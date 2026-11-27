@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import math
 
 import bpy
 import bmesh
@@ -36,9 +35,13 @@ from kenney_researcher_stock_recolor import (
     spawn_researcher_eye_meshes,
 )
 from researcher_hero_geometry import spawn_researcher_hair_cap
+from researcher_shirt_derived_meshes import (
+    SKIRT_NAME,
+    SLEEVES_NAME,
+    spawn_shirt_derived_coat_parts,
+)
 
 STOCK_OBJECT_NAME = "KenneyResearcherStock"
-SKIRT_OBJECT_NAME = "ResearcherCoatSkirt"
 
 # Match founder slot indices; slot 3 is lab coat (was shirt).
 SLOT_SHOE = 1
@@ -189,54 +192,28 @@ def apply_researcher_founder_base_materials(
 
 
 def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | None = None) -> bpy.types.Object:
-    """Waist→mid-thigh cylindrical coat skirt (front/sides/back); rigged for walk."""
-    for ob in list(bpy.context.scene.objects):
-        if ob.type == "MESH" and ob.name.split(".")[0] == SKIRT_OBJECT_NAME:
-            bpy.data.objects.remove(ob, do_unlink=True)
-    lm = compute_landmarks(body)
-    lo, span = lm.zmin, lm.span
-    ws = [body.matrix_world @ v.co for v in body.data.vertices]
-    fwd = toe_forward([body]).normalized()
-    hc, _ = face_shell_coord(body, fwd)
-    from founder_face_decals import _fwd_basis
-
-    _, right_ax = _fwd_basis(fwd)
-    thw_waist = torso_half_width(ws, lo, span, lm.h_waist, lm.cx, lm.cy)
-    z0 = lo + span * (lm.h_waist - 0.05)
-    z1 = lo + span * (lm.h_waist + 0.40)
-    segs = 24
-    mesh = bpy.data.meshes.new(SKIRT_OBJECT_NAME)
-    bm = bmesh.new()
-    ring_top: list[bmesh.types.BMVert] = []
-    ring_bot: list[bmesh.types.BMVert] = []
-    inv = body.matrix_world.inverted()
-    for ring, z, rad_mul in ((ring_top, z1, 1.16), (ring_bot, z0, 1.04)):
-        for i in range(segs):
-            ang = 2.0 * math.pi * i / segs
-            lateral = right_ax * math.cos(ang) + fwd * math.sin(ang)
-            r = thw_waist * rad_mul * (1.02 + 0.10 * abs(math.cos(ang)))
-            wco = hc + lateral * r
-            wco.z = z
-            lco = inv @ wco
-            ring.append(bm.verts.new(lco))
-    bm.verts.ensure_lookup_table()
-    for i in range(segs):
-        j = (i + 1) % segs
-        bm.faces.new((ring_top[i], ring_top[j], ring_bot[j], ring_bot[i]))
-    bm.to_mesh(mesh)
-    bm.free()
-    skirt = bpy.data.objects.new(SKIRT_OBJECT_NAME, mesh)
-    bpy.context.scene.collection.objects.link(skirt)
-    mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
-    skirt.data.materials.append(mat)
-    bc.smooth_shade(skirt)
-    skirt.parent = body
-    skirt.matrix_parent_inverse = body.matrix_world.inverted()
+    """Shirt-slot duplicate from hip→mid-thigh (no ad-hoc cylinder)."""
+    coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
+    parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
+    skirt = next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
     if arm is not None:
         from kenney_hero_walk_strip import _bind_coat_researcher_armature
 
         _bind_coat_researcher_armature(skirt, body, arm)
     return skirt
+
+
+def spawn_researcher_shirt_derived_parts(
+    body: bpy.types.Object, arm: bpy.types.Object | None = None
+) -> list[bpy.types.Object]:
+    coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
+    parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
+    skirt = next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
+    if arm is not None:
+        from kenney_hero_walk_strip import _bind_coat_researcher_armature
+
+        _bind_coat_researcher_armature(skirt, body, arm)
+    return parts
 
 
 def collect_researcher_founder_meshes() -> list[bpy.types.Object]:
@@ -255,7 +232,7 @@ def collect_researcher_founder_meshes() -> list[bpy.types.Object]:
         (
             o
             for o in meshes
-            if o.name.split(".")[0] in (SKIRT_OBJECT_NAME, "ResearcherHairCap")
+            if o.name.split(".")[0] in (SKIRT_NAME, SLEEVES_NAME, "ResearcherHairCap")
         ),
         key=lambda o: o.name,
     )
@@ -285,7 +262,7 @@ def load_researcher_from_founder_stock() -> bpy.types.Object:
             f"FAIL staff-researcher-idle stock_tris={tri_count} want={want_tris}"
         )
     apply_researcher_founder_base_materials(ob)
-    spawn_researcher_coat_skirt(ob, arm=None)
+    spawn_researcher_shirt_derived_parts(ob, arm=None)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
     return ob

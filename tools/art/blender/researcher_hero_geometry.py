@@ -1125,12 +1125,12 @@ def spawn_researcher_hair_cap(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.primitive_uv_sphere_add(
         segments=18,
         ring_count=12,
-        radius=head_w * 0.50,
+        radius=head_w * 0.48,
         location=local,
     )
     cap = bpy.context.active_object
     cap.name = "ResearcherHairCap"
-    cap.scale = (1.05, 0.96, 0.56)
+    cap.scale = (1.03, 0.96, 0.55)
     bpy.ops.object.transform_apply(scale=True)
     cap.parent = body
     cap.matrix_parent_inverse = body.matrix_world.inverted()

@@ -741,14 +741,14 @@ def apply_walk_materials_to_hero(
         elif asset_id == "staff-researcher-idle":
             if base == "KenneyResearcherStock":
                 apply_researcher_founder_base_materials(ob)
-            elif base in ("ResearcherHairCap", "ResearcherCoatSkirt"):
+            elif base in ("ResearcherHairCap", "ResearcherCoatSkirt", "ResearcherCoatSleeves"):
                 _tune_coat_mat(ob)
 
 
 def build_researcher_walk_scene() -> WalkHeroScene:
     from kenney_researcher_from_founder import (
         apply_researcher_founder_base_materials,
-        spawn_researcher_coat_skirt,
+        spawn_researcher_shirt_derived_parts,
     )
     from kenney_researcher_stock_recolor import spawn_researcher_eye_meshes
     from researcher_hero_geometry import spawn_researcher_hair_cap
@@ -763,11 +763,11 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     apply_researcher_founder_base_materials(mesh)
     mesh.name = "KenneyResearcherStock"
     reinforce_founder_forearm_weights(mesh)
-    skirt = spawn_researcher_coat_skirt(mesh, arm)
+    coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm)
     eyes = spawn_researcher_eye_meshes(mesh)
     hair = spawn_researcher_hair_cap(mesh)
     _weight_mesh_to_head(hair, arm)
-    extras = [skirt, hair]
+    extras = [*coat_parts, hair]
     keep = {
         arm.name.split(".")[0],
         mesh.name.split(".")[0],
@@ -786,7 +786,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     return WalkHeroScene(
         arm=arm,
         body=mesh,
-        render_meshes=[mesh, skirt, *eyes, hair],
+        render_meshes=[mesh, *coat_parts, *eyes, hair],
         action_name=act.name,
         walk_frames=walk_frames,
         labels=labels,
