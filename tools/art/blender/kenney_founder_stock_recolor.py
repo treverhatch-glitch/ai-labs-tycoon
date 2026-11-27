@@ -14,9 +14,9 @@ import blender_common as bc
 import kenney_founder_lib as kf
 from kenney_face_axis import H_EYE_CENTER, face_shell_coord, lateral_from_front, toe_forward
 
-H_EYE_LO = H_EYE_CENTER - 0.04
-H_EYE_HI = H_EYE_CENTER + 0.035
-H_BROW_LO = H_EYE_CENTER + 0.038
+H_EYE_LO = H_EYE_CENTER - 0.038
+H_EYE_HI = H_EYE_CENTER + 0.032
+H_BROW_LO = H_EYE_CENTER + 0.036
 
 STOCK_SOURCE = bc.REPO_ROOT / "tools" / "art" / "source" / "kenney"
 STOCK_BLEND = STOCK_SOURCE / "staff-founder-kenney-stock.blend"
@@ -33,6 +33,7 @@ H_WAIST = 0.50
 H_SHIRT_TOP = 0.80
 H_BROW = 0.76
 H_TOP_CAP = 0.90
+H_ARM_HAND_TOP = H_WAIST + 0.25 * (H_SHIRT_TOP - H_WAIST)
 
 SLOT_SOLE = 0
 SLOT_SHOE = 1
@@ -144,29 +145,28 @@ def _region_for_point(
         return SLOT_SOLE if lat_n > 0.05 else SLOT_SHOE
 
     if h < H_WAIST:
-        if xf >= 0.09:
-            return SLOT_SHIRT
         return SLOT_JEANS
 
     if h < H_SHIRT_TOP:
-        if h > 0.78 and y_face > 0.025:
-            if xf >= 0.11 and h >= 0.74:
-                return SLOT_HAND
-            return SLOT_SKIN
-        if xf >= 0.11:
-            if h >= 0.74:
+        if xf >= 0.09:
+            if h < H_ARM_HAND_TOP:
                 return SLOT_HAND
             return SLOT_SHIRT
+        if h > 0.78 and y_face > 0.03:
+            return SLOT_SKIN
         return SLOT_SHIRT
 
-    if y_face > 0.05 and H_EYE_LO <= h < H_EYE_HI and lat_n < 0.085:
+    if y_face > 0.08 and H_EYE_LO <= h < H_EYE_HI and lat_n < 0.072:
         return SLOT_EYE
-    if y_face > 0.05 and H_BROW_LO <= h < 0.96 and lat_n < 0.095:
+    if y_face > 0.08 and H_BROW_LO <= h < 0.965 and lat_n < 0.08:
         return SLOT_BROW
 
-    if h >= H_BROW and y_face < 0.0:
+    if h > 0.78 and y_face > 0.03:
+        return SLOT_SKIN
+
+    if h >= H_BROW and y_face < -0.02:
         return SLOT_HAIR
-    if h >= H_TOP_CAP and y_face < 0.03:
+    if h >= 0.84 and y_face < 0.04:
         return SLOT_HAIR
 
     return SLOT_SKIN

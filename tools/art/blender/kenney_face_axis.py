@@ -9,7 +9,6 @@ import bpy
 H_SHOE = 0.07
 H_NECK = 0.80
 H_HEAD_TOP = 0.97
-# Eyes at ~55% of head height above the neck band (brows above).
 H_EYE_CENTER = H_NECK + 0.55 * (H_HEAD_TOP - H_NECK)
 
 
@@ -24,7 +23,7 @@ def _pick_mesh(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object | None:
 
 
 def toe_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
-    """front = normalize(XY of mean(toe) − mean(heel)), shoe band h < 0.07."""
+    """front = normalize(XY mean(toe)−mean(heel)); toe/heel split on the *narrower* shoe XY axis."""
     ob = _pick_mesh(mesh_obs)
     if not ob:
         return Vector((0.0, -1.0, 0.0))
@@ -38,13 +37,12 @@ def toe_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     if len(shoes) < 4:
         return Vector((0.0, -1.0, 0.0))
 
-    best_ax = 0
-    best_spread = -1.0
+    spreads: list[tuple[float, int]] = []
     for ax in (0, 1):
         spread = max(p[ax] for p in shoes) - min(p[ax] for p in shoes)
-        if spread > best_spread:
-            best_spread = spread
-            best_ax = ax
+        spreads.append((spread, ax))
+    spreads.sort(key=lambda t: t[0])
+    best_ax = spreads[0][1]
 
     med = statistics.median(p[best_ax] for p in shoes)
     toe_pts = [p for p in shoes if p[best_ax] >= med]
@@ -56,7 +54,14 @@ def toe_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     delta = Vector((mean_toe.x - mean_heel.x, mean_toe.y - mean_heel.y, 0.0))
     if delta.length < 1e-5:
         return Vector((0.0, -1.0, 0.0))
-    return delta.normalized()
+    raw = delta.normalized()
+    hc = _head_center(ws, lo, span)
+    head = [p for p in ws if (p.z - lo) / span > 0.82]
+    if head:
+        nose = max(head, key=lambda p: (p - hc).dot(raw))
+        if (nose - hc).dot(raw) < 0.0:
+            raw = -raw
+    return raw
 
 
 def resolve_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
@@ -69,7 +74,6 @@ def _head_center(ws: list[Vector], lo: float, span: float) -> Vector:
 
 
 def face_shell_coord(ob: bpy.types.Object, fwd: Vector):
-    """Forward dot: positive on toe-forward face."""
     ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
     zs = [p.z for p in ws]
     lo, hi = min(zs), max(zs)
@@ -90,7 +94,6 @@ def lateral_from_front(w: Vector, hc: Vector, fwd: Vector) -> float:
 
 
 def eye_landmarks_world(ob: bpy.types.Object) -> tuple[Vector, Vector, float]:
-    """Eye centers from forward-facing FounderEye faces."""
     fwd = toe_forward([ob])
     hc, y_face_fn = face_shell_coord(ob, fwd)
     slots = list(ob.data.materials)
@@ -105,12 +108,13 @@ def eye_landmarks_world(ob: bpy.types.Object) -> tuple[Vector, Vector, float]:
             vi = mesh.loops[li].vertex_index
             wc += ob.matrix_world @ mesh.vertices[vi].co
         wc /= len(poly.loop_indices)
-        if y_face_fn(wc) < 0.04:
+        if y_face_fn(wc) < 0.07:
             continue
         pts.append(wc)
     if len(pts) >= 2:
-        lat_ax = 1 if abs(fwd.x) >= max(abs(fwd.y), 0.45) else 0
-        pts.sort(key=lambda p: p[lat_ax])
+        f_xy = Vector((fwd.x, fwd.y, 0.0)).normalized()
+        right = Vector((-f_xy.y, f_xy.x, 0.0))
+        pts.sort(key=lambda p: (p - hc).dot(right))
         return pts[0], pts[-1], max(p.z for p in pts)
 
     ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
