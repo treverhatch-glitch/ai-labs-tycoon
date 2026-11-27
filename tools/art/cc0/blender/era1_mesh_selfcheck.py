@@ -58,9 +58,7 @@ def assert_monitor_parts(parts: list[bpy.types.Object], root_name: str = "body_t
         "power_btn",
         "led_pwr",
         "screen",
-        "vent_groove_0",
-        "vent_groove_1",
-        "vent_groove_2",
+        "rear_housing",
     }
     for ob in parts:
         if ob.name in shell_names:

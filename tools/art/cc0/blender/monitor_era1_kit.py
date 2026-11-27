@@ -43,24 +43,26 @@ def _spec(name: str, dims: tuple[float, float, float], loc: tuple[float, float, 
 
 def _tapered_body(name: str, z_center: float) -> bpy.types.Object:
     y_front = -MON_D / 2
-    y_rear = MON_D / 2
+    y_rear = MON_D / 2 - 0.010
     mesh = bpy.data.meshes.new(name)
     ob = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(ob)
     bm = bmesh.new()
     z0 = z_center - FACE_H / 2
     z1 = z_center + FACE_H / 2
-    zr0 = z_center - REAR_H / 2
-    zr1 = z_center + REAR_H / 2
+    zr0 = z_center - REAR_H / 2 + 0.006
+    zr1 = z_center + REAR_H / 2 - 0.006
+    wf = FACE_W / 2 - 0.010
+    wr = REAR_W / 2 - 0.006
     coords = [
-        (-FACE_W / 2, y_front, z0),
-        (FACE_W / 2, y_front, z0),
-        (FACE_W / 2, y_front, z1),
-        (-FACE_W / 2, y_front, z1),
-        (-REAR_W / 2, y_rear, zr0),
-        (REAR_W / 2, y_rear, zr0),
-        (REAR_W / 2, y_rear, zr1),
-        (-REAR_W / 2, y_rear, zr1),
+        (-wf, y_front, z0),
+        (wf, y_front, z0),
+        (wf, y_front, z1),
+        (-wf, y_front, z1),
+        (-wr, y_rear, zr0),
+        (wr, y_rear, zr0),
+        (wr, y_rear, zr1),
+        (-wr, y_rear, zr1),
     ]
     verts = [bm.verts.new(c) for c in coords]
     bm.faces.new(verts[0:4])
@@ -167,20 +169,18 @@ def build_monitor_era1() -> bpy.types.Object:
     y_scr = y_front - RECESS - SCREEN_BULGE * 0.55
     parts.append(_bulged_screen(y_scr, z_body))
 
-    y_rear = MON_D / 2 - 0.05
-    for i, zo in enumerate((0.09, 0.05, 0.01)):
-        parts.append(_groove_box(f"vent_groove_{i}", (0.16, 0.006, 0.010), (0, y_rear, z_body + zo)))
+    parts.append(_rear_housing(z_body, y_front))
 
     foot_r = 0.11
     parts.append(_overlap_cylinder("base_foot", foot_r, 0.024, (0, 0, 0.012)))
     parts.append(_overlap_box("neck", (0.082, 0.082, 0.090), (0, 0, 0.067)))
 
-    y_bezel = y_front - BEZEL_T / 2
+    y_bezel = y_front - BEZEL_T / 2 + 0.002
     opening_bottom = z_body - SCREEN_H / 2
     bz = opening_bottom - 0.02
     bx_pwr = FACE_W / 2 - 0.03
-    parts.append(_overlap_box("power_btn", (0.012, BEZEL_T * 0.75, 0.012), (bx_pwr, y_bezel, bz)))
-    parts.append(_overlap_box("led_pwr", (0.010, BEZEL_T * 0.75, 0.010), (bx_pwr - 0.022, y_bezel, bz)))
+    parts.append(_overlap_box("power_btn", (0.014, BEZEL_T * 0.82, 0.008), (bx_pwr, y_bezel, bz)))
+    parts.append(_overlap_box("led_pwr", (0.006, BEZEL_T * 0.82, 0.012), (bx_pwr - 0.018, y_bezel, bz)))
 
     sc.assert_monitor_parts(parts, root_name="body_tapered")
     _parent_apply(parts, "body_tapered")
@@ -205,6 +205,44 @@ def build_monitor_era1() -> bpy.types.Object:
     mb.snap_root_to_floor(root)
     _final_weld(root)
     return root
+
+
+def _rear_housing(z_center: float, y_front: float) -> bpy.types.Object:
+    """Closed tapered rear solid from just behind bezel — no sheet overhang."""
+    y0 = y_front + BEZEL_T * 0.35
+    y1 = MON_D / 2 - 0.006
+    ym = (y0 + y1) / 2
+    depth = y1 - y0
+    mesh = bpy.data.meshes.new("rear_housing")
+    ob = bpy.data.objects.new("rear_housing", mesh)
+    bpy.context.collection.objects.link(ob)
+    bm = bmesh.new()
+    z0 = z_center - FACE_H / 2 + 0.008
+    z1 = z_center + FACE_H / 2 - 0.008
+    zr0 = z_center - REAR_H / 2 + 0.006
+    zr1 = z_center + REAR_H / 2 - 0.006
+    wf = FACE_W / 2 - 0.014
+    wr = REAR_W / 2 - 0.008
+    coords = [
+        (-wf, y0, z0),
+        (wf, y0, z0),
+        (wf, y0, z1),
+        (-wf, y0, z1),
+        (-wr, y1, zr0),
+        (wr, y1, zr0),
+        (wr, y1, zr1),
+        (-wr, y1, zr1),
+    ]
+    verts = [bm.verts.new(c) for c in coords]
+    bm.faces.new(verts[0:4])
+    bm.faces.new(list(reversed(verts[4:8])))
+    for quad in ((0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)):
+        bm.faces.new([verts[i] for i in quad])
+    bm.normal_update()
+    bm.to_mesh(mesh)
+    bm.free()
+    _spec("rear_housing", (FACE_W - 0.028, depth, FACE_H - 0.016), (0, ym, z_center))
+    return ob
 
 
 def _groove_box(name: str, dims: tuple[float, float, float], loc: tuple[float, float, float]) -> bpy.types.Object:

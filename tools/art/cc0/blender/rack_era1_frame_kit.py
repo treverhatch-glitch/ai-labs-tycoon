@@ -68,7 +68,7 @@ def _part_mat_index(name: str) -> int:
         return MAT_CABLE
     if "face" in name:
         return MAT_UNIT_FACE
-    if "unit" in name or "bay" in name:
+    if "unit" in name or "bay" in name or "slot" in name or "vent" in name or "port" in name:
         return MAT_UNIT
     if "rail" in name or "depth" in name or "frame_weld" in name:
         return MAT_RAIL
@@ -133,36 +133,60 @@ def build_rack_era1() -> bpy.types.Object:
         parts.append(_box(f"depth_tl_{tag}", (RAIL, RACK_D - RAIL, RAIL), (-hx, 0, z)))
         parts.append(_box(f"depth_tr_{tag}", (RAIL, RACK_D - RAIL, RAIL), (hx, 0, z)))
 
-    uc_y = y_front + ud / 2 - OVERLAP
-    z4, z2, z1 = 1.48, 1.18, 0.88
+    frame_parts = parts[:]
+    sc.assert_rack_parts(frame_parts, POST_NAMES, RAIL_Z)
 
-    parts.append(_box("unit_4u", (uw, ud, 0.180), (0, uc_y, z4)))
-    parts.append(_box("unit_4u_face", (uw - 0.015, 0.012, 0.158), (0, y_front + 0.008, z4)))
-    for bi, xo in enumerate((-0.11, 0.0, 0.11)):
-        parts.append(_box(f"bay_{bi}", (0.088, 0.010, 0.034), (xo, y_front + 0.009, z4 + (bi - 1) * 0.038)))
-    for lj, xo in enumerate((0.08, 0.12)):
-        parts.append(_box(f"led_g_{lj}", (0.010, 0.008, 0.008), (xo, y_front + 0.010, z4 - 0.06)))
+    y_ff = -0.245
+    y_bk = 0.20
+    ud_srv = y_bk - y_ff
+    uc_y = (y_ff + y_bk) / 2
+    uw_srv = RACK_W - POST * 2 + OVERLAP
+    u = 0.04445
+    z1 = 0.9 + u / 2
+    z2a = 0.9 + u + u / 2 + u
+    z2b = z2a + u + u / 2 + u
+    z4 = 1.6 - u - 0.18 / 2
 
-    parts.append(_box("unit_2u", (uw, ud, 0.090), (0, uc_y, z2)))
-    parts.append(_box("unit_2u_face", (uw - 0.015, 0.012, 0.068), (0, y_front + 0.008, z2)))
+    server_parts: list[bpy.types.Object] = []
 
-    parts.append(_box("unit_1u", (uw, ud, 0.045), (0, uc_y, z1)))
-    parts.append(_box("unit_1u_face", (uw - 0.015, 0.012, 0.032), (0, y_front + 0.008, z1)))
-    for j, xo in enumerate((-0.12, -0.04, 0.04, 0.12)):
-        parts.append(_box(f"led_g_{j}", (0.009, 0.008, 0.007), (xo, y_front + 0.010, z1)))
+    def _closed_unit(name: str, h: float, z: float, *, vents: int = 0, ports: int = 0, leds: int = 0) -> None:
+        server_parts.append(_box(name, (uw_srv, ud_srv, h), (0, uc_y, z)))
+        yf = y_ff + 0.0025
+        server_parts.append(_box(f"{name}_front", (uw_srv - 0.006, 0.005, h - 0.012), (0, yf, z)))
+        if name == "unit_4u":
+            for bi, xo in enumerate((-0.10, 0.0, 0.10)):
+                server_parts.append(
+                    _box(f"{name}_slot_{bi}", (0.085, 0.004, 0.030), (xo, yf + 0.002, z + (bi - 1) * 0.034))
+                )
+            for li, xo in enumerate((0.10, 0.14)):
+                server_parts.append(_box(f"{name}_led_g_{li}", (0.008, 0.006, 0.006), (xo, yf + 0.003, z - h * 0.32)))
+        for vi in range(vents):
+            server_parts.append(
+                _box(f"{name}_vent_{vi}", (uw_srv - 0.08, 0.004, 0.012), (0, yf + 0.002, z + 0.02 - vi * 0.022))
+            )
+        if ports:
+            for pi, xo in enumerate((-0.12, -0.04, 0.04, 0.12)):
+                server_parts.append(_box(f"{name}_led_g_{pi}", (0.009, 0.006, 0.006), (xo, yf + 0.003, z)))
+        for li in range(leds):
+            server_parts.append(
+                _box(f"{name}_led_g_{li}", (0.008, 0.006, 0.006), (uw_srv * 0.35 - li * 0.06, yf + 0.003, z - h * 0.25))
+            )
 
-    parts.append(_box("cable_bundle", (RACK_W * 0.4, ud * 0.62, 0.55), (0, y_back - ud * 0.28, 1.25)))
+    _closed_unit("unit_1u", 0.045, z1, ports=4)
+    _closed_unit("unit_2u_a", 0.090, z2a, vents=2, leds=1)
+    _closed_unit("unit_2u_b", 0.090, z2b, vents=2, leds=1)
+    _closed_unit("unit_4u", 0.180, z4)
 
-    sc.assert_rack_parts(parts, POST_NAMES, RAIL_Z)
-
+    all_parts = frame_parts + server_parts
     slot_mats = [bpy.data.materials.new(f"_rack_slot_{i}") for i in range(7)]
-    for ob in parts:
+    for ob in all_parts:
         tower._bevel(ob, 0.0015, segments=1)
         tower._paint_part_faces(ob, _part_color(ob.name))
-    tower._apply_global_material_slots(parts, slot_mats, _part_mat_index)
+    tower._apply_global_material_slots(all_parts, slot_mats, _part_mat_index)
 
-    root = mb._union_parts(parts[:])
+    root = mb._union_parts(all_parts)
     cc.apply_transforms(root)
+    _weld_mesh(root, 0.002)
     _weld_mesh(root, WELD)
     tower._fix_tower_normals(root)
     root.name = "post_fl"
