@@ -1,6 +1,7 @@
 """Head-bbox eye blob detection for staff hero PNG gates (stock Kenney idle)."""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from collections import deque
@@ -11,9 +12,9 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 
 MAX_EYE_LUM = 96
-MAX_EYE_LUM_RESEARCHER = 132
 MIN_BLOB_PX = 6
 MASK_THRESH = 48
+FACE_INSET_FRAC = 0.15
 
 
 def figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -36,16 +37,51 @@ def head_bbox(mask: Image.Image, min_y: int, span: int) -> tuple[int, int, int, 
 
 def face_eye_band(min_y: int, span: int) -> tuple[int, int]:
     """Vertical band for eyes inside head (upper face), not torso/crotch."""
-    y0 = min_y + int(span * 0.08)
-    y1 = min_y + int(span * 0.26)
+    y0 = min_y + int(span * 0.10)
+    y1 = min_y + int(span * 0.24)
     return y0, y1
+
+
+def face_plane_x_range(hx0: int, hx1: int, *, yaw_deg: float | None = None) -> tuple[int, int]:
+    """Exclude outer head box (hair/ear); keep both eyes at ~30° 3/4 (face on low-x side)."""
+    if yaw_deg is None:
+        yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+    w = max(1, hx1 - hx0)
+    if abs(yaw_deg) < 12:
+        left_in = right_in = 0.06
+    else:
+        left_in = 0.04
+        right_in = FACE_INSET_FRAC
+    pad_l = max(0, int(w * left_in))
+    pad_r = max(1, int(w * right_in))
+    return hx0 + pad_l, hx1 - pad_r
+
+
+def _blob_centroid(cells: set[tuple[int, int]]) -> tuple[float, float]:
+    xs = [x for x, _ in cells]
+    ys = [y for _, y in cells]
+    return sum(xs) / len(xs), sum(ys) / len(ys)
+
+
+def _blob_in_face_plane(
+    cells: set[tuple[int, int]],
+    *,
+    fx0: int,
+    fx1: int,
+    fy0: int,
+    fy1: int,
+) -> bool:
+    cx, cy = _blob_centroid(cells)
+    return fx0 <= cx <= fx1 and fy0 <= cy <= fy1
 
 
 def is_eye_pixel(r: int, g: int, b: int, *, asset_id: str = "") -> bool:
     if asset_id == "staff-researcher-idle":
-        if max(r, g, b) > 118 or (r + g + b) >= 320:
+        if max(r, g, b) > 78 or (r + g + b) >= 210:
             return False
-        return not (b > r + 24 and b > 95)
+        if abs(r - g) > 14 or abs(g - b) > 18:
+            return False
+        return not (b > r + 20 and b > 88)
     return max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 165
 
 
@@ -91,7 +127,8 @@ def dark_blobs_in_roi(
                         continue
                     seen[nyi][nx] = True
                     q.append((nx, ny))
-            if len(cells) >= MIN_BLOB_PX:
+            min_px = 4 if asset_id == "staff-researcher-idle" else MIN_BLOB_PX
+            if len(cells) >= min_px:
                 blobs.append(cells)
     return blobs
 
@@ -107,6 +144,46 @@ def _preview_eyes_visible() -> bool:
     return "preview_eyes_visible=2" in (proc.stdout or "")
 
 
+def _merge_eye_blob_fragments(
+    blobs: list[set[tuple[int, int]]], span: int
+) -> list[set[tuple[int, int]]]:
+    if len(blobs) < 2:
+        return blobs
+    cents: list[tuple[float, float, set[tuple[int, int]]]] = []
+    for cells in blobs:
+        cx = sum(x for x, _ in cells) / len(cells)
+        cy = sum(y for _, y in cells) / len(cells)
+        cents.append((cx, cy, cells))
+    used = [False] * len(cents)
+    merged_blobs: list[set[tuple[int, int]]] = []
+    for i, (cx, cy, cells) in enumerate(cents):
+        if used[i]:
+            continue
+        merged: set[tuple[int, int]] = set(cells)
+        used[i] = True
+        for j, (cx2, cy2, cells2) in enumerate(cents):
+            if used[j]:
+                continue
+            if abs(cx - cx2) < span * 0.05 and abs(cy - cy2) < span * 0.04:
+                merged |= cells2
+                used[j] = True
+        if len(merged) >= MIN_BLOB_PX:
+            merged_blobs.append(merged)
+    return merged_blobs
+
+
+def _split_merged_eye_blob(cells: set[tuple[int, int]], span: int) -> list[set[tuple[int, int]]]:
+    xs = sorted({x for x, _ in cells})
+    if len(xs) < 4 or max(xs) - min(xs) < span * 0.05:
+        return [cells]
+    mid_x = (min(xs) + max(xs)) / 2.0
+    left = {p for p in cells if p[0] <= mid_x}
+    right = {p for p in cells if p[0] > mid_x}
+    if len(left) >= MIN_BLOB_PX and len(right) >= MIN_BLOB_PX:
+        return [left, right]
+    return [cells]
+
+
 def check_eyes_in_head_mask(
     img: Image.Image,
     mask: Image.Image,
@@ -114,15 +191,24 @@ def check_eyes_in_head_mask(
     x_off: int = 0,
     asset_id: str = "staff-researcher-idle",
     allow_projection_fallback: bool | None = None,
+    yaw_deg: float | None = None,
 ) -> tuple[bool, str, list[set[tuple[int, int]]], tuple[int, int, int, int]]:
     min_y, _max_y, span = figure_span(mask)
     if span < 30:
         return False, "empty_mask", [], (0, 0, 0, 0)
     hx0, hy0, hx1, hy1 = head_bbox(mask, min_y, span)
     fy0, fy1 = face_eye_band(min_y, span)
+    if yaw_deg is None:
+        yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+    fx0, fx1 = face_plane_x_range(hx0, hx1, yaw_deg=yaw_deg)
     if allow_projection_fallback is None:
         allow_projection_fallback = asset_id != "staff-researcher-idle"
-    blobs = dark_blobs_in_roi(img, mask, hx0, hx1, fy0, fy1, asset_id=asset_id)
+    blobs = dark_blobs_in_roi(img, mask, fx0, fx1, fy0, fy1, asset_id=asset_id)
+    if asset_id == "staff-researcher-idle" and len(blobs) >= 3:
+        blobs = _merge_eye_blob_fragments(blobs, span)
+    blobs = [b for b in blobs if _blob_in_face_plane(b, fx0=fx0, fx1=fx1, fy0=fy0, fy1=fy1)]
+    if len(blobs) == 1 and abs(yaw_deg) < 12:
+        blobs = _split_merged_eye_blob(blobs[0], span)
     if len(blobs) < 2:
         if (
             allow_projection_fallback
@@ -161,8 +247,12 @@ def write_eye_debug(
     draw.rectangle((hx0, hy0, hx1, hy1), outline=(255, 80, 80), width=2)
     min_y, _max_y, span = figure_span(mask)
     fy0, fy1 = face_eye_band(min_y, span)
+    yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+    fx0, fx1 = face_plane_x_range(hx0, hx1, yaw_deg=yaw_deg)
     draw.line([(hx0, fy0), (hx1, fy0)], fill=(255, 160, 80), width=1)
     draw.line([(hx0, fy1), (hx1, fy1)], fill=(255, 160, 80), width=1)
+    draw.line([(fx0, hy0), (fx0, hy1)], fill=(255, 160, 80), width=1)
+    draw.line([(fx1, hy0), (fx1, hy1)], fill=(255, 160, 80), width=1)
     for cells in blobs[:2]:
         if not cells:
             continue

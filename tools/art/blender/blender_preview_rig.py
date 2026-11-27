@@ -468,12 +468,13 @@ def render_preview_studio(
         if preview_kind == "staff":
             if asset_id == "staff-researcher-idle":
                 scene.view_settings.view_transform = "Standard"
-                scene.view_settings.exposure = -1.12
+                scene.view_settings.exposure = -0.958
                 scene.view_settings.gamma = 1.0
                 if scene.world and scene.world.node_tree:
                     for n in scene.world.node_tree.nodes:
                         if n.type == "BACKGROUND":
-                            n.inputs["Strength"].default_value = 0.35
+                            n.inputs["Strength"].default_value = 1.0
+                            n.inputs["Color"].default_value = STUDIO_GREY
                 if hasattr(scene.eevee, "use_gtao"):
                     scene.eevee.gtao_factor = 1.0
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))

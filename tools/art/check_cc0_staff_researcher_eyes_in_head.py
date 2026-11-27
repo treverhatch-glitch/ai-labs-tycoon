@@ -20,6 +20,8 @@ NEGATIVE_SHAS = (
     ("af82592cc5a437e6f93ce8b65d7d5d24dddaa7f1", "v25"),
 )
 V2_FAIL_SHA = "1b8578f0"
+V3_FAIL_SHA = "0d4fe3ae"
+V3_DEBUG_REL = "docs/art/previews/staff-researcher-eye-gate-debug.png"
 GLB_NEG_REL = "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 
 sys.path.insert(0, str(REPO / "tools" / "art"))
@@ -73,6 +75,39 @@ def _glb_eye_gate_passes(sha: str) -> bool | None:
         if backup is not None:
             saved.write_bytes(backup)
         Path(glb.name).unlink(missing_ok=True)
+
+
+def _v3_strict_must_fail() -> bool:
+    """v3 false-passed on hair/ear blobs — strict face-plane gate must reject it."""
+    rel = "docs/art/previews/staff-researcher-idle.png"
+    mask_rel = "docs/art/previews/staff-researcher-idle.mask.png"
+    img = _git_png(V3_FAIL_SHA, rel)
+    mask = _git_png(V3_FAIL_SHA, mask_rel)
+    if img is None or mask is None:
+        print(f"FAIL staff-researcher-idle eyes_in_head v3_selftest missing_png sha={V3_FAIL_SHA}")
+        return False
+    ok, msg, blobs, _ = check_eyes_in_head_mask(
+        img, mask.convert("L"), allow_projection_fallback=False
+    )
+    if ok or len(blobs) >= 2:
+        print(
+            f"FAIL staff-researcher-idle eyes_in_head v3_selftest "
+            f"{V3_FAIL_SHA} must fail face_plane_gate (ok={ok} blobs={len(blobs)} {msg})"
+        )
+        return False
+    debug = _git_png(V3_FAIL_SHA, V3_DEBUG_REL)
+    if debug is not None:
+        ok_d, msg_d, blobs_d, _ = check_eyes_in_head_mask(
+            debug, mask.convert("L"), allow_projection_fallback=False, yaw_deg=30.0
+        )
+        if ok_d:
+            print(
+                f"FAIL staff-researcher-idle eyes_in_head v3_debug "
+                f"{V3_FAIL_SHA} must_fail ({msg_d} blobs={len(blobs_d)})"
+            )
+            return False
+    print(f"OK staff-researcher-idle eyes_in_head v3_selftest {V3_FAIL_SHA} strict_fail")
+    return True
 
 
 def _v2_strict_must_fail() -> bool:
@@ -147,6 +182,8 @@ def main() -> int:
     idle_img = Image.open(IDLE_PNG).convert("RGB")
     idle_mask = Image.open(IDLE_MASK).convert("L")
     if not _v2_strict_must_fail():
+        rc = 1
+    if not _v3_strict_must_fail():
         rc = 1
     ok, msg, blobs, head_rect = check_eyes_in_head_mask(
         idle_img, idle_mask, allow_projection_fallback=False
