@@ -99,11 +99,13 @@ def part_palette(asset_id: str) -> list[tuple[float, float, float]]:
             (0.62, 0.64, 0.68),
         ],
         "compute-pc-tower": [
-            (0.32, 0.34, 0.38),
-            (r * 0.55, g * 0.55, b * 0.55),
-            (0.22, 0.24, 0.28),
-            (0.15, 0.55, 0.85),
-            (0.75, 0.78, 0.82),
+            (0.72, 0.74, 0.80),
+            (0.58, 0.42, 0.96),
+            (0.98, 0.55, 0.18),
+            (0.25, 0.92, 0.88),
+            (0.95, 0.28, 0.72),
+            (0.38, 0.95, 0.48),
+            (0.35, 0.75, 0.95),
         ],
         "compute-monitor-set": [
             (0.20, 0.22, 0.26),
@@ -223,8 +225,9 @@ def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None
         img = bpy.data.images[str(albedo_path)]
     img.colorspace_settings.name = "sRGB"
     tex.image = img
-    bsdf.inputs["Roughness"].default_value = 0.52
-    bsdf.inputs["Metallic"].default_value = 0.12
+    rough = 0.38 if "pc-tower" in asset_id else 0.52
+    bsdf.inputs["Roughness"].default_value = rough
+    bsdf.inputs["Metallic"].default_value = 0.08 if "pc-tower" in asset_id else 0.12
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
@@ -325,7 +328,7 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.2
+    key.data.energy = 2.65 if "pc-tower" in asset_id else 2.2
     key.data.angle = math.radians(4)
 
     bpy.ops.object.light_add(type="AREA", location=(center.x, center.y, floor_z - span * 0.05))
@@ -396,8 +399,9 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
-    bevel_w = 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
-    bevel_object(root, width=bevel_w, segments=2)
+    bevel_w = 0.018 if asset_id == "compute-pc-tower" else 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
+    bevel_segments = 3 if asset_id == "compute-pc-tower" else 2
+    bevel_object(root, width=bevel_w, segments=bevel_segments)
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
     if not has_bake:
