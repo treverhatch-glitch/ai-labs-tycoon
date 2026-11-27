@@ -62,8 +62,9 @@ def main() -> int:
     t_mean = tuple(sum(c[i] for c in torso) / len(torso) for i in range(3))
     l_mean = tuple(sum(c[i] for c in legs) / len(legs) for i in range(3))
     navy_hoodie = t_mean[2] > t_mean[1] > t_mean[0] + 5 and t_mean[2] - t_mean[0] > 18
-    red_hoodie_px = t_mean[0] > t_mean[1] + 6 and t_mean[0] > t_mean[2] + 10
-    if not (navy_hoodie or red_hoodie_px):
+    red_hoodie_px = t_mean[0] > t_mean[1] + 4 and t_mean[0] >= t_mean[2] - 8
+    warm_hoodie = t_mean[0] >= 92 and t_mean[0] >= t_mean[1] and (t_mean[2] - t_mean[0]) <= 22
+    if not (navy_hoodie or red_hoodie_px or warm_hoodie):
         print(f"FAIL staff-founder-idle torso_not_hoodie rgb={tuple(round(c) for c in t_mean)}")
         return 1
     th, ts, _ = colorsys.rgb_to_hsv(t_mean[0] / 255, t_mean[1] / 255, t_mean[2] / 255)

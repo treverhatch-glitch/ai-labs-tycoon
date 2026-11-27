@@ -3,7 +3,7 @@
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
-export STAFF_PREVIEW_MARGIN=1.48
+export STAFF_PREVIEW_MARGIN=1.40
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -16,7 +16,7 @@ script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="
 out=$("$BLENDER" -b --python "$script" 2>&1) || { echo "$out"; echo "FAIL $script" >&2; exit 1; }
 echo "$out"
-echo "$out" | grep -q '^OK staff-founder-idle ' || { echo "FAIL missing OK line: $script" >&2; exit 1; }
+echo "$out" | grep -qE '^OK staff-founder-idle [0-9]+ ' || { echo "FAIL missing bake OK line: $script" >&2; exit 1; }
 
 set +e
 out=$("$BLENDER" -b --python tools/art/blender/check_staff_gltf_blender.py -- "$ROOT" 2>&1)
@@ -48,6 +48,7 @@ python3 tools/art/check_cc0_staff_founder_arm_pose.py
 python3 tools/art/check_cc0_staff_face_visible.py
 python3 tools/art/check_cc0_staff_founder_pixel_hues.py
 python3 tools/art/check_cc0_staff_founder_assembly.py
+python3 tools/art/check_cc0_staff_founder_head_mesh.py
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

@@ -483,6 +483,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
         if not ok_conn:
             raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
+        if asset_id == "staff-founder-idle":
+            ok_head, msg_head = staff_c0.check_founder_head_geometry(mesh_obs)
+            if not ok_head:
+                raise RuntimeError(f"FAIL {asset_id}: {msg_head}")
+            print(f"OK {asset_id} {msg_head}")
     staff_export_root: bpy.types.Object | None = None
     if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
@@ -668,14 +673,18 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
             assign_solid(ob, eye, 0.35)
         elif base == "Eyebrows":
             assign_solid(ob, (0.22, 0.14, 0.10, 1.0), 0.45)
-        elif base == "Hoodie":
+        elif base in ("Hoodie", "HoodieTorso", "HoodiePocket"):
             assign_solid(ob, hoodie_red, 0.54)
         elif base == "Jeans":
             assign_solid(ob, denim, 0.56)
-        elif base.startswith("Hoodie") or base == "Hood":
+        elif base.startswith("HoodieSleeve") or base == "Hood":
             assign_solid(ob, hoodie_navy, 0.52)
         elif base.startswith("Jeans") or base.startswith("Leg_") or base == "Hips":
             assign_solid(ob, denim, 0.56)
+        elif base in ("Torso", "Neck"):
+            assign_solid(ob, hoodie_red, 0.54)
+        elif base.startswith("UpperArm_") or base.startswith("LowerArm_") or base.startswith("Shoulder_"):
+            assign_solid(ob, hoodie_navy, 0.54)
         elif base.startswith("Shoe_"):
             assign_solid(ob, sneaker, 0.38)
         elif base.startswith("Foot_"):
