@@ -166,7 +166,7 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     """Face forward: hips/torso → head, projected off the standing axis (Z-up import)."""
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
     hips = by_name.get("Hips") or by_name.get("Torso")
-    head = by_name.get("Head")
+    head = by_name.get("Head") or by_name.get("KenneyFounderStock")
     up = Vector((0.0, 0.0, 1.0))
     mins, maxs = mesh_bounds_world(mesh_obs)
     if (maxs - mins).z < (maxs - mins).y:

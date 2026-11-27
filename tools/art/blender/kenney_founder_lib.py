@@ -835,22 +835,7 @@ def _face_features_on_stock_head() -> None:
 
 
 def build_founder_kenney() -> None:
-    baked = bake_stock_kenney_mesh()
-    _drop_tiny_islands(baked, min_verts=40)
-    parts = _split_parts(baked)
-    if len(parts) < 11:
-        raise RuntimeError(f"Kenney split failed parts={len(parts)}")
-    _ground_z_meshes()
-    _snap_soles_to_feet()
-    _purge_floor_stray_meshes()
-    _ground_z_meshes()
-    _nudge_arm_outward(-1.0, 0.17)
-    _nudge_arm_outward(1.0, 0.17)
-    _face_features_on_stock_head()
-    for ob in bpy.context.scene.objects:
-        if ob.type == "MESH":
-            bc.smooth_shade(ob)
-    _ground_z_meshes()
-    for ob in list(bpy.context.scene.objects):
-        if ob.type == "MESH" and ob.name.split(".")[0] == "Cube":
-            bpy.data.objects.remove(ob, do_unlink=True)
+    """Import canonical stock GLB; founder colours via face materials only."""
+    from kenney_founder_stock_recolor import load_stock_and_recolor
+
+    load_stock_and_recolor()

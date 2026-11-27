@@ -18,6 +18,7 @@ stock_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_stock
 echo "$stock_out"
 echo "$stock_out" | grep -q '^OK stock_check' || { echo "FAIL stock check OK line" >&2; exit 1; }
 test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || { echo "FAIL missing stock check png"; exit 1; }
+test -s "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-kenney-stock.blend" || { echo "FAIL missing stock blend"; exit 1; }
 
 script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="

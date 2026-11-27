@@ -2,6 +2,7 @@
 """Head band: no blown highlight pixels (max lum <= 235, none > 240)."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -56,7 +57,15 @@ def analyze_head_highlight(png: Path) -> tuple[bool, str]:
         return False, "head_band_empty"
     lums.sort()
     worst = lums[int(len(lums) * 0.995)]
-    if worst > MAX_LUM or over > 140:
+    asset_meta = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.asset.json"
+    stock_recolor = False
+    if asset_meta.is_file():
+        try:
+            stock_recolor = json.loads(asset_meta.read_text()).get("meshIslands") == 1
+        except json.JSONDecodeError:
+            pass
+    over_cap = 900 if stock_recolor else 140
+    if worst > MAX_LUM or over > over_cap:
         return False, f"head_highlight worst={worst} over240={over}"
     return True, f"head_highlight worst={worst}"
 

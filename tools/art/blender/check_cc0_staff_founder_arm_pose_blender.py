@@ -28,6 +28,42 @@ def main() -> None:
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
+    stock = by.get("KenneyFounderStock")
+    if stock and len(meshes) == 1:
+        zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
+        lo, hi = min(zs), max(zs)
+        span = max(1e-4, hi - lo)
+        hip_z = lo + span * 0.38
+        neck_lo = lo + span * 0.63
+        cx = sum((stock.matrix_world @ v.co).x for v in stock.data.vertices) / len(stock.data.vertices)
+        wrist_hi = lo + span * 0.73
+        def wrist_centroid(sign: float) -> Vector | None:
+            pts = [
+                stock.matrix_world @ v.co
+                for v in stock.data.vertices
+                if (stock.matrix_world @ v.co).z <= wrist_hi
+                and sign * ((stock.matrix_world @ v.co).x - cx) > 0.06
+            ]
+            if len(pts) < 8:
+                return None
+            return sum(pts, Vector()) / len(pts)
+        wl, wr = wrist_centroid(-1.0), wrist_centroid(1.0)
+        if not wl or not wr:
+            print("FAIL staff-founder-idle arm_pose_stock_wrists")
+            raise SystemExit(1)
+        shoulder_h = neck_lo - hip_z - 0.05
+        drops = [(neck_lo - wl.z) / shoulder_h, (neck_lo - wr.z) / shoulder_h]
+        tc = Vector((cx, (wl.y + wr.y) * 0.5, (hip_z + neck_lo) * 0.5))
+        spreads = [(wl - tc).length, (wr - tc).length]
+        if min(spreads) < MIN_HAND_SPREAD:
+            print(f"FAIL staff-founder-idle arm_side_spread={min(spreads):.2f} want>={MIN_HAND_SPREAD}")
+            raise SystemExit(1)
+        worst = min(drops)
+        if worst < MIN_DROP:
+            print(f"FAIL staff-founder-idle arm_tpose_drop={worst:.2f} want>={MIN_DROP}")
+            raise SystemExit(1)
+        print(f"OK staff-founder-idle arm_drop={worst:.2f}")
+        raise SystemExit(0)
     torso = by.get("Torso")
     anchor = by.get("Neck") or torso or by.get("Head")
     arm_l = by.get("Hand_-1") or by.get("LowerArm_-1") or by.get("Arm_-1")

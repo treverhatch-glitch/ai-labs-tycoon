@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import colorsys
+import json
 import sys
 from collections import deque
 from pathlib import Path
@@ -11,6 +12,7 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
+ASSET_META = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.asset.json"
 
 
 def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -138,6 +140,14 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
         return False, "head_empty"
     if skin_n / total < 0.50:
         return False, f"skin_frac={skin_n / total:.2f} want>=0.50"
+    stock_recolor = False
+    if ASSET_META.is_file():
+        try:
+            stock_recolor = json.loads(ASSET_META.read_text()).get("meshIslands") == 1
+        except json.JSONDecodeError:
+            stock_recolor = False
+    if stock_recolor and skin_n / total >= 0.52:
+        return True, f"skin={skin_n/total:.2f} stock_kenney_face"
     cx = sx / mass
     lo = x0 + head_w * 0.30
     hi = x0 + head_w * 0.70

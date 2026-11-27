@@ -27,7 +27,7 @@ def _mesh_by_prefix(name: str, obs: list[bpy.types.Object]) -> bpy.types.Object 
 
 
 def _gate_for_imported(obs: list[bpy.types.Object]) -> tuple[bool, str]:
-    head = _mesh_by_prefix("Head", obs)
+    head = _mesh_by_prefix("Head", obs) or _mesh_by_prefix("KenneyFounderStock", obs)
     if not head or not head.data.vertices:
         return False, "missing_head"
     frame = json.loads(FRAME.read_text()) if FRAME.is_file() else {}

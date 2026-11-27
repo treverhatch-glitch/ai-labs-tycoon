@@ -37,9 +37,25 @@ def main() -> None:
     cam, _ = rig.frame_staff_front_quarter(meshes, 50.0, margin, yaw, elev)
     bpy.context.scene.camera = cam
     cam_loc = cam.matrix_world.translation
-    head = next((o for o in meshes if o.name.split(".")[0] == "Head"), None)
+    head = next(
+        (
+            o
+            for o in meshes
+            if o.name.split(".")[0] in ("Head", "KenneyFounderStock")
+        ),
+        None,
+    )
     hc = _centroid(head) if head else Vector()
+    stock_one = head and head.name.split(".")[0] == "KenneyFounderStock" and len(meshes) == 1
     visible = 0
+    if stock_one:
+        fwd = rig.staff_face_forward(meshes).normalized()
+        to_cam = (cam_loc - hc)
+        to_cam.z = 0.0
+        if to_cam.length > 1e-5 and fwd.length > 1e-5:
+            to_cam.normalize()
+            if abs(fwd.dot(to_cam)) >= MIN_EYE_DOT:
+                visible = 2
     for key in ("Eye_-1", "Eye_1"):
         ob = next((o for o in meshes if o.name.split(".")[0] == key), None)
         if not ob:

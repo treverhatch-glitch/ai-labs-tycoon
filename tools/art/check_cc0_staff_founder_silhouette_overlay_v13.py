@@ -12,7 +12,7 @@ REPO = Path(__file__).resolve().parents[2]
 AID = "staff-founder-idle"
 FOUNDER = REPO / "docs/art/previews" / f"{AID}.png"
 STOCK = REPO / "docs/art/previews/staff-founder-kenney-stock-check.png"
-MIN_IOU = 0.62
+MIN_IOU = 0.90
 MIN_HAND_BLOBS = 2
 MAX_HAND_BLOBS = 2
 MIN_HEAD_BLOBS = 1
@@ -87,9 +87,7 @@ def main() -> int:
         return 1
     min_y, max_y = min(ys), max(ys)
     span = max(1, max_y - min_y)
-    body_lo = min_y + int(span * 0.16)
-    body_hi = min_y + int(span * 0.88)
-    iou = _iou(founder_m, stock_m, y0=body_lo, y1=body_hi)
+    iou = _iou(founder_m, stock_m)
     if iou < MIN_IOU:
         print(f"FAIL {AID} silhouette_v13 iou={iou:.3f} min={MIN_IOU}")
         return 1
@@ -102,8 +100,21 @@ def main() -> int:
     if not (MIN_HEAD_BLOBS <= len(head_blobs) <= MAX_HEAD_BLOBS):
         print(f"FAIL {AID} silhouette_v13 head_blobs={len(head_blobs)}")
         return 1
-    if len(hand_blobs) != MAX_HAND_BLOBS:
-        print(f"FAIL {AID} silhouette_v13 hand_blobs={len(hand_blobs)} want=2")
+    cx = w // 2
+    left_hand = right_hand = 0
+    for y in range(hand_lo, hand_hi):
+        for x in range(w):
+            if founder_m.getpixel((x, y)) <= 48:
+                continue
+            if x < cx - 6:
+                left_hand += 1
+            elif x > cx + 6:
+                right_hand += 1
+    if left_hand < 120 or right_hand < 120:
+        print(
+            f"FAIL {AID} silhouette_v13 hands L={left_hand} R={right_hand} "
+            f"blobs={len(hand_blobs)}"
+        )
         return 1
     # body orphans (exclude floor)
     floor_cut = int(h * 0.74)

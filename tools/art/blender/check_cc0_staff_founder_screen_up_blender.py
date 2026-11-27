@@ -33,11 +33,26 @@ def main() -> None:
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
+    stock = by.get("KenneyFounderStock")
     head = by.get("Head")
     feet = [by[n] for n in ("Foot_-1", "Foot_1", "Leg_-1", "Leg_1") if n in by]
-    if not head or len(feet) < 2:
+    if stock and len(meshes) == 1:
+        zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
+        lo, hi = min(zs), max(zs)
+        cx = sum((stock.matrix_world @ v.co).x for v in stock.data.vertices) / len(
+            stock.data.vertices
+        )
+        cy = sum((stock.matrix_world @ v.co).y for v in stock.data.vertices) / len(
+            stock.data.vertices
+        )
+        head_pt = Vector((cx, cy, hi))
+        foot_pt = Vector((cx, cy, lo))
+    elif not head or len(feet) < 2:
         print("FAIL staff-founder-idle screen_up_parts")
         raise SystemExit(1)
+    else:
+        head_pt = _centroid(head)
+        foot_pt = sum((_centroid(f) for f in feet), Vector()) / len(feet)
     frame = json.loads(FRAME.read_text()) if FRAME.is_file() else {}
     yaw = float(frame.get("staff_yaw_deg", 30))
     elev = float(frame.get("staff_elev_deg", 11))
@@ -50,8 +65,8 @@ def main() -> None:
         co = world_to_camera_view(scene, cam, world)
         return co.y
 
-    head_y = view_y(_centroid(head))
-    foot_y = sum(view_y(_centroid(f)) for f in feet) / len(feet)
+    head_y = view_y(head_pt)
+    foot_y = view_y(foot_pt)
     bpy.data.objects.remove(cam, do_unlink=True)
     gap = head_y - foot_y
     if head_y <= foot_y:

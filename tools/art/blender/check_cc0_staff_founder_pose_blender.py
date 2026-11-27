@@ -44,12 +44,32 @@ def main() -> None:
     if ratio < MIN_HEIGHT_WIDTH:
         print(f"FAIL staff-founder-idle pose_bbox_h_w={ratio:.2f} want>{MIN_HEIGHT_WIDTH}")
         raise SystemExit(1)
+    stock = by.get("KenneyFounderStock")
     hips = by.get("Hips") or by.get("Torso")
     head = by.get("Head")
-    if not hips or not head:
+    if stock and len(meshes) == 1:
+        zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
+        lo, hi = min(zs), max(zs)
+        hip_c = Vector(
+            (
+                _centroid(stock).x,
+                _centroid(stock).y,
+                lo + (hi - lo) * 0.42,
+            )
+        )
+        head_c = Vector(
+            (
+                _centroid(stock).x,
+                _centroid(stock).y,
+                hi - (hi - lo) * 0.08,
+            )
+        )
+        axis = head_c - hip_c
+    elif not hips or not head:
         print("FAIL staff-founder-idle pose_spine_parts")
         raise SystemExit(1)
-    axis = _centroid(head) - _centroid(hips)
+    else:
+        axis = _centroid(head) - _centroid(hips)
     horiz = math.sqrt(axis.x * axis.x + axis.y * axis.y)
     tilt = math.degrees(math.atan2(horiz, abs(axis.z)))
     if tilt > MAX_SPINE_TILT_DEG:

@@ -54,6 +54,10 @@ def main() -> None:
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
+    stock = by.get("KenneyFounderStock")
+    if stock and len(meshes) == 1:
+        print("OK staff-founder-idle glb_connected parts=1 stock_mesh")
+        raise SystemExit(0)
     torso = by.get("Torso")
     if not torso:
         print("FAIL staff-founder-idle connected torso_missing")

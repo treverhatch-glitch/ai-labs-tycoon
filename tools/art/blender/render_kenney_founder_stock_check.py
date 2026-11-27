@@ -9,11 +9,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 import kenney_founder_lib as kf  # noqa: E402
+from kenney_founder_stock_recolor import export_stock_glb  # noqa: E402
 
 
 def main() -> None:
     baked = kf.bake_stock_kenney_mesh()
-    bc.assign_solid(baked, (0.58, 0.58, 0.58, 1.0), 0.62)
+    export_stock_glb(baked)
     out = bc.REPO_ROOT / "docs/art/previews/staff-founder-kenney-stock-check.png"
     os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-kenney-stock-check"
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"

@@ -466,56 +466,89 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
     part_count = len(mesh_obs)
+    import os as _os
+
+    stock_recolor = (
+        _os.environ.get("FOUNDER_STOCK_RECOLOR", "").strip() == "1"
+        and asset_id == "staff-founder-idle"
+    )
     ground_scene_meshes()
-    tint_garage_parts(mesh_obs, asset_id)
-    if category == "staff-kit" and part_count < 6:
+    if not stock_recolor:
+        tint_garage_parts(mesh_obs, asset_id)
+    if category == "staff-kit" and part_count < 6 and not stock_recolor:
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
     if category == "staff-kit":
         import staff_connectivity as staff_conn
         import cc0_staff_lib as staff_c0
 
-        spine_kw: dict = {}
-        if asset_id == "staff-founder-idle":
-            spine_kw = {"only_parts": frozenset({"Neck", "Torso"}), "max_radius": 0.95}
-        ok_spine, msg_spine = staff_c0.check_spine_clearance(mesh_obs, **spine_kw)
-        if not ok_spine:
-            raise RuntimeError(f"FAIL {asset_id}: {msg_spine}")
-
-        ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
-        if not ok_conn:
-            raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
-        if asset_id == "staff-founder-idle":
-            import founder_chunky_gates as fcg
-
-            ok_head, msg_head = staff_c0.check_founder_head_geometry(mesh_obs)
+        if stock_recolor:
+            if part_count != 1:
+                raise RuntimeError(f"FAIL {asset_id}: stock_recolor need 1 mesh got {part_count}")
+            ob = mesh_obs[0]
+            if mesh_island_count(ob) > 1:
+                raise RuntimeError(f"FAIL {asset_id}: stock_mesh_fragmented")
+            ok_head, msg_head = staff_c0.check_founder_stock_single_mesh(ob)
             if not ok_head:
                 raise RuntimeError(f"FAIL {asset_id}: {msg_head}")
             print(f"OK {asset_id} {msg_head}")
-            ok_ck, msg_ck = fcg.check_founder_chunky_bake(mesh_obs)
-            if not ok_ck:
-                raise RuntimeError(f"FAIL {asset_id}: chunky_bake {msg_ck}")
-            print(f"OK {asset_id} chunky_bake {msg_ck}")
+            print(f"OK {asset_id} chunky_bake stock_recolor_single_mesh")
+        else:
+            spine_kw: dict = {}
+            if asset_id == "staff-founder-idle":
+                spine_kw = {"only_parts": frozenset({"Neck", "Torso"}), "max_radius": 0.95}
+            ok_spine, msg_spine = staff_c0.check_spine_clearance(mesh_obs, **spine_kw)
+            if not ok_spine:
+                raise RuntimeError(f"FAIL {asset_id}: {msg_spine}")
+
+            ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
+            if not ok_conn:
+                raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
+            if asset_id == "staff-founder-idle":
+                import founder_chunky_gates as fcg
+
+                ok_head, msg_head = staff_c0.check_founder_head_geometry(mesh_obs)
+                if not ok_head:
+                    raise RuntimeError(f"FAIL {asset_id}: {msg_head}")
+                print(f"OK {asset_id} {msg_head}")
+                ok_ck, msg_ck = fcg.check_founder_chunky_bake(mesh_obs)
+                if not ok_ck:
+                    raise RuntimeError(f"FAIL {asset_id}: chunky_bake {msg_ck}")
+                print(f"OK {asset_id} chunky_bake {msg_ck}")
     staff_export_root: bpy.types.Object | None = None
     if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
         root = link_or_join(mesh_obs)
     elif category == "staff-kit":
-        staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
-        ok_exp, msg_exp = staff_conn.check_objects_connectivity(mesh_obs, asset_id)
-        if not ok_exp:
-            raise RuntimeError(f"FAIL {asset_id}: export connectivity {msg_exp}")
-        for ob in mesh_obs:
-            smooth_shade(ob)
-            bevel_object(ob, width=0.006, segments=1)
+        staff_export_root: bpy.types.Object | None = None
+        if not stock_recolor:
+            staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
+            ok_exp, msg_exp = staff_conn.check_objects_connectivity(mesh_obs, asset_id)
+            if not ok_exp:
+                raise RuntimeError(f"FAIL {asset_id}: export connectivity {msg_exp}")
+            for ob in mesh_obs:
+                smooth_shade(ob)
+                bevel_object(ob, width=0.006, segments=1)
+        else:
+            for ob in mesh_obs:
+                smooth_shade(ob)
         glb_path = out_dir / f"{asset_id}.glb"
         _sanitize_solid_gltf_materials(mesh_obs)
-        if asset_id == "staff-founder-idle":
+        if asset_id == "staff-founder-idle" and not stock_recolor:
             _strip_uv_layers(mesh_obs)
         export_gltf_selection(mesh_obs, glb_path)
         log_staff_material_slots(mesh_obs, asset_id)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         try:
-            render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
+            if stock_recolor:
+                prev_preview_asset = _os.environ.get("STAFF_PREVIEW_ASSET")
+                _os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-kenney-stock-check"
+                render_preview(mesh_obs, preview_path, asset_id=asset_id)
+                if prev_preview_asset is None:
+                    _os.environ.pop("STAFF_PREVIEW_ASSET", None)
+                else:
+                    _os.environ["STAFF_PREVIEW_ASSET"] = prev_preview_asset
+            else:
+                render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview {asset_id}: {exc}")
         verts = sum(len(o.data.vertices) for o in mesh_obs)

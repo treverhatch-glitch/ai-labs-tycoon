@@ -1019,6 +1019,28 @@ def check_spine_clearance(
     return True, f"spine_ok r={worst[1]:.3f}m"
 
 
+def check_founder_stock_single_mesh(ob: bpy.types.Object, min_verts: int = 750) -> tuple[bool, str]:
+    """Stock GLB import: one intact mesh; head band has real geometry."""
+    import staff_connectivity as sc
+
+    if ob.type != "MESH":
+        return False, "stock_not_mesh"
+    verts = len(ob.data.vertices)
+    if verts < min_verts:
+        return False, f"stock_sparse verts={verts}"
+    lo, hi = sc._world_bbox(ob)
+    span = hi.z - lo.z
+    if span < 1.4:
+        return False, f"stock_short span={span:.3f}"
+    head_lo = lo.z + span * 0.58
+    head_verts = sum(
+        1 for v in ob.data.vertices if (ob.matrix_world @ v.co).z >= head_lo
+    )
+    if head_verts < 32:
+        return False, f"stock_head_sparse head_verts={head_verts}"
+    return True, f"head_ok verts={head_verts} total={verts}"
+
+
 def check_founder_head_geometry(mesh_obs: list[bpy.types.Object], min_verts: int = 32) -> tuple[bool, str]:
     """Bake gate: head skin mesh must exist with real geometry (not empty / stray cube)."""
     import staff_connectivity as sc

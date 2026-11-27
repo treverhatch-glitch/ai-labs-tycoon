@@ -30,7 +30,14 @@ def main() -> None:
     elev = float(frame.get("staff_elev_deg", 11))
     cam, _ = rig.frame_staff_front_quarter(meshes, 50.0, 1.46, yaw, elev)
     bpy.context.scene.camera = cam
-    head = next((o for o in meshes if o.name.split(".")[0] == "Head"), None)
+    head = next(
+        (
+            o
+            for o in meshes
+            if o.name.split(".")[0] in ("Head", "KenneyFounderStock")
+        ),
+        None,
+    )
     if not head:
         print("FAIL staff-founder-idle missing_head")
         raise SystemExit(1)
