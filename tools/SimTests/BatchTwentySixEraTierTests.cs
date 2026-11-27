@@ -92,7 +92,7 @@ public class BatchTwentySixEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_179_round_trip()
+    public void Save_load_preserves_schema_182_round_trip()
     {
         Game g = Lab(c =>
         {
@@ -102,9 +102,9 @@ public class BatchTwentySixEraTierTests
         });
         g.Do(Command.AcquireDataSource(g.Id, "licensed-corpus"));
         string save = g.Sim.Save();
-        Assert.Equal(179, g.State.Schema);
+        Assert.Equal(182, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(179, loaded.State.Schema);
+        Assert.Equal(182, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.DataSourceAcquireEraWeeksBonused);
     }
 
