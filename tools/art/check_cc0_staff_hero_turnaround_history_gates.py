@@ -17,6 +17,7 @@ HISTORIC = (
     ("99d91135", "staff-researcher-turnaround", "staff-researcher-idle"),
     ("d38b9957", "staff-researcher-turnaround", "staff-researcher-idle"),
     ("dd43016a", "staff-researcher-turnaround", "staff-researcher-idle"),
+    ("2b634bda", "staff-researcher-turnaround", "staff-researcher-idle"),
 )
 
 

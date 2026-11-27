@@ -493,19 +493,17 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
 
         if stock_recolor:
             if asset_id == "staff-researcher-idle":
-                from kenney_researcher_stock_recolor import (
-                    ARM_VG_BONES,
-                    collect_researcher_stock_meshes,
-                )
+                from kenney_founder_stock_recolor import ARM_VG_BONES
+                from kenney_researcher_from_founder import collect_researcher_founder_meshes
 
-                mesh_obs = collect_researcher_stock_meshes()
+                mesh_obs = collect_researcher_founder_meshes()
             else:
                 from kenney_founder_stock_recolor import ARM_VG_BONES, collect_founder_stock_meshes
 
                 mesh_obs = collect_founder_stock_meshes()
             mesh_only = [o for o in mesh_obs if o.type == "MESH"]
             part_count = len(mesh_only)
-            want_parts = 4 if asset_id == "staff-researcher-idle" else 3
+            want_parts = 5 if asset_id == "staff-researcher-idle" else 3
             if part_count != want_parts:
                 raise RuntimeError(
                     f"FAIL {asset_id}: stock_recolor need {want_parts} parts got {part_count}"
@@ -577,6 +575,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                     and not o.name.startswith("ResearcherGlasses")
                     and not o.name.startswith("ResearcherLabCoat")
                     and not o.name.startswith("ResearcherHairCap")
+                    and not o.name.startswith("ResearcherCoatSkirt")
                 ]
                 if asset_id == "staff-founder-idle":
                     for ob in mesh_obs:
@@ -635,9 +634,9 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         root = link_or_join(mesh_only)
         if stock_recolor:
             if asset_id == "staff-researcher-idle":
-                from kenney_researcher_stock_recolor import apply_researcher_materials
+                from kenney_researcher_from_founder import apply_researcher_founder_base_materials
 
-                apply_researcher_materials(root)
+                apply_researcher_founder_base_materials(root)
             else:
                 from kenney_founder_stock_recolor import apply_founder_materials
 

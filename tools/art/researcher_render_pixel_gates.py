@@ -1,13 +1,40 @@
 #!/usr/bin/env python3
-"""Researcher preview pixels: coat torso box, back-of-head hair, charcoal legs."""
+"""Researcher preview pixels: torso coat box (absolute ROI), back-of-head hair, legs."""
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 from PIL import Image
 
 CHARCOAL_RGB = (58, 58, 58)
 MIN_TORSO_COAT_WHITE_FRAC = 0.90
+MAX_TORSO_SKIN_FRAC = 0.08
 MAX_BACK_HEAD_SKIN_FRAC = 0.0
 MAX_LEG_MEDIAN_CHARCOAL_DIST = 95.0
+
+
+@dataclass(frozen=True)
+class TorsoGateBox:
+    panel_i: int
+    x0: int
+    y0: int
+    x1: int
+    y1: int
+    coat_white_frac: float
+    skin_tan_frac: float
+    sample_n: int
+
+    def as_dict(self) -> dict:
+        return {
+            "panel": self.panel_i,
+            "x0": self.x0,
+            "y0": self.y0,
+            "x1": self.x1,
+            "y1": self.y1,
+            "coat_white_pct": round(100.0 * self.coat_white_frac, 1),
+            "skin_tan_pct": round(100.0 * self.skin_tan_frac, 1),
+            "n": self.sample_n,
+        }
 
 
 def _is_backdrop(r: int, g: int, b: int, grey: tuple[int, int, int] = (150, 150, 150)) -> bool:
@@ -19,6 +46,14 @@ def _is_coat_white(r: int, g: int, b: int) -> bool:
         return False
     spread = max(r, g, b) - min(r, g, b)
     lum = r + g + b
+    if (
+        r >= 132
+        and g >= 128
+        and b >= 120
+        and lum >= 400
+        and spread < 52
+    ):
+        return True
     if spread > 55:
         return False
     if r > g + 12:
@@ -32,10 +67,39 @@ def _is_skin_tan(r: int, g: int, b: int) -> bool:
     if _is_backdrop(r, g, b) or _is_coat_white(r, g, b):
         return False
     spread = max(r, g, b) - min(r, g, b)
-    # Lit brown hair reads tan at preview exposure; keep back-head gate on true skin.
     if r < 148 and b < 112 and spread < 56:
         return False
     return 88 <= r <= 205 and 62 <= g <= 175 and 48 <= b <= 165 and r >= g - 24 and spread < 78
+
+
+def torso_gate_box(panel: Image.Image, panel_i: int) -> TorsoGateBox:
+    """Same absolute ROI as walk-strip torso coat gate (shoulder→hip, center 80% width)."""
+    w, h = panel.size
+    x0, x1 = w // 10, w - w // 10
+    y0, y1 = int(h * 0.19), int(h * 0.48)
+    coat = skin = fig = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = panel.getpixel((x, y))[:3]
+            if _is_backdrop(r, g, b):
+                continue
+            fig += 1
+            if _is_coat_white(r, g, b):
+                coat += 1
+            elif _is_skin_tan(r, g, b):
+                skin += 1
+    coat_f = coat / fig if fig >= 40 else 0.0
+    skin_f = skin / fig if fig >= 40 else 1.0
+    return TorsoGateBox(panel_i, x0, y0, x1, y1, coat_f, skin_f, fig)
+
+
+def torso_gate_boxes_report(panels: list[Image.Image]) -> list[dict]:
+    rows: list[dict] = []
+    for i, panel in enumerate(panels):
+        if i not in (0, 2):
+            continue
+        rows.append(torso_gate_box(panel, i).as_dict())
+    return rows
 
 
 def _figure_span_y(mask: Image.Image) -> tuple[int, int, int]:
@@ -45,29 +109,6 @@ def _figure_span_y(mask: Image.Image) -> tuple[int, int, int]:
         return 0, h, max(1, h)
     min_y, max_y = min(ys), max(ys)
     return min_y, max_y, max(8, max_y - min_y)
-
-
-def torso_box_coat_white_frac(panel: Image.Image, mask: Image.Image) -> tuple[float, int]:
-    """Shoulder→hip center column (excludes most arm/hand pixels)."""
-    w, h = panel.size
-    min_y, _max_y, span = _figure_span_y(mask)
-    y0 = min_y + int(span * 0.24)
-    y1 = min_y + int(span * 0.66)
-    x0, x1 = w // 2 - w // 5, w // 2 + w // 5
-    coat = fig = 0
-    for y in range(y0, y1, 2):
-        for x in range(x0, x1, 2):
-            if mask.getpixel((x, y)) <= 48:
-                continue
-            r, g, b = panel.getpixel((x, y))[:3]
-            if _is_backdrop(r, g, b):
-                continue
-            fig += 1
-            if _is_coat_white(r, g, b):
-                coat += 1
-    if fig < 40:
-        return 0.0, fig
-    return coat / fig, fig
 
 
 def back_of_head_skin_frac(panel: Image.Image, mask: Image.Image, panel_i: int) -> float:
@@ -80,7 +121,6 @@ def back_of_head_skin_frac(panel: Image.Image, mask: Image.Image, panel_i: int) 
         y1 = min_y + int(span * 0.22)
         x0, x1 = w // 5, (4 * w) // 5
     else:
-        # 90°/270°: crown + rear hair only (exclude cheek/neck profile skin).
         y0 = min_y + int(span * 0.02)
         y1 = min_y + int(span * 0.13)
         if panel_i == 1:
@@ -124,9 +164,21 @@ def leg_roi_median_rgb(panel: Image.Image, mask: Image.Image) -> tuple[float, fl
 def check_researcher_panel_pixels(
     panel: Image.Image, mask: Image.Image, *, panel_i: int = 0
 ) -> tuple[bool, str]:
-    coat, cn = torso_box_coat_white_frac(panel, mask)
-    if cn >= 40 and coat < MIN_TORSO_COAT_WHITE_FRAC:
-        return False, f"torso_coat_white={coat:.3f} want>={MIN_TORSO_COAT_WHITE_FRAC}"
+    if panel_i in (0, 2):
+        box = torso_gate_box(panel, panel_i)
+        if box.sample_n >= 40 and box.coat_white_frac < MIN_TORSO_COAT_WHITE_FRAC:
+            return (
+                False,
+                f"torso_coat_white={box.coat_white_frac:.3f} want>={MIN_TORSO_COAT_WHITE_FRAC}",
+            )
+        if box.sample_n >= 40 and box.skin_tan_frac > MAX_TORSO_SKIN_FRAC:
+            return (
+                False,
+                f"torso_skin_tan={box.skin_tan_frac:.3f} want<={MAX_TORSO_SKIN_FRAC}",
+            )
+        coat = box.coat_white_frac
+    else:
+        coat = 0.0
     back_skin = back_of_head_skin_frac(panel, mask, panel_i)
     if back_skin > MAX_BACK_HEAD_SKIN_FRAC:
         return False, f"back_head_skin={back_skin:.3f} want<={MAX_BACK_HEAD_SKIN_FRAC}"

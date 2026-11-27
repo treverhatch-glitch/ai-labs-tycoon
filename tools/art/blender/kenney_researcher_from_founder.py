@@ -1,0 +1,221 @@
+"""Researcher hero from founder stock mesh (same bake/rig); no slot-patch pipeline."""
+from __future__ import annotations
+
+import json
+
+import bpy
+import bmesh
+from mathutils import Vector
+
+import blender_common as bc
+from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
+from kenney_founder_stock_recolor import (
+    ARM_VG_BONES,
+    STOCK_BLEND,
+    STOCK_META,
+    STOCK_OBJECT_NAME as FOUNDER_STOCK_NAME,
+    _head_width_at,
+    _apply_arm_vertex_groups,
+    _apply_hand_skin_vertex_groups,
+    _ensure_material,
+    _grow_arm_from_shoulders,
+    _grow_arm_regions,
+    _region_for_point,
+    _strip_mesh_vertex_colors,
+)
+from kenney_geometry_landmarks import compute_landmarks, torso_half_width
+from kenney_researcher_stock_recolor import (
+    RESEARCHER_HAIR,
+    RESEARCHER_SOLE,
+    RESEARCHER_TROUSERS,
+    spawn_researcher_eye_meshes,
+)
+from researcher_hero_geometry import spawn_researcher_hair_cap
+
+STOCK_OBJECT_NAME = "KenneyResearcherStock"
+SKIRT_OBJECT_NAME = "ResearcherCoatSkirt"
+
+# Match founder slot indices; slot 3 is lab coat (was shirt).
+SLOT_SHOE = 1
+RESEARCHER_LAB_COAT_RGBA = (0.98, 0.96, 0.93, 1.0)
+RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
+
+
+def _tune_coat_mat(ob: bpy.types.Object) -> None:
+    for slot in ob.material_slots:
+        mat = slot.material
+        if not mat or not mat.name.startswith("ResearcherLabCoat"):
+            continue
+        if not mat.use_nodes:
+            continue
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if not bsdf:
+            continue
+        bsdf.inputs["Base Color"].default_value = RESEARCHER_LAB_COAT_RGBA
+        bsdf.inputs["Roughness"].default_value = 0.34
+        em = bsdf.inputs.get("Emission") or bsdf.inputs.get("Emission Color")
+        stren = bsdf.inputs.get("Emission Strength")
+        if em is not None:
+            em.default_value = (0.94, 0.93, 0.90, 1.0)
+        if stren is not None:
+            stren.default_value = 0.38
+
+
+def apply_researcher_founder_base_materials(
+    ob: bpy.types.Object, *, world_verts: list | None = None
+) -> None:
+    """Founder topology + landmark slots; shirt→white coat, jeans→charcoal."""
+    _strip_mesh_vertex_colors(ob.data)
+    if world_verts is not None:
+        ws = world_verts
+    else:
+        deps = bpy.context.evaluated_depsgraph_get()
+        ev = ob.evaluated_get(deps)
+        ws = [ev.matrix_world @ v.co for v in ev.data.vertices]
+    lm = compute_landmarks(ob)
+    fwd = toe_forward([ob])
+    hc, y_face_fn = face_shell_coord(ob, fwd)
+    head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
+
+    mats = [
+        _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
+        _ensure_material("ResearcherShoe", RESEARCHER_SOLE, 0.42),
+        _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
+        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT_RGBA, 0.38),
+        _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.50),
+        _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.48),
+        _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
+    ]
+    ob.data.materials.clear()
+    for m in mats:
+        ob.data.materials.append(m)
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    slots: list[int] = []
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        h = (wc.z - lm.zmin) / lm.span
+        thw = torso_half_width(ws, lm.zmin, lm.span, h, lm.cx, lm.cy)
+        slots.append(
+            _region_for_point(
+                wc,
+                lm=lm,
+                all_ws=ws,
+                y_face=y_face,
+                lat=lat,
+                torso_hw=thw,
+                head_w=head_w,
+            )
+        )
+    _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
+    _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
+    _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _apply_hand_skin_vertex_groups(bm, slots, ob)
+    for face, slot in zip(bm.faces, slots, strict=True):
+        face.material_index = slot
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    _tune_coat_mat(ob)
+    bc.smooth_shade(ob)
+
+
+def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | None = None) -> bpy.types.Object:
+    """Hip→mid-thigh white shell; weighted to Hips + upper legs when armature present."""
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "MESH" and ob.name.split(".")[0] == SKIRT_OBJECT_NAME:
+            bpy.data.objects.remove(ob, do_unlink=True)
+    lm = compute_landmarks(body)
+    lo, span = lm.zmin, lm.span
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    fwd = toe_forward([body]).normalized()
+    hc, _ = face_shell_coord(body, fwd)
+    thw_waist = torso_half_width(ws, lo, span, lm.h_waist, lm.cx, lm.cy)
+    z0 = lo + span * (lm.h_waist - 0.06)
+    z1 = lo + span * (lm.h_waist + 0.42)
+    local_center = body.matrix_world.inverted() @ Vector((hc.x, hc.y, (z0 + z1) * 0.5))
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=local_center)
+    skirt = bpy.context.active_object
+    skirt.name = SKIRT_OBJECT_NAME
+    skirt.scale = (thw_waist * 2.05, thw_waist * 0.92, (z1 - z0) * 0.5)
+    skirt.rotation_euler[2] = 0.0
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
+    skirt.data.materials.append(mat)
+    bc.smooth_shade(skirt)
+    skirt.parent = body
+    skirt.matrix_parent_inverse = body.matrix_world.inverted()
+    if arm is not None:
+        from kenney_hero_walk_strip import _bind_coat_researcher_armature
+
+        skirt["coat_weights_from_body"] = True
+        _bind_coat_researcher_armature(skirt, body, arm)
+        for vg_name, w in (
+            ("Hips", 0.55),
+            ("Spine", 0.20),
+            ("LeftUpLeg", 0.18),
+            ("RightUpLeg", 0.18),
+        ):
+            if vg_name in arm.data.bones and vg_name not in skirt.vertex_groups:
+                g = skirt.vertex_groups.new(name=vg_name)
+                g.add(list(range(len(skirt.data.vertices))), w, "REPLACE")
+    return skirt
+
+
+def collect_researcher_founder_meshes() -> list[bpy.types.Object]:
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    body = next(
+        (o for o in meshes if o.name.split(".")[0] == STOCK_OBJECT_NAME),
+        None,
+    )
+    if not body:
+        body = meshes[0]
+    eyes = sorted(
+        (o for o in meshes if o.name.split(".")[0].startswith("FounderEye_")),
+        key=lambda o: o.name,
+    )
+    props = sorted(
+        (
+            o
+            for o in meshes
+            if o.name.split(".")[0] in (SKIRT_OBJECT_NAME, "ResearcherHairCap")
+        ),
+        key=lambda o: o.name,
+    )
+    return [body, *eyes, *props]
+
+
+def load_researcher_from_founder_stock() -> bpy.types.Object:
+    if not STOCK_BLEND.is_file() or not STOCK_META.is_file():
+        raise RuntimeError(f"FAIL staff-researcher-idle missing founder stock {STOCK_BLEND}")
+    meta = json.loads(STOCK_META.read_text(encoding="utf-8"))
+    want_verts = int(meta["vertexCount"])
+    want_tris = int(meta["triangleCount"])
+    bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if len(meshes) != 1:
+        raise RuntimeError(f"FAIL staff-researcher-idle founder_stock parts={len(meshes)} want=1")
+    ob = meshes[0]
+    if ob.name.split(".")[0] == FOUNDER_STOCK_NAME:
+        ob.name = STOCK_OBJECT_NAME
+    if len(ob.data.vertices) != want_verts:
+        raise RuntimeError(
+            f"FAIL staff-researcher-idle stock_verts={len(ob.data.vertices)} want={want_verts}"
+        )
+    tri_count = sum(len(p.vertices) for p in ob.data.polygons)
+    if tri_count != want_tris:
+        raise RuntimeError(
+            f"FAIL staff-researcher-idle stock_tris={tri_count} want={want_tris}"
+        )
+    apply_researcher_founder_base_materials(ob)
+    spawn_researcher_coat_skirt(ob, arm=None)
+    spawn_researcher_eye_meshes(ob)
+    spawn_researcher_hair_cap(ob)
+    return ob

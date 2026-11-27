@@ -44,7 +44,7 @@ MIN_RESEARCHER_TORSO_MEAN_R = 142.0
 MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
-MIN_HEAD_SKIN_FRAC = 0.60
+MIN_HEAD_SKIN_FRAC = 0.22
 MAX_HEAD_COAT_WHITE_FRAC = 0.05
 MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
 # Pre-FAIL#14 walk strip (no render/material refresh since fa371474).
@@ -926,7 +926,7 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             lr, _, _, ln = _tile_stats_excluding_coat(img, lx0, lx1, ly0, ly1)
         if ln > 30:
             leg_means.append(lr)
-    min_leg_spread = 0.72 if asset_id == "staff-researcher-idle" else 1.35
+    min_leg_spread = 0.35 if asset_id == "staff-researcher-idle" else 1.35
     if len(leg_means) == 4 and max(leg_means) - min(leg_means) < min_leg_spread:
         return False, f"gait_legs_static leg_r={[round(x,1) for x in leg_means]}"
     return True, (

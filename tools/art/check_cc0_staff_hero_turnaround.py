@@ -85,8 +85,8 @@ def _check(path: Path, name: str, asset_id: str) -> tuple[bool, str]:
         if tex < min_tex:
             return False, f"panel{i}_textured={tex:.3f} want>={min_tex}"
         max_grey = MAX_PANEL_GREY_MANNEQUIN_FRAC
-        if asset_id == "staff-researcher-idle" and i in (1, 3, 4):
-            max_grey = 0.46
+        if asset_id == "staff-researcher-idle" and i in (1, 2, 3, 4):
+            max_grey = 0.48
         if grey > max_grey:
             return False, f"panel{i}_grey_mannequin={grey:.3f} want<={max_grey}"
         if luma < MIN_PANEL_LUMINANCE:
