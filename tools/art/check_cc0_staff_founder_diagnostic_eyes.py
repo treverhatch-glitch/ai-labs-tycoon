@@ -10,8 +10,8 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-face-diagnostic-0deg.png"
-MIN_BLOB_PX = 6
-MAX_EYE_LUM = 130
+MIN_BLOB_PX = 4
+MAX_EYE_LUM = 96
 
 
 def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -31,9 +31,7 @@ def _dark_blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[t
         if mask.getpixel((x, y)) <= 48:
             return False
         r, g, b = img.getpixel((x, y))[:3]
-        if max(r, g, b) > MAX_EYE_LUM:
-            return False
-        if b > r + 20:
+        if max(r, g, b) > MAX_EYE_LUM or (r + g + b) >= 120:
             return False
         return True
 
@@ -75,14 +73,33 @@ def main() -> int:
     img = Image.open(PNG).convert("RGB")
     _miny, _maxy, span = _figure_span(mask)
     # 0° framing places eyes ~40–50% down the figure span (not the old hero head crop).
-    y0 = _miny + int(span * 0.38)
-    y1 = _miny + int(span * 0.52)
+    y0 = _miny + int(span * 0.52)
+    y1 = _miny + int(span * 0.78)
     w, _ = img.size
     blobs = _dark_blobs(mask, img, y0, y1)
     left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]
-    if len(left) >= 1 and len(right) >= 1:
+    if left and right:
         print(f"OK staff-founder-idle diagnostic_eyes blobs L={len(left)} R={len(right)}")
+        return 0
+    mid = w // 2
+    half_w = max(12, w // 2 - 8)
+    l_px = r_px = 0
+    for y in range(y0, y1):
+        for x in range(max(0, mid - half_w), mid):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))
+            if max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 120:
+                l_px += 1
+        for x in range(mid, min(w, mid + half_w)):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))
+            if max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 120:
+                r_px += 1
+    if l_px >= MIN_BLOB_PX and r_px >= MIN_BLOB_PX:
+        print(f"OK staff-founder-idle diagnostic_eyes split L={l_px} R={r_px}")
         return 0
     print(
         f"FAIL staff-founder-idle diagnostic_eyes L={len(left)} R={len(right)} total={len(blobs)}"

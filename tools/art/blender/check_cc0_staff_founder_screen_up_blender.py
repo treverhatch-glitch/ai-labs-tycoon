@@ -36,15 +36,14 @@ def main() -> None:
     stock = by.get("KenneyFounderStock")
     head = by.get("Head")
     feet = [by[n] for n in ("Foot_-1", "Foot_1", "Leg_-1", "Leg_1") if n in by]
-    if stock and len(meshes) == 1:
-        zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
+    if stock and len(meshes) in (1, 3):
+        zs = []
+        for ob in meshes:
+            zs.extend((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+        ws = [stock.matrix_world @ v.co for v in stock.data.vertices]
         lo, hi = min(zs), max(zs)
-        cx = sum((stock.matrix_world @ v.co).x for v in stock.data.vertices) / len(
-            stock.data.vertices
-        )
-        cy = sum((stock.matrix_world @ v.co).y for v in stock.data.vertices) / len(
-            stock.data.vertices
-        )
+        cx = sum(p.x for p in ws) / len(ws)
+        cy = sum(p.y for p in ws) / len(ws)
         head_pt = Vector((cx, cy, hi))
         foot_pt = Vector((cx, cy, lo))
     elif not head or len(feet) < 2:

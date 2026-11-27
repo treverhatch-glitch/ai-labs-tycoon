@@ -29,7 +29,7 @@ def main() -> None:
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
     stock = by.get("KenneyFounderStock")
-    if stock and len(meshes) == 1:
+    if stock and len(meshes) in (1, 3):
         zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
         lo, hi = min(zs), max(zs)
         span = max(1e-4, hi - lo)

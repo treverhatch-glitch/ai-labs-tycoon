@@ -171,7 +171,7 @@ def _region_for_point(
     w: Vector,
     *,
     lm: FounderLandmarks,
-    ws: list[Vector],
+    all_ws: list[Vector],
     y_face: float,
     lat: float,
     torso_hw: float,
@@ -192,7 +192,13 @@ def _region_for_point(
         return SLOT_JEANS
 
     if h > lm.h_neck:
-        if y_face < -0.03 or (h > lm.h_neck + 0.10 and y_face < 0.06):
+        head_pts = [p for p in all_ws if (p.z - lo) / span > lm.h_neck]
+        head_top = max((p.z - lo) / span for p in head_pts) if head_pts else 0.97
+        h_hairline = lm.h_neck + 0.85 * (head_top - lm.h_neck)
+        if h >= h_hairline:
+            if y_face < 0.05 or h >= h_hairline + 0.012:
+                return SLOT_HAIR
+        elif y_face < -0.03 or (h > lm.h_neck + 0.08 and y_face < 0.04):
             return SLOT_HAIR
         return SLOT_SKIN
 
@@ -246,16 +252,28 @@ def check_founder_decal_islands(ob: bpy.types.Object) -> tuple[bool, str]:
     return True, f"islands={len(islands)} body=1 eyes=2"
 
 
-def prepare_founder_preview_shader(ob: bpy.types.Object) -> None:
-    """Vertex-color shader so side/back axis views show saturated founder flats (not grey stock)."""
-    mesh = ob.data
+def _strip_mesh_vertex_colors(mesh: bpy.types.Mesh) -> None:
     while mesh.color_attributes:
         mesh.color_attributes.remove(mesh.color_attributes[0])
-    bc.transfer_material_colors_to_vertex_layer(ob)
-    bc.unify_vertex_color_material(ob, "staff-founder-idle")
+
+
+def collect_founder_stock_meshes() -> list[bpy.types.Object]:
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    body = next(
+        (o for o in meshes if o.name.split(".")[0] == STOCK_OBJECT_NAME),
+        None,
+    )
+    if not body:
+        body = meshes[0]
+    eyes = sorted(
+        (o for o in meshes if o.name.split(".")[0].startswith("FounderEye_")),
+        key=lambda o: o.name,
+    )
+    return [body, *eyes]
 
 
 def apply_founder_materials(ob: bpy.types.Object) -> None:
+    _strip_mesh_vertex_colors(ob.data)
     ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
     lm = compute_landmarks(ob)
     fwd = toe_forward([ob])
@@ -270,9 +288,6 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
         _ensure_material("FounderSkin", kf.FOUNDER_SKIN, 0.50),
         _ensure_material("FounderHand", kf.FOUNDER_SKIN, 0.48),
         _ensure_material("FounderHair", kf.FOUNDER_HAIR, 0.48),
-        _ensure_material("FounderEye", kf.FOUNDER_EYE, 0.32),
-        _ensure_material("FounderBrow", FOUNDER_BROW, 0.36),
-        _ensure_material("FounderMouth", FOUNDER_MOUTH, 0.40),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -295,14 +310,14 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
             _region_for_point(
                 wc,
                 lm=lm,
-                ws=ws,
+                all_ws=ws,
                 y_face=y_face,
                 lat=lat,
                 torso_hw=thw,
                 head_w=head_w,
             )
         )
-    _apply_arm_vertex_groups(bm, slots, ob, lm)
+    _apply_arm_vertex_groups(bm, slots, ob, lm, force_override=True)
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
@@ -310,11 +325,33 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()
-
-    from founder_face_decals import attach_founder_face_decals
-
-    attach_founder_face_decals(ob)
     bc.smooth_shade(ob)
+
+
+_VG_LEGS = frozenset(
+    {"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg", "LeftFoot", "RightFoot", "LeftToes", "RightToes"}
+)
+
+ARM_VG_BONES = (
+    "LeftShoulder",
+    "RightShoulder",
+    "LeftArm",
+    "RightArm",
+    "LeftForeArm",
+    "RightForeArm",
+    "LeftHand",
+    "RightHand",
+    "LeftHandIndex1",
+    "LeftHandIndex2",
+    "LeftHandIndex3",
+    "LeftHandThumb1",
+    "LeftHandThumb2",
+    "RightHandIndex1",
+    "RightHandIndex2",
+    "RightHandIndex3",
+    "RightHandThumb1",
+    "RightHandThumb2",
+)
 
 
 def _apply_arm_vertex_groups(
@@ -322,43 +359,51 @@ def _apply_arm_vertex_groups(
     slots: list[int],
     ob: bpy.types.Object,
     lm: FounderLandmarks,
+    *,
+    force_override: bool = False,
 ) -> None:
-    """Classify sleeves/hands from Kenney rig vertex weights (baked mesh keeps groups)."""
+    """Sleeves/hands from Kenney armature vertex groups (no height/lateral bands)."""
     if not ob.vertex_groups:
         return
     vg_names = {g.index: g.name for g in ob.vertex_groups}
     hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
     lo, span = lm.zmin, lm.span
 
-    def _vert_weights(vi: int) -> tuple[float, float]:
-        hand = shirt = 0.0
+    def _vert_weights(vi: int) -> tuple[float, float, float]:
+        hand = shirt = leg = 0.0
         for g in ob.data.vertices[vi].groups:
             name = vg_names.get(g.group, "")
             if name in _VG_HANDS:
                 hand += g.weight
             elif name in _VG_SHIRT_ARMS:
                 shirt += g.weight
-        return hand, shirt
+            elif name in _VG_LEGS:
+                leg += g.weight
+        return hand, shirt, leg
 
     for face in bm.faces:
-        hand = shirt = 0.0
+        hand = shirt = leg = 0.0
         wc = Vector()
         for v in face.verts:
-            hwt, swt = _vert_weights(v.index)
+            hwt, swt, lwt = _vert_weights(v.index)
             hand += hwt
             shirt += swt
+            leg += lwt
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_waist - 0.02 or h > lm.h_neck + 0.04:
+        if h < lm.h_shoe + 0.02 or h > lm.h_neck + 0.05:
             continue
-        if hand < 0.12 and shirt < 0.12:
+        armish = hand + shirt
+        if armish < 0.08 and not force_override:
+            continue
+        if leg > armish and armish < 0.25:
             continue
         if h < hand_top:
-            slots[face.index] = SLOT_HAND if hand >= shirt * 0.45 else SLOT_SHIRT
-        elif shirt >= hand * 0.35:
+            slots[face.index] = SLOT_HAND if hand >= shirt * 0.38 else SLOT_SHIRT
+        elif shirt >= hand * 0.3 or shirt > 0.12:
             slots[face.index] = SLOT_SHIRT
-        elif hand >= 0.2:
+        elif hand > 0.1:
             slots[face.index] = SLOT_HAND
 
 
@@ -486,4 +531,7 @@ def load_stock_and_recolor() -> bpy.types.Object:
             f"FAIL staff-founder-idle stock_tris={tri_count} want={want_tris}"
         )
     apply_founder_materials(ob)
+    from founder_face_decals import spawn_founder_eye_meshes
+
+    spawn_founder_eye_meshes(ob)
     return ob

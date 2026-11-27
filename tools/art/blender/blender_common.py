@@ -482,16 +482,21 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         import cc0_staff_lib as staff_c0
 
         if stock_recolor:
-            if part_count != 1:
-                raise RuntimeError(f"FAIL {asset_id}: stock_recolor need 1 mesh got {part_count}")
-            ob = mesh_obs[0]
-            if mesh_island_count(ob) > 1:
-                from kenney_founder_stock_recolor import check_founder_decal_islands
+            from kenney_founder_stock_recolor import collect_founder_stock_meshes
 
-                ok_isl, msg_isl = check_founder_decal_islands(ob)
-                if not ok_isl:
-                    raise RuntimeError(f"FAIL {asset_id}: stock_mesh_{msg_isl}")
-                print(f"OK {asset_id} {msg_isl}")
+            mesh_obs = collect_founder_stock_meshes()
+            part_count = len(mesh_obs)
+            if part_count != 3:
+                raise RuntimeError(f"FAIL {asset_id}: stock_recolor need body+2eyes got {part_count}")
+            ob = mesh_obs[0]
+            eyes = mesh_obs[1:]
+            if {e.name.split('.')[0] for e in eyes} != {"FounderEye_L", "FounderEye_R"}:
+                raise RuntimeError(f"FAIL {asset_id}: eye_objects missing")
+            from kenney_founder_stock_recolor import ARM_VG_BONES
+
+            print(f"OK {asset_id} eye_objects FounderEye_L FounderEye_R arm_vg={','.join(ARM_VG_BONES)}")
+            if mesh_island_count(ob) > 1:
+                raise RuntimeError(f"FAIL {asset_id}: stock_body_fragmented islands={mesh_island_count(ob)}")
             ok_head, msg_head = staff_c0.check_founder_stock_single_mesh(ob)
             if not ok_head:
                 raise RuntimeError(f"FAIL {asset_id}: {msg_head}")
@@ -538,27 +543,51 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 smooth_shade(ob)
         glb_path = out_dir / f"{asset_id}.glb"
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-        if stock_recolor:
-            try:
-                prev_preview_asset = _os.environ.get("STAFF_PREVIEW_ASSET")
-                _os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-kenney-stock-check"
-                render_preview(mesh_obs, preview_path, asset_id=asset_id)
-                if prev_preview_asset is None:
-                    _os.environ.pop("STAFF_PREVIEW_ASSET", None)
-                else:
-                    _os.environ["STAFF_PREVIEW_ASSET"] = prev_preview_asset
-            except Exception as exc:  # noqa: BLE001
-                print(f"WARN preview {asset_id}: {exc}")
         _sanitize_solid_gltf_materials(mesh_obs)
         if asset_id == "staff-founder-idle" and not stock_recolor:
             _strip_uv_layers(mesh_obs)
-        export_gltf_selection(mesh_obs, glb_path)
+        export_gltf_selection(
+            mesh_obs, glb_path, apply_transform=not stock_recolor
+        )
         log_staff_material_slots(mesh_obs, asset_id)
-        if not stock_recolor:
-            try:
+        if stock_recolor and asset_id == "staff-founder-idle":
+            body_only = [o for o in mesh_obs if not o.name.startswith("FounderEye")]
+            silhouette_mask = preview_path.with_name(
+                preview_path.stem + ".silhouette.mask.png"
+            )
+            _render_silhouette_mask(body_only, silhouette_mask, asset_id)
+            print(f"OK {asset_id} silhouette_mask {silhouette_mask.name}")
+        try:
+            if stock_recolor and asset_id == "staff-founder-idle":
+                import subprocess
+
+                blender = os.environ.get("BLENDER_BIN", "blender")
+                script = REPO_ROOT / "tools/art/blender/render_staff_preview_from_glb.py"
+                proc = subprocess.run(
+                    [
+                        blender,
+                        "-b",
+                        "--python",
+                        str(script),
+                        "--",
+                        str(glb_path),
+                        str(preview_path),
+                        asset_id,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if proc.returncode != 0:
+                    raise RuntimeError(proc.stdout + proc.stderr)
+                if "OK preview_from_glb" not in proc.stdout:
+                    raise RuntimeError(proc.stdout + proc.stderr)
+            else:
                 render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
-            except Exception as exc:  # noqa: BLE001
-                print(f"WARN preview {asset_id}: {exc}")
+        except Exception as exc:  # noqa: BLE001
+            if stock_recolor:
+                raise RuntimeError(f"FAIL {asset_id}: final_preview {exc}") from exc
+            print(f"WARN preview {asset_id}: {exc}")
         verts = sum(len(o.data.vertices) for o in mesh_obs)
         tris = sum(len(p.vertices) for o in mesh_obs for p in o.data.polygons)
         min_z, _max_z, _sz = _mesh_scene_span_z(mesh_obs)
@@ -1275,7 +1304,9 @@ def _sanitize_solid_gltf_materials(mesh_obs: list[bpy.types.Object]) -> None:
                     nodes.remove(node)
 
 
-def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
+def export_gltf_selection(
+    objects: list[bpy.types.Object], path: Path, *, apply_transform: bool = True
+) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     mesh_list = [o for o in objects if o.type in ("MESH", "EMPTY")]
     if not mesh_list:
@@ -1286,7 +1317,7 @@ def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
     bpy.ops.export_scene.gltf(
         filepath=str(path),
         use_selection=True,
-        export_apply=True,
+        export_apply=apply_transform,
         export_format="GLB",
         export_image_format="AUTO",
         export_texcoords=True,
@@ -1343,6 +1374,26 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     ob.data.materials.append(mat)
 
 
+def _render_silhouette_mask(
+    mesh_obs: list[bpy.types.Object], mask_path: Path, asset_id: str
+) -> None:
+    """Pre-export body mask for IoU vs in-scene stock check (RGB still from post-export GLB)."""
+    import blender_preview_rig as rig  # type: ignore
+
+    if asset_id:
+        os.environ["STAFF_PREVIEW_ASSET"] = asset_id
+    tmp_rgb = mask_path.with_name(mask_path.stem + ".rgb-tmp.png")
+    rig.render_preview_studio(mesh_obs, tmp_rgb, mask_meshes=mesh_obs)
+    src_mask = tmp_rgb.with_name(tmp_rgb.stem + ".mask.png")
+    if not src_mask.is_file():
+        raise RuntimeError(f"FAIL {asset_id}: silhouette_mask missing")
+    mask_path.parent.mkdir(parents=True, exist_ok=True)
+    mask_path.write_bytes(src_mask.read_bytes())
+    for extra in (tmp_rgb, src_mask, tmp_rgb.with_name(tmp_rgb.stem + ".frame.json")):
+        if extra.is_file():
+            extra.unlink()
+
+
 def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = None) -> None:
     """Render studio preview from committed multi-mesh staff GLB (Z-up export)."""
     glb_path = glb_path.resolve()
@@ -1358,8 +1409,11 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
         tint_garage_parts(mesh_obs, asset_id)
     if asset_id:
         os.environ["STAFF_PREVIEW_ASSET"] = asset_id
+    mask_obs = mesh_obs
+    if asset_id == "staff-founder-idle":
+        mask_obs = [o for o in mesh_obs if not o.name.startswith("FounderEye")]
     try:
-        render_preview(mesh_obs, path, asset_id=asset_id)
+        render_preview(mesh_obs, path, asset_id=asset_id, mask_meshes=mask_obs)
     finally:
         for ob in imported:
             try:
@@ -1369,7 +1423,10 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
 
 
 def render_preview(
-    ob: bpy.types.Object | list[bpy.types.Object], path: Path, asset_id: str | None = None
+    ob: bpy.types.Object | list[bpy.types.Object],
+    path: Path,
+    asset_id: str | None = None,
+    mask_meshes: bpy.types.Object | list[bpy.types.Object] | None = None,
 ) -> None:
     use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
     if use_rig not in ("0", "false", "no"):
@@ -1383,7 +1440,7 @@ def render_preview(
                 elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
                     prev_kind = "hud"
             os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
-            rig.render_preview_studio(ob, path)
+            rig.render_preview_studio(ob, path, mask_meshes=mask_meshes)
             return
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview rig, fallback legacy: {exc}")

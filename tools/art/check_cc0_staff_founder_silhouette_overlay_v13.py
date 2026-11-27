@@ -73,7 +73,8 @@ def _iou(m1: Image.Image, m2: Image.Image, *, y0: int = 0, y1: int | None = None
 
 
 def main() -> int:
-    fm = FOUNDER.with_name(FOUNDER.stem + ".mask.png")
+    silo = FOUNDER.with_name(FOUNDER.stem + ".silhouette.mask.png")
+    fm = silo if silo.is_file() else FOUNDER.with_name(FOUNDER.stem + ".mask.png")
     sm = STOCK.with_name(STOCK.stem + ".mask.png")
     if not fm.is_file() or not sm.is_file():
         print(f"FAIL {AID} silhouette_v13 missing_mask")

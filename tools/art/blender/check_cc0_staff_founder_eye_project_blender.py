@@ -1,4 +1,4 @@
-"""Eye decals on front face: raycast + normals within 25° of shoe-forward."""
+"""FounderEye_L/R in exported GLB: raycast + front-facing normals."""
 from __future__ import annotations
 
 import json
@@ -11,108 +11,53 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_preview_rig as rig  # noqa: E402
-from kenney_face_axis import eye_landmarks_world, toe_forward  # noqa: E402
+from founder_face_decals import EYE_OBJECT_NAMES  # noqa: E402
+from kenney_face_axis import toe_forward  # noqa: E402
 
 REPO = Path(sys.argv[-1])
 FRAME = REPO / "docs/art/previews/staff-founder-idle.frame.json"
-STOCK_BLEND = REPO / "tools/art/source/kenney/staff-founder-kenney-stock.blend"
+GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 DIAG_FRAME = REPO / "docs/art/previews/staff-founder-face-diagnostic-0deg.frame.json"
 COS_25 = math.cos(math.radians(25.0))
 
 
-def _eye_slot(ob: bpy.types.Object) -> int:
-    return next(
-        (i for i, m in enumerate(ob.data.materials) if m and "FounderEye" in m.name),
-        7,
-    )
+def _eye_centroid(eye: bpy.types.Object) -> Vector:
+    pts = [eye.matrix_world @ v.co for v in eye.data.vertices]
+    return sum(pts, Vector()) / max(1, len(pts))
 
 
-def _poly_centroid_normal(ob: bpy.types.Object, poly_index: int) -> tuple[Vector, Vector]:
-    mesh = ob.data
-    poly = mesh.polygons[poly_index]
-    center = Vector()
-    for li in poly.loop_indices:
-        center += ob.matrix_world @ mesh.vertices[mesh.loops[li].vertex_index].co
-    center /= len(poly.loop_indices)
-    normal = (ob.matrix_world.to_3x3() @ poly.normal).normalized()
-    return center, normal
-
-
-def _ray_hit_eye(depsgraph, cam: bpy.types.Object, target: Vector, ob: bpy.types.Object, eye_idx: int) -> bool:
-    origin = cam.matrix_world.translation
-    for nudge in (0.0, -0.03, -0.06, 0.02):
-        aim = target + (target - origin).normalized() * nudge if (target - origin).length > 1e-4 else target
-        direction = (aim - origin).normalized()
-        hit, _loc, _norm, face_i, hit_obj, _mat = bpy.context.scene.ray_cast(
-            depsgraph, origin, direction
-        )
-        if hit and hit_obj == ob and face_i >= 0:
-            if ob.data.polygons[face_i].material_index == eye_idx:
-                return True
-    return False
-
-
-def _front_eye_polys(
-    cam: bpy.types.Object, ob: bpy.types.Object, eye_idx: int, front: Vector
-) -> int:
-    cam_loc = cam.matrix_world.translation
-    count = 0
-    for poly in ob.data.polygons:
-        if poly.material_index != eye_idx:
-            continue
-        center, normal = _poly_centroid_normal(ob, poly.index)
-        if normal.dot(front) < COS_25:
-            continue
-        to_cam = (cam_loc - center).normalized()
-        if normal.dot(to_cam) > 0.12:
-            count += 1
-    return count
-
-
-def _eye_mesh_components(ob: bpy.types.Object, eye_idx: int) -> int:
-    mesh = ob.data
-    eye_faces = {i for i, p in enumerate(mesh.polygons) if p.material_index == eye_idx}
-    if not eye_faces:
-        return 0
-    edge_to_faces: dict[tuple[int, int], list[int]] = {}
-    for fi in eye_faces:
-        poly = mesh.polygons[fi]
-        verts = [mesh.loops[li].vertex_index for li in poly.loop_indices]
-        for a, b in zip(verts, verts[1:] + verts[:1]):
-            key = (min(a, b), max(a, b))
-            edge_to_faces.setdefault(key, []).append(fi)
-    adj: dict[int, set[int]] = {fi: set() for fi in eye_faces}
-    for faces in edge_to_faces.values():
-        eye_only = [f for f in faces if f in eye_faces]
-        for i in eye_only:
-            for j in eye_only:
-                if i != j:
-                    adj[i].add(j)
-    seen: set[int] = set()
-    comps = 0
-    for fi in eye_faces:
-        if fi in seen:
-            continue
-        comps += 1
-        stack = [fi]
-        while stack:
-            cur = stack.pop()
-            if cur in seen:
-                continue
-            seen.add(cur)
-            stack.extend(adj[cur] - seen)
-    return comps
-
-
-def _aligned_eye_count(ob: bpy.types.Object, eye_idx: int, front: Vector) -> int:
+def _eye_forward_polys(eye: bpy.types.Object, front: Vector) -> int:
     n = 0
-    for poly in ob.data.polygons:
-        if poly.material_index != eye_idx:
-            continue
-        _, normal = _poly_centroid_normal(ob, poly.index)
+    for poly in eye.data.polygons:
+        normal = (eye.matrix_world.to_3x3() @ poly.normal).normalized()
         if normal.dot(front) >= COS_25:
             n += 1
     return n
+
+
+def _ray_hits_eye(depsgraph, cam: bpy.types.Object, eye: bpy.types.Object) -> bool:
+    target = _eye_centroid(eye)
+    origin = cam.matrix_world.translation
+    delta = target - origin
+    if delta.length < 1e-5:
+        return False
+    direction = delta.normalized()
+    for t in (0.95, 0.88, 1.0, 0.82, 1.05):
+        from_v = origin if t <= 1.0 else origin
+        to_v = origin + direction * (delta.length * min(t, 1.0))
+        if t > 1.0:
+            to_v = target + direction * (eye.dimensions.length * 0.1)
+        cast_dir = (to_v - from_v).normalized()
+        hit, _loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
+            depsgraph, from_v, cast_dir if cast_dir.length else direction
+        )
+        if hit and hit_obj and hit_obj.name.split(".")[0] in EYE_OBJECT_NAMES:
+            return True
+    cast_dir = direction
+    hit, _loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
+        depsgraph, origin, cast_dir
+    )
+    return bool(hit and hit_obj and hit_obj.name.split(".")[0] in EYE_OBJECT_NAMES)
 
 
 def _gate(mesh_obs: list, yaw: float, elev: float, margin: float) -> bpy.types.Object:
@@ -122,33 +67,42 @@ def _gate(mesh_obs: list, yaw: float, elev: float, margin: float) -> bpy.types.O
     return cam
 
 
+def _load_scene() -> list[bpy.types.Object]:
+    if GLB.is_file():
+        bpy.ops.object.select_all(action="SELECT")
+        bpy.ops.object.delete(use_global=False)
+        bpy.ops.import_scene.gltf(filepath=str(GLB))
+    else:
+        from kenney_founder_stock_recolor import STOCK_BLEND, apply_founder_materials
+
+        bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
+        body = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
+        if not body:
+            return []
+        apply_founder_materials(body)
+        from founder_face_decals import spawn_founder_eye_meshes
+
+        spawn_founder_eye_meshes(body)
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    body = next((o for o in meshes if o.name.split(".")[0] == "KenneyFounderStock"), meshes[0] if meshes else None)
+    eyes = [o for o in meshes if o.name.split(".")[0] in EYE_OBJECT_NAMES]
+    if not body or len(eyes) != 2:
+        return []
+    return [body, *eyes]
+
+
 def main() -> None:
-    if not STOCK_BLEND.is_file():
-        print("FAIL staff-founder-idle eye_project missing_blend")
+    mesh_obs = _load_scene()
+    if len(mesh_obs) != 3:
+        print(f"FAIL staff-founder-idle eye_project components={len(mesh_obs)} want=3")
         raise SystemExit(1)
-    bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
-    ob = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
-    if not ob:
-        print("FAIL staff-founder-idle eye_project no_mesh")
-        raise SystemExit(1)
-    from kenney_founder_stock_recolor import apply_founder_materials
-
-    apply_founder_materials(ob)
-    eye_idx = _eye_slot(ob)
-    front = toe_forward([ob]).normalized()
-    components = _eye_mesh_components(ob, eye_idx)
-    if components != 2:
-        print(f"FAIL staff-founder-idle eye_project components={components} want=2")
-        raise SystemExit(1)
-    aligned = _aligned_eye_count(ob, eye_idx, front)
-    if aligned < 2:
-        print(f"FAIL staff-founder-idle eye_project front_normals={aligned}")
+    eyes = mesh_obs[1:]
+    front = toe_forward(mesh_obs).normalized()
+    if sum(_eye_forward_polys(e, front) for e in eyes) < 2:
+        print("FAIL staff-founder-idle eye_project front_normals")
         raise SystemExit(1)
 
-    mesh_obs = [ob]
     depsgraph = bpy.context.evaluated_depsgraph_get()
-    el, er, _ = eye_landmarks_world(ob)
-
     frame = json.loads(FRAME.read_text()) if FRAME.is_file() else {}
     for tag, yaw, elev, margin in (
         ("hero", float(frame.get("staff_yaw_deg", 30)), float(frame.get("staff_elev_deg", 10)), float(frame.get("framing_margin", 1.45))),
@@ -160,16 +114,10 @@ def main() -> None:
             elev = float(df.get("staff_elev_deg", 8))
             margin = float(df.get("framing_margin", 1.35))
         cam = _gate(mesh_obs, yaw, elev, margin)
-        hits = sum(
-            1
-            for target in (el, er)
-            if _ray_hit_eye(depsgraph, cam, target, ob, eye_idx)
-        )
+        hits = sum(1 for eye in eyes if _ray_hits_eye(depsgraph, cam, eye))
         if hits < 2:
-            vis = _front_eye_polys(cam, ob, eye_idx, front)
-            if vis < 2:
-                print(f"FAIL staff-founder-idle eye_project {tag} ray={hits} poly={vis}")
-                raise SystemExit(1)
+            print(f"FAIL staff-founder-idle eye_project {tag} ray={hits}")
+            raise SystemExit(1)
         bpy.data.objects.remove(cam, do_unlink=True)
 
     print("OK staff-founder-idle eye_project raycast=2")

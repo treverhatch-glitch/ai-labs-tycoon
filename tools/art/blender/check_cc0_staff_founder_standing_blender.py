@@ -30,8 +30,10 @@ def main() -> None:
     stock = by.get("KenneyFounderStock")
     head = by.get("Head")
     feet = [by[n] for n in ("Foot_-1", "Foot_1", "Leg_-1", "Leg_1") if n in by]
-    if stock and len(meshes) == 1:
-        zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
+    if stock and len(meshes) in (1, 3):
+        zs = []
+        for ob in meshes:
+            zs.extend((ob.matrix_world @ v.co).z for v in ob.data.vertices)
         lo, hi = min(zs), max(zs)
         span = hi - lo
         head_z = hi

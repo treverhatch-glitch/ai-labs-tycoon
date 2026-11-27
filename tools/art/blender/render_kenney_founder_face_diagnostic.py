@@ -10,7 +10,12 @@ import bpy
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
-from kenney_founder_stock_recolor import STOCK_BLEND, apply_founder_materials  # noqa: E402
+from kenney_founder_stock_recolor import (  # noqa: E402
+    STOCK_BLEND,
+    apply_founder_materials,
+    collect_founder_stock_meshes,
+)
+from founder_face_decals import spawn_founder_eye_meshes  # noqa: E402
 
 
 def main() -> None:
@@ -23,13 +28,15 @@ def main() -> None:
         print("FAIL face_diagnostic no_mesh")
         raise SystemExit(1)
     apply_founder_materials(ob)
+    spawn_founder_eye_meshes(ob)
+    meshes = collect_founder_stock_meshes()
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "0"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"
     os.environ["STAFF_PREVIEW_MARGIN"] = "1.35"
     out = bc.PREVIEW_ROOT / "staff-founder-face-diagnostic-0deg.png"
     os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-idle"
-    bc.render_preview([ob], out, asset_id="staff-founder-idle")
+    bc.render_preview(meshes, out, asset_id="staff-founder-idle")
     print(f"OK face_diagnostic wrote {out}")
     raise SystemExit(0)
 

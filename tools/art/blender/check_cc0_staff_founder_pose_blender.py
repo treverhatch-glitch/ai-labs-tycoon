@@ -47,7 +47,7 @@ def main() -> None:
     stock = by.get("KenneyFounderStock")
     hips = by.get("Hips") or by.get("Torso")
     head = by.get("Head")
-    if stock and len(meshes) == 1:
+    if stock and len(meshes) in (1, 3):
         zs = [(stock.matrix_world @ v.co).z for v in stock.data.vertices]
         lo, hi = min(zs), max(zs)
         hip_c = Vector(

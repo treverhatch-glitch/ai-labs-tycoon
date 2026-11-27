@@ -28,7 +28,7 @@ FOUNDER_HOODIE_RED = (0.62, 0.16, 0.14, 1.0)
 FOUNDER_JEANS = (0.05, 0.10, 0.32, 1.0)
 FOUNDER_SHOE = (0.88, 0.90, 0.92, 1.0)
 FOUNDER_SHOE_SOLE = (0.32, 0.35, 0.40, 1.0)
-FOUNDER_EYE = (0.12, 0.10, 0.14, 1.0)
+FOUNDER_EYE = (26 / 255, 26 / 255, 26 / 255, 1.0)
 FBX_KW = {
     "use_manual_orientation": True,
     "axis_forward": "-Z",

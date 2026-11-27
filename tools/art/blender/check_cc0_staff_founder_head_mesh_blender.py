@@ -15,11 +15,9 @@ def main() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if (
-        len(meshes) == 1
-        and meshes[0].name.split(".")[0] == "KenneyFounderStock"
-    ):
-        ok, msg = c0.check_founder_stock_single_mesh(meshes[0])
+    stock = next((o for o in meshes if o.name.split(".")[0] == "KenneyFounderStock"), None)
+    if stock and len(meshes) in (1, 3):
+        ok, msg = c0.check_founder_stock_single_mesh(stock)
     else:
         ok, msg = c0.check_founder_head_geometry(meshes)
     print(f"{'OK' if ok else 'FAIL'} staff-founder-idle {msg}")

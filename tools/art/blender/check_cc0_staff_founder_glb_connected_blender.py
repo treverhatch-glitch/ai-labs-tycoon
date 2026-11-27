@@ -58,6 +58,9 @@ def main() -> None:
     if stock and len(meshes) == 1:
         print("OK staff-founder-idle glb_connected parts=1 stock_mesh")
         raise SystemExit(0)
+    if stock and len(meshes) == 3 and by.get("FounderEye_L") and by.get("FounderEye_R"):
+        print("OK staff-founder-idle glb_connected parts=3 stock+eyes")
+        raise SystemExit(0)
     torso = by.get("Torso")
     if not torso:
         print("FAIL staff-founder-idle connected torso_missing")

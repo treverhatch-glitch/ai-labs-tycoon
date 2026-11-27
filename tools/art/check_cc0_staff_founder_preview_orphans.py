@@ -68,11 +68,16 @@ def main() -> int:
     main_n = body[0][0]
     total = sum(c[0] for c in comps)
     body_total = sum(c[0] for c in body)
-    orphans = [
-        c
-        for c in body[1:]
-        if c[0] >= MIN_ORPHAN_PX and c[2] < floor_cut
-    ]
+    ys = [y for y in range(mask.size[1]) for x in range(mask.size[0]) if mask.getpixel((x, y)) > 48]
+    fig_top, fig_bot = min(ys), max(ys)
+    head_y1 = fig_top + int(max(1, fig_bot - fig_top) * 0.55)
+    orphans = []
+    for c in body[1:]:
+        if c[0] < MIN_ORPHAN_PX or c[2] >= floor_cut:
+            continue
+        if c[0] < 220 and c[2] <= head_y1:
+            continue  # FounderEye_L/R separate meshes on face
+        orphans.append(c)
     if main_n / body_total < MIN_MAIN_FRAC:
         print(f"FAIL staff-founder-idle fragmented main={main_n}/{body_total}")
         return 1

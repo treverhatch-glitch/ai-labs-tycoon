@@ -44,6 +44,11 @@ def _is_hair_cap(r: int, g: int, b: int) -> bool:
     return r > 55 and g < r * 0.68 and b < g * 0.92 and max(r, g, b) < 140
 
 
+def _is_separate_eye_mesh(r: int, g: int, b: int) -> bool:
+    """Ignore near-black FounderEye_* mesh pixels in face skin coverage."""
+    return max(r, g, b) <= 52 and r + g + b <= 120
+
+
 def _eye_mask_pixels(
     mask: Image.Image, img: Image.Image, x0: int, x1: int, y0: int, y1: int
 ) -> list[tuple[int, int]]:
@@ -130,6 +135,8 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
             r, g, b = img.getpixel((x, y))
             if _is_hair_cap(r, g, b):
                 continue
+            if _is_separate_eye_mesh(r, g, b):
+                continue
             total += 1
             sx += x
             sy += y
@@ -143,7 +150,8 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
     stock_recolor = False
     if ASSET_META.is_file():
         try:
-            stock_recolor = json.loads(ASSET_META.read_text()).get("meshIslands") == 1
+            islands = int(json.loads(ASSET_META.read_text()).get("meshIslands", 0))
+            stock_recolor = islands >= 3
         except json.JSONDecodeError:
             stock_recolor = False
     if stock_recolor and skin_n / total >= 0.52:

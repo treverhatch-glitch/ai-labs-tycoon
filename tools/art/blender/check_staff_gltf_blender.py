@@ -92,8 +92,12 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
         if any(n == "Cube" for n in (o.name.split(".")[0] for o in meshes)):
             return False, "stray_cube_mesh"
         by = {o.name.split(".")[0]: o for o in meshes}
-        if aid == "staff-founder-idle" and by.get("KenneyFounderStock") and len(meshes) == 1:
-            return True, f"z_up sz={sz:.3f} stock_recolor meshes=1"
+        if aid == "staff-founder-idle" and by.get("KenneyFounderStock"):
+            eyes = [n for n in by if n.startswith("FounderEye_")]
+            if len(meshes) == 3 and len(eyes) == 2:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=3 eyes=2"
+            if len(meshes) == 1:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=1"
         spine_kw = (
             {"only_parts": FOUNDER_SPINE_PARTS, "max_radius": MAX_FOUNDER_SPINE_RADIUS_M}
             if aid == "staff-founder-idle"

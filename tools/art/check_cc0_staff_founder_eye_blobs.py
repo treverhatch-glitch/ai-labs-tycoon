@@ -10,7 +10,7 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
-MAX_EYE_LUM = 130
+MAX_EYE_LUM = 96
 MIN_BLOB_PX = 6
 
 
@@ -31,9 +31,9 @@ def _blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[
         if mask.getpixel((x, y)) <= 48:
             return False
         r, g, b = img.getpixel((x, y))[:3]
-        if max(r, g, b) > MAX_EYE_LUM:
+        if max(r, g, b) > MAX_EYE_LUM or (r + g + b) >= 120:
             return False
-        return not (b > r + 20)
+        return True
 
     for y in range(y0, y1):
         for x in range(w):
@@ -70,8 +70,8 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
     mask = Image.open(mask_path).convert("L")
     w, _ = img.size
     _miny, _maxy, span = _figure_span(mask)
-    y0 = _miny + int(span * 0.30)
-    y1 = _miny + int(span * 0.58)
+    y0 = _miny + int(span * 0.45)
+    y1 = _miny + int(span * 0.72)
     blobs = _blobs(mask, img, y0, y1)
     left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]

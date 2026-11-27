@@ -16,7 +16,7 @@ from kenney_face_axis import toe_forward  # noqa: E402
 from kenney_founder_stock_recolor import (  # noqa: E402
     STOCK_BLEND,
     apply_founder_materials,
-    prepare_founder_preview_shader,
+    collect_founder_stock_meshes,
 )
 
 OUT = bc.PREVIEW_ROOT / "staff-founder-axis-sheet.png"
@@ -25,7 +25,6 @@ LABELS = ("0° front", "90° Z", "180° Z", "270° Z")
 
 
 def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
-    """Left/right dark eye regions in face band (matches diagnostic_eyes framing)."""
     from collections import deque
 
     mask = mask.convert("L")
@@ -36,7 +35,7 @@ def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
         return 0
     miny, maxy = min(ys), max(ys)
     span = max(1, maxy - miny)
-    y0, y1 = miny + int(span * 0.38), miny + int(span * 0.52)
+    y0, y1 = miny + int(span * 0.52), miny + int(span * 0.78)
     seen = [[False] * w for _ in range(max(1, y1 - y0))]
     boxes: list[tuple[int, int, int, int]] = []
 
@@ -44,7 +43,7 @@ def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
         if mask.getpixel((x, y)) <= 48:
             return False
         r, g, b = img.getpixel((x, y))[:3]
-        return max(r, g, b) <= 130 and not (b > r + 20)
+        return max(r, g, b) <= 96 and (r + g + b) < 120
 
     for y in range(y0, y1):
         for x in range(w):
@@ -68,28 +67,29 @@ def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
                         continue
                     seen[nyi][nx] = True
                     q.append((nx, ny))
-            if n >= 6:
+            if n >= 4:
                 boxes.append((minx, y, maxx, y))
     left = [b for b in boxes if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in boxes if (b[0] + b[2]) / 2 > w * 0.52]
     if left and right:
         return 2
     mid = w // 2
+    half_w = max(12, w // 2 - 8)
     l_px = r_px = 0
     for y in range(y0, y1):
-        for x in range(max(0, mid - w // 3), mid):
+        for x in range(max(0, mid - half_w), mid):
             if mask.getpixel((x, y)) <= 48:
                 continue
             r, g, b = img.getpixel((x, y))[:3]
-            if max(r, g, b) <= 130 and not (b > r + 20):
+            if max(r, g, b) <= 96 and (r + g + b) < 120:
                 l_px += 1
-        for x in range(mid, min(w, mid + w // 3)):
+        for x in range(mid, min(w, mid + half_w)):
             if mask.getpixel((x, y)) <= 48:
                 continue
             r, g, b = img.getpixel((x, y))[:3]
-            if max(r, g, b) <= 130 and not (b > r + 20):
+            if max(r, g, b) <= 96 and (r + g + b) < 120:
                 r_px += 1
-    if l_px >= 6 and r_px >= 6:
+    if l_px >= 4 and r_px >= 4:
         return 2
     return len(boxes)
 
@@ -136,22 +136,46 @@ def _panel_saturation(im: Image.Image, mask: Image.Image) -> float:
     return sat_sum / n if n > 0 else 0.0
 
 
-def _load_recolored_mesh() -> bpy.types.Object:
+def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
+    import colorsys
+
+    w, h = im.size
+    hues: list[float] = []
+    for y in range(0, h, 4):
+        for x in range(0, w, 4):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = im.getpixel((x, y))
+            if b < r + 12 or b < 70:
+                continue
+            if r > 110:
+                continue
+            h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if s < 0.18:
+                continue
+            hues.append(h)
+    return sum(hues) / len(hues) if hues else -1.0
+
+
+def _load_recolored_scene() -> list[bpy.types.Object]:
     bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
     ob = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
     if not ob:
         print("FAIL axis_sheet no_mesh")
         raise SystemExit(1)
     apply_founder_materials(ob)
-    return ob
+    from founder_face_decals import spawn_founder_eye_meshes
+
+    spawn_founder_eye_meshes(ob)
+    return collect_founder_stock_meshes()
 
 
 def main() -> None:
     if not STOCK_BLEND.is_file():
         print("FAIL axis_sheet missing stock blend")
         raise SystemExit(1)
-    ob0 = _load_recolored_mesh()
-    fwd = toe_forward([ob0])
+    scene_meshes = _load_recolored_scene()
+    fwd = toe_forward(scene_meshes)
     print(f"OK axis_sheet front=({fwd.x:.3f},{fwd.y:.3f}) gltf_ref=-Y")
 
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
@@ -161,16 +185,15 @@ def main() -> None:
     tiles: list[Image.Image] = []
     ious: dict[int, float] = {}
     eyes: dict[int, int] = {}
+    jeans_hue: dict[int, float] = {}
 
     with tempfile.TemporaryDirectory(prefix="founder_axis_") as tdir:
         tmp = Path(tdir)
         for yaw in YAWS:
-            ob = _load_recolored_mesh()
-            if yaw != 0:
-                prepare_founder_preview_shader(ob)
+            meshes = _load_recolored_scene()
             os.environ["STAFF_PREVIEW_YAW_DEG"] = str(yaw)
             tile = tmp / f"axis_{yaw}.png"
-            bc.render_preview([ob], tile, asset_id="staff-founder-idle")
+            bc.render_preview(meshes, tile, asset_id="staff-founder-idle")
             rgb = Image.open(tile).convert("RGB")
             mask_path = tile.with_name(tile.stem + ".mask.png")
             mask = Image.open(mask_path).convert("L") if mask_path.is_file() else None
@@ -181,14 +204,24 @@ def main() -> None:
             if sat < 0.15:
                 print(f"FAIL axis_sheet yaw={yaw} saturation={sat:.3f} want>0.15")
                 raise SystemExit(1)
+            jh = _panel_mean_jeans_hue(rgb, mask)
+            jeans_hue[yaw] = jh
             tiles.append(rgb)
-            mask_path = tile.with_name(tile.stem + ".mask.png")
-            if mask_path.is_file():
-                mask = Image.open(mask_path)
-                base = _mirror_iou(mask)
-                blobs = _eye_blobs(mask, rgb)
-                eyes[yaw] = blobs
-                ious[yaw] = base + (0.12 if blobs >= 2 else 0.0)
+            base = _mirror_iou(mask)
+            blobs = _eye_blobs(mask, rgb)
+            eyes[yaw] = blobs
+            ious[yaw] = base + (0.12 if blobs >= 2 else 0.0)
+
+    ref_hue = jeans_hue.get(0, -1.0)
+    if ref_hue >= 0:
+        for yaw in (90, 180, 270):
+            jh = jeans_hue.get(yaw, -1.0)
+            if jh < 0 or abs(jh - ref_hue) > 0.12:
+                print(
+                    f"FAIL axis_panel_hue yaw={yaw} jeans_h={jh:.3f} ref0={ref_hue:.3f} want±0.12"
+                )
+                raise SystemExit(1)
+    print(f"OK axis_panel_hue ref0={ref_hue:.3f}")
 
     i0 = ious.get(0, 0.0)
     i90 = ious.get(90, 1.0)

@@ -1,17 +1,18 @@
-"""Separate eye/brow/mouth mesh islands on founder stock (no painted face polys)."""
+"""Founder eyes/brows as separate mesh objects (visible in GLB + previews)."""
 from __future__ import annotations
 
 import bpy
-import bmesh
 from mathutils import Vector
 
 import blender_common as bc
-import kenney_founder_lib as kf
 from kenney_face_axis import face_shell_coord, toe_forward
 from kenney_geometry_landmarks import compute_landmarks
 
+FOUNDER_EYE_RGBA = (26 / 255, 26 / 255, 26 / 255, 1.0)
 FOUNDER_BROW_RGBA = (0.20, 0.16, 0.14, 1.0)
 FOUNDER_MOUTH_RGBA = (0.18, 0.12, 0.12, 1.0)
+
+EYE_OBJECT_NAMES = ("FounderEye_L", "FounderEye_R")
 
 
 def _head_width_at(ws: list[Vector], lo: float, span: float, h: float) -> float:
@@ -33,86 +34,79 @@ def _fwd_basis(fwd: Vector) -> tuple[Vector, Vector]:
     return f_xy, right
 
 
-def _add_cube_faces(
-    bm: bmesh.types.BMesh,
-    ob: bpy.types.Object,
-    center_world: Vector,
-    size: Vector,
-    mat_index: int,
-) -> None:
-    inv = ob.matrix_world.inverted()
-    center = inv @ center_world
-    half = size * 0.5
-    bmesh.ops.create_cube(bm, size=1.0)
-    new_faces = bm.faces[-6:]
-    new_verts = {v for f in new_faces for v in f.verts}
-    for v in new_verts:
-        v.co = Vector(
-            (
-                (v.co.x * 2 - 1) * half.x,
-                (v.co.y * 2 - 1) * half.y,
-                (v.co.z * 2 - 1) * half.z,
-            )
-        )
-        v.co = center + v.co
-    for f in new_faces:
-        f.material_index = mat_index
+def _purge_face_objects() -> None:
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base.startswith(("FounderEye_", "FounderBrow_", "FounderMouth")):
+            bpy.data.objects.remove(ob, do_unlink=True)
 
 
-def attach_founder_face_decals(ob: bpy.types.Object) -> None:
-    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
-    lm = compute_landmarks(ob)
-    fwd = toe_forward([ob])
-    hc, _ = face_shell_coord(ob, fwd)
+def _make_solid_mat(name: str, rgba: tuple[float, float, float, float], rough: float) -> bpy.types.Material:
+    mat = bpy.data.materials.get(name)
+    if mat:
+        bpy.data.materials.remove(mat)
+    mat = bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = rgba
+        bsdf.inputs["Roughness"].default_value = rough
+    return mat
+
+
+def _spawn_disc(
+    name: str,
+    center_w: Vector,
+    radius_xy: float,
+    thickness: float,
+    mat: bpy.types.Material,
+    parent: bpy.types.Object,
+) -> bpy.types.Object:
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, location=(0.0, 0.0, 0.0))
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.scale = (radius_xy, thickness, radius_xy)
+    bpy.ops.object.transform_apply(scale=True)
+    ob.location = parent.matrix_world.inverted() @ center_w
+    ob.parent = parent
+    ob.matrix_parent_inverse = parent.matrix_world.inverted()
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+    bc.smooth_shade(ob)
+    return ob
+
+
+def spawn_founder_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
+    """Two near-black #1a1a1a discs, ~8% head width, proud on face shell."""
+    _purge_face_objects()
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lm = compute_landmarks(body)
+    fwd = toe_forward([body])
+    hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
     f_xy, right = _fwd_basis(fwd)
-
-    shell = head_w * 0.11
     eye_z = lm.zmin + lm.span * lm.h_eye
-    face_push = f_xy * shell
-    eye_half = Vector((head_w * 0.04, head_w * 0.035, head_w * 0.032))
+    proud = head_w * 0.025
+    shell = head_w * 0.10
     sep = head_w * 0.20
-
-    def mat_index(name: str, rgba: tuple[float, float, float, float], rough: float) -> int:
-        for i, m in enumerate(ob.data.materials):
-            if m and m.name == name:
-                return i
-        mat = bpy.data.materials.new(name=name)
-        mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        if bsdf:
-            bsdf.inputs["Base Color"].default_value = rgba
-            bsdf.inputs["Roughness"].default_value = rough
-        ob.data.materials.append(mat)
-        return len(ob.data.materials) - 1
-
-    eye_i = mat_index("FounderEye", kf.FOUNDER_EYE, 0.32)
-    brow_i = mat_index("FounderBrow", FOUNDER_BROW_RGBA, 0.36)
-    mouth_i = mat_index("FounderMouth", FOUNDER_MOUTH_RGBA, 0.40)
-
-    bm = bmesh.new()
-    bm.from_mesh(ob.data)
-    bm.faces.ensure_lookup_table()
-
-    for sign in (-1.0, 1.0):
-        center = hc + face_push + right * (sep * sign)
+    radius = head_w * 0.04
+    thick = head_w * 0.024
+    eye_mat = _make_solid_mat("FounderEyeMesh", FOUNDER_EYE_RGBA, 0.88)
+    created: list[bpy.types.Object] = []
+    for name, sign in zip(EYE_OBJECT_NAMES, (-1.0, 1.0), strict=True):
+        center = hc + f_xy * (shell + proud) + right * (sep * sign)
         center.z = eye_z
-        _add_cube_faces(bm, ob, center, eye_half * 2, eye_i)
+        created.append(_spawn_disc(name, center, radius, thick, eye_mat, body))
+    return created
 
-    brow_z = eye_z + lm.span * 0.042
-    brow_half = Vector((head_w * 0.055, head_w * 0.028, head_w * 0.025))
-    for sign in (-1.0, 1.0):
-        center = hc + face_push * 1.05 + right * (sep * sign)
-        center.z = brow_z
-        _add_cube_faces(bm, ob, center, brow_half * 2, brow_i)
 
-    mouth_z = eye_z - lm.span * 0.085
-    mouth_half = Vector((head_w * 0.05, head_w * 0.028, head_w * 0.022))
-    mouth_c = hc + face_push * 0.92
-    mouth_c.z = mouth_z
-    _add_cube_faces(bm, ob, mouth_c, mouth_half * 2, mouth_i)
+def attach_founder_face_decals(ob: bpy.types.Object) -> list[bpy.types.Object]:
+    """Legacy entry: only separate eye meshes (no painted polys on head)."""
+    return spawn_founder_eye_meshes(ob)
 
-    bm.to_mesh(ob.data)
-    ob.data.update()
-    bm.free()
-    bc.smooth_shade(ob)
+
+def founder_preview_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
+    eyes = spawn_founder_eye_meshes(body)
+    return [body, *eyes]
