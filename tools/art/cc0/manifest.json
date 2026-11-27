@@ -8,6 +8,14 @@
       "sha256": "1d233e3dd2ae9ab1a06e883032ec27e3d334c44a0a80c7d160ba7e40b905328b"
     },
     {
+      "path": "tools/art/cc0/incoming/kenney/animated-characters-3/Animations/run.fbx",
+      "license": "CC0-1.0",
+      "role": "staff walk-strip previews (locomotion cycle)",
+      "source": "Kenney Animated Characters 3",
+      "sourceUrl": "https://kenney.nl/assets/animated-characters-3",
+      "licenseProof": "tools/art/cc0/incoming/kenney/CC0-RESEARCHER-KENNEY-STOCK.md"
+    },
+    {
       "path": "tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMedium.fbx",
       "bytes": 167212,
       "sha256": "18835fef534eede635b081ee7fe647d01a885550a591d2e6bf071010906167d8",
