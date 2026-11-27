@@ -1,0 +1,23 @@
+{
+  "assetId": "prop-server-rack",
+  "scope": "presentation",
+  "sourceCc0": "procedural: charcoal cabinet + mesh door + 8 rack units + side vents + LEDs; Kenney screen-panel-flat.glb (door glass); ambientCG Metal048A_1K-JPG",
+  "pipeline": "kenney-factory-v1",
+  "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Metal048A_1K-JPG/Metal048A_1K-JPG_Color.jpg",
+  "glb": "unity/Assets/Art/BlenderBaked/prop-server-rack/mesh_prop-server-rack.glb",
+  "fbx": "unity/Assets/Art/BlenderBaked/prop-server-rack/mesh_prop-server-rack.fbx",
+  "preview": "docs/art/previews/prop-server-rack.png",
+  "previewHdri": "docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr",
+  "textureNormal1024": "unity/Assets/Art/BlenderBaked/prop-server-rack/textures/Metal048A_NormalGL.jpg",
+  "textureRoughness1024": "unity/Assets/Art/BlenderBaked/prop-server-rack/textures/Metal048A_Roughness.jpg",
+  "targetSizeM": [
+    0.58,
+    0.82,
+    1.92
+  ],
+  "kenneyGlbs": [
+    "screen-panel-flat.glb"
+  ],
+  "rackUnits": 8,
+  "pipelineNote": "procedural-cabinet-v7-gunmetal-front"
+}

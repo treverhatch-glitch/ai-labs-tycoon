@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusIndexLaneManifestTailRefreshThrough268PresentationSpec { public const int RefreshThroughBatch = 268; public static int PriorRefreshThroughBatch => CampusIndexLaneManifestTailRefreshThrough265.RefreshThroughBatch; public const string RefreshDoc = "INDEX-LANE-MANIFEST-TAIL-REFRESH-268.md"; } }

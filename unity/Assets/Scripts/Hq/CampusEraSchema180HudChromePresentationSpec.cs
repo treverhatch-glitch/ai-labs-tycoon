@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusEraSchema180HudChromePresentationSpec { public const int EraSchemaSlot = 180; public static int PriorEraSchemaSlot => CampusEraSchema179HudChrome.EraSchemaSlot; public const string ChromeDoc = "ERA-SCHEMA-180-HUD-CHROME.md"; } }

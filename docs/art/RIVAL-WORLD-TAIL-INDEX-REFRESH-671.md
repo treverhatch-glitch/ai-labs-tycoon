@@ -1,0 +1,3 @@
+# Rival / world tail index refresh (batch 671)
+
+Batch **671** · [RIVAL-WORLD-TAIL-INDEX.md](RIVAL-WORLD-TAIL-INDEX.md); extends [RIVAL-WORLD-TAIL-INDEX-REFRESH-384.md](RIVAL-WORLD-TAIL-INDEX-REFRESH-384.md).

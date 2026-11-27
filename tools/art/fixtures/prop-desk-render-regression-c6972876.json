@@ -1,0 +1,14 @@
+{
+  "regressionHead": "c69728764a198fd085665314c068aefa156542df",
+  "fixture_png": "tools/art/fixtures/prop-desk-c6972876-regression.png",
+  "fixture_png_sha256": "221ddec7c7d983a8ac6667fc8f77bac497f142f87bfd95131c033019fa6d36c2",
+  "intendedGateFailures": [
+    "assembly: plant/monitor height ratio and plant-monitor overlap",
+    "preview: plant_green_frac and mis-scaled plant layout vs v12 gates"
+  ],
+  "assembly_exit_code": 1,
+  "assembly_note": "v11 GLB uses campus OBJ pottedPlant; clustering cannot isolate plant; ratio fails vs 1.2x monitor gate",
+  "preview_gate_fail_reasons_sampled": [
+    "plant_green_frac=0.00%"
+  ]
+}
