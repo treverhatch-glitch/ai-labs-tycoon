@@ -283,9 +283,16 @@ def collect_founder_stock_meshes() -> list[bpy.types.Object]:
     return [body, *eyes]
 
 
-def apply_founder_materials(ob: bpy.types.Object) -> None:
+def apply_founder_materials(
+    ob: bpy.types.Object, *, world_verts: list | None = None
+) -> None:
     _strip_mesh_vertex_colors(ob.data)
-    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    if world_verts is not None:
+        ws = world_verts
+    else:
+        deps = bpy.context.evaluated_depsgraph_get()
+        ev = ob.evaluated_get(deps)
+        ws = [ev.matrix_world @ v.co for v in ev.data.vertices]
     lm = compute_landmarks(ob)
     fwd = toe_forward([ob])
     hc, y_face_fn = face_shell_coord(ob, fwd)

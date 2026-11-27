@@ -16,6 +16,8 @@ MIN_TILE_SPREAD = 0.45
 MIN_HAND_BELOW_SHOULDER_PX = 28
 MAX_SHOULDER_HAND_Y_RATIO = 1.08
 LEG_FOREIGN_RGB_TOL = 36.0
+MAX_GREY_NEUTRAL = 22.0
+MAX_CAMERA_CENTROID_DRIFT_PX = 22
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -88,6 +90,33 @@ def _leg_foreign_pixels(img: Image.Image, x0: int, x1: int, y0: int, y1: int, as
     return foreign if total > 60 else 0
 
 
+def _shirt_roi(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 4
+    x1 = (i + 1) * tile_w - tile_w // 4
+    y0 = h // 4
+    y1 = h // 2
+    return x0, x1, y0, y1
+
+
+def _is_neutral_grey(r: int, g: int, b: int) -> bool:
+    return abs(r - GREY[0]) < 14 and abs(g - GREY[1]) < 14 and abs(b - GREY[2]) < 14
+
+
+def _char_centroid_x(img: Image.Image, tile_w: int, i: int, h: int) -> float | None:
+    xs: list[int] = []
+    x0 = i * tile_w
+    x1 = (i + 1) * tile_w
+    for y in range(h // 6, (5 * h) // 6, 3):
+        for x in range(x0 + 8, x1 - 8, 3):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            xs.append(x)
+    if len(xs) < 60:
+        return None
+    return sum(xs) / len(xs)
+
+
 def _torso_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
     x0 = i * tile_w + tile_w // 5
     x1 = (i + 1) * tile_w - tile_w // 5
@@ -116,7 +145,30 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
         return False, "backdrop_not_969696"
     tile_means: list[float] = []
     torso_rgb: list[tuple[float, float, float]] = []
+    centroids: list[float] = []
     for i in range(4):
+        cx = _char_centroid_x(img, tile_w, i, h)
+        if cx is None:
+            return False, f"tile{i}_silhouette_empty"
+        centroids.append(cx - (i * tile_w + tile_w * 0.5))
+        sx0, sx1, sy0, sy1 = _shirt_roi(tile_w, h, i)
+        sm_r, sm_g, sm_b, sn = _tile_stats(img, sx0, sx1, sy0, sy1)
+        if sn < 40:
+            return False, f"tile{i}_shirt_roi_empty"
+        if asset_id == "staff-founder-idle":
+            if _rgb_dist((sm_r, sm_g, sm_b), GREY) < MAX_GREY_NEUTRAL:
+                return False, f"tile{i}_grey_shirt mean={(round(sm_r,1), round(sm_g,1), round(sm_b,1))}"
+            if sm_r < 85:
+                return False, f"tile{i}_founder_shirt_washed r={sm_r:.1f}"
+        if asset_id == "staff-researcher-idle":
+            skin_y0, skin_y1 = h // 5, h // 3
+            sk_r, sk_g, sk_b, sk_n = _tile_stats(img, sx0, sx1, skin_y0, skin_y1)
+            if sk_n > 30 and _rgb_dist((sk_r, sk_g, sk_b), GREY) < MAX_GREY_NEUTRAL:
+                return False, f"tile{i}_grey_skin mean={(round(sk_r,1), round(sk_g,1), round(sk_b,1))}"
+            legx0, legx1, legy0, legy1 = _leg_window(tile_w, h, i)
+            lr, lg, lb, ln = _tile_stats(img, legx0, legx1, legy0, legy1)
+            if ln > 40 and _rgb_dist((lr, lg, lb), GREY) < MAX_GREY_NEUTRAL:
+                return False, f"tile{i}_grey_trousers mean={(round(lr,1), round(lg,1), round(lb,1))}"
         sh_win, hand_win = _arm_windows(tile_w, h, i)
         sh_y = _mean_non_grey_y(img, *sh_win)
         hand_y = _mean_non_grey_y(img, *hand_win)
@@ -156,6 +208,16 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             return False, f"researcher_tile_washed means={tile_means}"
     if max(tile_means) - min(tile_means) < MIN_TILE_SPREAD:
         return False, f"tiles_identical means={tile_means}"
+    if max(centroids) - min(centroids) > MAX_CAMERA_CENTROID_DRIFT_PX:
+        return False, f"camera_drift centroid_x={[round(c, 1) for c in centroids]}"
+    leg_means = []
+    for i in range(4):
+        lx0, lx1, ly0, ly1 = _leg_window(tile_w, h, i)
+        lr, _, _, ln = _tile_stats(img, lx0, lx1, ly0, ly1)
+        if ln > 30:
+            leg_means.append(lr)
+    if len(leg_means) == 4 and max(leg_means) - min(leg_means) < 3.5:
+        return False, f"gait_legs_static leg_r={[round(x,1) for x in leg_means]}"
     return True, (
         f"strip {w}x{h} tiles=4 torso0={tuple(round(c,1) for c in ref)} "
         f"means={[round(m, 1) for m in tile_means]}"

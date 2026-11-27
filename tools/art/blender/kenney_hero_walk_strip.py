@@ -175,6 +175,24 @@ def _bone_world_simple(arm: bpy.types.Object, name: str):
     return arm.matrix_world @ pb.head
 
 
+def _knee_depth(arm: bpy.types.Object, side: str) -> float:
+    up = _bone_world_simple(arm, f"{side}UpLeg")
+    knee = _bone_world_simple(arm, f"{side}Leg")
+    foot = _bone_world_simple(arm, f"{side}Foot")
+    if not up or not knee or not foot:
+        return 0.0
+    return (knee.z - up.z) + (foot.z - knee.z) * 0.25
+
+
+def _frame_gait_score(arm: bpy.types.Object) -> tuple[float, float, float]:
+    spread = _ankle_spread_x(arm)
+    knee = _knee_depth(arm, "Left") + _knee_depth(arm, "Right")
+    swing = max(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right")) - min(
+        _stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right")
+    )
+    return spread, knee, swing
+
+
 def pick_walk_contact_frames(
     arm: bpy.types.Object,
     scene: bpy.types.Scene,
@@ -183,8 +201,13 @@ def pick_walk_contact_frames(
     bind_arm_quats: dict[str, Quaternion] | None = None,
     idle_arm_quats: dict[str, Quaternion] | None = None,
 ) -> list[int]:
-    """Contact L → passing → contact R → passing (locomotion subset of Kenney Run)."""
+    """Contact L → down → contact R → up (Kenney Run slice used as walk)."""
     rows = _sample_feet(arm, scene, start, end, bind_arm_quats, idle_arm_quats)
+
+    def _pose_fr(fr: int) -> None:
+        scene.frame_set(fr)
+        if bind_arm_quats and idle_arm_quats:
+            apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
 
     def _pick_contact(side: str, exclude: set[int]) -> int:
         col = 1 if side == "Left" else 2
@@ -208,57 +231,54 @@ def pick_walk_contact_frames(
     contact_r = _pick_contact("Right", {contact_l})
     if contact_l == contact_r:
         quarter = max(1, (end - start) // 4)
-        return [start, start + quarter, start + 2 * quarter, start + 3 * quarter]
+        return [start + quarter, start + 2 * quarter, start + 3 * quarter, end]
     lo, hi = sorted((contact_l, contact_r))
-    between = {fr for fr, _, _ in rows if lo < fr < hi}
-    other = {fr for fr, _, _ in rows if fr < lo or fr > hi}
-    passing_1 = _pick_passing(
-        [r for r in rows if r[0] in between],
-        exclude=set(),
-        stance_max_m=0.12,
-    )
-    if passing_1 in (contact_l, contact_r):
-        passing_1 = _pick_passing(rows, exclude={contact_l, contact_r}, stance_max_m=0.12)
-    passing_2 = _pick_passing(
-        [r for r in rows if r[0] in other] or rows,
-        exclude={contact_l, contact_r, passing_1},
-        stance_max_m=0.12,
-    )
-    if passing_2 in (contact_l, contact_r, passing_1):
-        passing_2 = _pick_passing(rows, exclude={contact_l, contact_r, passing_1}, stance_max_m=0.22)
-    frames = [contact_l, passing_1, contact_r, passing_2]
-    for i, fr in enumerate(frames):
-        if fr == frames[0] and i > 0:
-            frames[i] = _pick_passing(rows, exclude=set(frames[:i]), stance_max_m=0.22)
-    frames = [fr for fr in frames if fr > start or fr == contact_l]
-    if frames and frames[1] == start:
-        passing_1 = _pick_passing(rows, exclude={contact_l, contact_r}, stance_max_m=0.18)
-        if passing_1 not in (contact_l, contact_r):
-            frames[1] = passing_1
+    mid_rows = [fr for fr, _, _ in rows if lo <= fr <= hi]
+
+    def _pick_down() -> int:
+        best_fr = mid_rows[0] if mid_rows else contact_l
+        best_score = -1e9
+        for fr in range(start, end + 1):
+            if fr in (contact_l, contact_r):
+                continue
+            _pose_fr(fr)
+            spread, knee, swing = _frame_gait_score(arm)
+            low_feet = min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right"))
+            if min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right")) > 0.14:
+                continue
+            score = knee * 2.2 + swing + spread * 0.35
+            if score > best_score:
+                best_score = score
+                best_fr = fr
+        return best_fr
+
+    def _pick_up(exclude: set[int]) -> int:
+        best_fr = rows[0][0]
+        best_score = -1.0
+        for fr, lz, rz in rows:
+            if fr in exclude:
+                continue
+            _pose_fr(fr)
+            spread, knee, swing = _frame_gait_score(arm)
+            score = swing * 1.5 + spread * 0.55 + knee * 0.2
+            if score > best_score:
+                best_score = score
+                best_fr = fr
+        if best_score < 0:
+            return _pick_passing(rows, exclude=exclude, stance_max_m=0.35)
+        return best_fr
+
+    down = _pick_down()
+    up = _pick_up({contact_l, contact_r, down})
+    frames = [contact_l, down, contact_r, up]
     if len(set(frames)) < 4:
-        quarter = max(1, (end - start) // 4)
-        frames = [start + quarter * i for i in range(4)]
-    if frames and _ankle_spread_x(arm) < 0.08:
-        scene.frame_set(frames[0])
-        if bind_arm_quats and idle_arm_quats:
-            apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
+        for fr, *_ in rows:
+            if fr not in frames:
+                frames = [contact_l, down, contact_r, fr]
+                break
     if max(frames) - min(frames) < 6:
-        left_sorted = sorted(rows, key=lambda t: t[1])
-        right_sorted = sorted(rows, key=lambda t: t[2])
-        contact_l = left_sorted[0][0]
-        contact_r = right_sorted[0][0]
-        if abs(contact_r - contact_l) < 4:
-            contact_l = left_sorted[min(1, len(left_sorted) - 1)][0]
-        passing_1 = _pick_passing(rows, exclude={contact_l, contact_r}, stance_max_m=0.22)
-        passing_2 = _pick_passing(
-            rows,
-            exclude={contact_l, contact_r, passing_1},
-            stance_max_m=0.14,
-        )
-        frames = [contact_l, passing_1, contact_r, passing_2]
-        if passing_2 == passing_1:
-            passing_2 = _pick_passing(rows, exclude={contact_l, contact_r, passing_1}, stance_max_m=0.22)
-            frames[3] = passing_2
+        quarter = max(1, (end - start) // 4)
+        frames = [contact_l, lo + quarter, contact_r, min(end, hi + quarter)]
     return frames
 
 
@@ -309,12 +329,76 @@ def apply_idle_arm_blend(
         apply_walk_arm_retarget(arm, bind, idle)
 
 
+def _weight_mesh_to_head(hair: bpy.types.Object, arm: bpy.types.Object) -> None:
+    if hair.type != "MESH":
+        return
+    if hair.parent:
+        world = hair.matrix_world.copy()
+        hair.parent = None
+        hair.matrix_world = world
+    for mod in list(hair.modifiers):
+        if mod.type == "ARMATURE":
+            hair.modifiers.remove(mod)
+    mod = hair.modifiers.new("HairArmature", "ARMATURE")
+    mod.object = arm
+    hair.vertex_groups.clear()
+    head = hair.vertex_groups.new(name="Head")
+    head.add(list(range(len(hair.data.vertices))), 1.0, "REPLACE")
+    bpy.context.view_layer.update()
+
+
+def _bind_coat_mesh_deform(coat: bpy.types.Object, body: bpy.types.Object) -> None:
+    if coat.type != "MESH" or body.type != "MESH":
+        return
+    if coat.parent:
+        world = coat.matrix_world.copy()
+        coat.parent = None
+        coat.matrix_world = world
+    for mod in list(coat.modifiers):
+        if mod.type in {"ARMATURE", "MESH_DEFORM"}:
+            coat.modifiers.remove(mod)
+    md = coat.modifiers.new("CoatMeshDeform", "MESH_DEFORM")
+    md.object = body
+    bpy.context.view_layer.objects.active = coat
+    coat.select_set(True)
+    try:
+        bpy.ops.object.meshdeform_bind(modifier=md.name)
+    except RuntimeError as exc:
+        raise RuntimeError(f"walk_coat_meshdeform_bind {exc}") from exc
+    bpy.context.view_layer.update()
+
+
+def reinforce_founder_forearm_weights(body: bpy.types.Object) -> None:
+    """Prefer arm chains over leg weights on sleeve verts (reduces hip forearm blobs)."""
+    chains = (
+        ("Left", ("LeftArm", "LeftForeArm", "LeftHand"), ("LeftUpLeg", "LeftLeg")),
+        ("Right", ("RightArm", "RightForeArm", "RightHand"), ("RightUpLeg", "RightLeg")),
+    )
+    if not body.vertex_groups:
+        return
+    for _side, arm_bones, leg_bones in chains:
+        for v in body.data.vertices:
+            arm_w = leg_w = 0.0
+            for g in v.groups:
+                name = body.vertex_groups[g.group].name
+                if name in arm_bones:
+                    arm_w += g.weight
+                elif name in leg_bones:
+                    leg_w += g.weight
+            if arm_w < 0.12 or leg_w <= arm_w:
+                continue
+            for name in arm_bones:
+                body.vertex_groups[name].add([v.index], (arm_w / max(leg_w, 1e-4)) * 0.08, "ADD")
+            for name in leg_bones:
+                body.vertex_groups[name].add([v.index], -0.35, "SUBTRACT")
+
+
 def _skin_mesh_to_armature(
     child: bpy.types.Object,
     body: bpy.types.Object,
     arm: bpy.types.Object,
 ) -> None:
-    """Parented coat/hair: copy nearest-body vertex weights so the mesh deforms with the walk rig."""
+    """Parented extras: nearest-body vertex weights (fallback when mesh deform is unavailable)."""
     if child.type != "MESH" or not body.data.vertices:
         return
     if child.parent:
@@ -363,14 +447,19 @@ def bake_evaluated_render_meshes(
             baked.append(ob)
             continue
         eval_ob = ob.evaluated_get(deps)
-        me = bpy.data.meshes.new_from_object(eval_ob, depsgraph=deps)
+        me = bpy.data.meshes.new_from_object(
+            eval_ob, preserve_all_data_layers=True, depsgraph=deps
+        )
         dup = bpy.data.objects.new(f"{ob.name.split('.')[0]}_WalkBake", me)
         dup.matrix_world = eval_ob.matrix_world.copy()
         dup.data.materials.clear()
+        used = {m for m in eval_ob.data.materials if m}
         for slot in ob.material_slots:
-            dup.data.materials.append(slot.material)
+            if slot.material:
+                used.add(slot.material)
+        for mat in used:
+            dup.data.materials.append(mat)
         bpy.context.collection.objects.link(dup)
-        ob.hide_render = True
         baked.append(dup)
         cleanup.append(dup)
     return baked, cleanup
@@ -428,6 +517,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
     idle_arms = _capture_arm_idle(arm)
     bpy.context.view_layer.update()
     apply_founder_materials(mesh)
+    reinforce_founder_forearm_weights(mesh)
     mesh.name = "KenneyFounderStock"
     eyes = spawn_founder_eye_meshes(mesh)
     keep = {
@@ -444,7 +534,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     walk_frames = pick_walk_contact_frames(arm, scene, start, end, bind_arms, idle_arms)
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
-    labels = ("contact_L", "passing", "contact_R", "passing")
+    labels = ("contact_L", "down", "contact_R", "up")
     return WalkHeroScene(
         arm=arm,
         body=mesh,
@@ -457,9 +547,28 @@ def build_founder_walk_scene() -> WalkHeroScene:
     )
 
 
+def apply_walk_materials_to_hero(
+    meshes: list[bpy.types.Object], asset_id: str
+) -> None:
+    from kenney_founder_stock_recolor import apply_founder_materials
+    from kenney_researcher_stock_recolor import apply_researcher_materials
+
+    for ob in meshes:
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if asset_id == "staff-founder-idle":
+            if base == "KenneyFounderStock":
+                apply_founder_materials(ob)
+            elif base.startswith("FounderEye_"):
+                founder_eye_preview_tweak([ob])
+        elif asset_id == "staff-researcher-idle":
+            if base == "KenneyResearcherStock":
+                apply_researcher_materials(ob)
+
+
 def build_researcher_walk_scene() -> WalkHeroScene:
     from kenney_researcher_stock_recolor import (
-        _pose_researcher_idle_arms,
         apply_researcher_materials,
         spawn_researcher_eye_meshes,
     )
@@ -477,8 +586,8 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     eyes = spawn_researcher_eye_meshes(mesh)
     coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
-    _skin_mesh_to_armature(coat, mesh, arm)
-    _skin_mesh_to_armature(hair, mesh, arm)
+    _bind_coat_mesh_deform(coat, mesh)
+    _weight_mesh_to_head(hair, arm)
     extras = [coat, hair]
     keep = {
         arm.name.split(".")[0],
@@ -494,7 +603,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     walk_frames = pick_walk_contact_frames(arm, scene, start, end, bind_arms, idle_arms)
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
-    labels = ("contact_L", "passing", "contact_R", "passing")
+    labels = ("contact_L", "down", "contact_R", "up")
     return WalkHeroScene(
         arm=arm,
         body=mesh,
@@ -510,6 +619,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
 def configure_preview_env(asset_id: str) -> None:
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_SKIP_MASK"] = "1"
+    os.environ["STAFF_PREVIEW_LOCK_CAMERA"] = "1"
     os.environ["STAFF_PREVIEW_ASSET"] = asset_id
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "30"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "10"

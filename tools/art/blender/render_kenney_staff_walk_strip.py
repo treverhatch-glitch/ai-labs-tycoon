@@ -12,11 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_hero_walk_strip import (  # noqa: E402
     KENNEY_RUN_LICENSE,
-    bake_evaluated_render_meshes,
+    apply_walk_materials_to_hero,
     build_founder_walk_scene,
     build_researcher_walk_scene,
     configure_preview_env,
-    dispose_baked_render_meshes,
     founder_eye_preview_tweak,
     apply_idle_arm_blend,
 )
@@ -71,6 +70,7 @@ def main() -> int:
         scene_data.idle_arm_quats,
         scene_data.bind_arm_quats,
     )
+    apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
     mat_ref = material_fingerprint(scene_data.body)
     tiles: list[Image.Image] = []
     tmp_dir = Path(bpy.app.tempdir)
@@ -82,30 +82,19 @@ def main() -> int:
             scene_data.idle_arm_quats,
             scene_data.bind_arm_quats,
         )
-        if asset_id == "staff-founder-idle":
-            from kenney_founder_stock_recolor import apply_founder_materials
-
-            apply_founder_materials(scene_data.body)
-        else:
-            from kenney_researcher_stock_recolor import apply_researcher_materials
-
-            apply_researcher_materials(scene_data.body)
+        apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")
             return 1
-        baked, cleanup = bake_evaluated_render_meshes(scene_data.render_meshes)
         tile = tmp_dir / f"walk_{i}.png"
-        try:
-            bc.render_preview(
-                baked,
-                tile,
-                asset_id=asset_id,
-                mask_meshes=baked,
-            )
-            tiles.append(Image.open(tile).convert("RGB"))
-        finally:
-            dispose_baked_render_meshes(scene_data.render_meshes, cleanup)
+        bc.render_preview(
+            scene_data.render_meshes,
+            tile,
+            asset_id=asset_id,
+            mask_meshes=scene_data.render_meshes,
+        )
+        tiles.append(Image.open(tile).convert("RGB"))
     w, h = tiles[0].size
     gap = 8
     sheet = Image.new("RGB", (w * 4 + gap * 3, h), (150, 150, 150))

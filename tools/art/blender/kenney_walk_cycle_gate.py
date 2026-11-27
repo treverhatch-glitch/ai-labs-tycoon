@@ -9,8 +9,8 @@ from mathutils import Vector
 MIN_LIMB_SPAN_M = 0.12
 LIMB_SPAN_DRIFT_M = 0.45
 FOOT_FLOOR_MAX_M = 0.16
-FOOT_PASSING_STANCE_MAX_M = 0.42
-FOOT_PASSING_MAX_M = 0.68
+FOOT_PASSING_STANCE_MAX_M = 0.58
+FOOT_PASSING_MAX_M = 1.15
 KNEE_ALT_MIN_M = 0.04
 ARM_MAX_FROM_VERTICAL_DEG = 72.0
 ARM_MIN_FROM_HORIZONTAL_DEG = 50.0
@@ -21,6 +21,7 @@ MIN_ANKLE_SPREAD_M = 0.10
 MESH_KNEE_STRETCH_MAX = 4.5
 MAT_COLOR_TOL = 0.04
 MIN_GAIT_SPAN_FRAMES = 6
+MIN_KEY_KNEE_SPREAD_M = 0.12
 
 LIMB_SPANS = (
     ("LeftShoulder", "LeftHand"),
@@ -291,8 +292,9 @@ def verify_walk_cycle(
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(mesh))
         if not ok_fp:
             return False, f"frame={fr} walk_{msg_fp}"
-        passing = idx in (1, 3)
-        ok_arm, msg_arm = _arms_pose_ok(arm, passing_frame=passing)
+        up_swing = idx == 3
+        down_pose = idx == 1
+        ok_arm, msg_arm = _arms_pose_ok(arm, passing_frame=up_swing)
         if not ok_arm:
             return False, f"frame={fr} walk_{msg_arm}"
         spread = _ankle_spread_x(arm)
@@ -301,16 +303,27 @@ def verify_walk_cycle(
         ok_mesh, msg_mesh = _mesh_leg_stretch_ok(mesh)
         if not ok_mesh:
             return False, f"frame={fr} walk_{msg_mesh}"
-        if passing:
+        if up_swing:
             low = _min_foot_z(arm)
             high = max(_stance_foot_z(arm, "Left"), _stance_foot_z(arm, "Right"))
             if low > FOOT_PASSING_STANCE_MAX_M:
-                return False, f"walk_floating passing frame={fr} stance_z={low:.4f}m"
+                return False, f"walk_floating up frame={fr} stance_z={low:.4f}m"
             if high - low < KNEE_ALT_MIN_M:
-                return False, f"walk_passing_flat frame={fr} spread={high - low:.4f}m"
+                return False, f"walk_up_flat frame={fr} spread={high - low:.4f}m"
             if high > FOOT_PASSING_MAX_M:
-                return False, f"walk_passing_too_high frame={fr} swing_z={high:.4f}m"
+                return False, f"walk_up_too_high frame={fr} swing_z={high:.4f}m"
             fz = low
+        elif down_pose:
+            lf = _stance_foot_z(arm, "Left")
+            rf = _stance_foot_z(arm, "Right")
+            if min(lf, rf) > 0.14:
+                return False, f"walk_down_airborne frame={fr} feet={(lf, rf)}"
+            knee = _knee_height(arm, "Left"), _knee_height(arm, "Right")
+            if knee[0] is None or knee[1] is None:
+                return False, f"walk_down_knee_missing frame={fr}"
+            if min(knee) > max(knee) * 0.92:
+                return False, f"walk_down_no_flex frame={fr} knees={knee}"
+            fz = min(lf, rf)
         else:
             stance = "Left" if idx == 0 else "Right"
             fz = _stance_foot_z(arm, stance)
@@ -349,6 +362,10 @@ def verify_walk_cycle(
     knee_spread = max(abs(k[0] - k[1]) for k in knee_lr) - min(abs(k[0] - k[1]) for k in knee_lr)
     if knee_spread < KNEE_ALT_MIN_M:
         return False, f"walk_legs_static knee_spread={knee_spread:.3f}"
+    knee_lr_spread = max(k[0] for k in knee_lr) - min(k[0] for k in knee_lr)
+    knee_rr_spread = max(k[1] for k in knee_lr) - min(k[1] for k in knee_lr)
+    if min(knee_lr_spread, knee_rr_spread) < MIN_KEY_KNEE_SPREAD_M:
+        return False, f"walk_keys_flat knees L={knee_lr_spread:.3f} R={knee_rr_spread:.3f}"
     return True, (
         f"walk_ok limb_drift={worst_drift:.4f}m foot_z={min(foot_heights):.3f}m "
         f"{msg_m} samples={samples} knee_spread={knee_spread:.3f}"

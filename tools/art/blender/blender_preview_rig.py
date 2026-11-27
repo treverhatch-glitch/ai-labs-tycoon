@@ -424,7 +424,7 @@ def frame_camera_ortho(objects: list[bpy.types.Object], fill: float = 0.70) -> b
     return cam
 
 
-def _purge_stale_preview_rig() -> None:
+def _purge_stale_preview_rig(*, keep_camera: bool = False) -> None:
     scene = bpy.context.scene
     stale_light_names = {"Key", "Fill", "Rim", "Key.001", "Fill.001", "Rim.001"}
     for ob in list(scene.objects):
@@ -437,6 +437,8 @@ def _purge_stale_preview_rig() -> None:
                 pass
             continue
         if not ob.name.startswith("Preview"):
+            continue
+        if keep_camera and ob.type == "CAMERA" and ob.name == "PreviewCamera":
             continue
         if ob.type in {"CAMERA", "LIGHT"} or ob.name == "PreviewShadowFloor":
             try:
@@ -463,7 +465,12 @@ def render_preview_studio(
     mask_meshes: bpy.types.Object | list[bpy.types.Object] | None = None,
 ) -> None:
     preview_kind = os.environ.get("EARLY_ART_PREVIEW_KIND", "staff").lower()
-    _purge_stale_preview_rig()
+    lock_camera = os.environ.get("STAFF_PREVIEW_LOCK_CAMERA", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    _purge_stale_preview_rig(keep_camera=lock_camera)
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
     if mask_meshes is not None:
@@ -564,13 +571,20 @@ def render_preview_studio(
                 scene.view_settings.gamma = 1.0
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
-            cam, cam_dist = frame_staff_front_quarter(
-                hero_meshes,
-                lens_mm=lens_mm,
-                margin=framing_margin,
-                yaw_deg=staff_yaw_deg,
-                elev_deg=staff_elev_deg,
-            )
+            cam = bpy.data.objects.get("PreviewCamera")
+            if lock_camera and cam:
+                scene.camera = cam
+                half_fov = camera_half_fov_rad(cam.data)
+                cam_dist = cam.location.length
+                _ = half_fov
+            else:
+                cam, cam_dist = frame_staff_front_quarter(
+                    hero_meshes,
+                    lens_mm=lens_mm,
+                    margin=framing_margin,
+                    yaw_deg=staff_yaw_deg,
+                    elev_deg=staff_elev_deg,
+                )
         else:
             cam = frame_camera(
                 hero_meshes,
