@@ -102,7 +102,14 @@ def is_eye_pixel(r: int, g: int, b: int, *, asset_id: str = "") -> bool:
         if abs(r - g) > 16 or abs(g - b) > 20:
             return False
         return not (b > r + 24 and b > 100)
-    return max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 165
+    if max(r, g, b) > MAX_EYE_LUM or (r + g + b) >= 165:
+        return False
+    if asset_id == "staff-founder-idle":
+        if (r + g + b) < 120:
+            return True
+        if b > r + 20 and max(r, g, b) > 52:
+            return False
+    return True
 
 
 def dark_blobs_in_roi(
@@ -203,13 +210,14 @@ def _pick_eye_blob_pair(
     if len(blobs) < 2:
         return None
     working = list(blobs)
-    if abs(yaw_deg) < 12:
-        sizable = [b for b in working if len(b) >= MIN_BLOB_PX]
-        if len(sizable) < 2:
-            return None
-        by_x = sorted(sizable, key=lambda b: _blob_centroid(b)[0])
+    sizable = [b for b in working if len(b) >= (4 if asset_id == "staff-researcher-idle" else MIN_BLOB_PX)]
+    if len(sizable) < 2:
+        return None
+    by_x = sorted(sizable, key=lambda b: _blob_centroid(b)[0])
+    cx_sep = _blob_centroid(by_x[-1])[0] - _blob_centroid(by_x[0])[0]
+    if abs(yaw_deg) < 12 or cx_sep >= span * 0.03:
         return [by_x[0], by_x[-1]]
-    best = sorted(working, key=len, reverse=True)[:2]
+    best = sorted(sizable, key=len, reverse=True)[:2]
     return best if len(best) >= 2 else None
 
 
@@ -277,6 +285,20 @@ def check_eyes_in_head_mask(
     lx = sum(x for x, _ in best[0]) / len(best[0])
     rx = sum(x for x, _ in best[1]) / len(best[1])
     min_sep = span * (0.011 if asset_id == "staff-researcher-idle" else 0.045)
+    if abs(yaw_deg) < 12:
+        min_sep = max(min_sep, span * 0.015)
+    if abs(lx - rx) < min_sep:
+        split_pool: list[set[tuple[int, int]]] = []
+        for cells in blobs:
+            split_pool.extend(_split_merged_eye_blob(cells, span))
+        if len(split_pool) >= 2 and len(split_pool) != len(blobs):
+            retry = _pick_eye_blob_pair(split_pool, span=span, asset_id=asset_id, yaw_deg=yaw_deg)
+            if retry:
+                lx2 = sum(x for x, _ in retry[0]) / len(retry[0])
+                rx2 = sum(x for x, _ in retry[1]) / len(retry[1])
+                if abs(lx2 - rx2) >= min_sep * 0.9:
+                    best = retry
+                    lx, rx = lx2, rx2
     if abs(lx - rx) < min_sep:
         return False, "eyes_too_close", blobs, (hx0, hy0, hx1, hy1)
     total = sum(len(c) for c in best)

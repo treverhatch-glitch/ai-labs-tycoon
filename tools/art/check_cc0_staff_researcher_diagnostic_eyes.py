@@ -22,7 +22,11 @@ def main() -> int:
     img = Image.open(PNG).convert("RGB")
     mask = Image.open(mask_path).convert("L")
     ok, msg, blobs, _ = check_eyes_in_head_mask(
-        img, mask, allow_projection_fallback=True, yaw_deg=0.0
+        img,
+        mask,
+        asset_id="staff-researcher-idle",
+        allow_projection_fallback=True,
+        yaw_deg=0.0,
     )
     if ok:
         print(f"OK staff-researcher-idle diagnostic_eyes {msg}")

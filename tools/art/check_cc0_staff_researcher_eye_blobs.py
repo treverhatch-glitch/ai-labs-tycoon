@@ -24,6 +24,7 @@ def main() -> int:
     ok, msg, _, _ = check_eyes_in_head_mask(
         img,
         mask,
+        asset_id="staff-researcher-idle",
         allow_projection_fallback=True,
         yaw_deg=30.0,
     )
