@@ -2,7 +2,6 @@
 """Founder head upper half: two dark eye blobs (modeled Quaternius eyes)."""
 from __future__ import annotations
 
-import json
 import sys
 from collections import deque
 from pathlib import Path
@@ -75,24 +74,12 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
     blobs = _blobs(mask, img, head_mid, head_hi)
     left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]
-    if len(blobs) >= 2:
-        return True, f"eye_blobs n={len(blobs)} L={len(left)} R={len(right)}"
-    if len(blobs) == 1:
-        b = blobs[0]
-        if (b[2] - b[0]) >= w * 0.045:
-            return True, "eye_blobs_merged_pair"
+    if len(blobs) == 2 and len(left) == 1 and len(right) == 1:
+        return True, f"eye_blobs n=2 L=1 R=1"
     return False, f"eye_blobs_missing L={len(left)} R={len(right)} total={len(blobs)}"
 
 
 def main() -> int:
-    asset_meta = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.asset.json"
-    if asset_meta.is_file():
-        try:
-            if json.loads(asset_meta.read_text()).get("meshIslands") == 1:
-                print("OK staff-founder-idle eye_blobs stock_kenney_face")
-                return 0
-        except json.JSONDecodeError:
-            pass
     ok, msg = analyze_eye_blobs(PNG)
     if ok:
         print(f"OK staff-founder-idle {msg}")

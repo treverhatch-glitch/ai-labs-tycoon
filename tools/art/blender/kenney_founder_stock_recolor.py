@@ -12,11 +12,8 @@ from mathutils import Vector
 
 import blender_common as bc
 import kenney_founder_lib as kf
-from kenney_face_axis import H_EYE_CENTER, face_shell_coord, lateral_from_front, toe_forward
-
-H_EYE_LO = H_EYE_CENTER - 0.038
-H_EYE_HI = H_EYE_CENTER + 0.032
-H_BROW_LO = H_EYE_CENTER + 0.036
+from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
+from kenney_geometry_landmarks import FounderLandmarks, compute_landmarks, torso_half_width
 
 STOCK_SOURCE = bc.REPO_ROOT / "tools" / "art" / "source" / "kenney"
 STOCK_BLEND = STOCK_SOURCE / "staff-founder-kenney-stock.blend"
@@ -27,13 +24,7 @@ STOCK_META = STOCK_BLEND.with_suffix(".stock.json")
 STOCK_OBJECT_NAME = "KenneyFounderStock"
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
-
-H_SHOE = 0.07
-H_WAIST = 0.50
-H_SHIRT_TOP = 0.80
-H_BROW = 0.76
-H_TOP_CAP = 0.90
-H_ARM_HAND_TOP = H_WAIST + 0.25 * (H_SHIRT_TOP - H_WAIST)
+FOUNDER_MOUTH = (0.18, 0.12, 0.12, 1.0)
 
 SLOT_SOLE = 0
 SLOT_SHOE = 1
@@ -44,6 +35,7 @@ SLOT_HAND = 5
 SLOT_HAIR = 6
 SLOT_EYE = 7
 SLOT_BROW = 8
+SLOT_MOUTH = 9
 
 
 def kit_glb_sha256() -> str:
@@ -95,7 +87,13 @@ def bisect_stock_landmarks(ob: bpy.types.Object) -> None:
     zs = [(ob.matrix_world @ v.co).z for v in ob.data.vertices]
     lo, hi = min(zs), max(zs)
     span = max(1e-4, hi - lo)
-    cuts = [lo + span * h for h in (H_SHOE, H_WAIST, H_SHIRT_TOP, H_BROW)]
+    lm = compute_landmarks(ob)
+    cuts = [
+        lo + span * lm.h_shoe,
+        lo + span * lm.h_waist,
+        lo + span * lm.h_neck,
+        lo + span * (lm.h_eye + 0.04),
+    ]
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     geom = list(bm.verts) + list(bm.edges) + list(bm.faces)
@@ -128,57 +126,71 @@ def _ensure_material(name: str, rgba: tuple[float, float, float, float], rough: 
     return mat
 
 
+def _head_width_at(ws: list[Vector], lo: float, span: float, h: float) -> float:
+    pts = [p for p in ws if abs((p.z - lo) / span - h) < 0.015]
+    return _xy_extent_static(pts, span)
+
+
+def _xy_extent_static(pts: list[Vector], span: float) -> float:
+    if len(pts) < 4:
+        return span * 0.18
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    return max(max(xs) - min(xs), max(ys) - min(ys))
+
+
 def _region_for_point(
     w: Vector,
     *,
-    lo: float,
-    span: float,
-    cx: float,
+    lm: FounderLandmarks,
+    ws: list[Vector],
     y_face: float,
     lat: float,
+    torso_hw: float,
+    head_w: float,
 ) -> int:
+    lo, span = lm.zmin, lm.span
     h = (w.z - lo) / span
-    xf = abs(w.x - cx)
     lat_n = lat / span
+    arm = lat > torso_hw + span * 0.012
+    arm_hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
 
-    if h < H_SHOE:
+    if h < lm.h_shoe:
         return SLOT_SOLE if lat_n > 0.05 else SLOT_SHOE
 
-    if h < H_WAIST:
+    if h < lm.h_waist:
         return SLOT_JEANS
 
-    if h < H_SHIRT_TOP:
-        if xf >= 0.09:
-            if h < H_ARM_HAND_TOP:
-                return SLOT_HAND
-            return SLOT_SHIRT
-        if h > 0.78 and y_face > 0.03:
-            return SLOT_SKIN
-        return SLOT_SHIRT
-
-    if y_face > 0.08 and H_EYE_LO <= h < H_EYE_HI and lat_n < 0.072:
-        return SLOT_EYE
-    if y_face > 0.08 and H_BROW_LO <= h < 0.965 and lat_n < 0.08:
-        return SLOT_BROW
-
-    if h > 0.78 and y_face > 0.03:
+    if h > lm.h_neck:
+        eye_lo = lm.h_eye - 0.032
+        eye_hi = lm.h_eye + 0.028
+        brow_lo = lm.h_eye + 0.034
+        eye_in = head_w * 0.05
+        eye_out = head_w * 0.44
+        if y_face > 0.12 and eye_lo <= h < eye_hi and eye_in < lat < eye_out:
+            return SLOT_EYE
+        if y_face > 0.12 and brow_lo <= h < eye_hi + 0.055 and lat < eye_out * 1.1:
+            return SLOT_BROW
+        if y_face > 0.10 and eye_lo - 0.045 <= h < eye_lo and lat < head_w * 0.08:
+            return SLOT_MOUTH
+        if y_face < -0.03 or (h > lm.h_neck + 0.12 and y_face < 0.05):
+            return SLOT_HAIR
         return SLOT_SKIN
 
-    if h >= H_BROW and y_face < -0.02:
-        return SLOT_HAIR
-    if h >= 0.84 and y_face < 0.04:
-        return SLOT_HAIR
+    if arm:
+        if h < arm_hand_top:
+            return SLOT_HAND
+        return SLOT_SHIRT
 
-    return SLOT_SKIN
+    return SLOT_SHIRT
 
 
 def apply_founder_materials(ob: bpy.types.Object) -> None:
-    lo, hi = _height_span(ob)
-    span = max(1e-4, hi - lo)
     ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
-    cx = sum(p.x for p in ws) / len(ws)
+    lm = compute_landmarks(ob)
     fwd = toe_forward([ob])
     hc, y_face_fn = face_shell_coord(ob, fwd)
+    head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
 
     mats = [
         _ensure_material("FounderSole", kf.FOUNDER_SHOE_SOLE, 0.72),
@@ -190,6 +202,7 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
         _ensure_material("FounderHair", kf.FOUNDER_HAIR, 0.48),
         _ensure_material("FounderEye", kf.FOUNDER_EYE, 0.32),
         _ensure_material("FounderBrow", FOUNDER_BROW, 0.36),
+        _ensure_material("FounderMouth", FOUNDER_MOUTH, 0.40),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -205,8 +218,16 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
         wc /= len(face.verts)
         y_face = y_face_fn(wc)
         lat = lateral_from_front(wc, hc, fwd)
+        h = (wc.z - lm.zmin) / lm.span
+        thw = torso_half_width(ws, lm.zmin, lm.span, h, lm.cx, lm.cy)
         face.material_index = _region_for_point(
-            wc, lo=lo, span=span, cx=cx, y_face=y_face, lat=lat
+            wc,
+            lm=lm,
+            ws=ws,
+            y_face=y_face,
+            lat=lat,
+            torso_hw=thw,
+            head_w=head_w,
         )
     bm.to_mesh(ob.data)
     ob.data.update()

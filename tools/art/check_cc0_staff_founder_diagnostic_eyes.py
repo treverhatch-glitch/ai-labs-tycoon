@@ -11,6 +11,7 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-face-diagnostic-0deg.png"
 MIN_BLOBS = 2
+MAX_BLOBS = 2
 MIN_BLOB_PX = 4
 
 
@@ -73,8 +74,8 @@ def main() -> int:
     y0 = _miny + int(span * 0.05)
     y1 = _miny + int(span * 0.32)
     blobs = _dark_blobs(mask, img, y0, y1)
-    if blobs < MIN_BLOBS:
-        print(f"FAIL staff-founder-idle diagnostic_eyes blobs={blobs} want>={MIN_BLOBS}")
+    if blobs != MIN_BLOBS:
+        print(f"FAIL staff-founder-idle diagnostic_eyes blobs={blobs} want={MIN_BLOBS}")
         return 1
     print(f"OK staff-founder-idle diagnostic_eyes blobs={blobs}")
     return 0
