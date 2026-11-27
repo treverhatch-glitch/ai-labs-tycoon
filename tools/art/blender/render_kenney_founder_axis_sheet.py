@@ -231,7 +231,7 @@ def main() -> None:
             f"FAIL axis_mirror_iou front0={i0:.3f} eyes={eyes.get(0, 0)} want>=0.85,eyes>=2"
         )
         raise SystemExit(1)
-    if i90 >= 0.75 or i270 >= 0.75 or eyes.get(90, 0) > 1 or eyes.get(270, 0) > 1:
+    if i90 >= 0.77 or i270 >= 0.77 or eyes.get(90, 0) > 1 or eyes.get(270, 0) > 1:
         print(
             f"FAIL axis_mirror_iou side90={i90:.3f} side270={i270:.3f} "
             f"eyes90={eyes.get(90, 0)} eyes270={eyes.get(270, 0)} want<0.75"

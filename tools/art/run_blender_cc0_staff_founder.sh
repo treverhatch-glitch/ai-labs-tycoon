@@ -4,7 +4,7 @@ set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
 export STAFF_PREVIEW_ELEV_DEG=10
-export STAFF_PREVIEW_MARGIN=1.47
+export STAFF_PREVIEW_MARGIN=1.42
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"

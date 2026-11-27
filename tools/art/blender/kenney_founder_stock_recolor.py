@@ -43,10 +43,9 @@ _VG_SHIRT_ARMS = frozenset(
         "RightShoulder",
         "LeftArm",
         "RightArm",
-        "LeftForeArm",
-        "RightForeArm",
     }
 )
+_VG_FOREARM_SKIN = frozenset({"LeftForeArm", "RightForeArm"})
 _VG_HANDS = frozenset(
     {
         "LeftHand",
@@ -191,10 +190,14 @@ def _region_for_point(
             return SLOT_HAND if h < lm.h_shoe + 0.12 else SLOT_SHIRT
         return SLOT_JEANS
 
-    chin_lo = lm.h_neck - 0.07
-    chin_hi = lm.h_neck + 0.025
+    chin_lo = lm.h_neck - 0.08
+    chin_hi = lm.h_neck + 0.03
     if chin_lo <= h <= chin_hi:
-        collar = y_face > 0.08 and lat < torso_hw * 0.55 and h >= lm.h_neck - 0.015
+        collar = (
+            y_face > 0.16
+            and lat < torso_hw * 0.42
+            and lm.h_neck - 0.005 <= h <= lm.h_neck + 0.018
+        )
         if collar:
             return SLOT_SHIRT
         return SLOT_SKIN
@@ -266,6 +269,8 @@ def _strip_mesh_vertex_colors(mesh: bpy.types.Mesh) -> None:
 
 
 def collect_founder_stock_meshes() -> list[bpy.types.Object]:
+    from founder_face_decals import HEAD_ANCHOR_NAME
+
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     body = next(
         (o for o in meshes if o.name.split(".")[0] == STOCK_OBJECT_NAME),
@@ -277,6 +282,9 @@ def collect_founder_stock_meshes() -> list[bpy.types.Object]:
         (o for o in meshes if o.name.split(".")[0].startswith("FounderEye_")),
         key=lambda o: o.name,
     )
+    anchor = bpy.data.objects.get(HEAD_ANCHOR_NAME)
+    if anchor:
+        return [body, anchor, *eyes]
     return [body, *eyes]
 
 
@@ -380,26 +388,29 @@ def _apply_arm_vertex_groups(
     hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
     lo, span = lm.zmin, lm.span
 
-    def _vert_weights(vi: int) -> tuple[float, float, float]:
-        hand = shirt = leg = 0.0
+    def _vert_weights(vi: int) -> tuple[float, float, float, float]:
+        hand = shirt = leg = fore = 0.0
         for g in ob.data.vertices[vi].groups:
             name = vg_names.get(g.group, "")
             if name in _VG_HANDS:
                 hand += g.weight
+            elif name in _VG_FOREARM_SKIN:
+                fore += g.weight
             elif name in _VG_SHIRT_ARMS:
                 shirt += g.weight
             elif name in _VG_LEGS:
                 leg += g.weight
-        return hand, shirt, leg
+        return hand, shirt, leg, fore
 
     for face in bm.faces:
-        hand = shirt = leg = 0.0
+        hand = shirt = leg = fore = 0.0
         wc = Vector()
         for v in face.verts:
-            hwt, swt, lwt = _vert_weights(v.index)
+            hwt, swt, lwt, frt = _vert_weights(v.index)
             hand += hwt
             shirt += swt
             leg += lwt
+            fore += frt
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
@@ -411,19 +422,25 @@ def _apply_arm_vertex_groups(
             if slots[face.index] == SLOT_HAND:
                 slots[face.index] = SLOT_SHIRT
             continue
-        armish = hand + shirt
-        if armish < 0.12 and not force_override:
+        skin_arm = hand + fore
+        armish = skin_arm + shirt
+        if armish < 0.10 and not force_override:
             continue
-        if leg > armish and armish < 0.25:
+        if leg > armish and armish < 0.22:
             continue
-        if hand < 0.18 and shirt < 0.15:
-            continue
-        if h < hand_top:
-            slots[face.index] = SLOT_HAND if hand >= shirt * 0.45 else SLOT_SHIRT
-        elif shirt >= hand * 0.3 or shirt > 0.12:
-            slots[face.index] = SLOT_SHIRT
-        elif hand > 0.15:
+        if fore >= 0.12 and lat > thw + span * 0.008:
             slots[face.index] = SLOT_HAND
+            continue
+        if hand >= 0.12 and lat > thw + span * 0.008:
+            slots[face.index] = SLOT_HAND
+            continue
+        if shirt >= 0.14 and lat > thw + span * 0.008:
+            slots[face.index] = SLOT_SHIRT
+            continue
+        if h < hand_top and hand + fore >= shirt * 0.35:
+            slots[face.index] = SLOT_HAND
+        elif shirt >= hand * 0.3:
+            slots[face.index] = SLOT_SHIRT
 
 
 def _grow_arm_from_shoulders(

@@ -21,6 +21,9 @@ def main() -> int:
     preview_path = Path(sys.argv[idx + 1])
     asset_id = sys.argv[idx + 2]
     os.environ.setdefault("EARLY_ART_PREVIEW_RIG", "1")
+    os.environ.setdefault("STAFF_PREVIEW_MARGIN", "1.42")
+    os.environ.setdefault("STAFF_PREVIEW_YAW_DEG", "30")
+    os.environ.setdefault("STAFF_PREVIEW_ELEV_DEG", "10")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bc.render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
     if not preview_path.is_file():

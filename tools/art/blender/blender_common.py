@@ -485,11 +485,12 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             from kenney_founder_stock_recolor import collect_founder_stock_meshes
 
             mesh_obs = collect_founder_stock_meshes()
-            part_count = len(mesh_obs)
+            mesh_only = [o for o in mesh_obs if o.type == "MESH"]
+            part_count = len(mesh_only)
             if part_count != 3:
                 raise RuntimeError(f"FAIL {asset_id}: stock_recolor need body+2eyes got {part_count}")
-            ob = mesh_obs[0]
-            eyes = mesh_obs[1:]
+            ob = next(o for o in mesh_only if o.name.split(".")[0] == "KenneyFounderStock")
+            eyes = [o for o in mesh_only if o.name.split(".")[0].startswith("FounderEye_")]
             if {e.name.split('.')[0] for e in eyes} != {"FounderEye_L", "FounderEye_R"}:
                 raise RuntimeError(f"FAIL {asset_id}: eye_objects missing")
             from kenney_founder_stock_recolor import ARM_VG_BONES
@@ -540,10 +541,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 bevel_object(ob, width=0.006, segments=1)
         else:
             for ob in mesh_obs:
-                smooth_shade(ob)
+                if ob.type == "MESH":
+                    smooth_shade(ob)
         glb_path = out_dir / f"{asset_id}.glb"
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-        _sanitize_solid_gltf_materials(mesh_obs)
+        _sanitize_solid_gltf_materials([o for o in mesh_obs if o.type == "MESH"])
         if asset_id == "staff-founder-idle" and not stock_recolor:
             _strip_uv_layers(mesh_obs)
         export_gltf_selection(
@@ -551,7 +553,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         )
         log_staff_material_slots(mesh_obs, asset_id)
         if stock_recolor and asset_id == "staff-founder-idle":
-            body_only = [o for o in mesh_obs if not o.name.startswith("FounderEye")]
+            body_only = [
+                o
+                for o in mesh_obs
+                if o.type == "MESH" and not o.name.startswith("FounderEye")
+            ]
             silhouette_mask = preview_path.with_name(
                 preview_path.stem + ".silhouette.mask.png"
             )
@@ -588,11 +594,12 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             if stock_recolor:
                 raise RuntimeError(f"FAIL {asset_id}: final_preview {exc}") from exc
             print(f"WARN preview {asset_id}: {exc}")
-        verts = sum(len(o.data.vertices) for o in mesh_obs)
-        tris = sum(len(p.vertices) for o in mesh_obs for p in o.data.polygons)
-        min_z, _max_z, _sz = _mesh_scene_span_z(mesh_obs)
-        mesh_count = len(mesh_obs)
-        root = link_or_join(mesh_obs)
+        mesh_only = [o for o in mesh_obs if o.type == "MESH"]
+        verts = sum(len(o.data.vertices) for o in mesh_only)
+        tris = sum(len(p.vertices) for o in mesh_only for p in o.data.polygons)
+        min_z, _max_z, _sz = _mesh_scene_span_z(mesh_only)
+        mesh_count = len(mesh_only)
+        root = link_or_join(mesh_only)
         if stock_recolor:
             from kenney_founder_stock_recolor import apply_founder_materials
 
