@@ -11,9 +11,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 BLENDER = os.environ.get("BLENDER_BIN", "blender")
 SCRIPTS = [
-    ROOT / "tools/art/cc0/blender/compute_server_rack.py",
     ROOT / "tools/art/cc0/blender/compute_pc_tower.py",
-    ROOT / "tools/art/cc0/blender/compute_monitor_set.py",
+    ROOT / "tools/art/cc0/blender/compute_monitor_era1.py",
+    ROOT / "tools/art/cc0/blender/compute_server_rack_era1.py",
 ]
 
 

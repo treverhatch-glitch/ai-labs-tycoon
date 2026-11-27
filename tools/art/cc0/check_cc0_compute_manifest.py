@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 MANIFEST = ROOT / "unity/Assets/Art/Cc0/compute-kit/compute-manifest.json"
-EXPECTED = {"compute-monitor-set", "compute-pc-tower-era1", "compute-server-rack"}
+EXPECTED = {"compute-pc-tower-era1", "compute-monitor-era1", "compute-server-rack-era1"}
 
 
 def main() -> int:
@@ -26,7 +26,11 @@ def main() -> int:
         alb = ROOT / "unity/Assets/Art/Cc0/compute-kit" / aid / "textures" / f"{aid}_albedo.png"
         ao = ROOT / "unity/Assets/Art/Cc0/compute-kit" / aid / "textures" / f"{aid}_ao.png"
         prev = ROOT / asset["preview"]
-        for path in (glb, alb, ao, prev):
+        paths = [glb, alb, ao, prev]
+        pf = asset.get("previewFront")
+        if pf:
+            paths.append(ROOT / pf)
+        for path in paths:
             if not path.is_file():
                 print(f"FAIL: missing {path.relative_to(ROOT)}", file=sys.stderr)
                 return 1

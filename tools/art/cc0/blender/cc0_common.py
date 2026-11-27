@@ -218,6 +218,29 @@ def bake_ao(ob: bpy.types.Object, mat: bpy.types.Material, ao_path: Path) -> Non
     ao_img.save()
 
 
+def _era1_solid_mat(
+    asset_id: str, suffix: str, rgb: tuple[float, float, float], rough: float, emission: float = 0.0
+) -> bpy.types.Material:
+    mat = bpy.data.materials.new(f"M_{asset_id}_{suffix}")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    col = (rgb[0], rgb[1], rgb[2], 1.0)
+    bsdf.inputs["Base Color"].default_value = col
+    bsdf.inputs["Roughness"].default_value = rough
+    bsdf.inputs["Metallic"].default_value = 0.05
+    if emission > 0 and "Emission Color" in bsdf.inputs:
+        bsdf.inputs["Emission Color"].default_value = col
+        bsdf.inputs["Emission Strength"].default_value = emission
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    mat.blend_method = "OPAQUE"
+    mat.shadow_method = "OPAQUE"
+    return mat
+
+
 def urp_material_era1_tower(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
     """Distinct solid slot colours (survive glTF); LEDs emissive strength 5+."""
     import pc_tower_kit as kit
@@ -228,33 +251,38 @@ def urp_material_era1_tower(ob: bpy.types.Object, asset_id: str, albedo_path: Pa
     led_g = kit.COL_LED_PWR
     led_a = kit.COL_LED_HDD
     ob.data.materials.clear()
-
-    def _solid_mat(suffix: str, rgb: tuple[float, float, float], rough: float, emission: float = 0.0) -> bpy.types.Material:
-        mat = bpy.data.materials.new(f"M_{asset_id}_{suffix}")
-        mat.use_nodes = True
-        nodes = mat.node_tree.nodes
-        links = mat.node_tree.links
-        nodes.clear()
-        out = nodes.new("ShaderNodeOutputMaterial")
-        bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-        col = (rgb[0], rgb[1], rgb[2], 1.0)
-        bsdf.inputs["Base Color"].default_value = col
-        bsdf.inputs["Roughness"].default_value = rough
-        bsdf.inputs["Metallic"].default_value = 0.05
-        if emission > 0 and "Emission Color" in bsdf.inputs:
-            bsdf.inputs["Emission Color"].default_value = col
-            bsdf.inputs["Emission Strength"].default_value = emission
-        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-        mat.blend_method = "OPAQUE"
-        mat.shadow_method = "OPAQUE"
-        return mat
-
-    ob.data.materials.append(_solid_mat("body", case, 0.40))
-    ob.data.materials.append(_solid_mat("bezel", bezel, 0.44))
-    ob.data.materials.append(_solid_mat("led_pwr", led_g, 0.25, emission=6.5))
-    ob.data.materials.append(_solid_mat("led_hdd", led_a, 0.25, emission=6.5))
-    ob.data.materials.append(_solid_mat("power", power, 0.46))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "body", case, 0.40))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "bezel", bezel, 0.44))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", led_g, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_hdd", led_a, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "power", power, 0.46))
     kit.restore_face_material_index(ob)
+
+
+def urp_material_era1_monitor(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
+    import monitor_era1_kit as kit
+
+    ob.data.materials.clear()
+    ob.data.materials.append(_era1_solid_mat(asset_id, "body", kit.COL_CASE, 0.40))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "bezel", kit.COL_BEZEL, 0.44))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "screen", kit.COL_SCREEN, 0.72, emission=1.8))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", kit.COL_LED_PWR, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_hdd", kit.COL_LED_HDD, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "power", kit.COL_POWER, 0.46))
+    import pc_tower_kit as tower
+
+    tower.restore_face_material_index(ob)
+
+
+def urp_material_era1_rack(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
+    import rack_era1_kit as kit
+    import pc_tower_kit as tower
+
+    ob.data.materials.clear()
+    ob.data.materials.append(_era1_solid_mat(asset_id, "frame", kit.COL_FRAME, 0.48))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "rail", kit.COL_RAIL, 0.42))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led", kit.COL_LED, 0.25, emission=5.5))
+    tower.restore_face_material_index(ob)
 
 
 def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
@@ -380,12 +408,12 @@ def _setup_preview_garage_style_world(*, lit_strength: float = 0.16) -> None:
         links.new(bg_grey.outputs["Background"], out.inputs["Surface"])
 
 
-def _tower_preview_lights(center: Vector, span: float, mins: Vector) -> None:
-    """Garage presentation_150 sun + area fill."""
+def _era1_preview_lights(center: Vector, span: float, mins: Vector) -> None:
+    """Garage #96 rig + camera-left fill + soft contact shadow."""
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
     key.data.energy = 2.86
-    key.data.angle = math.radians(4)
+    key.data.angle = math.radians(9)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
@@ -394,8 +422,14 @@ def _tower_preview_lights(center: Vector, span: float, mins: Vector) -> None:
     fill.data.size = span * 0.9
     fill.rotation_euler = (math.radians(60), 0, math.radians(25))
 
+    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span * 1.6, -span * 0.6, center.z + span * 0.45)))
+    side = bpy.context.active_object
+    side.data.energy = 42.0
+    side.data.size = span * 1.1
+    side.rotation_euler = (math.radians(75), 0, math.radians(-15))
+
     g = GREY150_PREVIEW
-    bpy.ops.mesh.primitive_plane_add(size=span * 1.05, location=(center.x, center.y, mins.z - 0.002))
+    bpy.ops.mesh.primitive_plane_add(size=max(span * 2.8, 3.0), location=(center.x, center.y, mins.z - 0.002))
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
@@ -404,7 +438,11 @@ def _tower_preview_lights(center: Vector, span: float, mins: Vector) -> None:
     ground.data.materials.append(gmat)
 
 
-def _boost_tower_emissive_mats() -> None:
+def _is_era1_hero(asset_id: str) -> bool:
+    return asset_id.endswith("-era1")
+
+
+def _boost_era1_emissive_mats() -> None:
     for mat in bpy.data.materials:
         low = mat.name.lower()
         if not mat.use_nodes:
@@ -412,10 +450,20 @@ def _boost_tower_emissive_mats() -> None:
         bsdf = mat.node_tree.nodes.get("Principled BSDF")
         if not bsdf:
             continue
-        if "led_pwr" in low or "led_hdd" in low:
+        if "led_pwr" in low:
+            bsdf.inputs["Base Color"].default_value = (0.08, 0.88, 0.28, 1.0)
+            if "Emission Color" in bsdf.inputs:
+                bsdf.inputs["Emission Color"].default_value = (0.06, 0.92, 0.30, 1.0)
             es = bsdf.inputs.get("Emission Strength")
             if es is not None:
-                es.default_value = 7.0
+                es.default_value = 5.5
+        elif "led_hdd" in low or ("led" in low and "pwr" not in low and "screen" not in low):
+            bsdf.inputs["Base Color"].default_value = (1.0, 0.58, 0.06, 1.0)
+            if "Emission Color" in bsdf.inputs:
+                bsdf.inputs["Emission Color"].default_value = (0.98, 0.52, 0.05, 1.0)
+            es = bsdf.inputs.get("Emission Strength")
+            if es is not None:
+                es.default_value = 5.5
 
 
 def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
@@ -425,8 +473,8 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
     preview = PREVIEW_DIR / f"{asset_id}.png"
     reset_scene()
-    is_tower = "pc-tower" in asset_id
-    if is_tower:
+    era1 = _is_era1_hero(asset_id)
+    if era1:
         _setup_preview_garage_style_world(lit_strength=0.16)
         bpy.context.scene.view_settings.view_transform = "Standard"
         bpy.context.scene.view_settings.exposure = -0.35
@@ -444,16 +492,16 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
                 bsdf = mat.node_tree.nodes.get("Principled BSDF")
                 if bsdf and "Alpha" in bsdf.inputs:
                     bsdf.inputs["Alpha"].default_value = 1.0
-    if is_tower:
-        _boost_tower_emissive_mats()
+    if era1:
+        _boost_era1_emissive_mats()
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    if is_tower:
-        _tower_preview_lights(center, span, mins)
+    if era1:
+        _era1_preview_lights(center, span, mins)
     else:
         floor_z = mins.z
         bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
@@ -488,7 +536,7 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     dist = span * 4.0
     elev = math.radians(30)
     # Tower front = −Y; camera at (−X,−Y) shows front + right (+X) panel.
-    az = math.radians(-135) if is_tower else math.radians(45)
+    az = math.radians(-135) if era1 else math.radians(45)
     cam.location = center + Vector(
         (
             dist * math.cos(elev) * math.cos(az),
@@ -507,13 +555,13 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_shadows = True
         if hasattr(ee, "shadow_cube_size"):
             ee.shadow_cube_size = "4096"
-        if is_tower:
+        if era1:
             if hasattr(ee, "use_soft_shadows"):
                 ee.use_soft_shadows = True
             if hasattr(ee, "use_bloom"):
                 ee.use_bloom = True
             if hasattr(ee, "bloom_intensity"):
-                ee.bloom_intensity = 0.05
+                ee.bloom_intensity = 0.025
             if hasattr(ee, "use_gtao"):
                 ee.use_gtao = True
     bpy.context.scene.render.film_transparent = False
@@ -554,13 +602,13 @@ def render_preview_front_from_glb(glb_path: Path, out_name: str) -> Path:
     bpy.context.scene.view_settings.exposure = -0.35
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    _boost_tower_emissive_mats()
+    _boost_era1_emissive_mats()
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
-    _tower_preview_lights(center, span, mins)
+    _era1_preview_lights(center, span, mins)
 
     obj_h = max(maxs.z - mins.z, 0.01)
     obj_w = max(maxs.x - mins.x, 0.01)
@@ -594,11 +642,11 @@ def render_preview_front_from_glb(glb_path: Path, out_name: str) -> Path:
 
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
-    era1_tower = asset_id == "compute-pc-tower-era1"
-    if not era1_tower:
-        bevel_w = 0.014 if "pc-tower" in asset_id else 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
+    era1 = _is_era1_hero(asset_id)
+    if not era1:
+        bevel_w = 0.014 if "pc-tower" in asset_id else 0.016 if asset_id.startswith("compute-") else 0.012
         bevel_object(root, width=bevel_w, segments=2)
-    if "pc-tower" in asset_id:
+    if era1 or "pc-tower" in asset_id:
         import mesh_builders as mb
 
         mb.snap_root_to_floor(root)
@@ -621,7 +669,7 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
                 vcol.data[corner_i].color = col
         root = join_meshes(parts) if len(parts) > 1 else parts[0]
     root.name = f"mesh_{asset_id}"
-    if era1_tower:
+    if era1:
         import pc_tower_kit as kit
 
         kit.store_face_material_index(root)
@@ -634,8 +682,12 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
     ao = tex_dir / f"{asset_id}_ao.png"
     rasterize_vertex_colors(root, albedo, asset_id)
     bake_ao(root, bake_mat, ao)
-    if era1_tower:
+    if asset_id == "compute-pc-tower-era1":
         urp_material_era1_tower(root, asset_id, albedo)
+    elif asset_id == "compute-monitor-era1":
+        urp_material_era1_monitor(root, asset_id, albedo)
+    elif asset_id == "compute-server-rack-era1":
+        urp_material_era1_rack(root, asset_id, albedo)
     else:
         urp_material(root, asset_id, albedo)
 
@@ -643,8 +695,8 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
     export_gltf_y_up(root, glb)
     preview = render_preview_from_glb(glb, asset_id)
     preview_front: str | None = None
-    if asset_id == "compute-pc-tower-era1":
-        pf = render_preview_front_from_glb(glb, "compute-pc-tower-era1-front")
+    if era1:
+        pf = render_preview_front_from_glb(glb, f"{asset_id}-front")
         preview_front = str(pf.relative_to(REPO))
 
     result = {

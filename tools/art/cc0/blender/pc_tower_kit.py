@@ -31,8 +31,9 @@ COL_BEZEL = (120 / 255.0, 112 / 255.0, 98 / 255.0)
 COL_BAY = (105 / 255.0, 98 / 255.0, 86 / 255.0)
 COL_SLOT = (85 / 255.0, 80 / 255.0, 72 / 255.0)
 COL_POWER = (95 / 255.0, 90 / 255.0, 82 / 255.0)
-COL_LED_PWR = (0.15, 0.92, 0.35)
-COL_LED_HDD = (0.98, 0.62, 0.12)
+COL_LED_PWR = (0.08, 0.88, 0.28)
+COL_LED_HDD = (1.0, 0.58, 0.06)
+COL_SIDE = (168 / 255.0, 158 / 255.0, 138 / 255.0)
 COL_BADGE = (0.36, 0.34, 0.32)
 COL_SIDE_SEAM = (0.78, 0.74, 0.66)
 
@@ -81,6 +82,8 @@ def _part_mat_index(name: str) -> int:
         return MAT_LED_AMBER
     if name == "power_btn":
         return MAT_POWER
+    if name.startswith("side_vent") or name == "side_seam":
+        return MAT_BEZEL
     if name in ("bay_upper", "bay_lower", "floppy", "cd_slot", "eject_btn", "vent_bar", "bezel_band", "badge_plate"):
         return MAT_BEZEL
     return MAT_BODY
@@ -119,12 +122,17 @@ def _paint_part_faces(ob: bpy.types.Object, rgb: tuple[float, float, float]) -> 
             vcol.data[li].color = col
 
 
-def _apply_global_material_slots(parts: list[bpy.types.Object], slot_mats: list[bpy.types.Material]) -> None:
+def _apply_global_material_slots(
+    parts: list[bpy.types.Object],
+    slot_mats: list[bpy.types.Material],
+    index_fn=None,
+) -> None:
+    pick = index_fn or _part_mat_index
     for ob in parts:
         ob.data.materials.clear()
         for m in slot_mats:
             ob.data.materials.append(m)
-        idx = _part_mat_index(ob.name)
+        idx = pick(ob.name)
         for poly in ob.data.polygons:
             poly.material_index = idx
 
@@ -195,6 +203,18 @@ def _fix_tower_normals(ob: bpy.types.Object) -> None:
         ob.data.auto_smooth_angle = math.radians(89.5)
 
 
+def _merge_face_colors_generic(root: bpy.types.Object, part_map: dict[int, tuple[float, float, float]]) -> None:
+    mesh = root.data
+    while mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[0])
+    vcol = mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+    for poly in mesh.polygons:
+        c = part_map.get(poly.material_index, COL_CASE)
+        col = (c[0], c[1], c[2], 1.0)
+        for li in poly.loop_indices:
+            vcol.data[li].color = col
+
+
 def _merge_face_colors(root: bpy.types.Object) -> None:
     """Per-face CORNER colors after material seam split (no LED/teal bleed)."""
     mesh = root.data
@@ -215,10 +235,11 @@ def _merge_face_colors(root: bpy.types.Object) -> None:
             zs = [mesh.vertices[vi].co.z for vi in poly.vertices]
             if sum(zs) / max(len(zs), 1) > 0.32:
                 c = COL_BAY
-        if mi == MAT_BODY and abs(poly.normal.x) > 0.85:
+        if mi == MAT_BODY and poly.normal.x > 0.85:
+            c = COL_SIDE
             ys = [mesh.vertices[vi].co.y for vi in poly.vertices]
             ymid = sum(ys) / max(len(ys), 1)
-            if abs(ymid + 0.210) < 0.003 and poly.normal.x > 0:
+            if abs(ymid + 0.210) < 0.004:
                 c = COL_SIDE_SEAM
         col = (c[0], c[1], c[2], 1.0)
         for li in poly.loop_indices:
@@ -263,7 +284,10 @@ def build_pc_tower_cc0() -> bpy.types.Object:
     parts.append(_raw_box("vent_bar", (0.12, PROTRUDE, 0.008), (0.0, yc, 0.088)))
 
     xc = TOWER_W / 2 - 0.0005
-    parts.append(_raw_box("side_vent", (0.002, 0.055, 0.042), (xc, TOWER_D / 2 - 0.048, 0.052)))
+    vy = TOWER_D / 2 - 0.048
+    for i in range(4):
+        parts.append(_raw_box(f"side_vent_{i}", (0.002, 0.048, 0.005), (xc, vy, 0.040 + i * 0.010)))
+    parts.append(_raw_box("side_seam", (0.0015, 0.001, TOWER_H * 0.88), (xc - 0.001, -0.210, hh)))
 
     slot_mats = [bpy.data.materials.new(f"_era1_slot_{i}") for i in range(5)]
     for ob in parts:

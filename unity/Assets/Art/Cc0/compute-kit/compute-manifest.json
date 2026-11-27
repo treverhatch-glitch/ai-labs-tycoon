@@ -3,35 +3,20 @@
   "fidelity": "cc0-restyle-bake",
   "assets": [
     {
-      "id": "compute-monitor-set",
-      "path": "Assets/Art/Cc0/compute-kit/compute-monitor-set/compute-monitor-set.glb",
+      "id": "compute-monitor-era1",
+      "path": "Assets/Art/Cc0/compute-kit/compute-monitor-era1/compute-monitor-era1.glb",
       "textures": {
-        "albedo": "Assets/Art/Cc0/compute-kit/compute-monitor-set/textures/compute-monitor-set_albedo.png",
-        "ao": "Assets/Art/Cc0/compute-kit/compute-monitor-set/textures/compute-monitor-set_ao.png"
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-monitor-era1/textures/compute-monitor-era1_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-monitor-era1/textures/compute-monitor-era1_ao.png"
       },
-      "preview": "docs/art/previews/compute-monitor-set.png",
+      "preview": "docs/art/previews/compute-monitor-era1.png",
       "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
       "sources": [
-        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerScreen.obj",
-        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerKeyboard.obj",
-        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerMouse.obj"
+        "procedural:era1 chunky beige CRT 0.40x0.40x0.38",
+        "style: curved screen, swivel base, power+LED"
       ],
-      "generator": "tools/art/cc0/blender/compute_monitor_set.py"
-    },
-    {
-      "id": "compute-server-rack",
-      "path": "Assets/Art/Cc0/compute-kit/compute-server-rack/compute-server-rack.glb",
-      "textures": {
-        "albedo": "Assets/Art/Cc0/compute-kit/compute-server-rack/textures/compute-server-rack_albedo.png",
-        "ao": "Assets/Art/Cc0/compute-kit/compute-server-rack/textures/compute-server-rack_ao.png"
-      },
-      "preview": "docs/art/previews/compute-server-rack.png",
-      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
-      "sources": [
-        "tools/art/cc0/incoming/ambientcg/Metal048A (palette reference)",
-        "procedural:bpy 42U cabinet (single island)"
-      ],
-      "generator": "tools/art/cc0/blender/compute_server_rack.py"
+      "generator": "tools/art/cc0/blender/compute_monitor_era1.py",
+      "previewFront": "docs/art/previews/compute-monitor-era1-front.png"
     },
     {
       "id": "compute-pc-tower-era1",
@@ -43,10 +28,27 @@
       "preview": "docs/art/previews/compute-pc-tower-era1.png",
       "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
       "sources": [
-        "procedural:era1 beige 90s desktop tower",
-        "style: TPH chunky rect"
+        "procedural:era1 solid beige tower 0.20x0.45x0.45 front-only bays",
+        "style: TPH chunky 5.25/floppy/power; no side fans or glass"
       ],
-      "generator": "tools/art/cc0/blender/compute_pc_tower.py"
+      "generator": "tools/art/cc0/blender/compute_pc_tower.py",
+      "previewFront": "docs/art/previews/compute-pc-tower-era1-front.png"
+    },
+    {
+      "id": "compute-server-rack-era1",
+      "path": "Assets/Art/Cc0/compute-kit/compute-server-rack-era1/compute-server-rack-era1.glb",
+      "textures": {
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-server-rack-era1/textures/compute-server-rack-era1_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-server-rack-era1/textures/compute-server-rack-era1_ao.png"
+      },
+      "preview": "docs/art/previews/compute-server-rack-era1.png",
+      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
+      "sources": [
+        "procedural:era1 open wire frame rack",
+        "style: corner posts, horizontal rails, no enclosed cabinet"
+      ],
+      "generator": "tools/art/cc0/blender/compute_server_rack_era1.py",
+      "previewFront": "docs/art/previews/compute-server-rack-era1-front.png"
     }
   ]
 }
