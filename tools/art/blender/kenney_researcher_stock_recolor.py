@@ -382,6 +382,7 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_forearm_shirt_under_coat(bm, slots, ob, lm)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
+    _hide_forearm_faces_under_sleeves(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -473,6 +474,59 @@ def _stamp_researcher_shirt_torso_arms(
         on_arm = lat > thw * 0.68 and lm.h_neck - 0.12 <= h <= lm.h_waist + 0.10
         if on_torso or on_arm:
             slots[face.index] = SLOT_SHIRT
+
+
+def _hide_forearm_faces_under_sleeves(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    """Shirt-colour lateral forearms so skin never shows through procedural sleeves."""
+    lo, span = lm.zmin, lm.span
+    arm_bones = frozenset(
+        {
+            "LeftArm",
+            "RightArm",
+            "LeftForeArm",
+            "RightForeArm",
+            "LeftShoulder",
+            "RightShoulder",
+        }
+    )
+    for face in bm.faces:
+        wc = Vector()
+        arm = 0.0
+        hand = 0.0
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+            hand += _vg_weight_from_bone_names(ob, v.index, _VG_HANDS)
+            arm += _vg_weight_from_bone_names(ob, v.index, arm_bones)
+        wc /= max(1, len(face.verts))
+        arm /= max(1, len(face.verts))
+        hand /= max(1, len(face.verts))
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.26 or h > lm.h_waist - 0.02:
+            continue
+        if hand > 0.20:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat <= thw * 0.52 or arm < 0.08:
+            continue
+        slots[face.index] = SLOT_SHIRT
+
+
+def _vg_weight_from_bone_names(ob: bpy.types.Object, vi: int, names: frozenset[str]) -> float:
+    total = 0.0
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    for g in ob.data.vertices[vi].groups:
+        if vg_names.get(g.group, "") in names:
+            total += g.weight
+    return total
 
 
 def _stamp_tee_short_sleeve(
