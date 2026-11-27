@@ -10,9 +10,8 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-face-diagnostic-0deg.png"
-MIN_BLOBS = 2
-MAX_BLOBS = 2
-MIN_BLOB_PX = 4
+MIN_BLOB_PX = 6
+MAX_EYE_LUM = 130
 
 
 def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -23,16 +22,16 @@ def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
     return min(ys), max(ys), max(1, max(ys) - min(ys))
 
 
-def _dark_blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> int:
+def _dark_blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[int, int, int, int]]:
     w, _ = img.size
     seen = [[False] * w for _ in range(y1 - y0)]
-    blobs = 0
+    blobs: list[tuple[int, int, int, int]] = []
 
     def dark(x: int, y: int) -> bool:
         if mask.getpixel((x, y)) <= 48:
             return False
         r, g, b = img.getpixel((x, y))[:3]
-        if max(r, g, b) > 130:
+        if max(r, g, b) > MAX_EYE_LUM:
             return False
         if b > r + 20:
             return False
@@ -46,9 +45,13 @@ def _dark_blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> int:
             q: deque[tuple[int, int]] = deque([(x, y)])
             seen[yi][x] = True
             n = 0
+            minx = maxx = x
+            miny = maxy = y
             while q:
                 cx, cy = q.popleft()
                 n += 1
+                minx, maxx = min(minx, cx), max(maxx, cx)
+                miny, maxy = min(miny, cy), max(maxy, cy)
                 for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     nx, ny = cx + dx, cy + dy
                     if ny < y0 or ny >= y1 or nx < 0 or nx >= w:
@@ -59,7 +62,7 @@ def _dark_blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> int:
                     seen[nyi][nx] = True
                     q.append((nx, ny))
             if n >= MIN_BLOB_PX:
-                blobs += 1
+                blobs.append((minx, miny, maxx, maxy))
     return blobs
 
 
@@ -71,14 +74,20 @@ def main() -> int:
     mask = Image.open(mask_path).convert("L")
     img = Image.open(PNG).convert("RGB")
     _miny, _maxy, span = _figure_span(mask)
-    y0 = _miny + int(span * 0.05)
-    y1 = _miny + int(span * 0.32)
+    # 0° framing places eyes ~40–50% down the figure span (not the old hero head crop).
+    y0 = _miny + int(span * 0.38)
+    y1 = _miny + int(span * 0.52)
+    w, _ = img.size
     blobs = _dark_blobs(mask, img, y0, y1)
-    if blobs != MIN_BLOBS:
-        print(f"FAIL staff-founder-idle diagnostic_eyes blobs={blobs} want={MIN_BLOBS}")
-        return 1
-    print(f"OK staff-founder-idle diagnostic_eyes blobs={blobs}")
-    return 0
+    left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
+    right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]
+    if len(left) >= 1 and len(right) >= 1:
+        print(f"OK staff-founder-idle diagnostic_eyes blobs L={len(left)} R={len(right)}")
+        return 0
+    print(
+        f"FAIL staff-founder-idle diagnostic_eyes L={len(left)} R={len(right)} total={len(blobs)}"
+    )
+    return 1
 
 
 if __name__ == "__main__":

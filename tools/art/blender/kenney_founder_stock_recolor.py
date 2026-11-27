@@ -37,6 +37,34 @@ SLOT_EYE = 7
 SLOT_BROW = 8
 SLOT_MOUTH = 9
 
+_VG_SHIRT_ARMS = frozenset(
+    {
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+    }
+)
+_VG_HANDS = frozenset(
+    {
+        "LeftHand",
+        "RightHand",
+        "LeftHandIndex1",
+        "LeftHandIndex2",
+        "LeftHandIndex3",
+        "LeftHandThumb1",
+        "LeftHandThumb2",
+        "RightHandIndex1",
+        "RightHandIndex2",
+        "RightHandIndex3",
+        "RightHandThumb1",
+        "RightHandThumb2",
+    }
+)
+_VG_SHOULDERS = frozenset({"LeftShoulder", "RightShoulder"})
+
 
 def kit_glb_sha256() -> str:
     if STOCK_KIT_SHA.is_file():
@@ -159,21 +187,12 @@ def _region_for_point(
         return SLOT_SOLE if lat_n > 0.05 else SLOT_SHOE
 
     if h < lm.h_waist:
+        if arm:
+            return SLOT_HAND if h < lm.h_shoe + 0.12 else SLOT_SHIRT
         return SLOT_JEANS
 
     if h > lm.h_neck:
-        eye_lo = lm.h_eye - 0.032
-        eye_hi = lm.h_eye + 0.028
-        brow_lo = lm.h_eye + 0.034
-        eye_in = head_w * 0.05
-        eye_out = head_w * 0.44
-        if y_face > 0.12 and eye_lo <= h < eye_hi and eye_in < lat < eye_out:
-            return SLOT_EYE
-        if y_face > 0.12 and brow_lo <= h < eye_hi + 0.055 and lat < eye_out * 1.1:
-            return SLOT_BROW
-        if y_face > 0.10 and eye_lo - 0.045 <= h < eye_lo and lat < head_w * 0.08:
-            return SLOT_MOUTH
-        if y_face < -0.03 or (h > lm.h_neck + 0.12 and y_face < 0.05):
+        if y_face < -0.03 or (h > lm.h_neck + 0.10 and y_face < 0.06):
             return SLOT_HAIR
         return SLOT_SKIN
 
@@ -183,6 +202,57 @@ def _region_for_point(
         return SLOT_SHIRT
 
     return SLOT_SHIRT
+
+
+def check_founder_decal_islands(ob: bpy.types.Object) -> tuple[bool, str]:
+    """One body island; face decals may be separate islands (2 eyes + brow/mouth)."""
+    decal_only = {SLOT_EYE, SLOT_BROW, SLOT_MOUTH}
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    islands: list[set[int]] = []
+    for face in bm.faces:
+        if face.index in visited:
+            continue
+        slots: set[int] = set()
+        stack = [face]
+        while stack:
+            f = stack.pop()
+            if f.index in visited:
+                continue
+            visited.add(f.index)
+            slots.add(f.material_index)
+            for e in f.edges:
+                for linked in e.link_faces:
+                    if linked.index not in visited:
+                        stack.append(linked)
+        islands.append(slots)
+    bm.free()
+    if len(islands) == 1:
+        return True, "islands=1"
+    body = eye = 0
+    for slots in islands:
+        if slots <= {SLOT_EYE}:
+            eye += 1
+        elif slots <= decal_only:
+            continue
+        else:
+            body += 1
+    if body != 1:
+        return False, f"body_islands={body} total={len(islands)}"
+    if eye != 2:
+        return False, f"eye_islands={eye} want=2"
+    return True, f"islands={len(islands)} body=1 eyes=2"
+
+
+def prepare_founder_preview_shader(ob: bpy.types.Object) -> None:
+    """Vertex-color shader so side/back axis views show saturated founder flats (not grey stock)."""
+    mesh = ob.data
+    while mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[0])
+    bc.transfer_material_colors_to_vertex_layer(ob)
+    bc.unify_vertex_color_material(ob, "staff-founder-idle")
 
 
 def apply_founder_materials(ob: bpy.types.Object) -> None:
@@ -211,6 +281,7 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     bm.faces.ensure_lookup_table()
+    slots: list[int] = []
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -220,19 +291,171 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
         lat = lateral_from_front(wc, hc, fwd)
         h = (wc.z - lm.zmin) / lm.span
         thw = torso_half_width(ws, lm.zmin, lm.span, h, lm.cx, lm.cy)
-        face.material_index = _region_for_point(
-            wc,
-            lm=lm,
-            ws=ws,
-            y_face=y_face,
-            lat=lat,
-            torso_hw=thw,
-            head_w=head_w,
+        slots.append(
+            _region_for_point(
+                wc,
+                lm=lm,
+                ws=ws,
+                y_face=y_face,
+                lat=lat,
+                torso_hw=thw,
+                head_w=head_w,
+            )
         )
+    _apply_arm_vertex_groups(bm, slots, ob, lm)
+    _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
+    _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    for face, slot in zip(bm.faces, slots, strict=True):
+        face.material_index = slot
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()
+
+    from founder_face_decals import attach_founder_face_decals
+
+    attach_founder_face_decals(ob)
     bc.smooth_shade(ob)
+
+
+def _apply_arm_vertex_groups(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    """Classify sleeves/hands from Kenney rig vertex weights (baked mesh keeps groups)."""
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    lo, span = lm.zmin, lm.span
+
+    def _vert_weights(vi: int) -> tuple[float, float]:
+        hand = shirt = 0.0
+        for g in ob.data.vertices[vi].groups:
+            name = vg_names.get(g.group, "")
+            if name in _VG_HANDS:
+                hand += g.weight
+            elif name in _VG_SHIRT_ARMS:
+                shirt += g.weight
+        return hand, shirt
+
+    for face in bm.faces:
+        hand = shirt = 0.0
+        wc = Vector()
+        for v in face.verts:
+            hwt, swt = _vert_weights(v.index)
+            hand += hwt
+            shirt += swt
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_waist - 0.02 or h > lm.h_neck + 0.04:
+            continue
+        if hand < 0.12 and shirt < 0.12:
+            continue
+        if h < hand_top:
+            slots[face.index] = SLOT_HAND if hand >= shirt * 0.45 else SLOT_SHIRT
+        elif shirt >= hand * 0.35:
+            slots[face.index] = SLOT_SHIRT
+        elif hand >= 0.2:
+            slots[face.index] = SLOT_HAND
+
+
+def _grow_arm_from_shoulders(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    from collections import deque
+
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    lo, span = lm.zmin, lm.span
+
+    def _shoulder_face(face: bmesh.types.BMFace) -> bool:
+        for v in face.verts:
+            for g in ob.data.vertices[v.index].groups:
+                if vg_names.get(g.group) in _VG_SHOULDERS and g.weight > 0.32:
+                    return True
+        return False
+
+    seeds = {
+        f.index
+        for f in bm.faces
+        if _shoulder_face(f) and slots[f.index] in (SLOT_SHIRT, SLOT_HAND)
+    }
+    if not seeds:
+        return
+    seen = set(seeds)
+    q: deque[int] = deque(seeds)
+    while q:
+        fi = q.popleft()
+        face = bm.faces[fi]
+        for edge in face.edges:
+            for other in edge.link_faces:
+                oi = other.index
+                if oi in seen:
+                    continue
+                wc = Vector()
+                for v in other.verts:
+                    wc += ob.matrix_world @ v.co
+                wc /= len(other.verts)
+                h = (wc.z - lo) / span
+                if h < lm.h_waist - 0.03 or h > lm.h_neck + 0.02:
+                    continue
+                lat = lateral_from_front(wc, hc, fwd)
+                thw = torso_half_width(ws, lm.zmin, lm.span, h, lm.cx, lm.cy)
+                if lat <= thw + lm.span * 0.006:
+                    continue
+                seen.add(oi)
+                slots[oi] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                q.append(oi)
+
+
+def _grow_arm_regions(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    for _ in range(12):
+        changed = False
+        for face in bm.faces:
+            wc = Vector()
+            for v in face.verts:
+                wc += ob.matrix_world @ v.co
+            wc /= len(face.verts)
+            h = (wc.z - lm.zmin) / lm.span
+            lat = lateral_from_front(wc, hc, fwd)
+            thw = torso_half_width(ws, lm.zmin, lm.span, h, lm.cx, lm.cy)
+            arm = lat > thw + lm.span * 0.01
+            idx = face.index
+            if slots[idx] == SLOT_JEANS and arm and h < lm.h_neck:
+                slots[idx] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                changed = True
+            if slots[idx] != SLOT_JEANS or not arm:
+                continue
+            for e in face.edges:
+                for other in e.link_faces:
+                    oi = other.index
+                    if slots[oi] in (SLOT_SHIRT, SLOT_HAND):
+                        slots[idx] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                        changed = True
+                        break
+        if not changed:
+            break
 
 
 def _height_span(ob: bpy.types.Object) -> tuple[float, float]:

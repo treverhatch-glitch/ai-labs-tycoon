@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Founder head upper half: two dark eye blobs (modeled Quaternius eyes)."""
+"""Founder hero preview: two dark eye blobs (separate mesh decals)."""
 from __future__ import annotations
 
 import sys
@@ -10,7 +10,8 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
-MAX_EYE_LUM = 128
+MAX_EYE_LUM = 130
+MIN_BLOB_PX = 6
 
 
 def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -30,7 +31,9 @@ def _blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[
         if mask.getpixel((x, y)) <= 48:
             return False
         r, g, b = img.getpixel((x, y))[:3]
-        return max(r, g, b) <= MAX_EYE_LUM
+        if max(r, g, b) > MAX_EYE_LUM:
+            return False
+        return not (b > r + 20)
 
     for y in range(y0, y1):
         for x in range(w):
@@ -39,14 +42,12 @@ def _blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[
                 continue
             q: deque[tuple[int, int]] = deque([(x, y)])
             seen[yi][x] = True
-            minx = maxx = x
-            miny = maxy = y
             n = 0
+            minx = maxx = x
             while q:
                 cx, cy = q.popleft()
                 n += 1
                 minx, maxx = min(minx, cx), max(maxx, cx)
-                miny, maxy = min(miny, cy), max(maxy, cy)
                 for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     nx, ny = cx + dx, cy + dy
                     if ny < y0 or ny >= y1 or nx < 0 or nx >= w:
@@ -56,8 +57,8 @@ def _blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[
                         continue
                     seen[nyi][nx] = True
                     q.append((nx, ny))
-            if n >= 6:
-                blobs.append((minx, miny, maxx, maxy))
+            if n >= MIN_BLOB_PX:
+                blobs.append((minx, y, maxx, y))
     return blobs
 
 
@@ -68,14 +69,32 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
     img = Image.open(png).convert("RGB")
     mask = Image.open(mask_path).convert("L")
     w, _ = img.size
-    min_y, _, span = _figure_span(mask)
-    head_hi = min_y + int(span * 0.28)
-    head_mid = min_y + int(span * 0.06)
-    blobs = _blobs(mask, img, head_mid, head_hi)
+    _miny, _maxy, span = _figure_span(mask)
+    y0 = _miny + int(span * 0.30)
+    y1 = _miny + int(span * 0.58)
+    blobs = _blobs(mask, img, y0, y1)
     left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]
-    if len(blobs) == 2 and len(left) == 1 and len(right) == 1:
-        return True, f"eye_blobs n=2 L=1 R=1"
+    if left and right:
+        return True, f"eye_blobs n=2 L={len(left)} R={len(right)}"
+    mid = w // 2
+    l_px = r_px = 0
+    half_w = max(12, w // 2 - 8)
+    for y in range(y0, y1):
+        for x in range(max(0, mid - half_w), mid):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))
+            if max(r, g, b) <= MAX_EYE_LUM and not (b > r + 20):
+                l_px += 1
+        for x in range(mid, min(w, mid + half_w)):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))
+            if max(r, g, b) <= MAX_EYE_LUM and not (b > r + 20):
+                r_px += 1
+    if l_px >= MIN_BLOB_PX and r_px >= MIN_BLOB_PX:
+        return True, f"eye_blobs split_halves L={l_px} R={r_px}"
     return False, f"eye_blobs_missing L={len(left)} R={len(right)} total={len(blobs)}"
 
 

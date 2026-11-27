@@ -486,7 +486,12 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 raise RuntimeError(f"FAIL {asset_id}: stock_recolor need 1 mesh got {part_count}")
             ob = mesh_obs[0]
             if mesh_island_count(ob) > 1:
-                raise RuntimeError(f"FAIL {asset_id}: stock_mesh_fragmented")
+                from kenney_founder_stock_recolor import check_founder_decal_islands
+
+                ok_isl, msg_isl = check_founder_decal_islands(ob)
+                if not ok_isl:
+                    raise RuntimeError(f"FAIL {asset_id}: stock_mesh_{msg_isl}")
+                print(f"OK {asset_id} {msg_isl}")
             ok_head, msg_head = staff_c0.check_founder_stock_single_mesh(ob)
             if not ok_head:
                 raise RuntimeError(f"FAIL {asset_id}: {msg_head}")

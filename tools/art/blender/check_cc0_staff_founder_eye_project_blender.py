@@ -69,6 +69,41 @@ def _front_eye_polys(
     return count
 
 
+def _eye_mesh_components(ob: bpy.types.Object, eye_idx: int) -> int:
+    mesh = ob.data
+    eye_faces = {i for i, p in enumerate(mesh.polygons) if p.material_index == eye_idx}
+    if not eye_faces:
+        return 0
+    edge_to_faces: dict[tuple[int, int], list[int]] = {}
+    for fi in eye_faces:
+        poly = mesh.polygons[fi]
+        verts = [mesh.loops[li].vertex_index for li in poly.loop_indices]
+        for a, b in zip(verts, verts[1:] + verts[:1]):
+            key = (min(a, b), max(a, b))
+            edge_to_faces.setdefault(key, []).append(fi)
+    adj: dict[int, set[int]] = {fi: set() for fi in eye_faces}
+    for faces in edge_to_faces.values():
+        eye_only = [f for f in faces if f in eye_faces]
+        for i in eye_only:
+            for j in eye_only:
+                if i != j:
+                    adj[i].add(j)
+    seen: set[int] = set()
+    comps = 0
+    for fi in eye_faces:
+        if fi in seen:
+            continue
+        comps += 1
+        stack = [fi]
+        while stack:
+            cur = stack.pop()
+            if cur in seen:
+                continue
+            seen.add(cur)
+            stack.extend(adj[cur] - seen)
+    return comps
+
+
 def _aligned_eye_count(ob: bpy.types.Object, eye_idx: int, front: Vector) -> int:
     n = 0
     for poly in ob.data.polygons:
@@ -101,6 +136,10 @@ def main() -> None:
     apply_founder_materials(ob)
     eye_idx = _eye_slot(ob)
     front = toe_forward([ob]).normalized()
+    components = _eye_mesh_components(ob, eye_idx)
+    if components != 2:
+        print(f"FAIL staff-founder-idle eye_project components={components} want=2")
+        raise SystemExit(1)
     aligned = _aligned_eye_count(ob, eye_idx, front)
     if aligned < 2:
         print(f"FAIL staff-founder-idle eye_project front_normals={aligned}")

@@ -13,7 +13,11 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
-from kenney_founder_stock_recolor import STOCK_BLEND, apply_founder_materials  # noqa: E402
+from kenney_founder_stock_recolor import (  # noqa: E402
+    STOCK_BLEND,
+    apply_founder_materials,
+    prepare_founder_preview_shader,
+)
 
 OUT = bc.PREVIEW_ROOT / "staff-founder-axis-sheet.png"
 YAWS = (0, 90, 180, 270)
@@ -21,18 +25,20 @@ LABELS = ("0° front", "90° Z", "180° Z", "270° Z")
 
 
 def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
+    """Left/right dark eye regions in face band (matches diagnostic_eyes framing)."""
+    from collections import deque
+
     mask = mask.convert("L")
+    img = img.convert("RGB")
     w, h = mask.size
     ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
     if not ys:
         return 0
     miny, maxy = min(ys), max(ys)
     span = max(1, maxy - miny)
-    y0, y1 = miny + int(span * 0.05), miny + int(span * 0.32)
-    from collections import deque
-
+    y0, y1 = miny + int(span * 0.38), miny + int(span * 0.52)
     seen = [[False] * w for _ in range(max(1, y1 - y0))]
-    blobs = 0
+    boxes: list[tuple[int, int, int, int]] = []
 
     def dark(x: int, y: int) -> bool:
         if mask.getpixel((x, y)) <= 48:
@@ -45,12 +51,14 @@ def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
             yi = y - y0
             if yi < 0 or yi >= len(seen) or seen[yi][x] or not dark(x, y):
                 continue
-            q = deque([(x, y)])
+            q: deque[tuple[int, int]] = deque([(x, y)])
             seen[yi][x] = True
             n = 0
+            minx = maxx = x
             while q:
                 cx, cy = q.popleft()
                 n += 1
+                minx, maxx = min(minx, cx), max(maxx, cx)
                 for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     nx, ny = cx + dx, cy + dy
                     if ny < y0 or ny >= y1 or nx < 0 or nx >= w:
@@ -60,9 +68,30 @@ def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
                         continue
                     seen[nyi][nx] = True
                     q.append((nx, ny))
-            if n >= 4:
-                blobs += 1
-    return blobs
+            if n >= 6:
+                boxes.append((minx, y, maxx, y))
+    left = [b for b in boxes if (b[0] + b[2]) / 2 < w * 0.48]
+    right = [b for b in boxes if (b[0] + b[2]) / 2 > w * 0.52]
+    if left and right:
+        return 2
+    mid = w // 2
+    l_px = r_px = 0
+    for y in range(y0, y1):
+        for x in range(max(0, mid - w // 3), mid):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))[:3]
+            if max(r, g, b) <= 130 and not (b > r + 20):
+                l_px += 1
+        for x in range(mid, min(w, mid + w // 3)):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = img.getpixel((x, y))[:3]
+            if max(r, g, b) <= 130 and not (b > r + 20):
+                r_px += 1
+    if l_px >= 6 and r_px >= 6:
+        return 2
+    return len(boxes)
 
 
 def _mirror_iou(mask: Image.Image) -> float:
@@ -87,44 +116,48 @@ def _mirror_iou(mask: Image.Image) -> float:
     return inter / union if union else 0.0
 
 
-def _is_founder_rgb(im: Image.Image) -> bool:
+def _panel_saturation(im: Image.Image, mask: Image.Image) -> float:
+    import colorsys
+
+    mask = mask.convert("L")
     w, h = im.size
-    red = blue = skin = 0
+    sat_sum = 0.0
     n = 0
-    for y in range(0, h, 4):
-        for x in range(0, w, 4):
+    for y in range(0, h, 3):
+        for x in range(0, w, 3):
+            if mask.getpixel((x, y)) <= 48:
+                continue
             r, g, b = im.getpixel((x, y))
             if r + g + b < 60:
                 continue
+            _, s, _v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            sat_sum += s
             n += 1
-            if r > g + 12 and r > b + 8:
-                red += 1
-            if b > r + 6 and b > g + 4:
-                blue += 1
-            if r > 148 and g > 110 and b < 175:
-                skin += 1
-    if n < 50:
-        return False
-    return (red + blue + skin) / n > 0.35
+    return sat_sum / n if n > 0 else 0.0
 
 
-def main() -> None:
-    if not STOCK_BLEND.is_file():
-        print("FAIL axis_sheet missing stock blend")
-        raise SystemExit(1)
+def _load_recolored_mesh() -> bpy.types.Object:
     bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
     ob = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
     if not ob:
         print("FAIL axis_sheet no_mesh")
         raise SystemExit(1)
     apply_founder_materials(ob)
-    fwd = toe_forward([ob])
+    return ob
+
+
+def main() -> None:
+    if not STOCK_BLEND.is_file():
+        print("FAIL axis_sheet missing stock blend")
+        raise SystemExit(1)
+    ob0 = _load_recolored_mesh()
+    fwd = toe_forward([ob0])
     print(f"OK axis_sheet front=({fwd.x:.3f},{fwd.y:.3f}) gltf_ref=-Y")
 
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-idle"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"
-    os.environ["STAFF_PREVIEW_MARGIN"] = "1.32"
+    os.environ["STAFF_PREVIEW_MARGIN"] = "1.35"
     tiles: list[Image.Image] = []
     ious: dict[int, float] = {}
     eyes: dict[int, int] = {}
@@ -132,12 +165,21 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="founder_axis_") as tdir:
         tmp = Path(tdir)
         for yaw in YAWS:
+            ob = _load_recolored_mesh()
+            if yaw != 0:
+                prepare_founder_preview_shader(ob)
             os.environ["STAFF_PREVIEW_YAW_DEG"] = str(yaw)
             tile = tmp / f"axis_{yaw}.png"
             bc.render_preview([ob], tile, asset_id="staff-founder-idle")
             rgb = Image.open(tile).convert("RGB")
-            if not _is_founder_rgb(rgb):
-                print(f"FAIL axis_sheet yaw={yaw} not_recolored")
+            mask_path = tile.with_name(tile.stem + ".mask.png")
+            mask = Image.open(mask_path).convert("L") if mask_path.is_file() else None
+            if mask is None:
+                print(f"FAIL axis_sheet yaw={yaw} missing_mask")
+                raise SystemExit(1)
+            sat = _panel_saturation(rgb, mask)
+            if sat < 0.15:
+                print(f"FAIL axis_sheet yaw={yaw} saturation={sat:.3f} want>0.15")
                 raise SystemExit(1)
             tiles.append(rgb)
             mask_path = tile.with_name(tile.stem + ".mask.png")
