@@ -244,6 +244,38 @@ def _frame_gait_score(arm: bpy.types.Object) -> tuple[float, float, float]:
     return spread, knee, swing
 
 
+def _spread_minmax_frames(
+    arm: bpy.types.Object,
+    scene: bpy.types.Scene,
+    start: int,
+    end: int,
+    bind_arm_quats: dict[str, Quaternion] | None,
+    idle_arm_quats: dict[str, Quaternion] | None,
+    *,
+    forbidden: set[int] | None = None,
+    grounded_only: bool = False,
+) -> tuple[int, int]:
+    forbidden = forbidden or set()
+    lo_fr, lo_sp = start, 1e9
+    hi_fr, hi_sp = start, -1.0
+    for fr in range(start, end + 1):
+        if fr in forbidden:
+            continue
+        scene.frame_set(fr)
+        if bind_arm_quats and idle_arm_quats:
+            apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
+        if grounded_only:
+            low = min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right"))
+            if low > LOCOMOTION_WALK_GROUND_MAX_M:
+                continue
+        sp = _ankle_spread_x(arm)
+        if sp < lo_sp:
+            lo_sp, lo_fr = sp, fr
+        if sp > hi_sp:
+            hi_sp, hi_fr = sp, fr
+    return lo_fr, hi_fr
+
+
 def pick_walk_contact_frames(
     arm: bpy.types.Object,
     scene: bpy.types.Scene,
@@ -267,13 +299,13 @@ def pick_walk_contact_frames(
         if not cands:
             cands = sorted(rows, key=lambda t: t[col])[:4]
         best_fr = cands[0][0]
-        best_spread = -1.0
+        best_spread = 1e9
         for fr, *_ in cands:
             scene.frame_set(fr)
             if bind_arm_quats and idle_arm_quats:
                 apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
             sp = _ankle_spread_x(arm)
-            if sp > best_spread:
+            if sp < best_spread:
                 best_spread = sp
                 best_fr = fr
         return best_fr

@@ -13,6 +13,7 @@ from kenney_founder_stock_recolor import (
     ARM_VG_BONES,
     SLOT_HAIR,
     SLOT_HAND,
+    SLOT_JEANS,
     SLOT_SHIRT,
     SLOT_SKIN,
     STOCK_BLEND,
@@ -87,6 +88,7 @@ def _finalize_researcher_coat_slots(
     """Full white torso + long sleeves; open lapel (no chin tube); hands stay skin."""
     lo, span = lm.zmin, lm.span
     wrist_h = lm.h_shoe + 0.14
+    skirt_bot = lm.h_waist + 0.50
     coat_top = lm.h_neck - 0.10
     for face in bm.faces:
         wc = Vector()
@@ -105,6 +107,10 @@ def _finalize_researcher_coat_slots(
                 and lm.h_neck - 0.03 <= h <= lm.h_neck + 0.06
             )
             if not throat:
+                slots[face.index] = SLOT_SHIRT
+
+        if lm.h_waist - 0.10 <= h <= skirt_bot and lat <= thw * 1.42:
+            if slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
                 slots[face.index] = SLOT_SHIRT
 
         if lat > thw * 0.82 and coat_top <= h <= wrist_h:

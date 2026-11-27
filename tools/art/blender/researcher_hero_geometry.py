@@ -1119,18 +1119,18 @@ def spawn_researcher_hair_cap(body: bpy.types.Object) -> bpy.types.Object:
     hc, _ = face_shell_coord(body, fwd)
     head_top = _researcher_head_top(ws, lm)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
-    crown_z = lm.zmin + lm.span * (head_top - 0.03)
-    crown = hc - fwd * (head_w * 0.10) + Vector((0.0, 0.0, crown_z - hc.z))
+    crown_z = lm.zmin + lm.span * (head_top - 0.045)
+    crown = hc - fwd * (head_w * 0.08) + Vector((0.0, 0.0, crown_z - hc.z))
     local = body.matrix_world.inverted() @ crown
     bpy.ops.mesh.primitive_uv_sphere_add(
         segments=18,
         ring_count=12,
-        radius=head_w * 0.43,
+        radius=head_w * 0.41,
         location=local,
     )
     cap = bpy.context.active_object
     cap.name = "ResearcherHairCap"
-    cap.scale = (0.88, 0.96, 0.48)
+    cap.scale = (0.86, 0.94, 0.54)
     bpy.ops.object.transform_apply(scale=True)
     cap.parent = body
     cap.matrix_parent_inverse = body.matrix_world.inverted()

@@ -140,13 +140,14 @@ def pick_shirt_skirt_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
+    skirt_bot = lm.h_waist + 0.52
     pick: set[int] = set()
     for f in bm_src.faces:
         if f.material_index != shirt_slot:
             continue
         wc = _face_world_centroid(body, f)
         h = (wc.z - lo) / span
-        if h < lm.h_waist - 0.20 or h > lm.h_waist + 0.52:
+        if h < lm.h_waist - 0.03 or h > skirt_bot:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
@@ -168,17 +169,19 @@ def pick_shirt_sleeve_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
+    wrist_lo = lm.h_shoe + 0.08
+    sleeve_hi = lm.h_neck + 0.08
     pick: set[int] = set()
     for f in bm_src.faces:
         if f.material_index not in (shirt_slot, hand_slot):
             continue
         wc = _face_world_centroid(body, f)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.22 or h > lm.h_waist + 0.14:
+        if h < wrist_lo - 0.05 or h > sleeve_hi:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat <= thw * 0.30:
+        if lat <= thw * 0.24:
             continue
         pick.add(f.index)
     changed = True
@@ -193,7 +196,7 @@ def pick_shirt_sleeve_faces(
                 continue
             wc = _face_world_centroid(body, f)
             h = (wc.z - lo) / span
-            if lm.h_neck - 0.22 <= h <= lm.h_waist + 0.14:
+            if wrist_lo - 0.05 <= h <= sleeve_hi:
                 pick.add(f.index)
                 changed = True
     return pick
