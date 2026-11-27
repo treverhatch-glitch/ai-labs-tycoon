@@ -8,9 +8,9 @@ import bpy
 from mathutils import Vector
 
 import cc0_common as cc
-from era1_mesh_selfcheck import _aabb_gap, _world_aabb
+from mesh_builders import _island_count
 
-GAP_TOL = 0.002
+WELD_DIST = 0.0005
 REPO = cc.REPO
 PREVIEW_DIR = cc.PREVIEW_DIR
 
@@ -19,71 +19,19 @@ def _mesh_bounds(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return cc._world_bbox(objs)
 
 
-def _face_island_aabbs(ob: bpy.types.Object) -> list[tuple[Vector, Vector]]:
-    import bmesh
-
-    mesh = ob.data
-    bm = bmesh.new()
-    bm.from_mesh(mesh)
-    bm.faces.ensure_lookup_table()
-    visited: set[int] = set()
-    boxes: list[tuple[Vector, Vector]] = []
-    for face in bm.faces:
-        if face.index in visited:
-            continue
-        stack = [face]
-        mins = Vector((1e9, 1e9, 1e9))
-        maxs = Vector((-1e9, -1e9, -1e9))
-        while stack:
-            f = stack.pop()
-            if f.index in visited:
-                continue
-            visited.add(f.index)
-            for v in f.verts:
-                w = ob.matrix_world @ v.co
-                mins.x = min(mins.x, w.x)
-                mins.y = min(mins.y, w.y)
-                mins.z = min(mins.z, w.z)
-                maxs.x = max(maxs.x, w.x)
-                maxs.y = max(maxs.y, w.y)
-                maxs.z = max(maxs.z, w.z)
-            for e in f.edges:
-                for nbr in e.link_faces:
-                    if nbr.index not in visited:
-                        stack.append(nbr)
-        boxes.append((mins, maxs))
-    bm.free()
-    return boxes
-
-
-def _components_within_tolerance(boxes: list[tuple[Vector, Vector]], tol: float = GAP_TOL) -> bool:
-    if len(boxes) <= 1:
-        return True
-    parent = list(range(len(boxes)))
-
-    def find(i: int) -> int:
-        while parent[i] != i:
-            parent[i] = parent[parent[i]]
-            i = parent[i]
-        return i
-
-    def unite(a: int, b: int) -> None:
-        ra, rb = find(a), find(b)
-        if ra != rb:
-            parent[rb] = ra
-
-    for i in range(len(boxes)):
-        for j in range(i + 1, len(boxes)):
-            if _aabb_gap(boxes[i], boxes[j]) <= tol + 1e-6:
-                unite(i, j)
-    return len({find(i) for i in range(len(boxes))}) == 1
-
-
-def _connected_within_tolerance(ob: bpy.types.Object, tol: float = GAP_TOL) -> bool:
-    face_boxes = _face_island_aabbs(ob)
-    if _components_within_tolerance(face_boxes, tol):
-        return True
-    return _components_within_tolerance([_world_aabb(ob)], tol)
+def _weld_and_islands(ob: bpy.types.Object, dist: float = WELD_DIST) -> int:
+    dup = ob.copy()
+    dup.data = ob.data.copy()
+    bpy.context.collection.objects.link(dup)
+    bpy.context.view_layer.objects.active = dup
+    dup.select_set(True)
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=dist)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    n = _island_count(dup.data)
+    bpy.data.objects.remove(dup, do_unlink=True)
+    return n
 
 
 def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
@@ -92,12 +40,6 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not meshes:
         raise RuntimeError(f"no mesh in {glb_path}")
-
-    part_boxes = [_world_aabb(m) for m in meshes]
-    island_boxes = []
-    for m in meshes:
-        island_boxes.extend(_face_island_aabbs(m))
-    conn = _components_within_tolerance(island_boxes) or _components_within_tolerance(part_boxes)
 
     ob = meshes[0]
     if len(meshes) > 1:
@@ -108,8 +50,13 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
         bpy.ops.object.join()
         ob = bpy.context.view_layer.objects.active
 
+    island_n = _weld_and_islands(ob)
+    conn = island_n == 1
+
     mins, maxs = _mesh_bounds([ob])
     top_cap = 0.42 if "monitor" in asset_id else 1.82 if "rack" in asset_id else 99.0
+
+    audit_glb._last_island_count = island_n  # type: ignore[attr-defined]
 
     results: dict[str, bool] = {
         "a_render_from_glb_only": True,
@@ -146,7 +93,7 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
 def format_audit_lines(results: dict[str, bool]) -> list[str]:
     labels = {
         "a_render_from_glb_only": "(a) previews sourced from exported GLB only",
-        "b_single_connected_component": "(b) one connected component (2mm gap tolerance)",
+        "b_single_connected_component": "(b) exactly one mesh island after 0.5mm weld",
         "c_nothing_below_floor": "(c) nothing below z=0",
         "c_nothing_above_frame_top": "(c) nothing above frame top",
         "d_screen_center_raycast": "(d) front ray hits screen material",
@@ -174,6 +121,7 @@ def write_audit_json(glb_path: Path, asset_id: str, results: dict[str, bool]) ->
         "assetId": asset_id,
         "glb": str(glb_path.relative_to(REPO)),
         "checks": results,
+        "weldedIslandCount": getattr(audit_glb, "_last_island_count", None),
         "lines": format_audit_lines(results),
     }
     out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

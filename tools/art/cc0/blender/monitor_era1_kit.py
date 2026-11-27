@@ -166,9 +166,6 @@ def build_monitor_era1() -> bpy.types.Object:
 
     y_scr = y_front - RECESS - SCREEN_BULGE * 0.55
     parts.append(_bulged_screen(y_scr, z_body))
-    tab_y = y_front - RECESS - 0.004
-    for tag, zoff in (("screen_tab_top", SCREEN_H / 2 - 0.006), ("screen_tab_bot", -SCREEN_H / 2 + 0.006)):
-        parts.append(_overlap_box(tag, (SCREEN_W - 0.02, 0.003, 0.006), (0, tab_y, z_body + zoff)))
 
     y_rear = MON_D / 2 - 0.05
     for i, zo in enumerate((0.09, 0.05, 0.01)):
@@ -178,12 +175,12 @@ def build_monitor_era1() -> bpy.types.Object:
     parts.append(_overlap_cylinder("base_foot", foot_r, 0.024, (0, 0, 0.012)))
     parts.append(_overlap_box("neck", (0.082, 0.082, 0.090), (0, 0, 0.067)))
 
-    y_bezel_face = y_front - BEZEL_T
-    bx = FACE_W * 0.36
-    bz = z_body - SCREEN_H / 2 + 0.032
-    parts.append(tower._raw_cylinder("power_btn", 0.009, BEZEL_T * 0.9, (bx, y_front - BEZEL_T / 2, bz)))
-    led = _overlap_box("led_pwr", (0.012, BEZEL_T * 0.85, 0.012), (bx - 0.032, y_front - BEZEL_T / 2, bz))
-    parts.append(led)
+    y_bezel = y_front - BEZEL_T / 2
+    opening_bottom = z_body - SCREEN_H / 2
+    bz = opening_bottom - 0.02
+    bx_pwr = FACE_W / 2 - 0.03
+    parts.append(_overlap_box("power_btn", (0.012, BEZEL_T * 0.75, 0.012), (bx_pwr, y_bezel, bz)))
+    parts.append(_overlap_box("led_pwr", (0.010, BEZEL_T * 0.75, 0.010), (bx_pwr - 0.022, y_bezel, bz)))
 
     sc.assert_monitor_parts(parts, root_name="body_tapered")
     _parent_apply(parts, "body_tapered")
