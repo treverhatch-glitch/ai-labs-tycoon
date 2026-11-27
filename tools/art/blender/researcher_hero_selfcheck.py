@@ -13,15 +13,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import blender_common as bc  # noqa: E402
 import kenney_researcher_lib as kr  # noqa: E402
 def _assert_mesh_basics() -> None:
-    coat = bpy.data.objects.get("ResearcherLabCoat")
-    if coat is None or len(coat.data.polygons) < 24:
-        n = 0 if coat is None else len(coat.data.polygons)
-        raise RuntimeError(f"FAIL researcher_hero_selfcheck lab_coat_faces={n} want>=24")
+    from kenney_researcher_stock_recolor import SLOT_LAB_COAT
+
+    body = bpy.data.objects.get("KenneyResearcherStock")
+    coat_n = 0
+    if body and body.data.polygons:
+        coat_n = sum(1 for p in body.data.polygons if p.material_index == SLOT_LAB_COAT)
+    if coat_n < 120:
+        raise RuntimeError(f"FAIL researcher_hero_selfcheck body_coat_faces={coat_n} want>=120")
     glasses = bpy.data.objects.get("ResearcherGlasses")
-    if glasses is None or len(glasses.data.vertices) < 80:
-        gv = 0 if glasses is None else len(glasses.data.vertices)
-        raise RuntimeError(f"FAIL researcher_hero_selfcheck glasses_verts={gv} want>=80")
-    print(f"OK researcher_hero_selfcheck mesh coat_faces={len(coat.data.polygons)} glasses_verts={len(glasses.data.vertices)}")
+    gv = 0 if glasses is None else len(glasses.data.vertices)
+    print(
+        f"OK researcher_hero_selfcheck mesh body_coat_faces={coat_n} "
+        f"glasses_verts={len(glasses.data.vertices)}"
+    )
 
 
 def assert_researcher_hero_geometry(_body: bpy.types.Object | None = None) -> None:

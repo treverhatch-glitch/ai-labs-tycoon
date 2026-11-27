@@ -928,7 +928,80 @@ def _copy_body_vertex_groups(
             vg_dst[name].add([ci], g.weight, "REPLACE")
 
 
-def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
+_VG_BODY_COAT_INFLATE = frozenset(
+    {
+        "Hips",
+        "Spine",
+        "Chest",
+        "UpperChest",
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+        "LeftUpLeg",
+        "RightUpLeg",
+    }
+)
+
+
+def remove_legacy_lab_coat_objects() -> None:
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def _world_centroid_face(face: bmesh.types.BMFace, ob: bpy.types.Object) -> Vector:
+    wc = Vector()
+    for v in face.verts:
+        wc += ob.matrix_world @ v.co
+    return wc / len(face.verts)
+
+
+def apply_researcher_body_lab_coat_displace(body: bpy.types.Object) -> None:
+    """Single skinned mesh: puff coat-slot verts along normals, same armature."""
+    from kenney_researcher_stock_recolor import SLOT_LAB_COAT
+
+    coat_vert: set[int] = set()
+    for poly in body.data.polygons:
+        if poly.material_index != SLOT_LAB_COAT:
+            continue
+        for vi in poly.vertices:
+            coat_vert.add(vi)
+
+    if len(coat_vert) < 48:
+        raise RuntimeError(f"FAIL staff-researcher-idle body_coat_verts={len(coat_vert)} too_few")
+
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.faces.ensure_lookup_table()
+    bm.verts.ensure_lookup_table()
+
+    push = max(body.dimensions.length * 0.015, 0.010)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    for vi in coat_vert:
+        v = bm.verts[vi]
+        if v.normal.length > 1e-6:
+            arm = _vg_weight(body, vi, _VG_SLEEVE)
+            scale = 0.42 if arm > 0.32 else 0.88
+            v.co += v.normal * push * scale
+
+    bm.to_mesh(body.data)
+    body.data.update()
+    bm.free()
+    body["researcher_lab_coat_on_body"] = True
+    bc.smooth_shade(body)
+
+
+def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object | None:
+    """Deprecated separate shell — coat is on the body mesh."""
+    remove_legacy_lab_coat_objects()
+    apply_researcher_body_lab_coat_displace(body)
+    return None
+
+
+def _spawn_researcher_lab_coat_legacy_shell(body: bpy.types.Object) -> bpy.types.Object:
     """Lab coat = duplicated torso + arm body faces, solidify, copied armature weights."""
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":

@@ -745,7 +745,11 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         apply_researcher_materials,
         spawn_researcher_eye_meshes,
     )
-    from researcher_hero_geometry import spawn_researcher_hair_cap, spawn_researcher_lab_coat
+    from researcher_hero_geometry import (
+        apply_researcher_body_lab_coat_displace,
+        remove_legacy_lab_coat_objects,
+        spawn_researcher_hair_cap,
+    )
 
     kf._clear_scene()
     arm, mesh = kf._import_rigged()
@@ -756,12 +760,12 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     bpy.context.view_layer.update()
     apply_researcher_materials(mesh)
     mesh.name = "KenneyResearcherStock"
+    remove_legacy_lab_coat_objects()
+    apply_researcher_body_lab_coat_displace(mesh)
     eyes = spawn_researcher_eye_meshes(mesh)
-    coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
-    _bind_coat_researcher_armature(coat, mesh, arm)
     _weight_mesh_to_head(hair, arm)
-    extras = [coat, hair]
+    extras = [hair]
     keep = {
         arm.name.split(".")[0],
         mesh.name.split(".")[0],
@@ -805,15 +809,24 @@ def configure_preview_env(asset_id: str) -> None:
 
 def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
     for ob in meshes:
-        if ob.type != "MESH" or ob.name.split(".")[0] != "ResearcherLabCoat":
+        if ob.type != "MESH":
             continue
-        mat = ob.active_material
-        if not mat or not mat.use_nodes:
-            continue
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        if bsdf:
-            bsdf.inputs["Base Color"].default_value = (1.0, 0.99, 0.96, 1.0)
-            bsdf.inputs["Roughness"].default_value = 0.32
+        for slot in ob.material_slots:
+            mat = slot.material
+            if not mat or mat.name.split(".")[0] != "ResearcherLabCoat":
+                continue
+            if not mat.use_nodes:
+                continue
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            if bsdf:
+                bsdf.inputs["Base Color"].default_value = (1.0, 0.99, 0.96, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.28
+                em = bsdf.inputs.get("Emission") or bsdf.inputs.get("Emission Color")
+                if em is not None:
+                    em.default_value = (0.92, 0.91, 0.88, 1.0)
+                stren = bsdf.inputs.get("Emission Strength")
+                if stren is not None:
+                    stren.default_value = 0.30
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:

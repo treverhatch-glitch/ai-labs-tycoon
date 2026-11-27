@@ -30,7 +30,7 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
-RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
+RESEARCHER_TROUSERS = (0.15, 0.15, 0.17, 1.0)
 RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
@@ -55,6 +55,7 @@ SLOT_EYE = 8
 SLOT_BROW = 9
 SLOT_MOUTH = 10
 SLOT_LAPEL = 11
+SLOT_LAB_COAT = 12
 
 _VG_SHIRT_ARMS = frozenset(
     {
@@ -315,7 +316,7 @@ def collect_researcher_stock_meshes() -> list[bpy.types.Object]:
             o
             for o in meshes
             if o.name.split(".")[0]
-            in ("ResearcherGlasses", "ResearcherLabCoat", "ResearcherHairCap")
+            in ("ResearcherGlasses", "ResearcherHairCap")
         ),
         key=lambda o: o.name,
     )
@@ -350,7 +351,11 @@ def apply_researcher_materials(
         _ensure_material("ResearcherDecalBrow", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherDecalMouth", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherLapel", RESEARCHER_COLLAR, 0.52),
+        _ensure_material("ResearcherLabCoat", (0.98, 0.96, 0.92, 1.0), 0.38, specular=0.06),
     ]
+    coat_mat = ob.data.materials[-1]
+    if coat_mat:
+        coat_mat.use_backface_culling = False
     ob.data.materials.clear()
     for m in mats:
         ob.data.materials.append(m)
@@ -387,14 +392,16 @@ def apply_researcher_materials(
     _stamp_researcher_tie(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_forearm_shirt_under_coat(bm, slots, ob, lm)
+    _stamp_coat_knee_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_collar_cuff_bleed(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_chin_neck_bleed(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _fix_researcher_hands_skin_no_blue(bm, slots, ob, lm)
     _audit_researcher_slots_no_blue(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _force_researcher_arm_skin_slots(bm, slots, ob, lm, ws, hc, fwd)
+    _stamp_lab_coat_vgroups(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _grow_lab_coat_mesh_slots(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _finalize_researcher_body_coat(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -553,7 +560,161 @@ def _stamp_researcher_chest_v_shirt(
             continue
         t = (h - v_lo) / max(1e-4, v_hi - v_lo)
         if lat < thw * (0.36 - t * 0.16):
-            slots[face.index] = SLOT_SHIRT
+            slots[face.index] = SLOT_LAB_COAT
+
+
+_VG_BODY_COAT = frozenset(
+    {
+        "Hips",
+        "Spine",
+        "Chest",
+        "UpperChest",
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+        "LeftUpLeg",
+        "RightUpLeg",
+    }
+)
+
+
+def _vg_mean_on_face(ob: bpy.types.Object, face: bmesh.types.BMFace, names: frozenset[str]) -> float:
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    total = 0.0
+    for v in face.verts:
+        for g in ob.data.vertices[v.index].groups:
+            if vg_names.get(g.group, "") in names:
+                total += g.weight
+    return total / max(1, len(face.verts))
+
+
+def _stamp_lab_coat_vgroups(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Single-mesh lab coat: white slot wherever rig weight > 0.5 on coat bones."""
+    lo, span = lm.zmin, lm.span
+    coat_hi = lm.h_waist + 0.58
+    for face in bm.faces:
+        if _vg_mean_on_face(ob, face, _VG_BODY_COAT) < 0.28:
+            continue
+        if _vg_mean_on_face(ob, face, _VG_HANDS) > 0.22:
+            continue
+        if _vg_mean_on_face(ob, face, frozenset({"Head", "Neck"})) > 0.18:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.08 or h > coat_hi:
+            continue
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if y_face > 0.06 and lat < thw * 0.28 and lm.h_neck <= h <= lm.h_waist - 0.05:
+            continue
+        slots[face.index] = SLOT_LAB_COAT
+
+
+def _finalize_researcher_body_coat(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    coat_hi = lm.h_waist + 0.58
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] in (SLOT_HAIR, SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_SOLE, SLOT_SHOE):
+            continue
+        if _vg_mean_on_face(ob, face, frozenset({"Head", "Neck"})) > 0.12:
+            continue
+        if _vg_mean_on_face(ob, face, _VG_HANDS) > 0.18:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.08 or h > coat_hi:
+            continue
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        on_arm = lat > thw * 0.52 and lm.h_neck - 0.18 <= h <= lm.h_waist + 0.06
+        on_torso = lat <= thw * 1.12 and lm.h_neck - 0.08 <= h <= lm.h_waist + 0.55
+        if not (on_arm or on_torso):
+            continue
+        if y_face > 0.05 and lat < thw * 0.14 and lm.h_neck <= h <= lm.h_waist - 0.03:
+            slots[fi] = SLOT_SHIRT
+            continue
+        slots[fi] = SLOT_LAB_COAT
+
+
+def _grow_lab_coat_mesh_slots(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    coat_hi = lm.h_waist + 0.58
+    block = frozenset(
+        {
+            SLOT_HAIR,
+            SLOT_EYE,
+            SLOT_BROW,
+            SLOT_MOUTH,
+            SLOT_HAND,
+            SLOT_SOLE,
+            SLOT_SHOE,
+        }
+    )
+    for _ in range(6):
+        grown = False
+        for face in bm.faces:
+            fi = face.index
+            if slots[fi] == SLOT_LAB_COAT or slots[fi] in block:
+                continue
+            if _vg_mean_on_face(ob, face, _VG_BODY_COAT) < 0.18:
+                continue
+            if not any(slots[nb.index] == SLOT_LAB_COAT for e in face.edges for nb in e.link_faces):
+                continue
+            wc = Vector()
+            for v in face.verts:
+                wc += ob.matrix_world @ v.co
+            wc /= len(face.verts)
+            h = (wc.z - lo) / span
+            if h < lm.h_neck - 0.10 or h > coat_hi:
+                continue
+            y_face = y_face_fn(wc)
+            lat = lateral_from_front(wc, hc, fwd)
+            thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+            if y_face > 0.06 and lat < thw * 0.28 and lm.h_neck <= h <= lm.h_waist - 0.05:
+                continue
+            slots[fi] = SLOT_LAB_COAT
+            grown = True
+        if not grown:
+            break
 
 
 def _stamp_forearm_shirt_under_coat(
@@ -562,7 +723,7 @@ def _stamp_forearm_shirt_under_coat(
     ob: bpy.types.Object,
     lm: FounderLandmarks,
 ) -> None:
-    """Procedural coat sleeves: forearms/hands are skin, not shirt blue."""
+    """Sleeves: white lab coat except wrists (skin hands)."""
     if not ob.vertex_groups:
         return
     lo, span = lm.zmin, lm.span
@@ -586,9 +747,9 @@ def _stamp_forearm_shirt_under_coat(
                     hand += g.weight
         arm /= max(1, len(face.verts))
         hand /= max(1, len(face.verts))
-        if arm < 0.10:
+        if arm < 0.35:
             continue
-        slots[face.index] = SLOT_HAND if hand > 0.12 else SLOT_SKIN
+        slots[face.index] = SLOT_HAND if hand > 0.12 else SLOT_LAB_COAT
 
 
 def _stamp_researcher_tie(
@@ -646,7 +807,7 @@ def _stamp_coat_knee_front(
         if slots[face.index] != SLOT_JEANS:
             continue
         if y_face > -0.02 and lat < thw * 1.05:
-            slots[face.index] = SLOT_SHIRT
+            slots[face.index] = SLOT_LAB_COAT
 
 
 def _stamp_lab_coat_lapels(
@@ -676,7 +837,7 @@ def _stamp_lab_coat_lapels(
             continue
         lapel = thw * 0.20 <= lat <= thw * 0.38
         if lapel:
-            slots[face.index] = SLOT_LAPEL
+            slots[face.index] = SLOT_LAB_COAT
 
 
 def _grow_researcher_hair_cap(
@@ -759,7 +920,7 @@ def _stamp_lab_coat_open_front(
             continue
         if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
             continue
-        slots[face.index] = SLOT_SHIRT
+        slots[face.index] = SLOT_LAB_COAT
 
 
 def _apply_researcher_hand_skin_only(
@@ -928,6 +1089,8 @@ def _force_researcher_arm_skin_slots(
 
     for face in bm.faces:
         idx = face.index
+        if slots[idx] == SLOT_LAB_COAT:
+            continue
         if slots[idx] not in (SLOT_SHIRT, SLOT_JEANS):
             continue
         wc = Vector()
@@ -1389,12 +1552,14 @@ def load_stock_and_recolor() -> bpy.types.Object:
     ob.name = STOCK_OBJECT_NAME
     apply_researcher_materials(ob)
     from researcher_hero_geometry import (  # noqa: WPS433
+        apply_researcher_body_lab_coat_displace,
+        remove_legacy_lab_coat_objects,
         spawn_researcher_hair_cap,
-        spawn_researcher_lab_coat,
     )
 
     if os.environ.get("RESEARCHER_SKIP_LAB_COAT", "").strip() != "1":
-        spawn_researcher_lab_coat(ob)
+        remove_legacy_lab_coat_objects()
+        apply_researcher_body_lab_coat_displace(ob)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
     return ob

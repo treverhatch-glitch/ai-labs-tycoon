@@ -62,10 +62,6 @@ def main() -> int:
         f"anim=Kenney/Run license={KENNEY_RUN_LICENSE} "
         f"frames={scene_data.walk_frames} labels={scene_data.labels}"
     )
-    if asset_id == "staff-founder-idle":
-        founder_eye_preview_tweak(scene_data.render_meshes)
-    else:
-        researcher_lab_coat_preview_tweak(scene_data.render_meshes)
     _pose_walk_frame(
         scene,
         scene_data.arm,
@@ -74,6 +70,10 @@ def main() -> int:
         scene_data.bind_arm_quats,
     )
     apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
+    if asset_id == "staff-founder-idle":
+        founder_eye_preview_tweak(scene_data.render_meshes)
+    else:
+        researcher_lab_coat_preview_tweak(scene_data.render_meshes)
     mat_ref = material_fingerprint(scene_data.body)
     tiles: list[Image.Image] = []
     tmp_dir = Path(bpy.app.tempdir)
@@ -86,6 +86,10 @@ def main() -> int:
             scene_data.bind_arm_quats,
         )
         apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
+        if asset_id == "staff-researcher-idle":
+            researcher_lab_coat_preview_tweak(scene_data.render_meshes)
+        elif asset_id == "staff-founder-idle":
+            founder_eye_preview_tweak(scene_data.render_meshes)
         _pose_walk_frame(
             scene,
             scene_data.arm,

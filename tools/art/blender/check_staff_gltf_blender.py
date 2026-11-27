@@ -98,6 +98,8 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
             glasses = [n for n in by if n.startswith("ResearcherGlasses")]
             lab = [n for n in by if n.startswith("ResearcherLabCoat")]
             hair = [n for n in by if n.startswith("ResearcherHairCap")]
+            if len(meshes) == 4 and len(eyes) == 2 and hair and not lab and not glasses:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=4 eyes=2 body_coat+hair"
             if len(meshes) == 5 and len(eyes) == 2 and lab and hair and not glasses:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=5 eyes=2 coat+hair"
             if len(meshes) == 6 and len(eyes) == 2 and glasses and lab and hair:

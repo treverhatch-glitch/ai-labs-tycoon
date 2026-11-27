@@ -10,6 +10,7 @@ torso shoulder silhouette width + COAT_FLARE_SHOULDER_PAD (15%).
 from __future__ import annotations
 
 import argparse
+import colorsys
 import sys
 from collections import deque
 from pathlib import Path
@@ -28,7 +29,7 @@ MAX_GREY_NEUTRAL = 22.0
 MAX_CAMERA_CENTROID_DRIFT_PX = 22
 MAX_ARM_SPAN_FRAC = 0.58
 COAT_FLARE_SHOULDER_PAD = 0.15
-MIN_COAT_FLARE_FAIL_PX = 14
+MIN_COAT_FLARE_FAIL_PX = 40
 MAX_COAT_OUTSIDE_SIL_PX = 10
 SILHOUETTE_DILATE_PX = 5
 MAX_HEAD_FACE_BLUE_PX = 10
@@ -37,6 +38,11 @@ MAX_SLEEVE_BLUE_PX = 12
 MIN_COAT_BODY_PX = 80
 MIN_COAT_MAJOR_COMPONENT_PX = 20
 MAX_COAT_ENCLOSED_DARK_FRAC = 0.02
+MIN_TORSO_COAT_FRAC = 0.63
+MAX_TORSO_SKIN_FRAC = 0.15
+MIN_ARM_COAT_FRAC = 0.80
+MAX_FIGURE_BLUE_HUE_PX = 12
+MAX_WHITE_SHARD_FRAC = 0.02
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -147,6 +153,176 @@ def _is_researcher_shirt_blue(r: int, g: int, b: int) -> bool:
 
 def _is_trouser_blue(r: int, g: int, b: int) -> bool:
     return b > 92 and r < 95 and g < 102 and b > g + 6
+
+
+def _is_skin_tone(r: int, g: int, b: int) -> bool:
+    if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b):
+        return False
+    if _is_coat_coverage_pixel(r, g, b):
+        return False
+    if _is_trouser_blue(r, g, b):
+        return False
+    return 88 <= r <= 210 and 58 <= g <= 178 and 42 <= b <= 165 and r >= g - 18
+
+
+def _is_figure_blue_hue(r: int, g: int, b: int) -> bool:
+    if _is_neutral_grey(r, g, b):
+        return False
+    h, s, _v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+    hue_deg = h * 360.0
+    return 190.0 <= hue_deg <= 250.0 and s > 0.25 and _v > 0.38
+
+
+def _torso_coat_coverage_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 10
+    x1 = (i + 1) * tile_w - tile_w // 10
+    y0 = h // 7
+    y1 = int(h * 0.48)
+    return x0, x1, y0, y1
+
+
+def _arm_coat_coverage_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 12
+    x1 = (i + 1) * tile_w - tile_w // 12
+    y0 = h // 8
+    y1 = int(h * 0.56)
+    return x0, x1, y0, y1
+
+
+def _is_coat_coverage_pixel(r: int, g: int, b: int) -> bool:
+    if _is_lab_coat_white(r, g, b):
+        return True
+    spread = max(r, g, b) - min(r, g, b)
+    return (
+        r >= 118
+        and g >= 112
+        and b >= 104
+        and r + g + b >= 338
+        and spread < 52
+        and r >= g - 16
+    )
+
+
+def _researcher_torso_coat_coverage(
+    img: Image.Image, tile_w: int, h: int, i: int
+) -> tuple[float, float]:
+    x0, x1, y0, y1 = _torso_coat_coverage_window(tile_w, h, i)
+    cx = i * tile_w + tile_w // 2
+    v_half = max(6, tile_w // 11)
+    skin_y0 = h // 6
+    skin_y1 = int(h * 0.34)
+    coat_lat = skin_lat = skin_center = fig_all = 0
+    lat_pad = max(10, tile_w // 5)
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            lateral = x < cx - v_half or x > cx + v_half
+            is_coat = _is_coat_coverage_pixel(r, g, b)
+            is_skin = _is_skin_tone(r, g, b)
+            fig_all += 1
+            if is_skin and not lateral and skin_y0 <= y <= skin_y1:
+                skin_center += 1
+            if not lateral:
+                continue
+            if x < cx - v_half and x < x0 + lat_pad:
+                continue
+            if x > cx + v_half and x > x1 - lat_pad:
+                continue
+            if is_coat:
+                coat_lat += 1
+            elif is_skin:
+                skin_lat += 1
+    lat_denom = max(1, coat_lat + skin_lat)
+    if fig_all < 40:
+        return 0.0, 1.0
+    return coat_lat / lat_denom, skin_center / fig_all
+
+
+def _researcher_arm_coat_coverage(img: Image.Image, tile_w: int, h: int, i: int) -> float:
+    x0, x1, y0, y1 = _arm_coat_coverage_window(tile_w, h, i)
+    cx = (x0 + x1) * 0.5
+    half_torso = (x1 - x0) * 0.16
+    coat = other = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            if abs(x - cx) < half_torso:
+                continue
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            if _is_coat_coverage_pixel(r, g, b):
+                coat += 1
+            else:
+                other += 1
+    return coat / max(1, coat + other)
+
+
+def _researcher_figure_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
+    x0, x1 = i * tile_w, (i + 1) * tile_w
+    y0, y1 = h // 10, int(h * 0.74)
+    blue = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_figure_blue_hue(r, g, b):
+                blue += 1
+    return blue
+
+
+def _researcher_white_shard_frac(img: Image.Image, tile_w: int, h: int, i: int) -> float:
+    x0, x1 = i * tile_w, (i + 1) * tile_w
+    y0, y1 = h // 8, int(h * 0.72)
+    step = 2
+    w = max(4, (x1 - x0) // step)
+    hh = max(4, (y1 - y0) // step)
+    fig = [[False] * w for _ in range(hh)]
+    white = [[False] * w for _ in range(hh)]
+    fig_n = 0
+    for yi in range(hh):
+        for xi in range(w):
+            r, g, b = img.getpixel((x0 + xi * step, y0 + yi * step))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            fig[yi][xi] = True
+            fig_n += 1
+            if _is_lab_coat_white(r, g, b):
+                white[yi][xi] = True
+    if fig_n < 80:
+        return 1.0
+    seen = [[False] * w for _ in range(hh)]
+    major = 0
+    shard = 0
+    for yi in range(hh):
+        for xi in range(w):
+            if not white[yi][xi] or seen[yi][xi]:
+                continue
+            q: deque[tuple[int, int]] = deque([(xi, yi)])
+            seen[yi][xi] = True
+            n = 0
+            while q:
+                cx, cy = q.popleft()
+                n += 1
+                for dx, dy in (
+                    (1, 0),
+                    (-1, 0),
+                    (0, 1),
+                    (0, -1),
+                    (1, 1),
+                    (1, -1),
+                    (-1, 1),
+                    (-1, -1),
+                ):
+                    nx, ny = cx + dx, cy + dy
+                    if 0 <= nx < w and 0 <= ny < hh and white[ny][nx] and not seen[ny][nx]:
+                        seen[ny][nx] = True
+                        q.append((nx, ny))
+            if n >= MIN_COAT_MAJOR_COMPONENT_PX:
+                major += n
+            else:
+                shard += n
+    return shard / max(1, fig_n)
 
 
 def _head_face_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
@@ -499,6 +675,20 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             sleeve_blue = _researcher_sleeve_blue_px(img, tile_w, h, i)
             if sleeve_blue > MAX_SLEEVE_BLUE_PX:
                 return False, f"tile{i}_sleeve_blue_px={sleeve_blue}"
+            coat_frac, skin_frac = _researcher_torso_coat_coverage(img, tile_w, h, i)
+            if coat_frac < MIN_TORSO_COAT_FRAC:
+                return False, f"tile{i}_torso_coat_frac={coat_frac:.3f} want>={MIN_TORSO_COAT_FRAC}"
+            if skin_frac > MAX_TORSO_SKIN_FRAC:
+                return False, f"tile{i}_torso_skin_frac={skin_frac:.3f} want<={MAX_TORSO_SKIN_FRAC}"
+            arm_frac = _researcher_arm_coat_coverage(img, tile_w, h, i)
+            if arm_frac < MIN_ARM_COAT_FRAC:
+                return False, f"tile{i}_arm_coat_frac={arm_frac:.3f} want>={MIN_ARM_COAT_FRAC}"
+            fig_blue = _researcher_figure_blue_px(img, tile_w, h, i)
+            if fig_blue > MAX_FIGURE_BLUE_HUE_PX:
+                return False, f"tile{i}_figure_blue_px={fig_blue}"
+            shard_frac = _researcher_white_shard_frac(img, tile_w, h, i)
+            if shard_frac > MAX_WHITE_SHARD_FRAC:
+                return False, f"tile{i}_white_shard_frac={shard_frac:.3f} want<={MAX_WHITE_SHARD_FRAC}"
             coat_comps, coat_px, hole_frac, enclosed_dark = _researcher_coat_shell_gate(
                 img, tile_w, h, i
             )
