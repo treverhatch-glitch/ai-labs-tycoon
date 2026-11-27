@@ -25,6 +25,7 @@ def main() -> int:
         img,
         mask,
         allow_projection_fallback=True,
+        yaw_deg=30.0,
     )
     if ok:
         print(f"OK staff-researcher-idle eye_blobs {msg}")

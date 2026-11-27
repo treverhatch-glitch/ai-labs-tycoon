@@ -192,6 +192,27 @@ def _merge_eye_blob_fragments(
     return merged_blobs
 
 
+def _pick_eye_blob_pair(
+    blobs: list[set[tuple[int, int]]],
+    *,
+    span: int,
+    asset_id: str,
+    yaw_deg: float,
+) -> list[set[tuple[int, int]]] | None:
+    """Pick left/right eye blobs; front view uses horizontal spread, not pixel count."""
+    if len(blobs) < 2:
+        return None
+    working = list(blobs)
+    if abs(yaw_deg) < 12:
+        sizable = [b for b in working if len(b) >= MIN_BLOB_PX]
+        if len(sizable) < 2:
+            return None
+        by_x = sorted(sizable, key=lambda b: _blob_centroid(b)[0])
+        return [by_x[0], by_x[-1]]
+    best = sorted(working, key=len, reverse=True)[:2]
+    return best if len(best) >= 2 else None
+
+
 def _split_merged_eye_blob(cells: set[tuple[int, int]], span: int) -> list[set[tuple[int, int]]]:
     xs = sorted({x for x, _ in cells})
     if len(xs) < 4 or max(xs) - min(xs) < span * 0.05:
@@ -238,11 +259,14 @@ def check_eyes_in_head_mask(
         ):
             return True, "eye_blobs_plus_projection", blobs, (hx0, hy0, hx1, hy1)
         return False, f"face_blobs={len(blobs)}", blobs, (hx0, hy0, hx1, hy1)
-    if asset_id == "staff-researcher-idle" and blobs:
-        blobs = [b for b in blobs if len(b) <= 220]
-    best = sorted(blobs, key=len, reverse=True)[:2]
-    if len(best) < 2:
-        return False, f"face_blobs={len(blobs)}", blobs, (hx0, hy0, hx1, hy1)
+    pick_from = blobs
+    if asset_id == "staff-researcher-idle" and abs(yaw_deg) >= 12:
+        pick_from = [b for b in blobs if len(b) <= 220]
+        if len(pick_from) < 2:
+            return False, f"face_blobs={len(pick_from)}", pick_from, (hx0, hy0, hx1, hy1)
+    best = _pick_eye_blob_pair(pick_from, span=span, asset_id=asset_id, yaw_deg=yaw_deg)
+    if not best:
+        return False, f"face_blobs={len(pick_from)}", pick_from, (hx0, hy0, hx1, hy1)
     for cells in best:
         cy = sum(y for _, y in cells) / len(cells)
         if abs(yaw_deg) < 12:

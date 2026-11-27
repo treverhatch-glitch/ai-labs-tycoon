@@ -23,6 +23,7 @@ V2_FAIL_SHA = "1b8578f0"
 V3_FAIL_SHA = "0d4fe3ae"
 V3_DEBUG_REL = "docs/art/previews/staff-researcher-eye-gate-debug.png"
 GLB_NEG_REL = "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
+IDLE_YAW_DEG = 30.0
 
 sys.path.insert(0, str(REPO / "tools" / "art"))
 from staff_preview_eye_head_gate import (  # noqa: E402
@@ -87,7 +88,7 @@ def _v3_strict_must_fail() -> bool:
         print(f"FAIL staff-researcher-idle eyes_in_head v3_selftest missing_png sha={V3_FAIL_SHA}")
         return False
     ok, msg, blobs, _ = check_eyes_in_head_mask(
-        img, mask.convert("L"), allow_projection_fallback=False
+        img, mask.convert("L"), allow_projection_fallback=False, yaw_deg=IDLE_YAW_DEG
     )
     if ok or len(blobs) >= 2:
         print(
@@ -125,7 +126,7 @@ def _v2_strict_must_fail() -> bool:
         print(f"FAIL staff-researcher-idle eyes_in_head v2_selftest missing_png sha={V2_FAIL_SHA}")
         return False
     ok, msg, blobs, _ = check_eyes_in_head_mask(
-        img, mask.convert("L"), allow_projection_fallback=False
+        img, mask.convert("L"), allow_projection_fallback=False, yaw_deg=IDLE_YAW_DEG
     )
     if ok or len(blobs) >= 2:
         print(
@@ -153,7 +154,9 @@ def _negative_self_tests() -> bool:
         if img is None or mask is None:
             print(f"FAIL staff-researcher-idle eyes_in_head negative missing_png {tag}")
             return False
-        ok, _msg, _, _ = check_eyes_in_head_mask(img, mask.convert("L"), allow_projection_fallback=False)
+        ok, _msg, _, _ = check_eyes_in_head_mask(
+            img, mask.convert("L"), allow_projection_fallback=False, yaw_deg=IDLE_YAW_DEG
+        )
         if ok:
             print(
                 f"FAIL staff-researcher-idle eyes_in_head negative {tag} "
@@ -192,7 +195,7 @@ def main() -> int:
     if not _v3_strict_must_fail():
         rc = 1
     ok, msg, blobs, head_rect = check_eyes_in_head_mask(
-        idle_img, idle_mask, allow_projection_fallback=False
+        idle_img, idle_mask, allow_projection_fallback=False, yaw_deg=IDLE_YAW_DEG
     )
     used_glb_preview_fallback = False
     if (not ok or len(blobs) < 2 or any(len(b) < 8 for b in blobs[:2])) and _glb_current_passes():
@@ -236,7 +239,9 @@ def main() -> int:
             researcher_crop = vs.crop((x0, 0, vs.width, vs.height))
             if researcher_crop.size != idle_img.size:
                 researcher_crop = researcher_crop.resize(idle_img.size, Image.Resampling.LANCZOS)
-            ok2, msg2, b2, _ = check_eyes_in_head_mask(researcher_crop, idle_mask)
+            ok2, msg2, b2, _ = check_eyes_in_head_mask(
+                researcher_crop, idle_mask, yaw_deg=IDLE_YAW_DEG
+            )
             if not ok2 and _glb_current_passes() and len(b2) >= 1:
                 proc = subprocess.run(
                     [sys.executable, str(REPO / "tools/art/check_cc0_staff_researcher_preview_eyes.py")],
