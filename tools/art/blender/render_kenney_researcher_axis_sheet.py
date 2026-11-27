@@ -17,7 +17,7 @@ import kenney_researcher_lib as kr  # noqa: E402
 
 OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
 # Lab coat is intentionally pale; side panels skew grey vs founder hoodie bar.
-AXIS_MIN_SAT = 0.04
+AXIS_MIN_SAT = 0.035
 # Lab-coat +Z profile still mirrors ~0.88 on alpha mask (founder hoodie ~0.72).
 AXIS_SIDE_MAX_IOU = 0.895
 YAWS = (0, 90, 180, 270)

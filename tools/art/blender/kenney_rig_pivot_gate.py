@@ -54,3 +54,34 @@ def verify_joint_pivots(arm) -> tuple[bool, str]:
         f"pivot_joints_ok worst={worst:.4f}m default_tol={PIVOT_TOL_M:.4f}m"
         f" overrides={len(PIVOT_TOL_OVERRIDES)}"
     )
+
+
+def pivot_gap_table(arm) -> list[dict[str, str | float]]:
+    """Bone head vs parent tail gaps for PR / audit (metres)."""
+    rows: list[dict[str, str | float]] = []
+    focus = (
+        ("shoulder", "Chest", "LeftShoulder"),
+        ("shoulder", "Chest", "RightShoulder"),
+        ("elbow", "LeftArm", "LeftForeArm"),
+        ("elbow", "RightArm", "RightForeArm"),
+        ("hip", "Hips", "LeftUpLeg"),
+        ("hip", "Hips", "RightUpLeg"),
+        ("knee", "LeftUpLeg", "LeftLeg"),
+        ("knee", "RightUpLeg", "RightLeg"),
+    )
+    for label, parent, child in focus:
+        gap = _joint_gap(arm, parent, child)
+        if gap is None:
+            rows.append({"joint": label, "parent": parent, "child": child, "gap_m": -1.0})
+            continue
+        tol = PIVOT_TOL_OVERRIDES.get((parent, child), PIVOT_TOL_M)
+        rows.append(
+            {
+                "joint": label,
+                "parent": parent,
+                "child": child,
+                "gap_m": round(gap, 5),
+                "tol_m": tol,
+            }
+        )
+    return rows

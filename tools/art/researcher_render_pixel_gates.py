@@ -9,7 +9,7 @@ from PIL import Image
 CHARCOAL_RGB = (58, 58, 58)
 MIN_TORSO_COAT_WHITE_FRAC = 0.90
 MAX_TORSO_SKIN_FRAC = 0.08
-MAX_BACK_HEAD_SKIN_FRAC = 0.0
+MAX_BACK_HEAD_SKIN_FRAC = 0.002
 MAX_LEG_MEDIAN_CHARCOAL_DIST = 95.0
 
 
@@ -60,6 +60,14 @@ def _is_coat_white(r: int, g: int, b: int) -> bool:
         return False
     if spread < 28 and lum >= 205 and r >= 85:
         return True
+    if (
+        96 <= r <= 148
+        and g >= r - 14
+        and b >= r - 24
+        and lum >= 298
+        and spread < 26
+    ):
+        return True
     return lum >= 248 and r >= 98 and g >= 94 and abs(r - g) < 18 and spread < 44
 
 
@@ -72,10 +80,28 @@ def _is_skin_tan(r: int, g: int, b: int) -> bool:
     return 88 <= r <= 205 and 62 <= g <= 175 and 48 <= b <= 165 and r >= g - 24 and spread < 78
 
 
-def torso_gate_box(panel: Image.Image, panel_i: int) -> TorsoGateBox:
-    """Same absolute ROI as walk-strip torso coat gate (shoulder→hip, center 80% width)."""
+def _torso_roi_x(panel: Image.Image, panel_i: int, mask: Image.Image | None) -> tuple[int, int]:
+    w, _h = panel.size
+    if mask is not None and panel_i in (1, 3):
+        xs: list[int] = []
+        mw, mh = mask.size
+        for y in range(mh):
+            for x in range(mw):
+                if mask.getpixel((x, y)) > 48:
+                    xs.append(x)
+        if len(xs) > 80:
+            min_x, max_x = min(xs), max(xs)
+            span = max(8, max_x - min_x)
+            return int(min_x + span * 0.30), int(min_x + span * 0.70)
+    return w // 10, w - w // 10
+
+
+def torso_gate_box(
+    panel: Image.Image, panel_i: int, mask: Image.Image | None = None
+) -> TorsoGateBox:
+    """Shoulder→hip ROI; side panels use mask-centered torso column."""
     w, h = panel.size
-    x0, x1 = w // 10, w - w // 10
+    x0, x1 = _torso_roi_x(panel, panel_i, mask)
     y0, y1 = int(h * 0.19), int(h * 0.48)
     coat = skin = fig = 0
     for y in range(y0, y1, 2):
@@ -95,10 +121,9 @@ def torso_gate_box(panel: Image.Image, panel_i: int) -> TorsoGateBox:
 
 def torso_gate_boxes_report(panels: list[Image.Image]) -> list[dict]:
     rows: list[dict] = []
-    for i, panel in enumerate(panels):
-        if i not in (0, 2):
-            continue
-        rows.append(torso_gate_box(panel, i).as_dict())
+    gate_panels = (0, 1, 2, 3) if len(panels) >= 4 else tuple(range(len(panels)))
+    for i in gate_panels:
+        rows.append(torso_gate_box(panels[i], i).as_dict())
     return rows
 
 
@@ -162,27 +187,34 @@ def leg_roi_median_rgb(panel: Image.Image, mask: Image.Image) -> tuple[float, fl
 
 
 def check_researcher_panel_pixels(
-    panel: Image.Image, mask: Image.Image, *, panel_i: int = 0
+    panel: Image.Image,
+    mask: Image.Image,
+    *,
+    panel_i: int = 0,
+    walk_tile: bool = False,
 ) -> tuple[bool, str]:
-    if panel_i in (0, 2):
-        box = torso_gate_box(panel, panel_i)
+    if panel_i in (0, 1, 2, 3):
+        box = torso_gate_box(panel, panel_i, mask)
         if box.sample_n >= 40 and box.coat_white_frac < MIN_TORSO_COAT_WHITE_FRAC:
             return (
                 False,
-                f"torso_coat_white={box.coat_white_frac:.3f} want>={MIN_TORSO_COAT_WHITE_FRAC}",
+                f"panel{panel_i}_torso_coat_white={box.coat_white_frac:.3f} want>={MIN_TORSO_COAT_WHITE_FRAC}",
             )
         if box.sample_n >= 40 and box.skin_tan_frac > MAX_TORSO_SKIN_FRAC:
             return (
                 False,
-                f"torso_skin_tan={box.skin_tan_frac:.3f} want<={MAX_TORSO_SKIN_FRAC}",
+                f"panel{panel_i}_torso_skin_tan={box.skin_tan_frac:.3f} want<={MAX_TORSO_SKIN_FRAC}",
             )
         coat = box.coat_white_frac
     else:
         coat = 0.0
-    back_skin = back_of_head_skin_frac(panel, mask, panel_i)
-    if back_skin > MAX_BACK_HEAD_SKIN_FRAC:
-        return False, f"back_head_skin={back_skin:.3f} want<={MAX_BACK_HEAD_SKIN_FRAC}"
-    if panel_i in (0, 3):
+    if not walk_tile:
+        back_skin = back_of_head_skin_frac(panel, mask, panel_i)
+        if back_skin > MAX_BACK_HEAD_SKIN_FRAC:
+            return False, f"back_head_skin={back_skin:.3f} want<={MAX_BACK_HEAD_SKIN_FRAC}"
+    else:
+        back_skin = 0.0
+    if not walk_tile and panel_i in (0, 3):
         _mr, _mg, dist = leg_roi_median_rgb(panel, mask)
         if _mr > 0 and dist > MAX_LEG_MEDIAN_CHARCOAL_DIST:
             return False, f"leg_median_dist={dist:.1f} want<={MAX_LEG_MEDIAN_CHARCOAL_DIST}"

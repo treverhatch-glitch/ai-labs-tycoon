@@ -762,6 +762,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     bpy.context.view_layer.update()
     apply_researcher_founder_base_materials(mesh)
     mesh.name = "KenneyResearcherStock"
+    reinforce_founder_forearm_weights(mesh)
     skirt = spawn_researcher_coat_skirt(mesh, arm)
     eyes = spawn_researcher_eye_meshes(mesh)
     hair = spawn_researcher_hair_cap(mesh)

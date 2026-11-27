@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 
 import bpy
 import bmesh
@@ -11,6 +12,10 @@ import blender_common as bc
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
 from kenney_founder_stock_recolor import (
     ARM_VG_BONES,
+    SLOT_HAIR,
+    SLOT_HAND,
+    SLOT_SHIRT,
+    SLOT_SKIN,
     STOCK_BLEND,
     STOCK_META,
     STOCK_OBJECT_NAME as FOUNDER_STOCK_NAME,
@@ -37,8 +42,63 @@ SKIRT_OBJECT_NAME = "ResearcherCoatSkirt"
 
 # Match founder slot indices; slot 3 is lab coat (was shirt).
 SLOT_SHOE = 1
-RESEARCHER_LAB_COAT_RGBA = (0.98, 0.96, 0.93, 1.0)
+RESEARCHER_LAB_COAT_RGBA = (0.99, 0.97, 0.94, 1.0)
 RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
+
+
+def _finalize_researcher_coat_slots(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Full white torso + long sleeves; open lapel (no chin tube); hands stay skin."""
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.14
+    coat_top = lm.h_neck - 0.10
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+
+        if coat_top <= h <= lm.h_waist + 0.06 and lat <= thw * 1.28:
+            throat = (
+                y_face > 0.10
+                and lat < thw * 0.20
+                and lm.h_neck - 0.03 <= h <= lm.h_neck + 0.06
+            )
+            if not throat:
+                slots[face.index] = SLOT_SHIRT
+
+        if lat > thw * 0.82 and coat_top <= h <= wrist_h:
+            if h >= wrist_h - 0.025 and slots[face.index] == SLOT_HAND:
+                continue
+            slots[face.index] = SLOT_SHIRT
+
+        if h > lm.h_neck + 0.06 and lat < thw * 0.95 and abs(y_face) < 0.12:
+            if slots[face.index] == SLOT_SHIRT:
+                slots[face.index] = SLOT_SKIN
+
+        lapel = (
+            coat_top <= h <= lm.h_neck + 0.05
+            and thw * 0.24 <= lat <= thw * 0.44
+            and y_face > 0.08
+        )
+        if lapel:
+            slots[face.index] = SLOT_SHIRT
+
+        if h > lm.h_neck - 0.02 and lat < thw * 0.62 and y_face > -0.02:
+            if slots[face.index] == SLOT_SHIRT:
+                slots[face.index] = SLOT_HAIR if h > lm.h_neck + 0.10 else SLOT_SKIN
 
 
 def _tune_coat_mat(ob: bpy.types.Object) -> None:
@@ -58,7 +118,7 @@ def _tune_coat_mat(ob: bpy.types.Object) -> None:
         if em is not None:
             em.default_value = (0.94, 0.93, 0.90, 1.0)
         if stren is not None:
-            stren.default_value = 0.38
+            stren.default_value = 0.42
 
 
 def apply_researcher_founder_base_materials(
@@ -118,6 +178,7 @@ def apply_researcher_founder_base_materials(
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_hand_skin_vertex_groups(bm, slots, ob)
+    _finalize_researcher_coat_slots(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -128,7 +189,7 @@ def apply_researcher_founder_base_materials(
 
 
 def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | None = None) -> bpy.types.Object:
-    """Hip→mid-thigh white shell; weighted to Hips + upper legs when armature present."""
+    """Waist→mid-thigh cylindrical coat skirt (front/sides/back); rigged for walk."""
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == SKIRT_OBJECT_NAME:
             bpy.data.objects.remove(ob, do_unlink=True)
@@ -137,16 +198,35 @@ def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | 
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
     fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
+    from founder_face_decals import _fwd_basis
+
+    _, right_ax = _fwd_basis(fwd)
     thw_waist = torso_half_width(ws, lo, span, lm.h_waist, lm.cx, lm.cy)
-    z0 = lo + span * (lm.h_waist - 0.06)
-    z1 = lo + span * (lm.h_waist + 0.42)
-    local_center = body.matrix_world.inverted() @ Vector((hc.x, hc.y, (z0 + z1) * 0.5))
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=local_center)
-    skirt = bpy.context.active_object
-    skirt.name = SKIRT_OBJECT_NAME
-    skirt.scale = (thw_waist * 2.05, thw_waist * 0.92, (z1 - z0) * 0.5)
-    skirt.rotation_euler[2] = 0.0
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    z0 = lo + span * (lm.h_waist - 0.05)
+    z1 = lo + span * (lm.h_waist + 0.40)
+    segs = 24
+    mesh = bpy.data.meshes.new(SKIRT_OBJECT_NAME)
+    bm = bmesh.new()
+    ring_top: list[bmesh.types.BMVert] = []
+    ring_bot: list[bmesh.types.BMVert] = []
+    inv = body.matrix_world.inverted()
+    for ring, z, rad_mul in ((ring_top, z1, 1.16), (ring_bot, z0, 1.04)):
+        for i in range(segs):
+            ang = 2.0 * math.pi * i / segs
+            lateral = right_ax * math.cos(ang) + fwd * math.sin(ang)
+            r = thw_waist * rad_mul * (1.02 + 0.10 * abs(math.cos(ang)))
+            wco = hc + lateral * r
+            wco.z = z
+            lco = inv @ wco
+            ring.append(bm.verts.new(lco))
+    bm.verts.ensure_lookup_table()
+    for i in range(segs):
+        j = (i + 1) % segs
+        bm.faces.new((ring_top[i], ring_top[j], ring_bot[j], ring_bot[i]))
+    bm.to_mesh(mesh)
+    bm.free()
+    skirt = bpy.data.objects.new(SKIRT_OBJECT_NAME, mesh)
+    bpy.context.scene.collection.objects.link(skirt)
     mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
     skirt.data.materials.append(mat)
     bc.smooth_shade(skirt)
@@ -155,17 +235,7 @@ def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | 
     if arm is not None:
         from kenney_hero_walk_strip import _bind_coat_researcher_armature
 
-        skirt["coat_weights_from_body"] = True
         _bind_coat_researcher_armature(skirt, body, arm)
-        for vg_name, w in (
-            ("Hips", 0.55),
-            ("Spine", 0.20),
-            ("LeftUpLeg", 0.18),
-            ("RightUpLeg", 0.18),
-        ):
-            if vg_name in arm.data.bones and vg_name not in skirt.vertex_groups:
-                g = skirt.vertex_groups.new(name=vg_name)
-                g.add(list(range(len(skirt.data.vertices))), w, "REPLACE")
     return skirt
 
 

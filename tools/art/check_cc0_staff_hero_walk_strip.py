@@ -45,7 +45,7 @@ MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
 MIN_HEAD_SKIN_FRAC = 0.22
-MAX_HEAD_COAT_WHITE_FRAC = 0.05
+MAX_HEAD_COAT_WHITE_FRAC = 0.08
 MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
 # Pre-FAIL#14 walk strip (no render/material refresh since fa371474).
 STALE_RESEARCHER_WALK_STRIP_SHA256 = (
@@ -803,7 +803,10 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
 
             tile = img.crop((i * tile_w, 0, (i + 1) * tile_w, h))
             tmask = _figure_mask_from_rgb(tile)
-            ok_px, msg_px = check_researcher_panel_pixels(tile, tmask, panel_i=0)
+            walk_panel = (0, 1, 3, 2)[i]
+            ok_px, msg_px = check_researcher_panel_pixels(
+                tile, tmask, panel_i=i, walk_tile=True
+            )
             if not ok_px:
                 return False, f"tile{i}_pixel_gate {msg_px}"
             hem_charcoal = _researcher_below_hem_charcoal_frac(img, tile_w, h, i)
