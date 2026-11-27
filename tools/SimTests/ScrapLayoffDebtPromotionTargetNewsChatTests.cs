@@ -51,8 +51,8 @@ public class ScrapLayoffDebtPromotionTargetNewsChatTests
     public void The_new_headlines_and_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(431, c.News.Headlines.Count);
-        Assert.Equal(384, c.Chat.Lines.Count);
+        Assert.Equal(434, c.News.Headlines.Count);
+        Assert.Equal(387, c.Chat.Lines.Count);
         foreach (string kind in new[] { "RunScrapped", "LayoffRound", "DebtPaid", "StaffPromoted", "TargetSet", "TargetSettled" })
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind);

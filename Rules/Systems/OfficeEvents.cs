@@ -124,7 +124,10 @@ namespace AiLabs.Rules.Systems
         public static void OnEscape(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Escape);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = EscapeCrisisEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Escape, expire);
+            EscapeCrisisEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>Released capability and corruption crossed the takeoff bar. Rivals have none.</summary>

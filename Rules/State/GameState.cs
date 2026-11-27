@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 179;
+        public const int CurrentSchema = 182;
 
         public int Schema;
         public string ConfigVersion;

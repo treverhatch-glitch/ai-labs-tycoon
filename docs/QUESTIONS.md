@@ -2431,3 +2431,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q513. Bonus duration on data-source acquire in late era? DECIDED (schema 179): `dataSourceAcquireEraWeeks`; `DataSourceAcquireEraWeeksBonused` on `DataSources.Acquire`.
 
 ### Q514. Batch twenty-six news, chat and combos. DECIDED: three headlines, three chat lines (431/384); `BatchTwentySixNewsChatTests`, `BatchTwentySixTogetherTests`.
+
+### Q515. Extra weeks to answer escape crises in late era? DECIDED (schema 180): `escapeCrisisEraGrace`; `EscapeCrisisEraGraced` on `OfficeEvents.OnEscape`.
+
+### Q516. Stronger law-shape delta in late era? DECIDED (schema 181): `lawShapingEraAmplify`; `LawShapingEraAmplified` on `LawShaping.Apply`.
+
+### Q517. Discount on data-source renew in late era? DECIDED (schema 182): `dataSourceRenewEraDiscount`; `DataSourceRenewEraDiscounted` on `DataSources.Renew`.
+
+### Q518. Batch twenty-seven news, chat and combos. DECIDED: three headlines, three chat lines (434/387); `BatchTwentySevenNewsChatTests`, `BatchTwentySevenTogetherTests`.

@@ -12525,6 +12525,24 @@
         "text": "{lab} licensed data for extra weeks"
       },
       {
+        "id": "escape-crisis-era-grace",
+        "kind": "EscapeCrisisEraGraced",
+        "pick": -1,
+        "text": "{lab} bought time on an escape crisis"
+      },
+      {
+        "id": "law-shaping-era-amplify",
+        "kind": "LawShapingEraAmplified",
+        "pick": -1,
+        "text": "{lab} pushed harder on law shaping"
+      },
+      {
+        "id": "data-source-renew-era-discount",
+        "kind": "DataSourceRenewEraDiscounted",
+        "pick": -1,
+        "text": "{lab} renewed data on era terms"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -17034,6 +17052,39 @@
         "toYear": 0
       },
       {
+        "id": "escape-crisis-grace-chat",
+        "kind": "EscapeCrisisEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "An escape crisis can wait a bit longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-shaping-amplify-chat",
+        "kind": "LawShapingEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The era lets us swing the law harder.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-renew-discount-chat",
+        "kind": "DataSourceRenewEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Renewing the feed costs less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19924,5 +19975,20 @@
     "enabled": 1,
     "minEra": 2,
     "bonusWeeks": 6
+  },
+  "escapeCrisisEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 4
+  },
+  "lawShapingEraAmplify": {
+    "enabled": 1,
+    "minEra": 2,
+    "amplifyPermille": 150
+  },
+  "dataSourceRenewEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
   }
 }

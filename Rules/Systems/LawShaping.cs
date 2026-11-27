@@ -26,9 +26,11 @@ namespace AiLabs.Rules.Systems
         public static void Apply(GameConfig c, GameState state, LabState lab, BlocStanding standing, string goal)
         {
             LawShapingConfig cfg = c.LawShaping;
-            int delta = goal == Strict ? cfg.StrictDelta : -cfg.LooseDelta;
-            delta = (int)MathI.MulPermille(delta, DampPermille(c, lab));
+            int baseDelta = goal == Strict ? cfg.StrictDelta : -cfg.LooseDelta;
+            baseDelta = (int)MathI.MulPermille(baseDelta, DampPermille(c, lab));
+            int delta = LawShapingEraAmplify.ShapeDelta(c, state, baseDelta);
             lab.LawShapePending = delta;
+            LawShapingEraAmplify.OnShaped(c, state, lab, goal, baseDelta, delta);
             int cd = LawShapingEraCooldown.EffectiveCooldownWeeks(c, state);
             int cut = c.Lobbying.CooldownWeeks - cd;
             standing.LobbyUntilTick = state.Tick + cd;

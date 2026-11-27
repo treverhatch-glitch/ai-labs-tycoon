@@ -728,6 +728,12 @@ namespace AiLabs.Rules.Sim
                     return who + " got " + e.SubjectId + " extra weeks to answer release notes.";
                 case EventKind.DataSourceAcquireEraWeeksBonused:
                     return who + " licensed \"" + e.Ref + "\" for +" + e.Amount + " bonus weeks.";
+                case EventKind.EscapeCrisisEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer an escape crisis.";
+                case EventKind.LawShapingEraAmplified:
+                    return who + " shaped law toward " + e.Ref + " with +" + e.SubjectId + " extra delta (" + e.Amount + " base).";
+                case EventKind.DataSourceRenewEraDiscounted:
+                    return who + " renewed data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

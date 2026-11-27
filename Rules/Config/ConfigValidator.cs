@@ -213,6 +213,9 @@ namespace AiLabs.Rules.Config
             HearingShareEraDampenProblems(p, c);
             OfficeReleaseEraGraceProblems(p, c);
             DataSourceAcquireEraWeeksProblems(p, c);
+            EscapeCrisisEraGraceProblems(p, c);
+            LawShapingEraAmplifyProblems(p, c);
+            DataSourceRenewEraDiscountProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2369,6 +2372,34 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraWeeks.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraWeeks.minEra must be a valid era index");
             if (k.BonusWeeks < 0) p.Add("dataSourceAcquireEraWeeks.bonusWeeks must not be negative");
+        }
+
+        static void EscapeCrisisEraGraceProblems(List<string> p, GameConfig c)
+        {
+            EscapeCrisisEraGraceConfig k = c.EscapeCrisisEraGrace;
+            if (k == null) { p.Add("escapeCrisisEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("escapeCrisisEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("escapeCrisisEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("escapeCrisisEraGrace.graceWeeks must not be negative");
+        }
+
+        static void LawShapingEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LawShapingEraAmplifyConfig k = c.LawShapingEraAmplify;
+            if (k == null) { p.Add("lawShapingEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShapingEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawShapingEraAmplify.minEra must be a valid era index");
+            if (k.AmplifyPermille < 0) p.Add("lawShapingEraAmplify.amplifyPermille must not be negative");
+        }
+
+        static void DataSourceRenewEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            DataSourceRenewEraDiscountConfig k = c.DataSourceRenewEraDiscount;
+            if (k == null) { p.Add("dataSourceRenewEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceRenewEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceRenewEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
+                p.Add("dataSourceRenewEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

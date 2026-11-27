@@ -659,7 +659,10 @@ namespace AiLabs.Rules.State
         ScenarioGoalEraTrusted,
         HearingShareEraDampened,
         OfficeReleaseEraGraced,
-        DataSourceAcquireEraWeeksBonused
+        DataSourceAcquireEraWeeksBonused,
+        EscapeCrisisEraGraced,
+        LawShapingEraAmplified,
+        DataSourceRenewEraDiscounted
     }
 
     /// <summary>

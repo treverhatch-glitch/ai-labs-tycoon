@@ -208,6 +208,9 @@ namespace AiLabs.Rules.Config
         public HearingShareEraDampenConfig HearingShareEraDampen = new HearingShareEraDampenConfig();
         public OfficeReleaseEraGraceConfig OfficeReleaseEraGrace = new OfficeReleaseEraGraceConfig();
         public DataSourceAcquireEraWeeksConfig DataSourceAcquireEraWeeks = new DataSourceAcquireEraWeeksConfig();
+        public EscapeCrisisEraGraceConfig EscapeCrisisEraGrace = new EscapeCrisisEraGraceConfig();
+        public LawShapingEraAmplifyConfig LawShapingEraAmplify = new LawShapingEraAmplifyConfig();
+        public DataSourceRenewEraDiscountConfig DataSourceRenewEraDiscount = new DataSourceRenewEraDiscountConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -414,6 +417,9 @@ namespace AiLabs.Rules.Config
             s.Obj("hearingShareEraDampen", ref HearingShareEraDampen);
             s.Obj("officeReleaseEraGrace", ref OfficeReleaseEraGrace);
             s.Obj("dataSourceAcquireEraWeeks", ref DataSourceAcquireEraWeeks);
+            s.Obj("escapeCrisisEraGrace", ref EscapeCrisisEraGrace);
+            s.Obj("lawShapingEraAmplify", ref LawShapingEraAmplify);
+            s.Obj("dataSourceRenewEraDiscount", ref DataSourceRenewEraDiscount);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);
