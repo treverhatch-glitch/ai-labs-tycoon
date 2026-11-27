@@ -532,14 +532,9 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             for ob in mesh_obs:
                 smooth_shade(ob)
         glb_path = out_dir / f"{asset_id}.glb"
-        _sanitize_solid_gltf_materials(mesh_obs)
-        if asset_id == "staff-founder-idle" and not stock_recolor:
-            _strip_uv_layers(mesh_obs)
-        export_gltf_selection(mesh_obs, glb_path)
-        log_staff_material_slots(mesh_obs, asset_id)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-        try:
-            if stock_recolor:
+        if stock_recolor:
+            try:
                 prev_preview_asset = _os.environ.get("STAFF_PREVIEW_ASSET")
                 _os.environ["STAFF_PREVIEW_ASSET"] = "staff-founder-kenney-stock-check"
                 render_preview(mesh_obs, preview_path, asset_id=asset_id)
@@ -547,15 +542,27 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                     _os.environ.pop("STAFF_PREVIEW_ASSET", None)
                 else:
                     _os.environ["STAFF_PREVIEW_ASSET"] = prev_preview_asset
-            else:
+            except Exception as exc:  # noqa: BLE001
+                print(f"WARN preview {asset_id}: {exc}")
+        _sanitize_solid_gltf_materials(mesh_obs)
+        if asset_id == "staff-founder-idle" and not stock_recolor:
+            _strip_uv_layers(mesh_obs)
+        export_gltf_selection(mesh_obs, glb_path)
+        log_staff_material_slots(mesh_obs, asset_id)
+        if not stock_recolor:
+            try:
                 render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
-        except Exception as exc:  # noqa: BLE001
-            print(f"WARN preview {asset_id}: {exc}")
+            except Exception as exc:  # noqa: BLE001
+                print(f"WARN preview {asset_id}: {exc}")
         verts = sum(len(o.data.vertices) for o in mesh_obs)
         tris = sum(len(p.vertices) for o in mesh_obs for p in o.data.polygons)
         min_z, _max_z, _sz = _mesh_scene_span_z(mesh_obs)
         mesh_count = len(mesh_obs)
         root = link_or_join(mesh_obs)
+        if stock_recolor:
+            from kenney_founder_stock_recolor import apply_founder_materials
+
+            apply_founder_materials(root)
         bpy.context.scene.render.engine = "CYCLES"
         uv_unwrap(root)
         maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
@@ -974,6 +981,13 @@ def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 3.
     return (r, g, b, rgba[3])
 
 
+def mesh_has_corner_color_layer(ob: bpy.types.Object) -> bool:
+    if getattr(ob.data, "vertex_colors", None):
+        return len(ob.data.vertex_colors) > 0
+    attrs = getattr(ob.data, "color_attributes", None)
+    return bool(attrs and any(a.domain == "CORNER" for a in attrs))
+
+
 def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
     mesh = ob.data
     while mesh.color_attributes:
@@ -1154,7 +1168,7 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         bpy.context.scene.render.bake.margin = 8
         restore: list[tuple] = []
         try:
-            if kind == "albedo" and ob.data.vertex_colors:
+            if kind == "albedo" and mesh_has_corner_color_layer(ob):
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
             elif kind == "albedo":
                 slot = ob.data.materials[0]

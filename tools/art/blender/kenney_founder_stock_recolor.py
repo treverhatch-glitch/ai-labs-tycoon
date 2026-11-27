@@ -1,25 +1,27 @@
-"""Founder hero: import canonical stock Kenney GLB; materials only (no mesh edits)."""
+"""Founder hero: import canonical stock Kenney mesh; materials only (no mesh edits)."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 import bpy
-import bmesh
 from mathutils import Vector
 
 import blender_common as bc
 import kenney_founder_lib as kf
 
-STOCK_BLEND = bc.ART_ROOT / "staff-kit" / "staff-founder-kenney-stock.blend"
+STOCK_SOURCE = bc.REPO_ROOT / "tools" / "art" / "source" / "kenney"
+STOCK_BLEND = STOCK_SOURCE / "staff-founder-kenney-stock.blend"
 STOCK_GLB = bc.ART_ROOT / "staff-kit" / "staff-founder-kenney-stock.glb"
 STOCK_META = STOCK_BLEND.with_suffix(".stock.json")
 STOCK_OBJECT_NAME = "KenneyFounderStock"
+VCOL_NAME = "BakeCol"
 
 
 def export_stock_glb(baked: bpy.types.Object) -> None:
     """Write grey stock mesh used by check frame and founder import."""
-    STOCK_BLEND.parent.mkdir(parents=True, exist_ok=True)
+    STOCK_SOURCE.mkdir(parents=True, exist_ok=True)
+    STOCK_GLB.parent.mkdir(parents=True, exist_ok=True)
     baked.name = STOCK_OBJECT_NAME
     bc.assign_solid(baked, (0.58, 0.58, 0.58, 1.0), 0.62)
     bc.smooth_shade(baked)
@@ -36,104 +38,161 @@ def export_stock_glb(baked: bpy.types.Object) -> None:
     STOCK_META.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
 
-def _height_band(ob: bpy.types.Object) -> tuple[float, float, float]:
-    zs = [(ob.matrix_world @ v.co).z for v in ob.data.vertices]
+def _height_band(ob: bpy.types.Object) -> tuple[float, float, float, float, float]:
+    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    zs = [p.z for p in ws]
+    ys = [p.y for p in ws]
     lo, hi = min(zs), max(zs)
-    return lo, hi, max(1e-4, hi - lo)
+    cx = sum(p.x for p in ws) / len(ws)
+    cy = sum(ys) / len(ys)
+    return lo, hi, max(1e-4, hi - lo), cx, cy
 
 
-def _ensure_material(name: str, rgba: tuple[float, float, float, float], rough: float) -> bpy.types.Material:
-    mat = bpy.data.materials.get(name)
-    if mat:
-        bpy.data.materials.remove(mat)
-    mat = bpy.data.materials.new(name=name)
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get("Principled BSDF")
-    if bsdf:
-        bsdf.inputs["Base Color"].default_value = rgba
-        bsdf.inputs["Roughness"].default_value = rough
-    return mat
+def _face_sign_from_verts(ob: bpy.types.Object) -> float:
+    """+1 when face toward +Y, else -1 (Kenney Z-up import)."""
+    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    zs = [p.z for p in ws]
+    z_hi = max(zs)
+    span = max(1e-4, z_hi - min(zs))
+    top = [p for p in ws if p.z > z_hi - span * 0.22]
+    if len(top) < 8:
+        return 1.0
+    hc = sum(top, Vector()) / len(top)
+    nose_fwd = max(top, key=lambda v: v.y)
+    nose_back = min(top, key=lambda v: v.y)
+    df = abs(nose_fwd.y - hc.y)
+    db = abs(nose_back.y - hc.y)
+    return 1.0 if df >= db else -1.0
 
 
-def _region_for_point(
+def _smoothstep(edge0: float, edge1: float, x: float) -> float:
+    if edge1 <= edge0:
+        return 1.0 if x >= edge1 else 0.0
+    t = max(0.0, min(1.0, (x - edge0) / (edge1 - edge0)))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def _mix_rgba(
+    a: tuple[float, float, float, float],
+    b: tuple[float, float, float, float],
+    t: float,
+) -> tuple[float, float, float, float]:
+    t = max(0.0, min(1.0, t))
+    return tuple(a[i] + (b[i] - a[i]) * t for i in range(4))
+
+
+def _brow_rgba() -> tuple[float, float, float, float]:
+    s = kf.FOUNDER_SKIN
+    return (s[0] * 0.62, s[1] * 0.58, s[2] * 0.52, 1.0)
+
+
+def _mouth_rgba() -> tuple[float, float, float, float]:
+    s = kf.FOUNDER_SKIN
+    return (s[0] * 0.55, s[1] * 0.48, s[2] * 0.46, 1.0)
+
+
+def _founder_rgba_at(
     w: Vector,
     *,
     lo: float,
     span: float,
     cx: float,
-) -> int:
-    """Material slot index for world point w (Z-up, front +Y)."""
+    cy: float,
+    face_sign: float,
+) -> tuple[float, float, float, float]:
     zf = (w.z - lo) / span
-    side = -1 if w.x < cx - 0.02 else (1 if w.x > cx + 0.02 else 0)
+    xf = abs(w.x - cx)
+    y_face = (w.y - cy) * face_sign
+    side = max(0.0, _smoothstep(0.08, 0.20, xf))
 
-    def band(f0: float, f1: float) -> bool:
-        return f0 - 1e-5 <= zf <= f1 + 1e-5
+    jeans = kf.FOUNDER_JEANS
+    shirt = kf.FOUNDER_HOODIE_RED
+    skin = kf.FOUNDER_SKIN
+    hair = kf.FOUNDER_HAIR
+    shoe = kf.FOUNDER_SHOE
+    sole = kf.FOUNDER_SHOE_SOLE
+    eye = kf.FOUNDER_EYE
 
-    if band(0.00, 0.05) and side != 0:
-        return 0  # sole dark
-    if band(0.04, 0.13) and side != 0:
-        return 1  # shoe
-    if band(0.00, 0.48) and side != 0:
-        return 2  # jeans (no white leg stripe)
-    if band(0.36, 0.54) and abs(w.x - cx) < 0.14:
-        return 2  # hips jeans
-    if band(0.42, 0.62) and abs(w.x - cx) < 0.14:
-        return 3  # torso red
-    if band(0.42, 0.58) and side != 0:
-        return 3  # upper arm red
-    if band(0.50, 0.68) and side != 0:
-        return 4  # lower arm skin
-    if band(0.58, 0.72) and side != 0:
-        return 5  # hand skin
-    if band(0.56, 0.64) and abs(w.x - cx) < 0.12:
-        return 4  # neck skin
-    if band(0.60, 0.73) and 0.055 < abs(w.x - cx) < 0.13:
-        return 7  # eyes (face materials only)
-    if band(0.58, 0.77) and abs(w.x - cx) < 0.14:
-        return 4  # head skin
-    if band(0.74, 0.84) and abs(w.x - cx) < 0.12:
-        return 6  # hair
-    if band(0.42, 0.62) and side != 0:
-        return 3
-  # default fill gaps with nearest garment
-    if zf < 0.5:
-        return 2
-    if zf < 0.72:
-        return 3 if abs(w.x - cx) > 0.1 else 4
-    return 4
+    waist = _smoothstep(0.44, 0.50, zf)
+    col = _mix_rgba(jeans, shirt, _smoothstep(0.42, 0.48, zf))
+
+    arm_shirt = side * _smoothstep(0.52, 0.60, zf) * _smoothstep(0.11, 0.20, xf)
+    col = _mix_rgba(col, shirt, arm_shirt)
+
+    arm_skin = side * _smoothstep(0.54, 0.62, zf) * _smoothstep(0.14, 0.24, xf)
+    col = _mix_rgba(col, skin, arm_skin)
+
+    hand = side * _smoothstep(0.58, 0.66, zf)
+    col = _mix_rgba(col, skin, hand)
+
+    neck = _smoothstep(0.55, 0.61, zf) * (1.0 - _smoothstep(0.10, 0.16, xf))
+    col = _mix_rgba(col, skin, neck)
+
+    foot = (1.0 - side) * _smoothstep(0.02, 0.06, zf)
+    col = _mix_rgba(col, sole, foot * 0.9)
+    foot_top = side * _smoothstep(0.05, 0.11, zf) * (1.0 - _smoothstep(0.12, 0.22, zf))
+    col = _mix_rgba(col, shoe, foot_top)
+
+    leg_jean = (1.0 - waist) * side
+    col = _mix_rgba(col, jeans, leg_jean * 0.85)
+
+    head_shell = _smoothstep(0.58, 0.64, zf) * (1.0 - _smoothstep(0.77, 0.84, zf))
+    head_front = _smoothstep(-0.02, 0.06, y_face)
+    col = _mix_rgba(col, skin, head_shell * head_front)
+
+    eye_l = (
+        _smoothstep(0.665, 0.695, zf)
+        * (1.0 - _smoothstep(0.705, 0.725, zf))
+        * _smoothstep(0.045, 0.075, xf)
+        * (1.0 - _smoothstep(0.10, 0.12, xf))
+        * _smoothstep(0.025, 0.05, y_face)
+    )
+    eye_r = eye_l
+    col = _mix_rgba(col, eye, max(eye_l, eye_r))
+
+    brow = (
+        _smoothstep(0.705, 0.735, zf)
+        * (1.0 - _smoothstep(0.735, 0.76, zf))
+        * (1.0 - _smoothstep(0.11, 0.13, xf))
+        * _smoothstep(0.02, 0.055, y_face)
+    )
+    col = _mix_rgba(col, _brow_rgba(), brow)
+
+    mouth = (
+        _smoothstep(0.615, 0.635, zf)
+        * (1.0 - _smoothstep(0.635, 0.655, zf))
+        * (1.0 - _smoothstep(0.035, 0.05, xf))
+        * _smoothstep(0.04, 0.07, y_face)
+    )
+    col = _mix_rgba(col, _mouth_rgba(), mouth * 0.55)
+
+    hair_back = _smoothstep(0.78, 0.85, zf) * (1.0 - _smoothstep(0.01, 0.05, y_face))
+    hair_top = _smoothstep(0.82, 0.90, zf) * (1.0 - _smoothstep(0.06, 0.12, y_face))
+    col = _mix_rgba(col, hair, max(hair_back, hair_top))
+
+    return col
+
+
+def _paint_founder_vertex_colors(ob: bpy.types.Object) -> None:
+    lo, _hi, span, cx, cy = _height_band(ob)
+    face_sign = _face_sign_from_verts(ob)
+    mesh = ob.data
+    while mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[0])
+    vcol = mesh.color_attributes.new(name=VCOL_NAME, type="BYTE_COLOR", domain="CORNER")
+    mesh.color_attributes.active_color = vcol
+    for poly in mesh.polygons:
+        for loop_idx in poly.loop_indices:
+            vi = mesh.loops[loop_idx].vertex_index
+            w = ob.matrix_world @ mesh.vertices[vi].co
+            rgba = _founder_rgba_at(w, lo=lo, span=span, cx=cx, cy=cy, face_sign=face_sign)
+            vcol.data[loop_idx].color = rgba
 
 
 def apply_founder_materials(ob: bpy.types.Object) -> None:
-    """Assign per-face materials by height/side; vertices unchanged."""
-    mats = [
-        _ensure_material("FounderSole", kf.FOUNDER_SHOE_SOLE, 0.72),
-        _ensure_material("FounderShoe", kf.FOUNDER_SHOE, 0.38),
-        _ensure_material("FounderJeans", kf.FOUNDER_JEANS, 0.56),
-        _ensure_material("FounderTee", kf.FOUNDER_HOODIE_RED, 0.58),
-        _ensure_material("FounderSkin", kf.FOUNDER_SKIN, 0.50),
-        _ensure_material("FounderHand", kf.FOUNDER_SKIN, 0.48),
-        _ensure_material("FounderHair", kf.FOUNDER_HAIR, 0.48),
-        _ensure_material("FounderEye", kf.FOUNDER_EYE, 0.32),
-    ]
-    ob.data.materials.clear()
-    for m in mats:
-        ob.data.materials.append(m)
-
-    lo, _hi, span = _height_band(ob)
-    cx = sum((ob.matrix_world @ v.co).x for v in ob.data.vertices) / len(ob.data.vertices)
-
-    bm = bmesh.new()
-    bm.from_mesh(ob.data)
-    bm.faces.ensure_lookup_table()
-    for face in bm.faces:
-        wc = Vector()
-        for v in face.verts:
-            wc += ob.matrix_world @ v.co
-        wc /= len(face.verts)
-        face.material_index = _region_for_point(wc, lo=lo, span=span, cx=cx)
-    bm.to_mesh(ob.data)
-    ob.data.update()
-    bm.free()
+    """Smooth vertex-color paint + single shader material; vertices unchanged."""
+    _paint_founder_vertex_colors(ob)
+    bc.unify_vertex_color_material(ob, "staff-founder-idle")
     bc.smooth_shade(ob)
 
 
