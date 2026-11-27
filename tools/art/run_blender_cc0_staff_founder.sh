@@ -2,9 +2,9 @@
 # Founder hero only — pause lane (researcher unchanged).
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
-export STAFF_PREVIEW_YAW_DEG=30
-export STAFF_PREVIEW_ELEV_DEG=7
-export STAFF_PREVIEW_MARGIN=1.46
+export STAFF_PREVIEW_YAW_DEG=32
+export STAFF_PREVIEW_ELEV_DEG=8
+export STAFF_PREVIEW_MARGIN=1.48
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"

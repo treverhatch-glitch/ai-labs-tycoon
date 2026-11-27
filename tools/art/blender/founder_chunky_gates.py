@@ -34,6 +34,7 @@ CLOTHING_SHELLS = frozenset(
 SKIN_OK = frozenset(
     {
         "Head",
+        "Neck",
         "Hair",
         "Eye_-1",
         "Eye_1",

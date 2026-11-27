@@ -185,17 +185,13 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
             fwd = mid - hc
             fwd.z = 0.0
             if fwd.length > 1e-4:
-                if up.z < 0.9 and fwd.dot(Vector((0.0, 1.0, 0.0))) < 0:
-                    fwd = -fwd
                 return fwd.normalized()
         if up.z > 0.9:
             nose = min(pts, key=lambda v: v.y)
-            back = max(pts, key=lambda v: v.y)
-            fwd = Vector((nose.x - back.x, nose.y - back.y, 0.0))
-            if fwd.length > 1e-4:
-                if fwd.dot(Vector((0.0, 1.0, 0.0))) < 0:
-                    fwd = -fwd
-                return fwd.normalized()
+            fwd = Vector((0.0, -1.0, 0.0))
+            if nose.y > hc.y:
+                fwd = Vector((0.0, 1.0, 0.0))
+            return fwd
         fwd = hc - (
             sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector())
             / max(1, len(hips.data.vertices))

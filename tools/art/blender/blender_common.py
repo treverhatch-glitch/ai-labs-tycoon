@@ -688,7 +688,9 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
             assign_solid(ob, hoodie_navy, 0.52)
         elif base.startswith("Jeans") or base.startswith("Leg_") or base == "Hips":
             assign_solid(ob, denim, 0.56)
-        elif base in ("Torso", "Neck"):
+        elif base == "Neck":
+            assign_solid(ob, skin, 0.82)
+        elif base == "Torso":
             assign_solid(ob, hoodie_red, 0.54)
         elif base.startswith("Sole_"):
             assign_solid(ob, (0.32, 0.35, 0.40, 1.0), 0.72)
