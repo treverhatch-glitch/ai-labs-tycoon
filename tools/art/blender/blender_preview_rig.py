@@ -17,7 +17,7 @@ from mathutils import Vector
 # Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
 _GREY_150 = 150.0 / 255.0
 STUDIO_GREY = (_GREY_150, _GREY_150, _GREY_150, 1.0)
-FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
+FLOOR_GREY = STUDIO_GREY
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -94,7 +94,7 @@ def setup_studio_world(*, staff_flat: bool = False) -> None:
     bg = nodes.new("ShaderNodeBackground")
     # Mid-grey visible backdrop; HDRI may light objects but stays hidden in the render.
     bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 1.0 if staff_flat else 1.0
+    bg.inputs["Strength"].default_value = 1.0
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
     if staff_flat or not hdr_path.is_file():
         bpy.context.scene.view_settings.view_transform = "Standard"
@@ -134,6 +134,8 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
         bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
+    if hasattr(floor, "is_shadow_catcher"):
+        floor.is_shadow_catcher = True
     return floor
 
 
@@ -150,6 +152,8 @@ def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
         bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
+    if hasattr(floor, "is_shadow_catcher"):
+        floor.is_shadow_catcher = True
     return floor
 
 
@@ -159,26 +163,70 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
 
 
 def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
-    """Face forward: hips/torso → head, projected off the standing axis (Z-up import)."""
+    """Face forward: Kenney stock head axis, else hips→head (Z-up)."""
+    stock = [o for o in mesh_obs if o.type == "MESH" and o.name.split(".")[0] == "KenneyFounderStock"]
+    if stock:
+        try:
+            from kenney_face_axis import toe_forward
+
+            return toe_forward(stock)
+        except Exception:
+            pass
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
     hips = by_name.get("Hips") or by_name.get("Torso")
-    head = by_name.get("Head")
+    head = by_name.get("Head") or by_name.get("KenneyFounderStock")
     up = Vector((0.0, 0.0, 1.0))
     mins, maxs = mesh_bounds_world(mesh_obs)
     if (maxs - mins).z < (maxs - mins).y:
         up = Vector((0.0, 1.0, 0.0))
-    if hips and head and head.data.vertices and hips.data.vertices:
-        hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
-            head.data.vertices
+    if head and head.data.vertices:
+        pts = [head.matrix_world @ v.co for v in head.data.vertices]
+        hc = sum(pts, Vector()) / len(pts)
+        eye_l = by_name.get("Eye_-1")
+        eye_r = by_name.get("Eye_1")
+        if eye_l and eye_r:
+            el = sum((eye_l.matrix_world @ v.co for v in eye_l.data.vertices), Vector())
+            el /= max(1, len(eye_l.data.vertices))
+            er = sum((eye_r.matrix_world @ v.co for v in eye_r.data.vertices), Vector())
+            er /= max(1, len(eye_r.data.vertices))
+            mid = (el + er) * 0.5
+            fwd = mid - hc
+            fwd.z = 0.0
+            if fwd.length > 1e-4:
+                return fwd.normalized()
+        if up.z > 0.9:
+            zs = [p.z for p in pts]
+            z_hi = max(zs)
+            span_z = max(1e-4, z_hi - min(zs))
+            top = [p for p in pts if p.z > z_hi - span_z * 0.22]
+            if len(top) >= 8:
+                hc_top = sum(top, Vector()) / len(top)
+                nose_fwd = max(top, key=lambda v: v.y)
+                nose_back = min(top, key=lambda v: v.y)
+                df = abs(nose_fwd.y - hc_top.y)
+                db = abs(nose_back.y - hc_top.y)
+                return Vector((0.0, 1.0, 0.0)) if df >= db else Vector((0.0, -1.0, 0.0))
+            fwd = hc - Vector((0.0, 0.0, 0.35))
+            fwd.z = 0.0
+            if fwd.length > 1e-4:
+                return fwd.normalized()
+            return Vector((0.0, 1.0, 0.0))
+        fwd = hc - (
+            sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector())
+            / max(1, len(hips.data.vertices))
+            if hips and hips.data.vertices
+            else hc - Vector((0.0, 0.0, 0.35))
         )
-        ic = sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector()) / len(
-            hips.data.vertices
-        )
-        fwd = hc - ic
         fwd = fwd - up * fwd.dot(up)
         if fwd.length > 1e-4:
             return fwd.normalized()
     return Vector((0.0, 1.0, 0.0))
+
+
+def _rotate_z_xy(v: Vector, yaw_deg: float) -> Vector:
+    yaw = math.radians(yaw_deg)
+    c, s = math.cos(yaw), math.sin(yaw)
+    return Vector((c * v.x - s * v.y, s * v.x + c * v.y, 0.0))
 
 
 def frame_staff_front_quarter(
@@ -188,22 +236,21 @@ def frame_staff_front_quarter(
     yaw_deg: float = 30.0,
     elev_deg: float = 11.0,
 ) -> tuple[bpy.types.Object, float]:
+    """Camera on center + front*d at yaw=0; idle adds yaw° about world Z (glTF −Y forward ref)."""
     mins, maxs = mesh_bounds_world(mesh_obs)
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, mesh_obs)
     half_fov = math.radians(22.0)
     cam_dist = (radius / math.tan(half_fov)) * margin
-    fwd = staff_face_forward(mesh_obs)
-    right = Vector((-fwd.y, fwd.x, 0.0))
-    if right.length < 1e-5:
-        right = Vector((1.0, 0.0, 0.0))
+    front = staff_face_forward(mesh_obs).normalized()
+    front_xy = Vector((front.x, front.y, 0.0))
+    if front_xy.length < 1e-5:
+        front_xy = Vector((0.0, -1.0, 0.0))
     else:
-        right.normalize()
-    yaw = math.radians(yaw_deg)
+        front_xy.normalize()
+    hdir = _rotate_z_xy(front_xy, yaw_deg)
     elev = math.radians(elev_deg)
-    offset = fwd * (math.cos(yaw) * math.cos(elev)) + right * (math.sin(yaw) * math.cos(elev))
-    offset.z = math.sin(elev)
-    offset = offset.normalized() * cam_dist
+    offset = hdir * (math.cos(elev) * cam_dist) + Vector((0.0, 0.0, 1.0)) * (math.sin(elev) * cam_dist)
     cam_loc = center + offset
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
@@ -411,16 +458,19 @@ def render_preview_studio(
         scene.eevee.taa_render_samples = 32
         if hasattr(scene.eevee, "use_gtao"):
             scene.eevee.use_gtao = True
-            scene.eevee.gtao_distance = 0.4
-            scene.eevee.gtao_factor = 1.4
+            scene.eevee.gtao_distance = 0.55
+            if os.environ.get("STAFF_PREVIEW_ASSET") == "staff-founder-idle":
+                scene.eevee.gtao_factor = 1.05
+            else:
+                scene.eevee.gtao_factor = 1.85 if preview_kind == "staff" else 1.4
 
     setup_studio_world(staff_flat=(preview_kind == "staff"))
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 1.46
+        framing_margin = float(os.environ.get("STAFF_PREVIEW_MARGIN", "1.46"))
         lens_mm = 50.0
-        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
     elif preview_kind in ("wisp",):
         axis = "Y"
@@ -451,12 +501,7 @@ def render_preview_studio(
         if preview_kind == "wisp":
             add_shadow_floor_y(mins, maxs)
         elif preview_kind == "staff":
-            add_shadow_floor_z(mins, maxs)
-            floor_ob = bpy.data.objects.get("PreviewShadowFloor")
-            if floor_ob and floor_ob.active_material:
-                bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
-                if bsdf:
-                    bsdf.inputs["Base Color"].default_value = FLOOR_GREY
+            pass  # contact shadow via GTAO on grey-150 only — no lit floor tile
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
@@ -464,7 +509,22 @@ def render_preview_studio(
         light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
         setup_three_point_lights(center, light_r)
         if preview_kind == "staff":
-            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+            key = bpy.data.objects.get("Key")
+            if key and key.type == "LIGHT" and os.environ.get("STAFF_PREVIEW_ASSET") != "staff-founder-idle":
+                key.data.energy *= 0.040
+            founder = os.environ.get("STAFF_PREVIEW_ASSET") == "staff-founder-idle"
+            if founder:
+                for soft_name, erg in (("Key", 7.5), ("Fill", 3.2), ("Rim", 1.2)):
+                    lite = bpy.data.objects.get(soft_name)
+                    if lite and lite.type == "LIGHT":
+                        lite.data.energy = erg
+            else:
+                rim_mul = 0.12
+                for soft_name, mul in (("Fill", 0.35), ("Rim", rim_mul)):
+                    lite = bpy.data.objects.get(soft_name)
+                    if lite and lite.type == "LIGHT":
+                        lite.data.energy *= mul
+            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
                 hero_meshes,
@@ -497,7 +557,7 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
-                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30")),
+                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35")),
                 "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
             indent=2,

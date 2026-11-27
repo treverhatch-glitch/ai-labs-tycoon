@@ -1,0 +1,3 @@
+# Era reserved-compute bible refill (batch 633)
+
+Batch **633** · thickens [ERA-RESERVED-COMPUTE-HUD-CHROME.md](ERA-RESERVED-COMPUTE-HUD-CHROME.md) / [ERA-RESERVED-COMPUTE-BIBLE-THICKENER.md](ERA-RESERVED-COMPUTE-BIBLE-THICKENER.md) — host chrome only.

@@ -34,7 +34,11 @@ namespace AiLabs.Rules.Systems
                 if (span > 0)
                 {
                     long mark = lab.PlanStartTick + span * sc.GoalDeadlinePermille / MathI.Permille;
+                    int slack = ScenarioGoalsEraSlack.SlackWeeks(c, state);
+                    mark = ScenarioGoalsEraSlack.AdjustEarlyMark(c, state, mark);
                     if (state.Tick + 1 < mark) return;
+                    if (slack > 0 && state.Tick + 1 == mark)
+                        ScenarioGoalsEraSlack.OnEarlyCheck(c, state, lab, slack, mark);
                 }
             }
             if (Met(c, state, lab, goal))

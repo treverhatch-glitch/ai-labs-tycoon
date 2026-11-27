@@ -1,0 +1,35 @@
+{
+  "fixture": "tools/art/fixtures/prop-desk-9e58ee2-regression.png",
+  "sha256": "99e7ca1b077f8c284069c5064a6606590c488034f19e6d5af9ca040b69c1f9ef",
+  "stats": {
+    "stddev": 55.71808866411427,
+    "coverage": 0.8407793045043945,
+    "mean_lum": 81.93377145600768,
+    "mean_sat": 0.4170824301392625,
+    "border_touch": 0.0,
+    "silhouette_frac": 0.6416015625,
+    "subject_bbox_frac": 0.6416015625,
+    "min_margin_frac": 0.1533203125,
+    "flat_pixel_frac": 0.6972169876098633,
+    "ground_lum": 149.77885226117886,
+    "corner_lum_mean": 150.0,
+    "subject_median_sat": 0.30196078431372547,
+    "desk_top_brown_frac": 0.40077895299553246,
+    "screen_peak_lum": 1.0,
+    "corner_rgb_max_delta": 0.0,
+    "outside_screen_mean_sat": 0.28246914144668384,
+    "blow_frac_outside_screen": 0.01085662934447332,
+    "desk_mean_lum": 0.40329789374313263,
+    "desk_mean_sat": 0.3916167572001176,
+    "dark_subject_cell_frac": 0.0,
+    "bezel_wood_frac": 0.006027397260273973,
+    "dark_object_frac": 0.43699325604304007,
+    "monitor_skew_deg": 11.181754210196678,
+    "plant_green_frac": 0.014401212733703891
+  },
+  "gate_fail_reasons": [
+    "dark_object_frac=43.70%",
+    "monitor_skew_deg=11.2",
+    "plant_green_frac=1.44%"
+  ]
+}

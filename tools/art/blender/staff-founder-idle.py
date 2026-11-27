@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""CC0 Kenney stylized → founder hero (hoodie, jeans, mug)."""
+"""CC0 Kenney blocky character → founder hero (stock GLB recolor only)."""
+import os
 import sys
 from pathlib import Path
 
@@ -9,6 +10,7 @@ import kenney_founder_lib as kf  # noqa: E402
 
 
 def main():
+    os.environ["FOUNDER_STOCK_RECOLOR"] = "1"
     kf.build_founder_kenney()
     entry = bc.finish_asset(
         "staff-founder-idle",

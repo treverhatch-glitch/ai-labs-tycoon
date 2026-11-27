@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusExplainableHudTailRefreshThrough345PresentationSpec { public const int TailRefreshThroughPresentationBatch = 345; public static int PriorBatch => CampusExplainableHudTailRefreshThrough342.TailRefreshThroughPresentationBatch; public const string RefreshDoc = "EXPLAINABLE-HUD-TAIL-REFRESH-345.md"; } }

@@ -1,0 +1,3 @@
+# Seasonal overlay index refresh (batch 653)
+
+Batch **653** · [SEASONAL-OVERLAY-INDEX.md](SEASONAL-OVERLAY-INDEX.md) hub refill; pairs [SEASONAL-A11Y-CHROME-TAIL-REFRESH-384.md](SEASONAL-A11Y-CHROME-TAIL-REFRESH-384.md).
