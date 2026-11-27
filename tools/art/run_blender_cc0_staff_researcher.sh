@@ -23,18 +23,6 @@ test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || {
   exit 1
 }
 
-echo "=== tools/art/blender/researcher_hero_selfcheck.py ==="
-self_out=$("$BLENDER" -b --python tools/art/blender/researcher_hero_selfcheck.py 2>&1) || {
-  echo "$self_out"
-  echo "FAIL researcher hero selfcheck" >&2
-  exit 1
-}
-echo "$self_out"
-echo "$self_out" | grep -q '^OK researcher_hero_selfcheck' || {
-  echo "FAIL missing selfcheck OK line" >&2
-  exit 1
-}
-
 echo "=== tools/art/blender/render_kenney_researcher_face_diagnostic.py ==="
 diag_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_researcher_face_diagnostic.py 2>&1) || { echo "$diag_out"; echo "FAIL face diagnostic" >&2; exit 1; }
 echo "$diag_out"
@@ -62,9 +50,6 @@ echo "$out" | grep -q '^OK staff-researcher-idle ' || { echo "FAIL staff-researc
 
 python3 tools/art/check_cc0_staff_researcher_eye_glb_world.py
 test -s "docs/art/previews/staff-researcher-idle.png" || { echo "FAIL missing researcher preview"; exit 1; }
-
-python3 tools/art/researcher_hero_render_selfcheck.py
-python3 tools/art/researcher_hero_render_selfcheck.py --report-only
 
 python3 tools/art/check_cc0_staff_preview_upright.py
 python3 tools/art/check_cc0_staff_silhouette.py

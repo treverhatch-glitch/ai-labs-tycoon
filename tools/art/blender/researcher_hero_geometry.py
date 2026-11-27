@@ -436,6 +436,20 @@ def _trim_coat_hands_crotch(
     bm.free()
 
 
+def _prune_coat_below_hem(coat: bpy.types.Object, lm, coat_hem: float) -> None:
+    lo, span = lm.zmin, lm.span
+    z_cut = lo + span * coat_hem
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.verts.ensure_lookup_table()
+    doomed = [v for v in bm.verts if (coat.matrix_world @ v.co).z < z_cut - span * 0.008]
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="VERTS")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
+
+
 def _prune_coat_wrist_shards(
     coat: bpy.types.Object,
     lm,
@@ -629,10 +643,10 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    thick = max(body.dimensions.length * 0.018, 0.013)
+    thick = max(body.dimensions.length * 0.035, 0.022)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
-    solid.offset = 0.85
+    solid.offset = 1.0
     bpy.context.view_layer.objects.active = coat
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
@@ -647,6 +661,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
     _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
     _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
+    _prune_coat_below_hem(coat, lm, coat_hem)
     if len(coat.data.polygons) < 8:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
@@ -702,47 +717,37 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     eye_diameter = eye_radius * 2.0
     half_sep = head_w * 0.158
     full_sep = half_sep * 2.0
-    proud = max(lm.span * 0.016, head_w * 0.052, 0.014)
+    proud = max(lm.span * 0.014, head_w * 0.048, 0.012)
     mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.04, specular=0.02)
     rot = fwd.to_track_quat("Y", "Z").to_euler()
+    up = Vector((0.0, 0.0, 1.0))
     bvh = _body_bvh_evaluated(body)
     cast_in = -fwd
     parts: list[bpy.types.Object] = []
-    outer_diam = max(eye_diameter * 1.42, head_w * 0.101)
-    major_r = outer_diam * 0.5
-    minor_r = max(head_w * 0.0092, lm.span * 0.0046, 0.0038)
-    bar = minor_r * 1.08
-    inv = body.matrix_world.inverted()
-    max_lat = head_w * 0.525
+    outer = eye_diameter * 1.3
+    bar = max(full_sep * 0.090, head_w * 0.0088)
+    half = outer * 0.5
 
-    def _torus_rim(center_w: Vector, lateral_sign: float, name: str) -> None:
-        bpy.ops.mesh.primitive_torus_add(
-            major_radius=major_r,
-            minor_radius=minor_r,
-            abso_major_rad=major_r + minor_r,
-            abso_minor_rad=minor_r,
-            location=inv @ center_w,
-        )
-        torus = bpy.context.active_object
-        torus.name = f"{name}.ring"
-        torus.rotation_euler = rot
-        torus.data.materials.append(mat)
-        parts.append(torus)
-        outer_pt = center_w + right * (lateral_sign * major_r * 0.96)
-        if abs(lateral_from_front(outer_pt, hc, fwd)) > max_lat:
-            outer_pt = center_w + right * (lateral_sign * (max_lat - minor_r))
-        ear_pt = center_w - fwd * (head_w * 0.44) + right * (lateral_sign * head_w * 0.50)
-        if abs(lateral_from_front(ear_pt, hc, fwd)) > max_lat:
-            ear_pt = hc - fwd * (head_w * 0.44) + right * (lateral_sign * max_lat)
-        mid_t = inv @ ((outer_pt + ear_pt) * 0.5)
-        length = (ear_pt - outer_pt).length
-        arm_dir = (ear_pt - outer_pt).normalized()
-        bpy.ops.mesh.primitive_cylinder_add(radius=bar, depth=max(length, minor_r * 4), location=mid_t)
-        temple = bpy.context.active_object
-        temple.name = f"{name}.temple"
-        temple.rotation_euler = arm_dir.to_track_quat("Z", "Y").to_euler()
-        temple.data.materials.append(mat)
-        parts.append(temple)
+    def _open_square_rim(center_w: Vector, lateral_sign: float, name: str) -> None:
+        side_len = outer * 0.88
+        temple = center_w + right * (lateral_sign * (half - bar * 0.48))
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=temple)
+        side = bpy.context.active_object
+        side.name = f"{name}.side"
+        side.scale = (bar * 1.06, bar * 1.12, side_len)
+        side.rotation_euler = rot
+        bpy.ops.object.transform_apply(scale=True, rotation=True)
+        side.data.materials.append(mat)
+        parts.append(side)
+        brow = center_w + up * (half - bar * 0.50)
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=brow)
+        top = bpy.context.active_object
+        top.name = f"{name}.top"
+        top.scale = (outer * 0.92, bar * 1.10, bar * 1.06)
+        top.rotation_euler = rot
+        bpy.ops.object.transform_apply(scale=True, rotation=True)
+        top.data.materials.append(mat)
+        parts.append(top)
 
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
@@ -756,13 +761,13 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
         else:
             center = seed + fwd * proud
         anchors.append(center)
-    _torus_rim(anchors[0], -1.0, "ResearcherGlasses.L")
-    _torus_rim(anchors[1], 1.0, "ResearcherGlasses.R")
-    mid = (anchors[0] + anchors[1]) * 0.5
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=inv @ mid)
+    _open_square_rim(anchors[0], -1.0, "ResearcherGlasses.L")
+    _open_square_rim(anchors[1], 1.0, "ResearcherGlasses.R")
+    mid = (anchors[0] + anchors[1]) * 0.5 - up * (head_w * 0.06)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses.bridge"
-    bridge.scale = (full_sep * 0.16, bar * 1.45, bar * 1.2)
+    bridge.scale = (full_sep * 0.20, bar * 1.08, bar * 1.18)
     bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)

@@ -34,7 +34,7 @@ RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
-RESEARCHER_LAPEL = (198 / 255, 198 / 255, 193 / 255, 1.0)
+RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
 RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
 RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
 RESEARCHER_GLASSES = (34 / 255, 34 / 255, 34 / 255, 1.0)
@@ -469,15 +469,9 @@ def _stamp_researcher_shirt_torso_arms(
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        y_face = y_face_fn(wc)
+        on_torso = lat <= thw * 1.10 and y_face_fn(wc) > -0.18
         on_arm = lat > thw * 0.68 and lm.h_neck - 0.12 <= h <= lm.h_waist + 0.10
-        center_v = (
-            lat <= thw * 1.10
-            and y_face > 0.03
-            and lat < thw * 0.26
-            and lm.h_neck - 0.10 <= h <= lm.h_waist - 0.08
-        )
-        if center_v or on_arm:
+        if on_torso or on_arm:
             slots[face.index] = SLOT_SHIRT
 
 
@@ -752,7 +746,7 @@ def _stamp_lab_coat_open_front(
             continue
         if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
             continue
-        slots[face.index] = SLOT_LAPEL
+        slots[face.index] = SLOT_SHIRT
 
 
 def _apply_researcher_hand_skin_only(
@@ -1187,13 +1181,11 @@ def load_stock_and_recolor() -> bpy.types.Object:
     ob.name = STOCK_OBJECT_NAME
     apply_researcher_materials(ob)
     from researcher_hero_geometry import (  # noqa: WPS433
-        spawn_researcher_glasses,
         spawn_researcher_hair_cap,
         spawn_researcher_lab_coat,
     )
 
     spawn_researcher_lab_coat(ob)
     spawn_researcher_eye_meshes(ob)
-    spawn_researcher_glasses(ob)
     spawn_researcher_hair_cap(ob)
     return ob

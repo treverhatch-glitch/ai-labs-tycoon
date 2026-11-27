@@ -505,7 +505,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 mesh_obs = collect_founder_stock_meshes()
             mesh_only = [o for o in mesh_obs if o.type == "MESH"]
             part_count = len(mesh_only)
-            want_parts = 6 if asset_id == "staff-researcher-idle" else 3
+            want_parts = 5 if asset_id == "staff-researcher-idle" else 3
             if part_count != want_parts:
                 raise RuntimeError(
                     f"FAIL {asset_id}: stock_recolor need {want_parts} parts got {part_count}"

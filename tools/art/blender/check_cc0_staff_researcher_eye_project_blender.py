@@ -48,45 +48,16 @@ def _ray_hits_eye(depsgraph, cam: bpy.types.Object, eye: bpy.types.Object) -> bo
         if t > 1.0:
             to_v = target + direction * (eye.dimensions.length * 0.1)
         cast_dir = (to_v - from_v).normalized()
-        hit, loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
+        hit, _loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
             depsgraph, from_v, cast_dir if cast_dir.length else direction
         )
-        if hit and hit_obj:
-            tag = hit_obj.name.split(".")[0]
-            if tag in EYE_OBJECT_NAMES:
-                return True
-            if tag in (
-                "ResearcherLabCoat",
-                "ResearcherGlasses",
-                "ResearcherHairCap",
-                "KenneyResearcherStock",
-            ):
-                through = (to_v - loc).normalized()
-                hit2, _l2, *_rest, hit2_obj, _m2 = bpy.context.scene.ray_cast(
-                    depsgraph, loc + through * 1e-4, through
-                )
-                if hit2 and hit2_obj and hit2_obj.name.split(".")[0] in EYE_OBJECT_NAMES:
-                    return True
-    cast_dir = direction
-    origin_r = origin
-    for _ in range(4):
-        hit, loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
-            depsgraph, origin_r, cast_dir
-        )
-        if not hit or not hit_obj:
-            return False
-        tag = hit_obj.name.split(".")[0]
-        if tag in EYE_OBJECT_NAMES:
+        if hit and hit_obj and hit_obj.name.split(".")[0] in EYE_OBJECT_NAMES:
             return True
-        if tag not in (
-            "ResearcherLabCoat",
-            "ResearcherGlasses",
-            "ResearcherHairCap",
-            "KenneyResearcherStock",
-        ):
-            return False
-        origin_r = loc + cast_dir * 1e-4
-    return False
+    cast_dir = direction
+    hit, _loc, _norm, _fi, hit_obj, _mat = bpy.context.scene.ray_cast(
+        depsgraph, origin, cast_dir
+    )
+    return bool(hit and hit_obj and hit_obj.name.split(".")[0] in EYE_OBJECT_NAMES)
 
 
 def _gate(mesh_obs: list, yaw: float, elev: float, margin: float) -> bpy.types.Object:
