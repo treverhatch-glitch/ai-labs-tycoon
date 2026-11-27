@@ -2,7 +2,10 @@
 """FAIL#19 geometry gates: skirt Z band, sleeve arm VG, hair bbox vs head."""
 from __future__ import annotations
 
+import os
 import sys
+
+os.environ.setdefault("RESEARCHER_STOCK_RECOLOR", "1")
 from pathlib import Path
 
 import bpy
@@ -12,11 +15,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import kenney_researcher_lib as kr  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
 from kenney_geometry_landmarks import compute_landmarks  # noqa: E402
-from researcher_shirt_derived_meshes import SKIRT_NAME, SLEEVES_NAME, VG_DENY_HEAD  # noqa: E402
-
-SKIRT_ALLOWED = frozenset(
-    {"Hips", "Spine", "Chest", "UpperChest", "LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"}
+from researcher_shirt_derived_meshes import (  # noqa: E402
+    SKIRT_NAME,
+    SLEEVES_NAME,
+    VG_DENY_HEAD,
+    _neck_cut_world_z,
+    _skirt_z_band,
+    _stretch_skirt_hem_to_mid_thigh,
 )
+
+SKIRT_ALLOWED = frozenset({"Hips", "Spine", "Chest", "UpperChest", "LeftUpLeg", "RightUpLeg"})
 SLEEVE_ALLOWED = frozenset(
     {"LeftShoulder", "LeftArm", "LeftForeArm", "RightShoulder", "RightArm", "RightForeArm"}
 )
@@ -80,25 +88,28 @@ def main() -> int:
     hair = next((o for o in meshes if o.name.split(".")[0] == "ResearcherHairCap"), None)
     arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     lm = compute_landmarks(body)
-    lo, span = lm.zmin, lm.span
-    z_hip = lo + span * (lm.h_waist - 0.06)
-    z_knee = lo + span * (lm.h_waist + 0.55)
-    if arm:
-        hk = _bone_z(arm, "Hips")
-        lk = _bone_z(arm, "LeftLeg")
-        if hk is not None:
-            z_hip = hk - span * 0.02
-        if lk is not None:
-            z_knee = lk + span * 0.02
+    lo, span, skirt_top_z, z_hip, z_mid_thigh, z_knee = _skirt_z_band(body, lm)
     if not skirt or not sleeves or not hair:
         print("FAIL staff-researcher-idle geometry missing_parts")
         return 1
+    z_neck = _neck_cut_world_z(arm, lm)
+    above_neck = sum(
+        1 for v in skirt.data.vertices if (skirt.matrix_world @ v.co).z > z_neck - 0.01
+    )
+    if above_neck > 0:
+        print(f"FAIL staff-researcher-idle skirt_verts_above_neck={above_neck} neck_z={z_neck:.4f}")
+        return 1
+    _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
     zmin = min((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     zmax = max((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
-    if zmin < z_hip - span * 0.04 or zmax > z_knee:
+    if (
+        zmin < z_hip - span * 0.10
+        or zmax < z_mid_thigh - span * 0.08
+        or zmax > z_knee + span * 0.02
+    ):
         print(
             f"FAIL staff-researcher-idle skirt_z_band zmin={zmin:.4f} zmax={zmax:.4f} "
-            f"want_hip={z_hip:.4f} knee={z_knee:.4f}"
+            f"want_hip={z_hip:.4f} mid_thigh={z_mid_thigh:.4f} knee={z_knee:.4f}"
         )
         return 1
     for v in skirt.data.vertices:
@@ -130,6 +141,7 @@ def main() -> int:
         return 1
     print(
         f"OK staff-researcher-idle geometry skirt_z=({zmin:.3f},{zmax:.3f}) "
+        f"mid_thigh={z_mid_thigh:.3f} skirt_above_neck={above_neck} "
         f"sleeve_verts L={cov_l} R={cov_r} hair_ratio={ratio:.3f}"
     )
     return 0

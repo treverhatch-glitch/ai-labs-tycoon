@@ -14,13 +14,18 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_hero_walk_strip import (  # noqa: E402
+    apply_idle_arm_blend,
     apply_walk_materials_to_hero,
+    bake_evaluated_render_meshes,
     build_founder_walk_scene,
     build_researcher_walk_scene,
     configure_preview_env,
+    dispose_baked_render_meshes,
     founder_eye_preview_tweak,
+    ensure_locomotion_action,
+    measure_walk_frame_pose,
+    pose_walk_for_render,
     researcher_lab_coat_preview_tweak,
-    apply_idle_arm_blend,
 )
 
 GREY = (150, 150, 150)
@@ -29,11 +34,8 @@ LABELS = ("front", "left", "back", "right", "walk side")
 GAP = 8
 
 
-def _pose_walk(arm, frame, scene_data):
-    bpy.context.scene.frame_set(frame)
-    if scene_data.idle_arm_quats and scene_data.bind_arm_quats:
-        apply_idle_arm_blend(arm, scene_data.idle_arm_quats, scene_data.bind_arm_quats)
-    bpy.context.view_layer.update()
+def _pose_walk(frame, scene_data):
+    pose_walk_for_render(bpy.context.scene, scene_data, int(frame))
 
 
 def _pose_idle(scene_data) -> None:
@@ -59,6 +61,7 @@ def _render_tile(
     *,
     walk_pose: bool,
     scene_data,
+    walk_frame: int | None = None,
 ) -> None:
     os.environ["STAFF_PREVIEW_YAW_DEG"] = str(_effective_cam_yaw(asset_id, cam_yaw_deg))
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "10"
@@ -70,11 +73,33 @@ def _render_tile(
         researcher_lab_coat_preview_tweak(meshes)
     if scene_data and scene_data.arm:
         if walk_pose:
-            _pose_walk(scene_data.arm, scene_data.walk_frames[0], scene_data)
+            fr = int(walk_frame if walk_frame is not None else scene_data.walk_frames[1])
+            _pose_walk(fr, scene_data)
+            if asset_id == "staff-researcher-idle":
+                metrics = measure_walk_frame_pose(scene_data, fr)
+                print(
+                    f"OK researcher_walk_render frame={fr} label=turnaround_walk_side "
+                    f"ankle_x={metrics['ankle_x']:.4f} "
+                    f"knee_L={metrics['knee_l']:.2f} knee_R={metrics['knee_r']:.2f} "
+                    f"arm_swing_L={metrics['arm_swing_l']:.2f} arm_swing_R={metrics['arm_swing_r']:.2f}"
+                )
         else:
             _pose_idle(scene_data)
     bpy.context.view_layer.update()
-    bc.render_preview(meshes, out, asset_id=asset_id, mask_meshes=meshes)
+    render_meshes = meshes
+    cleanup: list = []
+    if False and walk_pose and asset_id == "staff-researcher-idle":
+        try:
+            render_meshes, cleanup = bake_evaluated_render_meshes(meshes)
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN staff-researcher-idle turnaround_walk_bake {exc}")
+            render_meshes = meshes
+            cleanup = []
+    try:
+        bc.render_preview(render_meshes, out, asset_id=asset_id, mask_meshes=render_meshes)
+    finally:
+        if cleanup:
+            dispose_baked_render_meshes(meshes, cleanup)
 
 
 def main() -> int:
@@ -93,6 +118,7 @@ def main() -> int:
         if asset_id == "staff-founder-idle"
         else build_researcher_walk_scene()
     )
+    ensure_locomotion_action(scene_data.arm, scene_data.action_name)
     apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
     if asset_id == "staff-founder-idle":
         founder_eye_preview_tweak(scene_data.render_meshes)
@@ -128,6 +154,7 @@ def main() -> int:
         mask_src = tile.with_name(tile.stem + ".mask.png")
         panel_mask_paths.append(mask_src if mask_src.is_file() else None)
     walk_tile = tmp / "walk_side.png"
+    walk_fr = int(scene_data.walk_frames[1])
     _render_tile(
         meshes,
         asset_id,
@@ -135,6 +162,7 @@ def main() -> int:
         walk_tile,
         walk_pose=True,
         scene_data=scene_data,
+        walk_frame=walk_fr,
     )
     tiles.append(Image.open(walk_tile).convert("RGB"))
     walk_mask = walk_tile.with_name(walk_tile.stem + ".mask.png")

@@ -1,67 +1,27 @@
 #!/usr/bin/env python3
-"""FAIL#22 pose walk gate — ankle spread, knee flex, arm swing per gait tile frame."""
+"""FAIL#22+#23 pose walk gate — same armature pose as walk PNG renders."""
 from __future__ import annotations
 
-import math
+import os
 import sys
+
+os.environ.setdefault("RESEARCHER_STOCK_RECOLOR", "1")
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from kenney_hero_walk_strip import (  # noqa: E402
     _ankle_spread_x,
     _spread_minmax_frames,
-    apply_idle_arm_blend,
     build_researcher_walk_scene,
+    measure_walk_frame_pose,
+    pose_walk_for_render,
 )
 
 ANKLE_CONTACT_PASS_DELTA_M = 0.15
 KNEE_PASS_MIN_DEG = 20.0
 ARM_SWING_MIN_DEG = 15.0
-
-
-def _bone_world(arm: bpy.types.Object, name: str) -> Vector | None:
-    pb = arm.pose.bones.get(name)
-    if not pb:
-        return None
-    return arm.matrix_world @ pb.head
-
-
-def _bone_tail_world(arm: bpy.types.Object, name: str) -> Vector | None:
-    pb = arm.pose.bones.get(name)
-    if not pb:
-        return None
-    return arm.matrix_world @ (pb.head + pb.tail)
-
-
-def _angle_deg(a: Vector, b: Vector, c: Vector) -> float:
-    u = (a - b).normalized()
-    v = (c - b).normalized()
-    dot = max(-1.0, min(1.0, u.dot(v)))
-    return math.degrees(math.acos(dot))
-
-
-def _knee_flex_deg(arm: bpy.types.Object, side: str) -> float:
-    hip = _bone_world(arm, f"{side}UpLeg")
-    knee = _bone_world(arm, f"{side}Leg")
-    foot = _bone_tail_world(arm, f"{side}Leg") or _bone_world(arm, f"{side}Foot")
-    if not hip or not knee or not foot:
-        return 0.0
-    straight = 180.0
-    return straight - _angle_deg(hip, knee, foot)
-
-
-def _upper_arm_swing_deg(arm: bpy.types.Object, side: str, bind_quats: dict) -> float:
-    ua = arm.pose.bones.get(f"{side}Arm")
-    if not ua:
-        return 0.0
-    bind = bind_quats.get(f"{side}Arm")
-    if not bind:
-        return 0.0
-    dq = ua.rotation_quaternion @ bind.inverted()
-    return abs(math.degrees(dq.angle))
 
 
 def main() -> int:
@@ -70,30 +30,22 @@ def main() -> int:
     arm = data.arm
     labels = data.labels
 
-    rows: list[tuple[str, int, float, float, float, float, float]] = []
+    rows: list[tuple[str, int, dict[str, float]]] = []
     for label, fr in zip(labels, data.walk_frames, strict=True):
-        scene.frame_set(int(fr))
-        apply_idle_arm_blend(arm, data.idle_arm_quats, data.bind_arm_quats)
-        spread = _ankle_spread_x(arm)
-        knee_l = _knee_flex_deg(arm, "Left")
-        knee_r = _knee_flex_deg(arm, "Right")
-        knee_max = max(knee_l, knee_r)
-        swing_l = _upper_arm_swing_deg(arm, "Left", data.idle_arm_quats)
-        swing_r = _upper_arm_swing_deg(arm, "Right", data.idle_arm_quats)
-        swing_max = max(swing_l, swing_r)
-        rows.append((label, fr, spread, knee_max, swing_max, swing_l, swing_r))
+        metrics = measure_walk_frame_pose(data, int(fr))
+        rows.append((label, int(fr), metrics))
+        act = arm.animation_data.action if arm.animation_data else None
+        act_name = act.name if act else "none"
         print(
-            f"OK researcher_walk_pose frame={fr} label={label} "
-            f"ankle_x={spread:.4f} knee_L={knee_l:.2f} knee_R={knee_r:.2f} "
-            f"arm_swing_L={swing_l:.2f} arm_swing_R={swing_r:.2f}"
+            f"OK researcher_walk_pose frame={int(fr)} label={label} action={act_name} "
+            f"ankle_x={metrics['ankle_x']:.4f} knee_L={metrics['knee_l']:.2f} "
+            f"knee_R={metrics['knee_r']:.2f} arm_swing_L={metrics['arm_swing_l']:.2f} "
+            f"arm_swing_R={metrics['arm_swing_r']:.2f}"
         )
 
     by_label = {r[0]: r for r in rows}
-    contact_spreads = [
-        by_label["contact_L"][2],
-        by_label["contact_R"][2],
-    ]
-    passing_spreads = [by_label["down"][2], by_label["up"][2]]
+    contact_spreads = [by_label["contact_L"][2]["ankle_x"], by_label["contact_R"][2]["ankle_x"]]
+    passing_spreads = [by_label["down"][2]["ankle_x"], by_label["up"][2]["ankle_x"]]
     ankle_delta = max(
         max(contact_spreads) - min(passing_spreads),
         max(passing_spreads) - min(contact_spreads),
@@ -107,11 +59,9 @@ def main() -> int:
         data.idle_arm_quats,
         forbidden=set(),
     )
-    scene.frame_set(lo_fr)
-    apply_idle_arm_blend(arm, data.idle_arm_quats, data.bind_arm_quats)
+    pose_walk_for_render(scene, data, lo_fr)
     lo_sp = _ankle_spread_x(arm)
-    scene.frame_set(hi_fr)
-    apply_idle_arm_blend(arm, data.idle_arm_quats, data.bind_arm_quats)
+    pose_walk_for_render(scene, data, hi_fr)
     hi_sp = _ankle_spread_x(arm)
     clip_delta = hi_sp - lo_sp
     ankle_pass = max(ankle_delta, clip_delta)
@@ -122,7 +72,12 @@ def main() -> int:
         )
         return 1
 
-    passing_knee = max(by_label["down"][3], by_label["up"][3])
+    passing_knee = max(
+        by_label["down"][2]["knee_l"],
+        by_label["down"][2]["knee_r"],
+        by_label["up"][2]["knee_l"],
+        by_label["up"][2]["knee_r"],
+    )
     if passing_knee < KNEE_PASS_MIN_DEG:
         print(
             f"FAIL researcher_walk_pose passing_knee={passing_knee:.2f} "
@@ -130,7 +85,12 @@ def main() -> int:
         )
         return 1
 
-    passing_swing = max(by_label["down"][4], by_label["up"][4])
+    passing_swing = max(
+        by_label["down"][2]["arm_swing_l"],
+        by_label["down"][2]["arm_swing_r"],
+        by_label["up"][2]["arm_swing_l"],
+        by_label["up"][2]["arm_swing_r"],
+    )
     if passing_swing < ARM_SWING_MIN_DEG:
         print(
             f"FAIL researcher_walk_pose passing_arm_swing={passing_swing:.2f} "

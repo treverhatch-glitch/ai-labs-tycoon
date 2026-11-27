@@ -39,6 +39,7 @@ from researcher_hero_geometry import spawn_researcher_hair_cap
 from researcher_shirt_derived_meshes import (
     SKIRT_NAME,
     SLEEVES_NAME,
+    _skirt_z_band,
     spawn_shirt_derived_coat_parts,
 )
 
@@ -88,8 +89,8 @@ def _finalize_researcher_coat_slots(
     """Full white torso + long sleeves; open lapel (no chin tube); hands stay skin."""
     lo, span = lm.zmin, lm.span
     wrist_h = lm.h_shoe + 0.14
-    skirt_bot = lm.h_waist + 0.50
     coat_top = lm.h_neck - 0.10
+    _, span, _, z_hip, z_mid_thigh, _zk = _skirt_z_band(ob, lm)
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -109,7 +110,7 @@ def _finalize_researcher_coat_slots(
             if not throat:
                 slots[face.index] = SLOT_SHIRT
 
-        if lm.h_waist - 0.10 <= h <= skirt_bot and lat <= thw * 1.42:
+        if z_hip - span * 0.03 <= wc.z <= z_mid_thigh + span * 0.04 and lat <= thw * 1.42:
             if slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
                 slots[face.index] = SLOT_SHIRT
 

@@ -13,12 +13,16 @@ import blender_common as bc  # noqa: E402
 from kenney_hero_walk_strip import (  # noqa: E402
     KENNEY_RUN_LICENSE,
     apply_walk_materials_to_hero,
+    bake_evaluated_render_meshes,
     build_founder_walk_scene,
     build_researcher_walk_scene,
     configure_preview_env,
+    dispose_baked_render_meshes,
     founder_eye_preview_tweak,
+    ensure_locomotion_action,
+    measure_walk_frame_pose,
+    pose_walk_for_render,
     researcher_lab_coat_preview_tweak,
-    apply_idle_arm_blend,
 )
 from kenney_walk_cycle_gate import (  # noqa: E402
     fingerprints_match,
@@ -62,13 +66,7 @@ def main() -> int:
         f"anim=Kenney/Run license={KENNEY_RUN_LICENSE} "
         f"frames={scene_data.walk_frames} labels={scene_data.labels}"
     )
-    _pose_walk_frame(
-        scene,
-        scene_data.arm,
-        scene_data.walk_frames[0],
-        scene_data.idle_arm_quats,
-        scene_data.bind_arm_quats,
-    )
+    pose_walk_for_render(scene, scene_data, int(scene_data.walk_frames[0]))
     apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
     if asset_id == "staff-founder-idle":
         founder_eye_preview_tweak(scene_data.render_meshes)
@@ -77,37 +75,49 @@ def main() -> int:
     mat_ref = material_fingerprint(scene_data.body)
     tiles: list[Image.Image] = []
     tmp_dir = Path(bpy.app.tempdir)
+    ensure_locomotion_action(scene_data.arm, scene_data.action_name)
+    use_pose_bake = False
     for i, fr in enumerate(scene_data.walk_frames):
-        _pose_walk_frame(
-            scene,
-            scene_data.arm,
-            fr,
-            scene_data.idle_arm_quats,
-            scene_data.bind_arm_quats,
-        )
+        label = scene_data.labels[i] if i < len(scene_data.labels) else f"tile_{i}"
+        pose_walk_for_render(scene, scene_data, int(fr))
+        metrics = measure_walk_frame_pose(scene_data, int(fr))
+        if asset_id == "staff-researcher-idle":
+            print(
+                f"OK researcher_walk_render frame={int(fr)} label={label} "
+                f"ankle_x={metrics['ankle_x']:.4f} "
+                f"knee_L={metrics['knee_l']:.2f} knee_R={metrics['knee_r']:.2f} "
+                f"arm_swing_L={metrics['arm_swing_l']:.2f} arm_swing_R={metrics['arm_swing_r']:.2f}"
+            )
         apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
         if asset_id == "staff-researcher-idle":
             researcher_lab_coat_preview_tweak(scene_data.render_meshes)
         elif asset_id == "staff-founder-idle":
             founder_eye_preview_tweak(scene_data.render_meshes)
-        _pose_walk_frame(
-            scene,
-            scene_data.arm,
-            fr,
-            scene_data.idle_arm_quats,
-            scene_data.bind_arm_quats,
-        )
+        pose_walk_for_render(scene, scene_data, int(fr))
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")
             return 1
         tile = tmp_dir / f"walk_{i}.png"
-        bc.render_preview(
-            scene_data.render_meshes,
-            tile,
-            asset_id=asset_id,
-            mask_meshes=scene_data.render_meshes,
-        )
+        render_meshes = scene_data.render_meshes
+        cleanup: list = []
+        if use_pose_bake:
+            try:
+                render_meshes, cleanup = bake_evaluated_render_meshes(scene_data.render_meshes)
+            except Exception as exc:  # noqa: BLE001
+                print(f"WARN staff-researcher-idle walk_bake {exc}")
+                render_meshes = scene_data.render_meshes
+                cleanup = []
+        try:
+            bc.render_preview(
+                render_meshes,
+                tile,
+                asset_id=asset_id,
+                mask_meshes=render_meshes,
+            )
+        finally:
+            if cleanup:
+                dispose_baked_render_meshes(scene_data.render_meshes, cleanup)
         tiles.append(Image.open(tile).convert("RGB"))
     w, h = tiles[0].size
     gap = 8
@@ -124,14 +134,6 @@ def main() -> int:
     sheet.save(out)
     print(f"OK walk_strip wrote {out.relative_to(bc.REPO_ROOT)}")
     return 0
-
-
-def _pose_walk_frame(scene, arm, frame: int, idle_arm_quats, bind_arm_quats) -> None:
-    scene.frame_set(frame)
-    apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
-    bpy.context.view_layer.update()
-    dg = bpy.context.evaluated_depsgraph_get()
-    dg.update()
 
 
 if __name__ == "__main__":

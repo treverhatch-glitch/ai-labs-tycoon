@@ -14,16 +14,7 @@ SKIRT_NAME = "ResearcherCoatSkirt"
 SLEEVES_NAME = "ResearcherCoatSleeves"
 
 SKIRT_ALLOWED_VG = frozenset(
-    {
-        "Hips",
-        "Spine",
-        "Chest",
-        "UpperChest",
-        "LeftUpLeg",
-        "RightUpLeg",
-        "LeftLeg",
-        "RightLeg",
-    }
+    {"Hips", "Spine", "Chest", "UpperChest", "LeftUpLeg", "RightUpLeg"}
 )
 SLEEVE_ALLOWED_VG = frozenset(
     {
@@ -129,32 +120,141 @@ def _mesh_from_face_pick(
     return ob, src_for
 
 
+def _skirt_z_band(
+    body: bpy.types.Object, lm
+) -> tuple[float, float, float, float, float, float]:
+    lo, span = lm.zmin, lm.span
+    skirt_top_z = lo + span * (lm.h_neck - 0.12)
+    z_hip = lo + span * (lm.h_waist - 0.06)
+    z_knee = lo + span * (lm.h_waist + 0.55)
+    hip_pts: list[float] = []
+    knee_pts: list[float] = []
+    for v in body.data.vertices:
+        w = body.matrix_world @ v.co
+        h = (w.z - lo) / span
+        if lm.h_waist - 0.08 < h < lm.h_waist + 0.06:
+            hip_pts.append(w.z)
+        if lm.h_waist + 0.26 < h < lm.h_waist + 0.56:
+            knee_pts.append(w.z)
+    if hip_pts:
+        z_hip = min(hip_pts)
+    if knee_pts:
+        z_knee = max(knee_pts)
+    arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
+    if arm:
+        for name, dst in (("Hips", "hip"), ("LeftLeg", "knee")):
+            b = arm.data.bones.get(name)
+            if b:
+                wz = (arm.matrix_world @ b.head_local).z
+                if dst == "hip":
+                    z_hip = wz - span * 0.02
+                else:
+                    z_knee = wz + span * 0.02
+    z_mid_thigh = (z_hip + z_knee) * 0.5
+    return lo, span, skirt_top_z, z_hip, z_mid_thigh, z_knee
+
+
 def pick_shirt_skirt_faces(
     body: bpy.types.Object,
     bm_src: bmesh.types.BMesh,
     *,
     shirt_slot: int,
+    jeans_slot: int,
     lm,
     hc: Vector,
     fwd: Vector,
     ws: list[Vector],
 ) -> set[int]:
-    lo, span = lm.zmin, lm.span
-    skirt_bot = lm.h_waist + 0.52
+    lo, span, skirt_top_z, z_hip, z_mid_thigh, _z_knee = _skirt_z_band(body, lm)
     pick: set[int] = set()
     for f in bm_src.faces:
-        if f.material_index != shirt_slot:
+        if f.material_index not in (shirt_slot, jeans_slot):
             continue
         wc = _face_world_centroid(body, f)
-        h = (wc.z - lo) / span
-        if h < lm.h_waist - 0.03 or h > skirt_bot:
+        if wc.z < z_hip - span * 0.03 or wc.z > z_mid_thigh + span * 0.04:
             continue
+        if wc.z > skirt_top_z:
+            continue
+        h = (wc.z - lo) / span
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat > thw * 1.42:
+        if wc.z >= z_hip + (z_mid_thigh - z_hip) * 0.18:
+            lat_cap = thw * 1.95
+        else:
+            lat_cap = thw * 1.42
+        if lat > lat_cap:
+            continue
+        pick.add(f.index)
+    hem_seed = max((z_hip - span * 0.02, 0.98))
+    for f in bm_src.faces:
+        if f.index in pick or f.material_index != jeans_slot:
+            continue
+        wc = _face_world_centroid(body, f)
+        if wc.z < hem_seed or wc.z > z_mid_thigh + span * 0.04:
+            continue
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat > thw * 1.85:
             continue
         pick.add(f.index)
     return pick
+
+
+def _neck_cut_world_z(arm: bpy.types.Object | None, lm) -> float:
+    lo, span = lm.zmin, lm.span
+    if arm and arm.type == "ARMATURE":
+        for name in ("Neck", "Head"):
+            b = arm.data.bones.get(name)
+            if b:
+                return (arm.matrix_world @ b.head_local).z
+    return lo + span * (lm.h_neck - 0.08)
+
+
+def _stretch_skirt_hem_to_mid_thigh(
+    skirt: bpy.types.Object, z_hip: float, z_mid: float, *, skirt_top_z: float
+) -> None:
+    if not skirt.data.vertices:
+        return
+    mw = skirt.matrix_world.copy()
+    inv = mw.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(skirt.data)
+    bm.verts.ensure_lookup_table()
+    zs = [(mw @ v.co).z for v in bm.verts]
+    z_hi = max(zs)
+    if z_hi >= z_mid - 0.02:
+        bm.free()
+        return
+    scale = (z_mid - z_hip) / max(1e-6, z_hi - z_hip)
+    for v in bm.verts:
+        w = mw @ v.co
+        if w.z > skirt_top_z or w.z < z_hip:
+            continue
+        w.z = z_hip + (w.z - z_hip) * scale
+        v.co = inv @ w
+    bm.to_mesh(skirt.data)
+    skirt.data.update()
+    bm.free()
+
+
+def _prune_verts_above_z(ob: bpy.types.Object, z_cut: float, *, margin_m: float = 0.012) -> int:
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    kill = [
+        v.index
+        for v in bm.verts
+        if (ob.matrix_world @ v.co).z > z_cut - margin_m
+    ]
+    if not kill:
+        bm.free()
+        return 0
+    bmesh.ops.delete(bm, geom=[bm.verts[i] for i in kill], context="VERTS")
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    return len(kill)
 
 
 def pick_shirt_sleeve_faces(
@@ -241,8 +341,24 @@ def spawn_shirt_derived_coat_parts(
     bm_src.from_mesh(body.data)
     bm_src.faces.ensure_lookup_table()
     skirt_pick = pick_shirt_skirt_faces(
-        body, bm_src, shirt_slot=shirt_slot, lm=lm, hc=hc, fwd=fwd, ws=ws
+        body,
+        bm_src,
+        shirt_slot=shirt_slot,
+        jeans_slot=2,
+        lm=lm,
+        hc=hc,
+        fwd=fwd,
+        ws=ws,
     )
+    if len(skirt_pick) < 12:
+        lo, span = lm.zmin, lm.span
+        for f in bm_src.faces:
+            if f.material_index not in (shirt_slot, 2):
+                continue
+            wc = _face_world_centroid(body, f)
+            h = (wc.z - lo) / span
+            if lm.h_waist - 0.06 <= h <= lm.h_waist + 0.40 and h < lm.h_neck - 0.14:
+                skirt_pick.add(f.index)
     sleeve_pick = pick_shirt_sleeve_faces(
         body,
         bm_src,
@@ -265,6 +381,16 @@ def spawn_shirt_derived_coat_parts(
     skirt, _ = _mesh_from_face_pick(body, bm_src, skirt_pick, SKIRT_NAME)
     sleeves, _ = _mesh_from_face_pick(body, bm_src, sleeve_pick, SLEEVES_NAME)
     bm_src.free()
+    lo, span, skirt_top_z, z_hip, z_mid_thigh, _zk = _skirt_z_band(body, lm)
+    arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
+    z_neck = _neck_cut_world_z(arm, lm)
+    _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
+    z_after = max((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
+    if z_after < z_mid_thigh - span * 0.06:
+        _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
+    removed = _prune_verts_above_z(skirt, z_neck)
+    if removed > 0 and len(skirt.data.vertices) < 12:
+        raise RuntimeError(f"FAIL staff-researcher-idle skirt_prune_neck removed={removed}")
     for ob in (skirt, sleeves):
         ob.data.materials.clear()
         ob.data.materials.append(coat_mat)

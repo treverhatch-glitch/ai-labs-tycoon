@@ -71,6 +71,45 @@ class WalkHeroScene:
     bind_arm_quats: dict[str, Quaternion]
 
 
+def measure_walk_frame_pose(data: WalkHeroScene, frame: int) -> dict[str, float]:
+    """Bone metrics after pose_walk_for_render (same armature as walk PNG tiles)."""
+    scene = bpy.context.scene
+    pose_walk_for_render(scene, data, frame)
+    arm = data.arm
+    spread = _ankle_spread_x(arm)
+    knee_l = 180.0
+    knee_r = 180.0
+    for side in ("Left", "Right"):
+        up = _bone_world_simple(arm, f"{side}UpLeg")
+        knee = _bone_world_simple(arm, f"{side}Leg")
+        foot = _bone_world_simple(arm, f"{side}Foot")
+        if up and knee and foot:
+            u = (up - knee).normalized()
+            v = (foot - knee).normalized()
+            dot = max(-1.0, min(1.0, u.dot(v)))
+            flex = 180.0 - math.degrees(math.acos(dot))
+            if side == "Left":
+                knee_l = flex
+            else:
+                knee_r = flex
+    swings: dict[str, float] = {}
+    for side in ("Left", "Right"):
+        ua = arm.pose.bones.get(f"{side}Arm")
+        idle_q = data.idle_arm_quats.get(f"{side}Arm")
+        if ua and idle_q:
+            dq = ua.rotation_quaternion @ idle_q.inverted()
+            swings[side] = abs(math.degrees(dq.angle))
+        else:
+            swings[side] = 0.0
+    return {
+        "ankle_x": spread,
+        "knee_l": knee_l,
+        "knee_r": knee_r,
+        "arm_swing_l": swings["Left"],
+        "arm_swing_r": swings["Right"],
+    }
+
+
 def _purge_dup_armature() -> None:
     dup = bpy.data.objects.get("Root.001")
     if dup:
@@ -450,6 +489,35 @@ def apply_idle_arm_blend(
     _ = blend
     if idle and bind:
         apply_walk_arm_retarget(arm, bind, idle)
+
+
+def ensure_locomotion_action(arm: bpy.types.Object, action_name: str) -> bpy.types.Action:
+    act = bpy.data.actions.get(action_name)
+    if not act:
+        for candidate in bpy.data.actions:
+            if candidate.name == action_name or candidate.name.endswith(action_name.split("|")[-1]):
+                act = candidate
+                break
+    if not act:
+        act = _pick_locomotion_action()
+    arm.animation_data_create()
+    arm.animation_data.action = act
+    return act
+
+
+def pose_walk_for_render(
+    scene: bpy.types.Scene,
+    data: WalkHeroScene,
+    frame: int,
+) -> None:
+    ensure_locomotion_action(data.arm, data.action_name)
+    if hasattr(data.arm.data, "pose_position"):
+        data.arm.data.pose_position = "POSE"
+    scene.frame_set(int(frame))
+    apply_idle_arm_blend(data.arm, data.idle_arm_quats, data.bind_arm_quats)
+    bpy.context.view_layer.update()
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
 
 
 def _weight_mesh_to_head(hair: bpy.types.Object, arm: bpy.types.Object) -> None:
