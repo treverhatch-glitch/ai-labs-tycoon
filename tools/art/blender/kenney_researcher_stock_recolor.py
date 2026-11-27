@@ -375,7 +375,8 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_hand_skin_vertex_groups(bm, slots, ob)
-    _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_researcher_chest_v_shirt(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_researcher_tie(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
@@ -463,12 +464,12 @@ def _stamp_researcher_shirt_torso_arms(
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.08 or h > lm.h_waist + 0.22:
+        if h < lm.h_neck - 0.10 or h > lm.h_waist + 0.26:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         on_torso = lat <= thw * 1.10 and y_face_fn(wc) > -0.18
-        on_arm = lat > thw * 0.78 and lm.h_neck - 0.06 <= h <= lm.h_waist + 0.18
+        on_arm = lat > thw * 0.74 and lm.h_neck - 0.08 <= h <= lm.h_waist + 0.24
         if on_torso or on_arm:
             slots[face.index] = SLOT_SHIRT
 
@@ -484,7 +485,7 @@ def _stamp_tee_short_sleeve(
 ) -> None:
     """Tee ends at upper arm; forearm and hands stay skin."""
     lo, span = lm.zmin, lm.span
-    sleeve_hi = lm.h_waist + 0.14
+    wrist_h = lm.h_waist - 0.02
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -495,11 +496,11 @@ def _stamp_tee_short_sleeve(
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         if lat <= thw + span * 0.014:
             continue
-        if h > sleeve_hi and slots[face.index] == SLOT_SHIRT:
+        if h > wrist_h and slots[face.index] == SLOT_SHIRT:
             slots[face.index] = SLOT_HAND
 
 
-def _stamp_teal_undershirt_vneck(
+def _stamp_researcher_chest_v_shirt(
     bm: bmesh.types.BMesh,
     slots: list[int],
     ob: bpy.types.Object,
@@ -509,7 +510,7 @@ def _stamp_teal_undershirt_vneck(
     fwd: Vector,
     y_face_fn,
 ) -> None:
-    """Front V-neck teal band (readable in 3/4 idle)."""
+    """Light-blue shirt in open lab-coat front V."""
     lo, span = lm.zmin, lm.span
     for face in bm.faces:
         wc = Vector()
@@ -520,11 +521,40 @@ def _stamp_teal_undershirt_vneck(
         h = (wc.z - lo) / span
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if not (lm.h_neck - 0.04 <= h <= lm.h_waist - 0.10):
+        if not (lm.h_neck - 0.04 <= h <= lm.h_waist - 0.08):
             continue
-        if y_face < 0.06 or lat > thw * 0.30:
+        if y_face < 0.05:
             continue
-        slots[face.index] = SLOT_COLLAR
+        if lat < thw * 0.34:
+            slots[face.index] = SLOT_SHIRT
+
+
+def _stamp_researcher_tie(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Dark tie strip in the shirt V (lapel material)."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if not (lm.h_neck + 0.01 <= h <= lm.h_waist - 0.14):
+            continue
+        if y_face < 0.12 or lat > thw * 0.11:
+            continue
+        slots[face.index] = SLOT_LAPEL
 
 
 def _stamp_coat_knee_front(
@@ -649,7 +679,7 @@ def _stamp_lab_coat_open_front(
 ) -> None:
     """Off-white lab coat torso to mid-thigh; center V left for teal undershirt."""
     lo, span = lm.zmin, lm.span
-    coat_hi = lm.h_waist + 0.34
+    coat_hi = lm.h_waist + 0.58
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -663,7 +693,7 @@ def _stamp_lab_coat_open_front(
             continue
         if y_face < -0.06:
             continue
-        if y_face > 0.11 and lat < thw * 0.24:
+        if y_face > 0.06 and lat < thw * 0.30:
             continue
         if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
             continue
@@ -1025,7 +1055,7 @@ def spawn_researcher_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object
     head_top = _researcher_head_top(ws, lm)
     eye_h = _researcher_eye_h(ws, lm, head_top)
     eye_z = lm.zmin + lm.span * eye_h
-    proud = head_w * 0.028
+    proud = head_w * 0.034
     sep = head_w * 0.158
     radius = head_w * 0.036
     cast_in = -fwd
