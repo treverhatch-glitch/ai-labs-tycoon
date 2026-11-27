@@ -59,6 +59,18 @@ WALK_ARM_BONES = (
 ARM_BLEND_BONES = WALK_ARM_BONES
 
 
+def _lead_arm_schedule(
+    labels: tuple[str, ...] | list[str], frames: list[int]
+) -> dict[int, str]:
+    out: dict[int, str] = {}
+    for label, fr in zip(labels, frames, strict=False):
+        if label == "contact_L":
+            out[int(fr)] = "Right"
+        elif label == "contact_R":
+            out[int(fr)] = "Left"
+    return out
+
+
 @dataclass
 class WalkHeroScene:
     arm: bpy.types.Object
@@ -69,6 +81,7 @@ class WalkHeroScene:
     labels: tuple[str, str, str, str]
     idle_arm_quats: dict[str, Quaternion]
     bind_arm_quats: dict[str, Quaternion]
+    lead_arm_by_frame: dict[int, str]
 
 
 def measure_walk_frame_pose(
@@ -100,6 +113,7 @@ def measure_walk_frame_pose(
             else:
                 knee_r = flex
     swings: dict[str, float] = {}
+    shoulder_swings: dict[str, float] = {}
     for side in ("Left", "Right"):
         ua = arm.pose.bones.get(f"{side}Arm")
         idle_q = data.idle_arm_quats.get(f"{side}Arm")
@@ -108,12 +122,21 @@ def measure_walk_frame_pose(
             swings[side] = abs(math.degrees(dq.angle))
         else:
             swings[side] = 0.0
+        sh = arm.pose.bones.get(f"{side}Shoulder")
+        idle_sh = data.idle_arm_quats.get(f"{side}Shoulder")
+        if sh and idle_sh:
+            dq_sh = sh.rotation_quaternion @ idle_sh.inverted()
+            shoulder_swings[side] = abs(math.degrees(dq_sh.angle))
+        else:
+            shoulder_swings[side] = 0.0
     return {
         "ankle_x": spread,
         "knee_l": knee_l,
         "knee_r": knee_r,
         "arm_swing_l": swings["Left"],
         "arm_swing_r": swings["Right"],
+        "shoulder_swing_l": shoulder_swings["Left"],
+        "shoulder_swing_r": shoulder_swings["Right"],
     }
 
 
@@ -449,23 +472,46 @@ def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
     return out
 
 
+def _lead_stride_side(arm: bpy.types.Object) -> str:
+    """Foot farther forward (+X in walk strip space) drives opposite-arm swing."""
+    lf = _bone_world_simple(arm, "LeftFoot")
+    rf = _bone_world_simple(arm, "RightFoot")
+    if not lf or not rf:
+        return ""
+    lead = lf.x - rf.x
+    if lead > 0.02:
+        return "Left"
+    if lead < -0.02:
+        return "Right"
+    return ""
+
+
 def _counter_swing_quat(arm: bpy.types.Object, side: str) -> Quaternion:
     lf = _bone_world_simple(arm, "LeftFoot")
     rf = _bone_world_simple(arm, "RightFoot")
     if not lf or not rf:
         return Quaternion((1.0, 0.0, 0.0, 0.0))
-    lead = (lf.x - rf.x) if side == "Left" else (rf.x - lf.x)
-    amp = max(-1.0, min(1.0, lead / 0.25)) * math.radians(16.0)
+    foot_lead = lf.x - rf.x
+    signed = -foot_lead if side == "Left" else foot_lead
+    lead_stride = _lead_stride_side(arm)
+    lead_arm = (lead_stride == "Left" and side == "Right") or (
+        lead_stride == "Right" and side == "Left"
+    )
+    if lead_stride and not lead_arm:
+        return Quaternion((1.0, 0.0, 0.0, 0.0))
+    amp = max(-1.0, min(1.0, signed / 0.22)) * math.radians(22.0)
     axis = (1.0, 0.0, 0.0)
-    return Quaternion(axis, amp if side == "Left" else -amp)
+    return Quaternion(axis, amp)
 
 
 def apply_walk_arm_retarget(
     arm: bpy.types.Object,
     bind: dict[str, Quaternion],
     idle: dict[str, Quaternion],
+    *,
+    lead_arm: str | None = None,
 ) -> None:
-    """Idle hang + gentle counter-swing; locomotion clip must not drive arm channels (muted)."""
+    """Idle hang + counter-swing on lead arm vs opposite stride (locomotion arms muted)."""
     _ = bind
     for side in ("Left", "Right"):
         ua = arm.pose.bones.get(f"{side}Arm")
@@ -481,7 +527,27 @@ def apply_walk_arm_retarget(
                 continue
             pb.rotation_mode = "QUATERNION"
             pb.rotation_quaternion = idle[name].copy()
-        swing = _counter_swing_quat(arm, side)
+        if lead_arm and side != lead_arm:
+            continue
+        if lead_arm:
+            swing = Quaternion((1.0, 0.0, 0.0), math.radians(22.0))
+        else:
+            lead_stride = _lead_stride_side(arm)
+            lead_side = (
+                "Right"
+                if lead_stride == "Left"
+                else "Left"
+                if lead_stride == "Right"
+                else side
+            )
+            if side != lead_side:
+                continue
+            swing = _counter_swing_quat(arm, side)
+        if abs(swing.angle) < 1e-6:
+            continue
+        if sh:
+            sh_swing = Quaternion(swing.axis, swing.angle * 0.78)
+            sh.rotation_quaternion = (sh_swing @ sh.rotation_quaternion).normalized()
         ua.rotation_quaternion = (swing @ ua.rotation_quaternion).normalized()
         fa.rotation_quaternion = (swing @ fa.rotation_quaternion).normalized()
     bpy.context.view_layer.update()
@@ -492,10 +558,12 @@ def apply_idle_arm_blend(
     idle: dict[str, Quaternion] | None = None,
     bind: dict[str, Quaternion] | None = None,
     blend: float = 0.0,
+    *,
+    lead_arm: str | None = None,
 ) -> None:
     _ = blend
     if idle and bind:
-        apply_walk_arm_retarget(arm, bind, idle)
+        apply_walk_arm_retarget(arm, bind, idle, lead_arm=lead_arm)
 
 
 def ensure_locomotion_action(arm: bpy.types.Object, action_name: str) -> bpy.types.Action:
@@ -521,7 +589,12 @@ def pose_walk_for_render(
     if hasattr(data.arm.data, "pose_position"):
         data.arm.data.pose_position = "POSE"
     scene.frame_set(int(frame))
-    apply_idle_arm_blend(data.arm, data.idle_arm_quats, data.bind_arm_quats)
+    apply_idle_arm_blend(
+        data.arm,
+        data.idle_arm_quats,
+        data.bind_arm_quats,
+        lead_arm=data.lead_arm_by_frame.get(int(frame)),
+    )
     bpy.context.view_layer.update()
     deps = bpy.context.evaluated_depsgraph_get()
     deps.update()
@@ -889,6 +962,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
         labels=labels,
         idle_arm_quats=idle_arms,
         bind_arm_quats=bind_arms,
+        lead_arm_by_frame=_lead_arm_schedule(labels, walk_frames),
     )
 
 
@@ -982,6 +1056,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         labels=labels,
         idle_arm_quats=idle_arms,
         bind_arm_quats=bind_arms,
+        lead_arm_by_frame=_lead_arm_schedule(labels, walk_frames),
     )
 
 

@@ -30,6 +30,8 @@ SLEEVE_ALLOWED_VG = frozenset(
 VG_DENY_HEAD = frozenset({"Head", "Neck"})
 MAX_COAT_BODY_GAP_M = 0.08
 MAX_COAT_EDGE_M = 0.15
+MIN_COAT_ISLAND_VERTS = 50
+COAT_ISLAND_BODY_TOUCH_M = 0.035
 
 
 def _face_world_centroid(body: bpy.types.Object, face: bmesh.types.BMFace) -> Vector:
@@ -170,6 +172,125 @@ def _project_verts_onto_body_shell(ob: bpy.types.Object, body: bpy.types.Object)
     bm.free()
 
 
+def _keep_largest_coat_island(ob: bpy.types.Object) -> int:
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    catalog: list[tuple[list[bmesh.types.BMFace], int]] = []
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        stack = [seed]
+        island: list[bmesh.types.BMFace] = []
+        visited.add(seed.index)
+        while stack:
+            face = stack.pop()
+            island.append(face)
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        visited.add(nb.index)
+                        stack.append(nb)
+        catalog.append((island, len(island)))
+    if len(catalog) <= 1:
+        bm.free()
+        return len(catalog)
+    catalog.sort(key=lambda row: row[1], reverse=True)
+    doomed = [f for isl, _ in catalog[1:] for f in isl]
+    bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    left = len(catalog[0][0])
+    bm.free()
+    return left
+
+
+def _count_mesh_islands(ob: bpy.types.Object) -> int:
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    n = 0
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        n += 1
+        stack = [seed]
+        visited.add(seed.index)
+        while stack:
+            face = stack.pop()
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        visited.add(nb.index)
+                        stack.append(nb)
+    bm.free()
+    return n
+
+
+def _prune_coat_loose_islands(
+    ob: bpy.types.Object,
+    body: bpy.types.Object,
+    *,
+    min_verts: int = MIN_COAT_ISLAND_VERTS,
+    touch_m: float = COAT_ISLAND_BODY_TOUCH_M,
+) -> int:
+    """Drop shoulder shards: islands < min_verts or not touching body surface."""
+    tree = _body_bvh_world(body)
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    bm.verts.ensure_lookup_table()
+    visited: set[int] = set()
+    catalog: list[tuple[list[bmesh.types.BMFace], int, bool]] = []
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        stack = [seed]
+        island: list[bmesh.types.BMFace] = []
+        island_verts: set[int] = set()
+        visited.add(seed.index)
+        while stack:
+            face = stack.pop()
+            island.append(face)
+            for v in face.verts:
+                island_verts.add(v.index)
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        visited.add(nb.index)
+                        stack.append(nb)
+        touches = False
+        for vi in island_verts:
+            co_w = ob.matrix_world @ bm.verts[vi].co
+            _loc, _n, _idx, dist = tree.find_nearest(co_w)
+            if dist is not None and dist <= touch_m:
+                touches = True
+                break
+        catalog.append((island, len(island_verts), touches))
+    catalog.sort(key=lambda row: row[1], reverse=True)
+    doomed: list[bmesh.types.BMFace] = []
+    removed = 0
+    for idx, (island, n_verts, touches) in enumerate(catalog):
+        keep_main = idx == 0 and touches and n_verts >= 12
+        if keep_main:
+            continue
+        if n_verts < min_verts or not touches:
+            doomed.extend(island)
+            removed += n_verts
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0012)
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    return removed
+
+
 def _sanitize_coat_part(
     ob: bpy.types.Object,
     body: bpy.types.Object,
@@ -184,12 +305,21 @@ def _sanitize_coat_part(
     _transfer_coat_weights_nearest_face_interp(ob, body)
     _purge_vertex_groups(ob, allow=allow, deny=VG_DENY_HEAD)
     _normalize_vertex_groups(ob)
+    _prune_coat_loose_islands(ob, body)
     _cull_spike_edges(ob, max_edge_m=MAX_COAT_EDGE_M)
     if cull_below_knee:
         _cull_verts_below_z(ob, z_knee - 0.008)
     _cull_verts_far_from_body(ob, body, max_gap_m=MAX_COAT_BODY_GAP_M)
     if len(ob.data.vertices) < 12:
         raise RuntimeError(f"FAIL staff-researcher-idle coat_cull_empty name={ob.name}")
+    islands = _count_mesh_islands(ob)
+    if islands != 1:
+        _keep_largest_coat_island(ob)
+        islands = _count_mesh_islands(ob)
+    if islands != 1:
+        raise RuntimeError(
+            f"FAIL staff-researcher-idle coat_islands={islands} name={ob.name} want=1"
+        )
 
 
 def _repair_weights_from_nearest_body(
@@ -368,6 +498,23 @@ def pick_shirt_skirt_faces(
         if lat > thw * 1.92:
             continue
         pick.add(f.index)
+    z_top = skirt_top_z + span * 0.05
+    z_lo = z_hip - span * 0.04
+    changed = True
+    while changed:
+        changed = False
+        for f in bm_src.faces:
+            if f.index in pick:
+                continue
+            if f.material_index not in (shirt_slot, jeans_slot):
+                continue
+            if not any(nb.index in pick for e in f.edges for nb in e.link_faces):
+                continue
+            wc = _face_world_centroid(body, f)
+            if wc.z < z_lo or wc.z > z_top:
+                continue
+            pick.add(f.index)
+            changed = True
     return pick
 
 
@@ -438,19 +585,25 @@ def pick_shirt_sleeve_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
-    wrist_lo = lm.h_shoe + 0.02
-    sleeve_hi = lm.h_neck + 0.08
+    wrist_lo = lm.h_shoe + 0.01
+    sleeve_hi = lm.h_neck + 0.10
     pick: set[int] = set()
     for f in bm_src.faces:
-        if f.material_index not in (shirt_slot, hand_slot):
+        mat_ok = f.material_index in (shirt_slot, hand_slot, 2)
+        if not mat_ok:
             continue
         wc = _face_world_centroid(body, f)
         h = (wc.z - lo) / span
-        if h < wrist_lo - 0.05 or h > sleeve_hi:
+        if h < wrist_lo - 0.02 or h > sleeve_hi:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat <= thw * 0.24:
+        arm_band = lat > thw * 0.52
+        if not arm_band:
+            continue
+        if f.material_index == 2 and h > lm.h_waist + 0.08:
+            continue
+        if f.material_index == hand_slot and lat <= thw * 0.68:
             continue
         pick.add(f.index)
     changed = True

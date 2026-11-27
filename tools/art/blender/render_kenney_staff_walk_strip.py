@@ -86,7 +86,9 @@ def main() -> int:
                 f"OK researcher_walk_render frame={int(fr)} label={label} "
                 f"ankle_x={metrics['ankle_x']:.4f} "
                 f"knee_L={metrics['knee_l']:.2f} knee_R={metrics['knee_r']:.2f} "
-                f"arm_swing_L={metrics['arm_swing_l']:.2f} arm_swing_R={metrics['arm_swing_r']:.2f}"
+                f"arm_swing_L={metrics['arm_swing_l']:.2f} arm_swing_R={metrics['arm_swing_r']:.2f} "
+                f"shoulder_L={metrics['shoulder_swing_l']:.2f} "
+                f"shoulder_R={metrics['shoulder_swing_r']:.2f}"
             )
         apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
         if asset_id == "staff-researcher-idle":

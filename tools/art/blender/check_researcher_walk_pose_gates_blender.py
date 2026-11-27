@@ -22,6 +22,7 @@ from kenney_hero_walk_strip import (  # noqa: E402
 ANKLE_CONTACT_PASS_DELTA_M = 0.15
 KNEE_PASS_MIN_DEG = 20.0
 ARM_SWING_MIN_DEG = 15.0
+SHOULDER_SWING_MIN_DEG = 15.0
 
 
 def main() -> int:
@@ -48,6 +49,7 @@ def main() -> int:
         m = by_label[contact][2]
         knee = max(m["knee_l"], m["knee_r"])
         swing = max(m["arm_swing_l"], m["arm_swing_r"])
+        shoulder = max(m["shoulder_swing_l"], m["shoulder_swing_r"])
         if knee < KNEE_PASS_MIN_DEG:
             print(
                 f"FAIL researcher_walk_pose contact={contact} knee={knee:.2f} "
@@ -58,6 +60,24 @@ def main() -> int:
             print(
                 f"FAIL researcher_walk_pose contact={contact} arm_swing={swing:.2f} "
                 f"want>={ARM_SWING_MIN_DEG}"
+            )
+            return 1
+        if shoulder < SHOULDER_SWING_MIN_DEG:
+            print(
+                f"FAIL researcher_walk_pose contact={contact} shoulder={shoulder:.2f} "
+                f"want>={SHOULDER_SWING_MIN_DEG}"
+            )
+            return 1
+        if contact == "contact_L":
+            lead_sw = m["arm_swing_r"]
+            trail_sw = m["arm_swing_l"]
+        else:
+            lead_sw = m["arm_swing_l"]
+            trail_sw = m["arm_swing_r"]
+        if lead_sw < max(ARM_SWING_MIN_DEG, trail_sw + 6.0):
+            print(
+                f"FAIL researcher_walk_pose contact={contact} opposite_arm "
+                f"lead={lead_sw:.2f} trail={trail_sw:.2f}"
             )
             return 1
     passing_spreads = [by_label["down"][2]["ankle_x"], by_label["up"][2]["ankle_x"]]

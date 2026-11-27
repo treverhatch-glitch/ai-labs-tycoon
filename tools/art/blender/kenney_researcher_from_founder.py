@@ -86,7 +86,7 @@ def _finalize_researcher_coat_slots(
 ) -> None:
     """Full white torso + long sleeves; open lapel (no chin tube); hands stay skin."""
     lo, span = lm.zmin, lm.span
-    wrist_h = lm.h_shoe + 0.14
+    wrist_h = lm.h_shoe + 0.22
     coat_top = lm.h_neck - 0.10
     _, span, _, z_hip, z_mid_thigh, _zk = _skirt_z_band(ob, lm)
     for face in bm.faces:

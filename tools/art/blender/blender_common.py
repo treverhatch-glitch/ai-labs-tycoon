@@ -576,6 +576,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                     and not o.name.startswith("ResearcherLabCoat")
                     and not o.name.startswith("ResearcherHairCap")
                     and not o.name.startswith("ResearcherCoatSkirt")
+                    and not o.name.startswith("ResearcherCoatSleeves")
                 ]
                 if asset_id == "staff-founder-idle":
                     for ob in mesh_obs:
