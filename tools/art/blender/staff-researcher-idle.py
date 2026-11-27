@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CC0 Quaternius modular character → researcher hero (lab coat, shirt/tie, glasses)."""
+"""CC0 Kenney character → researcher hero (recolour lab coat, shirt, glasses)."""
 import os
 import sys
 from pathlib import Path
@@ -10,12 +10,12 @@ import kenney_researcher_lib as kr  # noqa: E402
 
 
 def main():
-    os.environ.pop("RESEARCHER_STOCK_RECOLOR", None)
+    os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
     kr.build_researcher_kenney()
     entry = bc.finish_asset(
         "staff-researcher-idle",
         "staff-kit",
-        license_note="CC0-1.0 (Quaternius Ultimate Modular Character + in-repo doctor styling)",
+        license_note="CC0-1.0 (Kenney Animated Characters 3 + in-repo lab-coat recolour)",
     )
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry

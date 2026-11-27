@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""0° face-on diagnostic — Quaternius researcher hero."""
+"""0° face-on diagnostic — Kenney researcher hero."""
 from __future__ import annotations
 
 import os
@@ -10,15 +10,13 @@ import bpy
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
-import cc0_staff_lib as c0  # noqa: E402
+import kenney_researcher_lib as kr  # noqa: E402
 
 
 def main() -> None:
-    if not c0.MODULAR_GLB.is_file():
-        print("FAIL face_diagnostic missing quaternius modular glb")
-        raise SystemExit(1)
-    c0.build_researcher_cc0()
-    meshes = c0.collect_researcher_scene_meshes()
+    os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
+    kr.build_researcher_kenney()
+    meshes = kr.collect_researcher_scene_meshes()
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "0"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"

@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
-import cc0_staff_lib as c0  # noqa: E402
+import kenney_researcher_lib as kr  # noqa: E402
 
 OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
 # Lab coat is intentionally pale; side panels skew grey vs founder hoodie bar.
@@ -105,14 +105,12 @@ def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
 
 
 def _load_recolored_scene() -> list[bpy.types.Object]:
-    c0.build_researcher_cc0()
-    return c0.collect_researcher_scene_meshes()
+    kr.build_researcher_kenney()
+    return kr.collect_researcher_scene_meshes()
 
 
 def main() -> None:
-    if not c0.MODULAR_GLB.is_file():
-        print("FAIL axis_sheet missing quaternius modular glb")
-        raise SystemExit(1)
+    os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
     scene_meshes = _load_recolored_scene()
     fwd = toe_forward(scene_meshes)
     print(f"OK axis_sheet front=({fwd.x:.3f},{fwd.y:.3f}) gltf_ref=-Y")

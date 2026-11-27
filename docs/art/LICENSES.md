@@ -5,9 +5,9 @@ Hero staff on `cursor/art-staff-founder-researcher` restyle these packs in Blend
 | Pack | URL | Use on this branch |
 | --- | --- | --- |
 | Kenney Animated Characters 3 (CC0-1.0) | https://kenney.nl/assets/animated-characters-3 | `staff-founder-idle` — kit **Animated Characters 3**, mesh `Model/characterMedium.fbx`, `License.txt` in incoming |
-| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com/packs/ultimatemodularcharacters.html | **`staff-researcher-idle` v10+** hero base (`character.glb`); proof: `tools/art/cc0/incoming/quaternius/CC0-ULTIMATE-MODULAR-CHARACTERS.md` |
+| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com/packs/ultimatemodularcharacters.html | Incoming reference (`character.glb`); modular v9/v10 experiments only |
 | Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`) |
-| Kenney stock kit GLB (pinned) | https://kenney.nl/assets/animated-characters-3 | **`b09c59ac`** — founder stock gate only; not researcher v10 mesh source |
+| Kenney stock kit GLB (pinned) | https://kenney.nl/assets/animated-characters-3 | **`b09c59ac`** — founder stock gate; **`staff-researcher-idle` v12+** uses same rig bake + in-repo lab-coat recolour (`kenney_researcher_stock_recolor.py`) |
 | Poly Haven `studio_small_08` | https://polyhaven.com/a/studio_small_08 | EEVEE preview HDRI |
 
 Incoming paths and SHA-256 pins: `tools/art/cc0/manifest.json`.

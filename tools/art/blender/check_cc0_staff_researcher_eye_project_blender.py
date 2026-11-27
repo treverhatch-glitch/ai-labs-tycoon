@@ -73,9 +73,12 @@ def _load_scene() -> list[bpy.types.Object]:
         bpy.ops.object.delete(use_global=False)
         bpy.ops.import_scene.gltf(filepath=str(GLB))
     else:
-        import cc0_staff_lib as c0
+        import os
 
-        c0.build_researcher_cc0()
+        os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
+        import kenney_researcher_lib as kr
+
+        kr.build_researcher_kenney()
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     eyes = [o for o in meshes if o.name.split(".")[0] in EYE_OBJECT_NAMES]
     if len(eyes) != 2:

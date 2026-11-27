@@ -12,9 +12,10 @@
       "bytes": 167212,
       "sha256": "18835fef534eede635b081ee7fe647d01a885550a591d2e6bf071010906167d8",
       "license": "CC0-1.0",
-      "role": "staff-founder-idle",
+      "role": "staff-founder-idle, staff-researcher-idle",
       "source": "Kenney Animated Characters 3",
-      "sourceUrl": "https://kenney.nl/assets/animated-characters-3"
+      "sourceUrl": "https://kenney.nl/assets/animated-characters-3",
+      "licenseProof": "tools/art/cc0/incoming/kenney/CC0-RESEARCHER-KENNEY-STOCK.md"
     },
     {
       "path": "tools/art/cc0/incoming/quaternius/animated_human.glb",
