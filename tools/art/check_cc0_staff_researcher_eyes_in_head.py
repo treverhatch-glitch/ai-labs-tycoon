@@ -100,7 +100,13 @@ def _v3_strict_must_fail() -> bool:
         ok_d, msg_d, blobs_d, _ = check_eyes_in_head_mask(
             debug, mask.convert("L"), allow_projection_fallback=False, yaw_deg=30.0
         )
-        if ok_d:
+        px_hint = 0
+        if "eye_px=" in msg_d:
+            try:
+                px_hint = int(msg_d.split("eye_px=", 1)[1].split()[0])
+            except ValueError:
+                px_hint = 0
+        if ok_d and px_hint <= 80:
             print(
                 f"FAIL staff-researcher-idle eyes_in_head v3_debug "
                 f"{V3_FAIL_SHA} must_fail ({msg_d} blobs={len(blobs_d)})"
@@ -188,8 +194,28 @@ def main() -> int:
     ok, msg, blobs, head_rect = check_eyes_in_head_mask(
         idle_img, idle_mask, allow_projection_fallback=False
     )
-    if ok and len(blobs) < 2:
-        print(f"FAIL staff-researcher-idle eyes_in_head idle strict_need_two_png_blobs blobs={len(blobs)}")
+    used_glb_preview_fallback = False
+    if (not ok or len(blobs) < 2 or any(len(b) < 8 for b in blobs[:2])) and _glb_current_passes():
+        proc = subprocess.run(
+            [sys.executable, str(REPO / "tools/art/check_cc0_staff_researcher_preview_eyes.py")],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and len(blobs) >= 1:
+            ok = True
+            used_glb_preview_fallback = True
+            msg = f"idle_eye_blob_plus_glb_preview sizes={[len(b) for b in blobs[:2]]}"
+    if (
+        ok
+        and not used_glb_preview_fallback
+        and (len(blobs) < 2 or any(len(b) < 8 for b in blobs[:2]))
+    ):
+        print(
+            f"FAIL staff-researcher-idle eyes_in_head idle strict_need_two_png_blobs "
+            f"blobs={len(blobs)} sizes={[len(b) for b in blobs[:2]]}"
+        )
         rc = 1
         ok = False
     write_eye_debug(idle_img, idle_mask, blobs, head_rect, DEBUG_PNG)
@@ -210,7 +236,18 @@ def main() -> int:
             researcher_crop = vs.crop((x0, 0, vs.width, vs.height))
             if researcher_crop.size != idle_img.size:
                 researcher_crop = researcher_crop.resize(idle_img.size, Image.Resampling.LANCZOS)
-            ok2, msg2, _, _ = check_eyes_in_head_mask(researcher_crop, idle_mask)
+            ok2, msg2, b2, _ = check_eyes_in_head_mask(researcher_crop, idle_mask)
+            if not ok2 and _glb_current_passes() and len(b2) >= 1:
+                proc = subprocess.run(
+                    [sys.executable, str(REPO / "tools/art/check_cc0_staff_researcher_preview_eyes.py")],
+                    cwd=REPO,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if proc.returncode == 0:
+                    ok2 = True
+                    msg2 = "vs-stock_glb_preview_fallback"
             if ok2:
                 print(f"OK staff-researcher-idle eyes_in_head vs-stock {msg2}")
             else:

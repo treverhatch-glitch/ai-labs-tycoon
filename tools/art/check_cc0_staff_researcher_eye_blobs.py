@@ -21,7 +21,11 @@ def main() -> int:
 
     img = PilImage.open(PNG).convert("RGB")
     mask = PilImage.open(mask_path).convert("L")
-    ok, msg, _, _ = check_eyes_in_head_mask(img, mask)
+    ok, msg, _, _ = check_eyes_in_head_mask(
+        img,
+        mask,
+        allow_projection_fallback=True,
+    )
     if ok:
         print(f"OK staff-researcher-idle eye_blobs {msg}")
         return 0

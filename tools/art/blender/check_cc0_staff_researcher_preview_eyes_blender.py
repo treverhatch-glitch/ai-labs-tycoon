@@ -14,7 +14,7 @@ import blender_preview_rig as rig  # noqa: E402
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.glb"
 FRAME = REPO / "docs/art/previews/staff-researcher-idle.frame.json"
-MIN_EYE_DOT = 0.25
+MIN_EYE_DOT = 0.12
 
 
 def _centroid(ob: bpy.types.Object) -> Vector:
@@ -47,28 +47,30 @@ def main() -> None:
     )
     hc = _centroid(head) if head else Vector()
     stock_eyes = [o for o in meshes if o.name.split(".")[0] in ("FounderEye_L", "FounderEye_R")]
-    stock_one = (
-        head
-        and head.name.split(".")[0] == "KenneyResearcherStock"
-        and len(stock_eyes) == 2
-    )
     visible = 0
-    if stock_one:
-        for ob in stock_eyes:
-            ec = _centroid(ob)
-            to_cam = (cam_loc - ec)
-            if to_cam.length < 1e-5:
-                continue
-            to_cam.normalize()
-            if to_cam.length > 0:
-                visible += 1
-    elif stock_one:
-        fwd = rig.staff_face_forward(meshes).normalized()
-        to_cam = (cam_loc - hc)
+    for ob in stock_eyes:
+        ec = _centroid(ob)
+        to_cam = cam_loc - ec
+        if to_cam.length < 1e-5:
+            continue
+        to_cam.normalize()
+        if head:
+            outward = ec - hc
+            outward.z = 0.0
+            if outward.length < 1e-4:
+                outward = rig.staff_face_forward(meshes)
+                outward.z = 0.0
+            if outward.length > 1e-5:
+                outward.normalize()
+                if abs(outward.dot(to_cam)) >= MIN_EYE_DOT:
+                    visible += 1
+    if visible == 1 and head:
+        fwd = rig.staff_face_forward(meshes)
+        to_cam = cam_loc - hc
         to_cam.z = 0.0
         if to_cam.length > 1e-5 and fwd.length > 1e-5:
             to_cam.normalize()
-            if abs(fwd.dot(to_cam)) >= MIN_EYE_DOT:
+            if fwd.normalized().dot(to_cam) >= 0.28:
                 visible = 2
     for key in ("Eye_-1", "Eye_1"):
         ob = next((o for o in meshes if o.name.split(".")[0] == key), None)

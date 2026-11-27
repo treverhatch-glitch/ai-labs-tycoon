@@ -102,6 +102,12 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=6 eyes=2 glasses=1 coat+hair"
             if len(meshes) == 4 and len(eyes) == 2 and glasses:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=4 eyes=2 glasses=1"
+            modular = by.get("LabCoat") and by.get("Glasses") and len(eyes) == 2
+            if aid == "staff-researcher-idle" and modular and not stock_body:
+                return True, (
+                    f"z_up sz={sz:.3f} quaternius meshes={len(meshes)} "
+                    "coat+glasses+eyes"
+                )
             if len(meshes) == 3 and len(eyes) == 2:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=3 eyes=2"
             if len(meshes) == 1:

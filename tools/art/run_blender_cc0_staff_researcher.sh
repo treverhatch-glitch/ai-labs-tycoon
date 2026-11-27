@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
-# Researcher Kenney hero — same preview bar as founder #98 (researcher assets only).
+# Researcher Quaternius modular hero — same preview bar as founder #98 (researcher assets only).
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
 export STAFF_PREVIEW_ELEV_DEG=10
 export STAFF_PREVIEW_MARGIN=1.44
-export RESEARCHER_STOCK_RECOLOR=1
+unset RESEARCHER_STOCK_RECOLOR
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
 
+if [[ ! -f tools/art/cc0/incoming/quaternius/character.glb ]]; then
+  ./tools/art/cc0/fetch_incoming.sh
+fi
 if [[ ! -f tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMedium.fbx ]]; then
   ./tools/art/cc0/fetch_incoming.sh
 fi

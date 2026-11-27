@@ -178,6 +178,38 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
         fwd = fwd - up * fwd.dot(up)
         if fwd.length > 1e-4:
             return fwd.normalized()
+    if up.y > 0.5:
+        foot_pts: list[Vector] = []
+        for tag in ("Foot_-1", "Foot_1"):
+            ob = by_name.get(tag)
+            if not ob:
+                continue
+            foot_pts.extend(ob.matrix_world @ v.co for v in ob.data.vertices)
+        if len(foot_pts) >= 8:
+            lo_y = min(p.y for p in foot_pts)
+            span_y = max(p.y for p in foot_pts) - lo_y
+            ground = [p for p in foot_pts if p.y < lo_y + span_y * 0.45]
+            zs = [p.z for p in ground]
+            med_z = sorted(zs)[len(zs) // 2]
+            toes = [p for p in ground if p.z <= med_z]
+            heels = [p for p in ground if p.z > med_z]
+            if heels and toes:
+                heel = sum(heels, Vector()) / len(heels)
+                toe = sum(toes, Vector()) / len(toes)
+                fwd = toe - heel
+                fwd.y = 0.0
+                if fwd.length > 1e-4:
+                    return fwd.normalized()
+        return Vector((0.0, 0.0, -1.0))
+    try:
+        from kenney_face_axis import toe_forward
+
+        fwd = toe_forward(mesh_obs)
+        fwd = fwd - up * fwd.dot(up)
+        if fwd.length > 1e-4:
+            return fwd.normalized()
+    except Exception:
+        pass
     return Vector((0.0, 1.0, 0.0))
 
 

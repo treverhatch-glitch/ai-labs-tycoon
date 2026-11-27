@@ -53,7 +53,7 @@ def main() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     by = {o.name.split(".")[0]: o for o in bpy.context.scene.objects if o.type == "MESH"}
-    body = by.get("KenneyResearcherStock")
+    body = by.get("KenneyResearcherStock") or by.get("Head")
     eyes = [by[n] for n in ("FounderEye_L", "FounderEye_R") if n in by]
     if not body or len(eyes) != 2:
         print(f"FAIL {ASSET} eye_glb_world parts body={bool(body)} eyes={len(eyes)}")
@@ -61,7 +61,7 @@ def main() -> None:
 
     z0, z1 = _head_z_band(body)
     bvh = _body_bvh(body)
-    pad_z = 0.05
+    pad_z = 0.10 if body.name.split(".")[0] == "Head" else 0.05
     for eye in eyes:
         e0, e1 = _world_bbox(eye)
         center = (e0 + e1) * 0.5

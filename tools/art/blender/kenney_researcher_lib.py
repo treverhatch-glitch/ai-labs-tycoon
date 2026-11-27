@@ -1,8 +1,8 @@
-"""Kenney Animated Characters 3 (CC0) — researcher hero, stock recolor lane."""
+"""Researcher hero — Quaternius Ultimate Modular Character (CC0) + in-repo doctor styling."""
 from __future__ import annotations
 
-from kenney_researcher_stock_recolor import load_stock_and_recolor
+import cc0_staff_lib as c0
 
 
 def build_researcher_kenney() -> None:
-    load_stock_and_recolor()
+    c0.build_researcher_cc0()

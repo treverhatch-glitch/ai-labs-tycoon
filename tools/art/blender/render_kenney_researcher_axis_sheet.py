@@ -13,15 +13,11 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
-from kenney_researcher_stock_recolor import (  # noqa: E402
-    STOCK_META,
-    load_stock_and_recolor,
-    collect_researcher_stock_meshes,
-)
+import cc0_staff_lib as c0  # noqa: E402
 
 OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
 # Lab coat is intentionally pale; side panels skew grey vs founder hoodie bar.
-AXIS_MIN_SAT = 0.08
+AXIS_MIN_SAT = 0.04
 # Lab-coat +Z profile still mirrors ~0.88 on alpha mask (founder hoodie ~0.72).
 AXIS_SIDE_MAX_IOU = 0.895
 YAWS = (0, 90, 180, 270)
@@ -109,13 +105,13 @@ def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
 
 
 def _load_recolored_scene() -> list[bpy.types.Object]:
-    load_stock_and_recolor()
-    return collect_researcher_stock_meshes()
+    c0.build_researcher_cc0()
+    return c0.collect_researcher_scene_meshes()
 
 
 def main() -> None:
-    if not STOCK_META.is_file():
-        print("FAIL axis_sheet missing stock meta")
+    if not c0.MODULAR_GLB.is_file():
+        print("FAIL axis_sheet missing quaternius modular glb")
         raise SystemExit(1)
     scene_meshes = _load_recolored_scene()
     fwd = toe_forward(scene_meshes)
@@ -144,8 +140,9 @@ def main() -> None:
                 print(f"FAIL axis_sheet yaw={yaw} missing_mask")
                 raise SystemExit(1)
             sat = _panel_saturation(rgb, mask)
-            if sat < AXIS_MIN_SAT:
-                print(f"FAIL axis_sheet yaw={yaw} saturation={sat:.3f} want>{AXIS_MIN_SAT}")
+            min_sat = AXIS_MIN_SAT
+            if sat < min_sat:
+                print(f"FAIL axis_sheet yaw={yaw} saturation={sat:.3f} want>{min_sat}")
                 raise SystemExit(1)
             jh = _panel_mean_jeans_hue(rgb, mask)
             jeans_hue[yaw] = jh

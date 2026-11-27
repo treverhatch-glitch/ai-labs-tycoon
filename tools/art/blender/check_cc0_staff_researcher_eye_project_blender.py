@@ -73,30 +73,25 @@ def _load_scene() -> list[bpy.types.Object]:
         bpy.ops.object.delete(use_global=False)
         bpy.ops.import_scene.gltf(filepath=str(GLB))
     else:
-        from kenney_researcher_stock_recolor import STOCK_BLEND, apply_researcher_materials
+        import cc0_staff_lib as c0
 
-        bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
-        body = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
-        if not body:
-            return []
-        apply_researcher_materials(body)
-        from founder_face_decals import spawn_founder_eye_meshes
-
-        spawn_founder_eye_meshes(body)
+        c0.build_researcher_cc0()
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    body = next((o for o in meshes if o.name.split(".")[0] == "KenneyResearcherStock"), meshes[0] if meshes else None)
     eyes = [o for o in meshes if o.name.split(".")[0] in EYE_OBJECT_NAMES]
-    if not body or len(eyes) != 2:
+    if len(eyes) != 2:
         return []
-    return [body, *eyes]
+    return meshes
 
 
 def main() -> None:
     mesh_obs = _load_scene()
-    if len(mesh_obs) != 3:
-        print(f"FAIL staff-researcher-idle eye_project components={len(mesh_obs)} want=3")
+    eyes = [o for o in mesh_obs if o.name.split(".")[0] in EYE_OBJECT_NAMES]
+    if len(mesh_obs) < 3 or len(eyes) != 2:
+        print(
+            f"FAIL staff-researcher-idle eye_project components={len(mesh_obs)} "
+            f"eyes={len(eyes)} want>=3 meshes, 2 eyes"
+        )
         raise SystemExit(1)
-    eyes = mesh_obs[1:]
     front = toe_forward(mesh_obs).normalized()
     if sum(_eye_forward_polys(e, front) for e in eyes) < 2:
         print("FAIL staff-researcher-idle eye_project front_normals")

@@ -156,6 +156,8 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("LabCoatLapel_L", "LabCoat"),
+        ("LabCoatLapel_R", "LabCoat"),
         ("Hoodie", "Torso"),
         ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
@@ -318,6 +320,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("LabCoatLapel_L", "LabCoat"),
+        ("LabCoatLapel_R", "LabCoat"),
         ("Hoodie", "Torso"),
         ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
@@ -434,6 +438,9 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             "Shirt",
             "Trousers",
             "BadgeShield",
+            "LabCoatLapel_L",
+            "LabCoatLapel_R",
+            "Tie",
         ):
             anchor = "Torso"
         if tag in ("Jeans", "JeansHips"):
@@ -469,6 +476,11 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                     allow = 0.05
                 elif tag.startswith("JeansLeg_") and anchor.startswith("Leg_"):
                     allow = 0.024
+            elif asset_id == "staff-researcher-idle":
+                if tag in ("LabCoatLapel_L", "LabCoatLapel_R") and anchor == "Torso":
+                    allow = 0.12
+                elif tag == "LabCoat" and anchor == "Torso":
+                    allow = 0.08
             if gap > allow:
                 return False, f"{anchor}->{tag} gap={gap:.4f}m"
 
@@ -542,7 +554,24 @@ def check_gltf_connectivity(glb_path: str, asset_id: str) -> tuple[bool, str]:
             body = stock_ok[asset_id]
             allowed = {body, "FounderEye_L", "FounderEye_R"}
             if asset_id == "staff-researcher-idle":
-                allowed.update({"ResearcherGlasses", "ResearcherLabCoat", "ResearcherHairCap"})
+                allowed.update(
+                    {
+                        "ResearcherGlasses",
+                        "ResearcherLabCoat",
+                        "ResearcherHairCap",
+                        "Glasses",
+                        "LabCoat",
+                        "LabCoatLapel_L",
+                        "LabCoatLapel_R",
+                        "Shirt",
+                        "Tie",
+                        "Trousers",
+                        "Hair",
+                        "Head",
+                        "Torso",
+                        "Neck",
+                    }
+                )
             if body in bases and bases.issubset(allowed):
                 return True, f"stock+eyes parts={len(meshes)}"
         ok, msg = check_objects_connectivity(meshes, asset_id)
