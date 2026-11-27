@@ -89,7 +89,7 @@ def _check_view(
     eye_dark_skin = cheek_white = cheek_skin = 0
     coat_l = coat_r = 0
     leg_zones: tuple[tuple[int, int], tuple[int, int]] | None = None
-    if thigh_bilateral and tag == "idle":
+    if thigh_bilateral and tag in ("idle", "front0"):
         w_span = max(12, max_x - min_x)
         leg_zones = (
             (min_x, min_x + w_span // 3),
@@ -148,9 +148,10 @@ def _check_view(
         if cheek_white > cheek_white_max:
             return False, f"{tag} cheek_white_px={cheek_white} want<={cheek_white_max} (coat on face)"
     if thigh_bilateral:
-        if tag == "idle":
-            if max(coat_l, coat_r) < 42:
-                return False, f"{tag} thigh_coat L={coat_l} R={coat_r} want max>=42"
+        if tag in ("idle", "front0"):
+            need = 42 if tag == "idle" else 45
+            if max(coat_l, coat_r) < need:
+                return False, f"{tag} thigh_coat L={coat_l} R={coat_r} want max>={need}"
         elif coat_l < 45 or coat_r < 45:
             return False, f"{tag} thigh_coat L={coat_l} R={coat_r} want>=45 each"
     else:
@@ -159,20 +160,50 @@ def _check_view(
     return True, f"{tag} eye_dark={eye_dark_skin} cheek_w={cheek_white} thigh L/R={coat_l}/{coat_r}"
 
 
+def _save_axis_crop(
+    im: Image.Image, box: tuple[int, int, int, int], stem: str
+) -> tuple[Path, Path]:
+    crop = im.crop(box)
+    png = PREVIEW / stem
+    crop.save(png)
+    bg = crop.getpixel((8, 8))
+    m = Image.new("L", crop.size)
+    cw, ch = crop.size
+    for y in range(ch):
+        for x in range(cw):
+            r, g, b = crop.getpixel((x, y))
+            d = abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2])
+            m.putpixel((x, y), 255 if d > 35 else 0)
+    mask = png.with_name(png.stem + ".mask.png")
+    m.save(mask)
+    return png, mask
+
+
 def main() -> int:
     views = [
         (PREVIEW / "staff-researcher-idle.png", True, "idle"),
-        (PREVIEW / "staff-researcher-face-diagnostic-0deg.png", True, "front0"),
     ]
     reports: list[str] = []
+    sheet = PREVIEW / "staff-researcher-axis-sheet.png"
+    if sheet.is_file():
+        im = Image.open(sheet).convert("RGB")
+        w, h = im.size
+        tw, th = w // 2, h // 2
+        front_png, front_mask = _save_axis_crop(im, (0, 0, tw, th), "_staff-researcher-axis-0-check.png")
+        views.append((front_png, True, "front0"))
+    else:
+        views.append((PREVIEW / "staff-researcher-face-diagnostic-0deg.png", True, "front0"))
+
     for png, bilateral, tag in views:
         ok, msg = _check_view(tag, png, thigh_bilateral=bilateral)
+        if tag != "idle" and png.name.startswith("_staff-researcher-axis"):
+            png.unlink(missing_ok=True)
+            png.with_name(png.stem + ".mask.png").unlink(missing_ok=True)
         if not ok:
             print(f"FAIL staff-researcher-idle idle_visual {msg}")
             return 1
         reports.append(msg)
 
-    sheet = PREVIEW / "staff-researcher-axis-sheet.png"
     if sheet.is_file():
         im = Image.open(sheet).convert("RGB")
         w, h = im.size

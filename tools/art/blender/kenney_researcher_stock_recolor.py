@@ -341,15 +341,15 @@ def apply_researcher_materials(
         _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
-        _ensure_material("ResearcherTee", RESEARCHER_TEE, 0.55),
+        _ensure_material("ResearcherTee", RESEARCHER_SKIN, 0.54, specular=0.05),
         _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.54, specular=0.05),
         _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.52, specular=0.06),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
-        _ensure_material("ResearcherUndershirt", RESEARCHER_SHIRT, 0.48),
+        _ensure_material("ResearcherUndershirt", RESEARCHER_SKIN, 0.48, specular=0.05),
         _ensure_material("ResearcherDecalEye", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherDecalBrow", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherDecalMouth", RESEARCHER_SKIN, 0.5),
-        _ensure_material("ResearcherLapel", RESEARCHER_LAPEL, 0.52),
+        _ensure_material("ResearcherLapel", RESEARCHER_COLLAR, 0.52),
     ]
     ob.data.materials.clear()
     for m in mats:

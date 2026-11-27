@@ -29,6 +29,8 @@ MAX_CAMERA_CENTROID_DRIFT_PX = 22
 MAX_ARM_SPAN_FRAC = 0.58
 COAT_FLARE_SHOULDER_PAD = 0.15
 MIN_COAT_FLARE_FAIL_PX = 14
+MAX_COAT_OUTSIDE_SIL_PX = 10
+SILHOUETTE_DILATE_PX = 5
 MAX_HEAD_FACE_BLUE_PX = 10
 MAX_HAND_BLUE_PX = 16
 MAX_SLEEVE_BLUE_PX = 12
@@ -125,14 +127,12 @@ def _is_neutral_grey(r: int, g: int, b: int) -> bool:
 
 
 def _is_lab_coat_white(r: int, g: int, b: int) -> bool:
-    return (
-        r >= 188
-        and g >= 183
-        and b >= 176
-        and (r - b) < 36
-        and abs(r - g) < 26
-        and max(r, g, b) - min(r, g, b) < 42
-    )
+    """Lit walk-strip coat (preview rig), not only albedo 255."""
+    if r < 158 or g < 154 or b < 148:
+        return False
+    if max(r, g, b) - min(r, g, b) > 48:
+        return False
+    return r >= g - 10 and g >= b - 14 and (r + g + b) > 470
 
 
 def _is_researcher_shirt_blue(r: int, g: int, b: int) -> bool:
@@ -284,7 +284,16 @@ def _researcher_coat_shell_gate(
             while q:
                 cx, cy = q.popleft()
                 n += 1
-                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                for dx, dy in (
+                    (1, 0),
+                    (-1, 0),
+                    (0, 1),
+                    (0, -1),
+                    (1, 1),
+                    (1, -1),
+                    (-1, 1),
+                    (-1, -1),
+                ):
                     nx, ny = cx + dx, cy + dy
                     if 0 <= nx < w and 0 <= ny < hh and coat[ny][nx] and not seen[ny][nx]:
                         seen[ny][nx] = True
@@ -336,6 +345,8 @@ def _researcher_coat_sleeve_flare_px(
             r, g, b = img.getpixel((x, y))[:3]
             if _is_neutral_grey(r, g, b):
                 continue
+            if _is_lab_coat_white(r, g, b):
+                continue
             xs_sh.append(x)
     if len(xs_sh) < 36:
         return 0, 0.0
@@ -352,6 +363,64 @@ def _researcher_coat_sleeve_flare_px(
             if abs(x - center) > half_allow:
                 flare += 1
     return flare, shoulder_w
+
+
+def _dilate_mask(mask: list[list[bool]], radius: int) -> list[list[bool]]:
+    if radius < 1:
+        return mask
+    hh = len(mask)
+    w = len(mask[0]) if hh else 0
+    out = [[False] * w for _ in range(hh)]
+    for yi in range(hh):
+        for xi in range(w):
+            if not mask[yi][xi]:
+                continue
+            for dy in range(-radius, radius + 1):
+                for dx in range(-radius, radius + 1):
+                    ny, nx = yi + dy, xi + dx
+                    if 0 <= nx < w and 0 <= ny < hh:
+                        out[ny][nx] = True
+    return out
+
+
+def _tile_body_silhouette_mask(
+    img: Image.Image, tile_w: int, h: int, i: int
+) -> list[list[bool]]:
+    """Full non-backdrop character blob (incl. coat), dilated — catches floating tubes."""
+    x0, x1 = i * tile_w, (i + 1) * tile_w
+    y0, y1 = h // 8, int(h * 0.72)
+    step = 2
+    w = max(1, (x1 - x0) // step)
+    hh = max(1, (y1 - y0) // step)
+    raw = [[False] * w for _ in range(hh)]
+    for yi in range(hh):
+        for xi in range(w):
+            r, g, b = img.getpixel((x0 + xi * step, y0 + yi * step))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            raw[yi][xi] = True
+    return _dilate_mask(raw, SILHOUETTE_DILATE_PX)
+
+
+def _researcher_coat_outside_silhouette_px(
+    img: Image.Image, tile_w: int, h: int, i: int
+) -> int:
+    sil = _tile_body_silhouette_mask(img, tile_w, h, i)
+    step = 2
+    x0, x1 = i * tile_w, (i + 1) * tile_w
+    y0, y1 = h // 8, int(h * 0.72)
+    outside = 0
+    for yi, y in enumerate(range(y0, y1, step)):
+        if yi >= len(sil):
+            break
+        for xi, x in enumerate(range(x0, x1, step)):
+            if xi >= len(sil[0]):
+                break
+            if not _is_lab_coat_white(*img.getpixel((x, y))[:3]):
+                continue
+            if not sil[yi][xi]:
+                outside += 1
+    return outside
 
 
 def _char_centroid_x(img: Image.Image, tile_w: int, i: int, h: int) -> float | None:
@@ -448,6 +517,9 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
                     False,
                     f"tile{i}_coat_sleeve_tpose flare_px={flare_px} shoulder_w={sh_w:.1f}",
                 )
+            outside_px = _researcher_coat_outside_silhouette_px(img, tile_w, h, i)
+            if outside_px >= MAX_COAT_OUTSIDE_SIL_PX:
+                return False, f"tile{i}_coat_outside_sil_px={outside_px}"
         sh_win, hand_win = _arm_windows(tile_w, h, i)
         sh_y = _mean_non_grey_y(img, *sh_win)
         hand_y = _mean_non_grey_y(img, *hand_win)

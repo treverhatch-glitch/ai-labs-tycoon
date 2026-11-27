@@ -440,10 +440,18 @@ def _bind_coat_researcher_armature(
     body: bpy.types.Object,
     arm: bpy.types.Object,
 ) -> None:
-    """Lab coat: torso on spine; sleeves on upper_arm + forearm (no leg/hand weights)."""
+    """Lab coat: duplicated body weights, or nearest-body fallback if missing."""
     from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
     from kenney_geometry_landmarks import compute_landmarks, torso_half_width
     if coat.type != "MESH" or not body.data.vertices:
+        return
+    if coat.get("coat_weights_from_body") and len(coat.vertex_groups) >= 4:
+        for mod in list(coat.modifiers):
+            if mod.type in {"ARMATURE", "MESH_DEFORM"}:
+                coat.modifiers.remove(mod)
+        mod = coat.modifiers.new("CoatWalkArmature", "ARMATURE")
+        mod.object = arm
+        bpy.context.view_layer.update()
         return
     if coat.parent:
         world = coat.matrix_world.copy()
@@ -804,13 +812,8 @@ def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
             continue
         bsdf = mat.node_tree.nodes.get("Principled BSDF")
         if bsdf:
-            bsdf.inputs["Base Color"].default_value = (
-                0.97,
-                0.955,
-                0.93,
-                1.0,
-            )
-            bsdf.inputs["Roughness"].default_value = 0.38
+            bsdf.inputs["Base Color"].default_value = (1.0, 0.99, 0.96, 1.0)
+            bsdf.inputs["Roughness"].default_value = 0.32
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:

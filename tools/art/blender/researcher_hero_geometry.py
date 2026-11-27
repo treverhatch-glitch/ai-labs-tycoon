@@ -852,24 +852,131 @@ def _build_procedural_sleeve_tube(
                 pass
 
 
+def _bmesh_faces_from_indices(
+    bm: bmesh.types.BMesh,
+    bm_src: bmesh.types.BMesh,
+    indices: set[int],
+) -> dict[int, bmesh.types.BMVert]:
+    """Duplicate body faces; map body vert index → new bmesh vert."""
+    vmap: dict[int, bmesh.types.BMVert] = {}
+    for fi in indices:
+        sf = bm_src.faces[fi]
+        new_vs = []
+        for sv in sf.verts:
+            si = sv.index
+            if si not in vmap:
+                vmap[si] = bm.verts.new(sv.co.copy())
+            new_vs.append(vmap[si])
+        try:
+            bm.faces.new(new_vs)
+        except ValueError:
+            pass
+    return vmap
+
+
+def _collect_arm_sleeve_face_indices(
+    body: bpy.types.Object,
+    bm_src: bmesh.types.BMesh,
+    *,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> set[int]:
+    lo, span = lm.zmin, lm.span
+    pick: set[int] = set()
+    for f in bm_src.faces:
+        if _arm_coat_face(f, body, lm=lm, hc=hc, fwd=fwd, ws=ws):
+            pick.add(f.index)
+        elif _sleeve_source_face(
+            f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
+        ):
+            pick.add(f.index)
+    changed = True
+    while changed:
+        changed = False
+        for f in bm_src.faces:
+            if f.index in pick:
+                continue
+            if not any(nb.index in pick for e in f.edges for nb in e.link_faces):
+                continue
+            if _sleeve_grow_face(
+                f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
+            ):
+                pick.add(f.index)
+                changed = True
+    return pick
+
+
+def _copy_body_vertex_groups(
+    body: bpy.types.Object,
+    coat: bpy.types.Object,
+    src_for_coat_vert: list[int | None],
+) -> None:
+    """One source body vert index per coat vert (pre-solidify correspondence)."""
+    coat.vertex_groups.clear()
+    vg_dst: dict[str, bpy.types.VertexGroup] = {}
+    for vg in body.vertex_groups:
+        vg_dst[vg.name] = coat.vertex_groups.new(name=vg.name)
+    for ci, si in enumerate(src_for_coat_vert):
+        if si is None or si < 0 or si >= len(body.data.vertices):
+            continue
+        for g in body.data.vertices[si].groups:
+            if g.group >= len(body.vertex_groups):
+                continue
+            name = body.vertex_groups[g.group].name
+            vg_dst[name].add([ci], g.weight, "REPLACE")
+
+
 def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
+    """Lab coat = duplicated torso + arm body faces, solidify, copied armature weights."""
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":
             bpy.data.objects.remove(ob, do_unlink=True)
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
-    hc, _y_face_fn = face_shell_coord(body, fwd)
+    hc, y_face_fn = face_shell_coord(body, fwd)
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lo, span = lm.zmin, lm.span
+    coat_hem = lm.h_waist - 0.34
+    coat_top = lm.h_neck + 0.04
+
+    bm_src = bmesh.new()
+    bm_src.from_mesh(body.data)
+    bm_src.faces.ensure_lookup_table()
+
+    torso_pick = _duplicate_coat_shell_faces(
+        body,
+        bm_src,
+        lm=lm,
+        lo=lo,
+        span=span,
+        coat_hem=coat_hem,
+        coat_top=coat_top,
+        hc=hc,
+        fwd=fwd,
+        ws=ws,
+        y_face_fn=y_face_fn,
+    )
+    arm_pick = _collect_arm_sleeve_face_indices(
+        body, bm_src, lm=lm, hc=hc, fwd=fwd, ws=ws
+    )
+    all_pick = torso_pick | arm_pick
+    if len(all_pick) < 48:
+        bm_src.free()
+        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(all_pick)} too_few")
 
     bm = bmesh.new()
-    _build_procedural_coat_body(bm, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
-    _build_procedural_sleeve_tube(bm, body, side="Left", lm=lm, hc=hc, fwd=fwd, ws=ws)
-    _build_procedural_sleeve_tube(bm, body, side="Right", lm=lm, hc=hc, fwd=fwd, ws=ws)
-    _stitch_coat_sleeve_shoulder(bm, body, side="Left", lm=lm, hc=hc, fwd=fwd, ws=ws)
-    _stitch_coat_sleeve_shoulder(bm, body, side="Right", lm=lm, hc=hc, fwd=fwd, ws=ws)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.00035)
+    vmap = _bmesh_faces_from_indices(bm, bm_src, all_pick)
+    bm_src.free()
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0004)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    _prune_bmesh_islands(bm, min_faces=28)
+    push = max(body.dimensions.length * 0.011, 0.008)
+    for v in bm.verts:
+        if v.normal.length > 1e-6:
+            v.co += v.normal * push
 
     mesh = bpy.data.meshes.new("ResearcherLabCoatMesh")
     bm.to_mesh(mesh)
@@ -880,11 +987,49 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bpy.context.collection.objects.link(coat)
     mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.42, specular=0.08)
     coat.data.materials.append(mat)
-    coat.parent = body
-    coat.matrix_parent_inverse = body.matrix_world.inverted()
-    bc.smooth_shade(coat)
-    if len(coat.data.polygons) < 80:
-        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(coat.data.polygons)} too_few")
+    world = body.matrix_world.copy()
+    coat.matrix_world = world
+
+    bpy.context.view_layer.objects.active = coat
+    coat.select_set(True)
+    bpy.ops.object.shade_smooth()
+    thick = max(body.dimensions.length * 0.012, 0.006)
+    solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
+    solid.thickness = thick
+    solid.offset = 1.0
+    solid.use_rim = True
+    bpy.ops.object.modifier_apply(modifier=solid.name)
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.remove_doubles(threshold=0.00055)
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+    remap: list[int] = []
+    ref_cos = {si: body.data.vertices[si].co.copy() for si in vmap}
+    inv_coat = coat.matrix_world.inverted()
+    for v in coat.data.vertices:
+        best_i = min(ref_cos, key=lambda si: (inv_coat @ v.co - ref_cos[si]).length_squared)
+        remap.append(best_i)
+    _copy_body_vertex_groups(body, coat, remap)
+    coat["coat_weights_from_body"] = True
+
+    _trim_coat_above_chin(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _bisect_coat_below_hem(coat, lm, coat_hem)
+    bm_hem = bmesh.new()
+    bm_hem.from_mesh(coat.data)
+    _append_coat_hem_quads(bm_hem, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
+    bm_hem.to_mesh(coat.data)
+    coat.data.update()
+    bm_hem.free()
+    _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _prune_coat_micro_islands(coat, min_faces=8)
+    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
+
+    if len(coat.data.polygons) < 40:
+        raise RuntimeError(
+            f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}"
+        )
     return coat
 
 
