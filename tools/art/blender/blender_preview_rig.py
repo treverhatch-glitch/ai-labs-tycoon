@@ -163,7 +163,15 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
 
 
 def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
-    """Face forward: hips/torso → head, projected off the standing axis (Z-up import)."""
+    """Face forward: Kenney stock head axis, else hips→head (Z-up)."""
+    stock = [o for o in mesh_obs if o.type == "MESH" and o.name.split(".")[0] == "KenneyFounderStock"]
+    if stock:
+        try:
+            from kenney_face_axis import resolve_face_forward
+
+            return resolve_face_forward(stock)
+        except Exception:
+            pass
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
     hips = by_name.get("Hips") or by_name.get("Torso")
     head = by_name.get("Head") or by_name.get("KenneyFounderStock")
@@ -238,7 +246,7 @@ def frame_staff_front_quarter(
     offset = fwd * (math.cos(yaw) * math.cos(elev)) + right * (math.sin(yaw) * math.cos(elev))
     offset.z = math.sin(elev)
     offset = offset.normalized() * cam_dist
-    cam_loc = center - offset
+    cam_loc = center + offset
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.name = "PreviewCamera"

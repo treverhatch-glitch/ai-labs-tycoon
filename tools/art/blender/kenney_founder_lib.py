@@ -806,7 +806,11 @@ def bake_stock_kenney_mesh() -> bpy.types.Object:
     head_ref, foot_ref = refs
     baked = _bake_mesh(mesh, arm, head_ref, foot_ref)
     _ensure_upright_z(baked, head_ref, foot_ref)
+    _face_forward_z(baked)
     _scale_character(baked)
+    from kenney_founder_stock_recolor import bisect_stock_landmarks
+
+    bisect_stock_landmarks(baked)
     return baked
 
 

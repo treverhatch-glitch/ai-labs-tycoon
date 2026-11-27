@@ -20,6 +20,12 @@ echo "$stock_out" | grep -q '^OK stock_check' || { echo "FAIL stock check OK lin
 test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || { echo "FAIL missing stock check png"; exit 1; }
 test -s "tools/art/source/kenney/staff-founder-kenney-stock.blend" || { echo "FAIL missing stock blend"; exit 1; }
 
+echo "=== tools/art/blender/render_kenney_founder_face_diagnostic.py ==="
+diag_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_face_diagnostic.py 2>&1) || { echo "$diag_out"; echo "FAIL face diagnostic" >&2; exit 1; }
+echo "$diag_out"
+echo "$diag_out" | grep -q '^OK face_diagnostic' || { echo "FAIL face diagnostic OK line" >&2; exit 1; }
+test -s "docs/art/previews/staff-founder-face-diagnostic-0deg.png" || { echo "FAIL missing face diagnostic png"; exit 1; }
+
 script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="
 out=$("$BLENDER" -b --python "$script" 2>&1) || { echo "$out"; echo "FAIL $script" >&2; exit 1; }
@@ -58,6 +64,7 @@ python3 tools/art/check_cc0_staff_founder_arm_pose.py
 python3 tools/art/check_cc0_staff_face_visible.py
 python3 tools/art/check_cc0_staff_founder_eye_blobs.py
 python3 tools/art/check_cc0_staff_founder_preview_eyes.py
+python3 tools/art/check_cc0_staff_founder_eye_project.py
 python3 tools/art/check_cc0_staff_founder_preview_centered.py
 python3 tools/art/check_cc0_staff_founder_glb_connected.py
 python3 tools/art/check_cc0_staff_founder_pixel_hues.py
