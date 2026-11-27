@@ -71,13 +71,6 @@ def _render_tile(
         founder_eye_preview_tweak(meshes)
     else:
         researcher_lab_coat_preview_tweak(meshes)
-    if asset_id == "staff-researcher-idle" and scene_data and scene_data.body:
-        from researcher_scene_mesh_audit import audit_researcher_render_meshes
-
-        ok_r, msg_r = audit_researcher_render_meshes(scene_data.body, meshes)
-        if not ok_r:
-            print(f"FAIL staff-researcher-idle render_islands {msg_r}")
-            raise RuntimeError(msg_r)
     if scene_data and scene_data.arm:
         if walk_pose:
             fr = int(walk_frame if walk_frame is not None else scene_data.walk_frames[1])
@@ -93,6 +86,28 @@ def _render_tile(
         else:
             _pose_idle(scene_data)
     bpy.context.view_layer.update()
+    bpy.context.evaluated_depsgraph_get().update()
+    if asset_id == "staff-researcher-idle" and scene_data and scene_data.body:
+        from researcher_scene_mesh_audit import (
+            assert_render_island_audit,
+            audit_researcher_render_meshes,
+        )
+
+        panel = "turnaround_walk_side" if walk_pose else f"yaw_{cam_yaw_deg:.0f}"
+        fr = bpy.context.scene.frame_current
+        audit_researcher_render_meshes(
+            scene_data.body, meshes, arm=scene_data.arm
+        )
+        ok_r, msg_r = assert_render_island_audit(
+            scene_data.body,
+            meshes,
+            frame=fr,
+            panel=panel,
+        )
+        if not ok_r:
+            print(f"FAIL staff-researcher-idle {msg_r}")
+            raise RuntimeError(msg_r)
+        print(f"OK researcher_render_islands {msg_r}")
     render_meshes = meshes
     cleanup: list = []
     if walk_pose and asset_id == "staff-researcher-idle":
@@ -120,6 +135,10 @@ def main() -> int:
     configure_preview_env(asset_id)
     os.environ.pop("STAFF_PREVIEW_SKIP_MASK", None)
     os.environ.pop("STAFF_PREVIEW_LOCK_CAMERA", None)
+    if asset_id == "staff-researcher-idle":
+        from researcher_scene_mesh_audit import reset_render_island_audit_log
+
+        reset_render_island_audit_log()
     scene_data = (
         build_founder_walk_scene()
         if asset_id == "staff-founder-idle"

@@ -147,6 +147,31 @@ def _finalize_researcher_coat_slots(
                 slots[face.index] = SLOT_HAIR if h > lm.h_neck + 0.10 else SLOT_SKIN
 
 
+def _demote_body_collar_shirt_faces(body: bpy.types.Object, lm) -> int:
+    """FAIL #28: white collar shards — shirt slot above neck → skin."""
+    lo, span = lm.zmin, lm.span
+    chin_h = lo + span * (lm.h_neck - 0.06)
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.faces.ensure_lookup_table()
+    changed = 0
+    for face in bm.faces:
+        if face.material_index != SLOT_SHIRT:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += body.matrix_world @ v.co
+        wc /= len(face.verts)
+        if wc.z > chin_h:
+            face.material_index = SLOT_SKIN
+            changed += 1
+    if changed:
+        bm.to_mesh(body.data)
+        body.data.update()
+    bm.free()
+    return changed
+
+
 def _tune_coat_mat(ob: bpy.types.Object) -> None:
     for slot in ob.material_slots:
         mat = slot.material
@@ -243,7 +268,14 @@ def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | 
     from researcher_shirt_derived_meshes import _attach_coat_part_to_body_or_arm
 
     coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
-    parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
+    from researcher_shirt_derived_meshes import spawn_shirt_derived_coat_parts
+
+    parts = spawn_shirt_derived_coat_parts(
+        body,
+        shirt_slot=SLOT_SHIRT,
+        coat_mat=coat_mat,
+        spawn_parts=(SKIRT_NAME,),
+    )
     for ob in parts:
         _attach_coat_part_to_body_or_arm(ob, body, arm)
     return next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
@@ -313,11 +345,22 @@ def load_researcher_from_founder_stock() -> bpy.types.Object:
             f"FAIL staff-researcher-idle stock_tris={tri_count} want={want_tris}"
         )
     apply_researcher_founder_base_materials(ob)
+    lm = compute_landmarks(ob)
+    _demote_body_collar_shirt_faces(ob, lm)
     spawn_researcher_shirt_derived_parts(ob, arm=None)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
-    from researcher_scene_mesh_audit import audit_researcher_render_meshes
+    from researcher_scene_mesh_audit import (
+        audit_researcher_render_meshes,
+        reset_render_island_audit_log,
+    )
+    from researcher_shirt_derived_meshes import finalize_coat_sleeve_islands
 
+    reset_render_island_audit_log()
     meshes = collect_researcher_founder_meshes()
     audit_researcher_render_meshes(ob, meshes)
+    sleeves_ob = next(
+        o for o in meshes if o.type == "MESH" and o.name.split(".")[0] == SLEEVES_NAME
+    )
+    finalize_coat_sleeve_islands(sleeves_ob, ob, compute_landmarks(ob))
     return ob

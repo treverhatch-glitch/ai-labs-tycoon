@@ -116,10 +116,12 @@ def main() -> int:
         return 1
     for coat in (skirt, sleeves):
         isl = _count_mesh_islands(coat)
-        if isl != 1:
+        base = coat.name.split(".")[0]
+        want = 2 if base == SLEEVES_NAME else 1
+        if isl != want and not (base == SLEEVES_NAME and isl == 1):
             print(
                 f"FAIL staff-researcher-idle coat_islands={isl} "
-                f"mesh={coat.name.split('.')[0]} want=1"
+                f"mesh={base} want={want}"
             )
             return 1
     z_neck = _neck_cut_world_z(arm, lm)

@@ -134,11 +134,31 @@ def main() -> int:
         )
         return 1
 
+    from kenney_geometry_landmarks import compute_landmarks
+    from researcher_scene_mesh_audit import verify_sleeve_cuff_wrist_gap
+
+    sleeves = next(
+        (o for o in data.render_meshes if o.name.split(".")[0] == "ResearcherCoatSleeves"),
+        None,
+    )
+    if sleeves is None:
+        print("FAIL researcher_walk_pose missing_coat_sleeves")
+        return 1
+    pose_walk_for_render(scene, data, int(data.walk_frames[0]))
+    bpy.context.view_layer.update()
+    lm = compute_landmarks(data.body)
+    ok_c, cuff_msg, _g = verify_sleeve_cuff_wrist_gap(
+        sleeves, data.body, arm, lm, use_evaluated=True
+    )
+    if not ok_c:
+        print(f"FAIL researcher_walk_pose {cuff_msg}")
+        return 1
+
     print(
         f"OK researcher_walk_pose ankle_delta={ankle_delta:.4f} "
         f"clip_delta={clip_delta:.4f} clip_frames=({lo_fr},{hi_fr}) "
         f"passing_knee={passing_knee:.2f} passing_arm_swing={passing_swing:.2f} "
-        f"frames={list(data.walk_frames)}"
+        f"{cuff_msg} frames={list(data.walk_frames)}"
     )
     return 0
 

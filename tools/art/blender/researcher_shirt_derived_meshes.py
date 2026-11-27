@@ -301,6 +301,7 @@ def _sanitize_coat_part(
     cull_below_knee: bool = True,
     island_touch_m: float = COAT_ISLAND_BODY_TOUCH_M,
     max_body_gap_m: float = MAX_COAT_BODY_GAP_M,
+    require_single_island: bool = True,
 ) -> None:
     if project_shell:
         _project_verts_onto_body_shell(ob, body)
@@ -315,13 +316,232 @@ def _sanitize_coat_part(
     if len(ob.data.vertices) < 12:
         raise RuntimeError(f"FAIL staff-researcher-idle coat_cull_empty name={ob.name}")
     islands = _count_mesh_islands(ob)
-    if islands != 1:
+    if require_single_island and islands != 1:
         _keep_largest_coat_island(ob)
         islands = _count_mesh_islands(ob)
-    if islands != 1:
+    if require_single_island and islands != 1:
         raise RuntimeError(
             f"FAIL staff-researcher-idle coat_islands={islands} name={ob.name} want=1"
         )
+
+
+def lock_sleeve_cuff_weights_to_forearm(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    lm,
+    *,
+    max_wrist_dist_m: float = 0.12,
+) -> int:
+    from researcher_scene_mesh_audit import _wrist_head_world
+
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    mesh_ob = sleeves.evaluated_get(deps)
+    locked = 0
+    for vi in range(len(sleeves.data.vertices)):
+        wc = mesh_ob.matrix_world @ mesh_ob.data.vertices[vi].co
+        best_side = None
+        best_d = 1e9
+        for side in ("Left", "Right"):
+            wrist = _wrist_head_world(arm, side)
+            if wrist is None:
+                continue
+            d = (wc - wrist).length
+            if d < best_d:
+                best_d = d
+                best_side = side
+        if best_side is None or best_d > max(lm.span * 0.35, max_wrist_dist_m * 2.5):
+            continue
+        if best_d > max_wrist_dist_m:
+            continue
+        fa = f"{best_side}ForeArm"
+        hd = f"{best_side}Hand"
+        for g in list(sleeves.data.vertices[vi].groups):
+            sleeves.vertex_groups[g.group].remove([vi])
+        if fa not in sleeves.vertex_groups:
+            sleeves.vertex_groups.new(name=fa)
+        if hd not in sleeves.vertex_groups:
+            sleeves.vertex_groups.new(name=hd)
+        w_fa = min(1.0, max(0.65, 1.0 - best_d / max_wrist_dist_m * 0.35))
+        sleeves.vertex_groups[fa].add([vi], w_fa, "REPLACE")
+        sleeves.vertex_groups[hd].add([vi], 1.0 - w_fa, "REPLACE")
+        locked += 1
+    return locked
+
+
+def nudge_sleeve_cuffs_toward_wrists(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    lm,
+    *,
+    iterations: int = 24,
+    target_gap_m: float = 0.034,
+) -> float:
+    """Heuristic: nudge rest cuffs so evaluated geometry sits near posed wrist bones."""
+    from researcher_scene_mesh_audit import _infer_vert_arm_side, _wrist_head_world
+
+    inv_obj = sleeves.matrix_world.inverted()
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.22
+    worst = 1.0
+    for _ in range(iterations):
+        bpy.context.view_layer.update()
+        deps = bpy.context.evaluated_depsgraph_get()
+        deps.update()
+        mesh_ob = sleeves.evaluated_get(deps)
+        worst = 0.0
+        moved = False
+        for side in ("Left", "Right"):
+            wrist = _wrist_head_world(arm, side)
+            if wrist is None:
+                continue
+            ranked: list[tuple[float, int, Vector]] = []
+            for vi in range(len(sleeves.data.vertices)):
+                if _infer_vert_arm_side(sleeves, vi) != side:
+                    continue
+                wc = mesh_ob.matrix_world @ mesh_ob.data.vertices[vi].co
+                h = (wc.z - lo) / span
+                if h < wrist_h - 0.20:
+                    continue
+                dist = (wc - wrist).length
+                worst = max(worst, dist)
+                ranked.append((dist, vi, wc))
+            ranked.sort(key=lambda row: row[0])
+            for dist, vi, wc in ranked[:16]:
+                if dist <= target_gap_m:
+                    continue
+                radial = wc - wrist
+                if radial.length < 1e-5:
+                    radial = Vector((0.0, target_gap_m, 0.0))
+                target_w = wrist + radial.normalized() * min(target_gap_m, radial.length * 0.65)
+                delta_w = target_w - wc
+                sleeves.data.vertices[vi].co += inv_obj @ delta_w
+                moved = True
+        if not moved:
+            break
+    sleeves.data.update()
+    return worst
+
+
+def bind_cuff_verts_to_hand_bone(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    lm,
+    *,
+    max_wrist_dist_m: float | None = None,
+    cuff_radius_m: float = 0.034,
+) -> int:
+    """Single-bone bind: rest verts placed so posed Hand wrist keeps cuffs within radius."""
+    from researcher_scene_mesh_audit import _wrist_head_world
+
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.22
+    pick_radius = max_wrist_dist_m if max_wrist_dist_m is not None else span * 0.55
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    mesh_ob = sleeves.evaluated_get(deps)
+    inv_obj = sleeves.matrix_world.inverted()
+    touched = 0
+    for vi in range(len(sleeves.data.vertices)):
+        wc = mesh_ob.matrix_world @ mesh_ob.data.vertices[vi].co
+        h = (wc.z - lo) / span
+        if h < wrist_h - 0.24:
+            continue
+        best_side = None
+        best_d = 1e9
+        for side in ("Left", "Right"):
+            wrist = _wrist_head_world(arm, side)
+            if wrist is None:
+                continue
+            d = (wc - wrist).length
+            if d < best_d:
+                best_d = d
+                best_side = side
+        if best_side is None or best_d > pick_radius:
+            continue
+        pb = arm.pose.bones.get(f"{best_side}Hand")
+        if pb is None:
+            pb = arm.pose.bones.get(f"{best_side}ForeArm")
+        if pb is None:
+            continue
+        wrist = _wrist_head_world(arm, best_side)
+        assert wrist is not None
+        radial = wc - wrist
+        if radial.length < 1e-5:
+            radial = Vector((0.0, cuff_radius_m, 0.0))
+        target_w = wrist + radial.normalized() * min(cuff_radius_m, radial.length + 0.01)
+        bone_mw = arm.matrix_world @ pb.matrix
+        co_rest = inv_obj @ bone_mw.inverted() @ target_w
+        sleeves.data.vertices[vi].co = co_rest
+        hd = f"{best_side}Hand"
+        fa = f"{best_side}ForeArm"
+        for g in list(sleeves.data.vertices[vi].groups):
+            sleeves.vertex_groups[g.group].remove([vi])
+        if hd not in sleeves.vertex_groups:
+            sleeves.vertex_groups.new(name=hd)
+        sleeves.vertex_groups[hd].add([vi], 0.92, "REPLACE")
+        if fa in sleeves.vertex_groups or True:
+            if fa not in sleeves.vertex_groups:
+                sleeves.vertex_groups.new(name=fa)
+            sleeves.vertex_groups[fa].add([vi], 0.08, "REPLACE")
+        touched += 1
+    sleeves.data.update()
+    return touched
+
+
+def snap_sleeve_cuffs_to_arm(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    lm,
+    *,
+    max_radius_m: float = 0.038,
+) -> int:
+    """Pull cuff-band verts toward posed wrist bones (walk / rigged scenes)."""
+    from researcher_scene_mesh_audit import _wrist_head_world
+
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    mesh_ob = sleeves.evaluated_get(deps)
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.22
+    inv = sleeves.matrix_world.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(sleeves.data)
+    bm.verts.ensure_lookup_table()
+    touched = 0
+    for v in bm.verts:
+        vi = v.index
+        if vi >= len(mesh_ob.data.vertices):
+            continue
+        wc = mesh_ob.matrix_world @ mesh_ob.data.vertices[vi].co
+        h = (wc.z - lo) / span
+        if h < wrist_h - 0.18 or h > wrist_h + 0.14:
+            continue
+        best_side = None
+        best_dist = 1e9
+        for side in ("Left", "Right"):
+            wrist = _wrist_head_world(arm, side)
+            if wrist is None:
+                continue
+            d = (wc - wrist).length
+            if d < best_dist:
+                best_dist = d
+                best_side = side
+        if best_side is None or best_dist > span * 0.45:
+            continue
+        wrist = _wrist_head_world(arm, best_side)
+        assert wrist is not None
+        radial = wc - wrist
+        if radial.length < 1e-6:
+            radial = Vector((0.0, 0.02, 0.0))
+        target = wrist + radial.normalized() * min(max_radius_m, max(radial.length, 0.02))
+        v.co = inv @ target
+        touched += 1
+    if touched:
+        bm.to_mesh(sleeves.data)
+        sleeves.data.update()
+    bm.free()
+    return touched
 
 
 def _snap_sleeve_cuffs_to_body_wrist(
@@ -358,22 +578,43 @@ def _snap_sleeve_cuffs_to_body_wrist(
 
 
 def _boost_sleeve_forearm_weights(
-    sleeves: bpy.types.Object, lm, *, body_cx: float | None = None
+    sleeves: bpy.types.Object,
+    lm,
+    *,
+    body_cx: float | None = None,
+    arm: bpy.types.Object | None = None,
 ) -> None:
     """Cuff verts: skin mostly to forearm bones for walk swing."""
+    from researcher_scene_mesh_audit import _wrist_head_world
+
     lo, span = lm.zmin, lm.span
     wrist_h = lm.h_shoe + 0.22
     cx = body_cx if body_cx is not None else lm.cx
     for vi in range(len(sleeves.data.vertices)):
         wc = sleeves.matrix_world @ sleeves.data.vertices[vi].co
         h = (wc.z - lo) / span
-        if h < wrist_h - 0.12:
+        if h < wrist_h - 0.32:
             continue
         side = None
-        if wc.x < cx - span * 0.02:
-            side = "Left"
-        elif wc.x > cx + span * 0.02:
-            side = "Right"
+        if arm is not None:
+            d_l = (
+                (wc - _wrist_head_world(arm, "Left")).length
+                if _wrist_head_world(arm, "Left")
+                else 1e9
+            )
+            d_r = (
+                (wc - _wrist_head_world(arm, "Right")).length
+                if _wrist_head_world(arm, "Right")
+                else 1e9
+            )
+            if min(d_l, d_r) > span * 0.55:
+                continue
+            side = "Left" if d_l < d_r else "Right"
+        else:
+            if wc.x < cx - span * 0.02:
+                side = "Left"
+            elif wc.x > cx + span * 0.02:
+                side = "Right"
         if side is None:
             continue
         fa = f"{side}ForeArm"
@@ -625,6 +866,52 @@ def _stretch_skirt_hem_to_mid_thigh(
     bm.free()
 
 
+def _prune_sleeve_torso_bridge(ob: bpy.types.Object, lm) -> int:
+    """Drop shirt faces bridging both arms across the chest (splits one island into L/R)."""
+    lo, span = lm.zmin, lm.span
+    cx = lm.cx
+    z_lo = lo + span * (lm.h_waist - 0.02)
+    z_hi = lo + span * (lm.h_neck - 0.06)
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    doomed: list[bmesh.types.BMFace] = []
+    for f in bm.faces:
+        wc = ob.matrix_world @ f.calc_center_median()
+        if wc.z < z_lo or wc.z > z_hi:
+            continue
+        if abs(wc.x - cx) > span * 0.11:
+            continue
+        doomed.append(f)
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+        bm.to_mesh(ob.data)
+        ob.data.update()
+    removed = len(doomed)
+    bm.free()
+    return removed
+
+
+def finalize_coat_sleeve_islands(
+    sleeves: bpy.types.Object,
+    body: bpy.types.Object,
+    lm,
+) -> None:
+    from researcher_scene_mesh_audit import _delete_island_faces, _mesh_island_sets
+
+    _prune_sleeve_torso_bridge(sleeves, lm)
+    _prune_coat_loose_islands(sleeves, body, min_verts=8, touch_m=0.12)
+
+    while len(_mesh_island_sets(sleeves)) > 2:
+        face_ids, _ = min(_mesh_island_sets(sleeves), key=lambda row: len(row[1]))
+        _delete_island_faces(sleeves, face_ids)
+    isl = _count_mesh_islands(sleeves)
+    if isl < 1 or isl > 2:
+        raise RuntimeError(
+            f"FAIL staff-researcher-idle coat_islands={isl} mesh={SLEEVES_NAME} want<=2"
+        )
+
+
 def _prune_verts_above_z(ob: bpy.types.Object, z_cut: float, *, margin_m: float = 0.006) -> int:
     bm = bmesh.new()
     bm.from_mesh(ob.data)
@@ -709,6 +996,13 @@ def sync_coat_parts_to_body(
     body: bpy.types.Object, parts: list[bpy.types.Object], arm: bpy.types.Object | None
 ) -> None:
     for ob in parts:
+        if ob.name.split(".")[0] == SKIRT_NAME:
+            for mod in list(ob.modifiers):
+                if mod.type == "ARMATURE":
+                    ob.modifiers.remove(mod)
+            ob.parent = body
+            ob.matrix_parent_inverse = body.matrix_world.inverted()
+            continue
         if arm is not None and any(m.type == "ARMATURE" for m in ob.modifiers):
             ob.matrix_world = body.matrix_world.copy()
         elif arm is None:
@@ -722,6 +1016,10 @@ def _attach_coat_part_to_body_or_arm(
     body: bpy.types.Object,
     arm: bpy.types.Object | None,
 ) -> None:
+    if ob.name.split(".")[0] == SKIRT_NAME:
+        ob.parent = body
+        ob.matrix_parent_inverse = body.matrix_world.inverted()
+        return
     if arm is not None:
         if ob.parent:
             ob.parent = None
@@ -743,8 +1041,9 @@ def spawn_shirt_derived_coat_parts(
     shirt_slot: int,
     coat_mat,
     weight_body: bpy.types.Object | None = None,
+    spawn_parts: tuple[str, ...] = (SKIRT_NAME, SLEEVES_NAME),
 ) -> list[bpy.types.Object]:
-    for name in (SKIRT_NAME, SLEEVES_NAME):
+    for name in spawn_parts:
         for ob in list(bpy.context.scene.objects):
             if ob.type == "MESH" and ob.name.split(".")[0] == name:
                 bpy.data.objects.remove(ob, do_unlink=True)
@@ -775,32 +1074,86 @@ def spawn_shirt_derived_coat_parts(
             h = (wc.z - lo) / span
             if lm.h_waist - 0.06 <= h <= lm.h_waist + 0.40 and h < lm.h_neck - 0.14:
                 skirt_pick.add(f.index)
-    sleeve_pick = pick_shirt_sleeve_faces(
-        body,
-        bm_src,
-        shirt_slot=shirt_slot,
-        hand_slot=5,
-        lm=lm,
-        hc=hc,
-        fwd=fwd,
-        ws=ws,
-    )
+    want_skirt = SKIRT_NAME in spawn_parts
+    want_sleeves = SLEEVES_NAME in spawn_parts
+    sleeve_pick: set[int] = set()
+    if want_sleeves:
+        sleeve_src = weight_body if weight_body != body else body
+        bm_sleeves = bmesh.new()
+        bm_sleeves.from_mesh(sleeve_src.data)
+        bm_sleeves.faces.ensure_lookup_table()
+        lm_s = compute_landmarks(sleeve_src)
+        ws_s = [sleeve_src.matrix_world @ v.co for v in sleeve_src.data.vertices]
+        hc_s, _ = face_shell_coord(sleeve_src, fwd)
+        sleeve_pick = pick_shirt_sleeve_faces(
+            sleeve_src,
+            bm_sleeves,
+            shirt_slot=shirt_slot,
+            hand_slot=5,
+            lm=lm_s,
+            hc=hc_s,
+            fwd=fwd,
+            ws=ws_s,
+        )
     bm_src.free()
     parts: list[bpy.types.Object] = []
-    if len(skirt_pick) < 12:
+    if want_skirt and len(skirt_pick) < 12:
         raise RuntimeError(f"FAIL staff-researcher-idle skirt_faces={len(skirt_pick)} too_few")
-    if len(sleeve_pick) < 16:
+    if want_sleeves and len(sleeve_pick) < 16:
         raise RuntimeError(f"FAIL staff-researcher-idle sleeve_faces={len(sleeve_pick)} too_few")
-    bm_src = bmesh.new()
-    bm_src.from_mesh(body.data)
-    bm_src.faces.ensure_lookup_table()
-    skirt, _ = _mesh_from_face_pick(body, bm_src, skirt_pick, SKIRT_NAME)
-    sleeves, _ = _mesh_from_face_pick(body, bm_src, sleeve_pick, SLEEVES_NAME)
-    bm_src.free()
+    skirt = sleeves = None
+    if want_skirt:
+        bm_sk = bmesh.new()
+        bm_sk.from_mesh(body.data)
+        bm_sk.faces.ensure_lookup_table()
+        skirt, _ = _mesh_from_face_pick(body, bm_sk, skirt_pick, SKIRT_NAME)
+        bm_sk.free()
+    if want_sleeves:
+        sleeve_src = weight_body if weight_body != body else body
+        bm_sl = bmesh.new()
+        bm_sl.from_mesh(sleeve_src.data)
+        bm_sl.faces.ensure_lookup_table()
+        sleeves, _ = _mesh_from_face_pick(sleeve_src, bm_sl, sleeve_pick, SLEEVES_NAME)
+        bm_sl.free()
     lo, span, skirt_top_z, z_hip, z_mid_thigh, _zk = _skirt_z_band(body, lm)
     z_knee = knee_world_z(body, lm)
     arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     z_neck = _neck_cut_world_z(arm, lm)
+    if skirt is None:
+        assert not want_skirt
+        assert sleeves is not None
+        # sleeves-only path
+        sleeves.data.materials.clear()
+        sleeves.data.materials.append(coat_mat)
+        _sanitize_coat_part(
+            sleeves,
+            weight_body,
+            allow=SLEEVE_ALLOWED_VG,
+            z_knee=z_knee,
+            project_shell=False,
+            cull_below_knee=False,
+            island_touch_m=0.10,
+            max_body_gap_m=0.15,
+            require_single_island=False,
+        )
+        from researcher_scene_mesh_audit import head_top_world
+
+        removed = _prune_verts_above_z(sleeves, head_top_world(body) - 0.015)
+        if removed and len(sleeves.data.vertices) < 20:
+            raise RuntimeError(f"FAIL staff-researcher-idle sleeves_prune_head removed={removed}")
+        shell_body = weight_body
+        _snap_sleeve_cuffs_to_body_wrist(sleeves, shell_body, lm)
+        _transfer_coat_weights_nearest_face_interp(sleeves, weight_body)
+        _purge_vertex_groups(sleeves, allow=SLEEVE_ALLOWED_VG, deny=VG_DENY_HEAD)
+        _normalize_vertex_groups(sleeves)
+        _boost_sleeve_forearm_weights(sleeves, lm, body_cx=lm.cx)
+        _cull_spike_edges(sleeves, max_edge_m=MAX_COAT_EDGE_M)
+        if shell_body == body:
+            _cull_verts_far_from_body(sleeves, shell_body, max_gap_m=MAX_COAT_BODY_GAP_M)
+        finalize_coat_sleeve_islands(sleeves, shell_body, lm)
+        parts.append(sleeves)
+        return parts
+    assert skirt is not None
     _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
     z_after = max((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     if z_after < z_mid_thigh - span * 0.06:
@@ -826,6 +1179,10 @@ def spawn_shirt_derived_coat_parts(
     _cull_verts_far_from_body(skirt, body, max_gap_m=MAX_COAT_BODY_GAP_M)
     if len(skirt.data.vertices) < 12:
         raise RuntimeError("FAIL staff-researcher-idle skirt_post_hem_empty")
+    if not want_sleeves:
+        parts.append(skirt)
+        return parts
+    assert sleeves is not None
     sleeves.data.materials.clear()
     sleeves.data.materials.append(coat_mat)
     _sanitize_coat_part(
@@ -835,14 +1192,24 @@ def spawn_shirt_derived_coat_parts(
         z_knee=z_knee,
         project_shell=False,
         cull_below_knee=False,
-        island_touch_m=0.12,
-        max_body_gap_m=0.14,
+        island_touch_m=0.10,
+        max_body_gap_m=0.15,
+        require_single_island=False,
     )
+    from researcher_scene_mesh_audit import head_top_world
+
+    removed = _prune_verts_above_z(sleeves, head_top_world(body) - 0.015)
+    if removed and len(sleeves.data.vertices) < 20:
+        raise RuntimeError(f"FAIL staff-researcher-idle sleeves_prune_head removed={removed}")
     shell_body = weight_body
     _snap_sleeve_cuffs_to_body_wrist(sleeves, shell_body, lm)
+    _transfer_coat_weights_nearest_face_interp(sleeves, weight_body)
+    _purge_vertex_groups(sleeves, allow=SLEEVE_ALLOWED_VG, deny=VG_DENY_HEAD)
+    _normalize_vertex_groups(sleeves)
     _boost_sleeve_forearm_weights(sleeves, lm, body_cx=lm.cx)
     _cull_spike_edges(sleeves, max_edge_m=MAX_COAT_EDGE_M)
     if shell_body == body:
         _cull_verts_far_from_body(sleeves, shell_body, max_gap_m=MAX_COAT_BODY_GAP_M)
+    finalize_coat_sleeve_islands(sleeves, shell_body, lm)
     parts.extend([skirt, sleeves])
     return parts

@@ -98,16 +98,27 @@ def main() -> int:
         bpy.context.view_layer.update()
         bpy.context.evaluated_depsgraph_get().update()
         if use_pose_bake:
-            from researcher_scene_mesh_audit import audit_researcher_render_meshes
+            from researcher_scene_mesh_audit import (
+                assert_render_island_audit,
+                audit_researcher_render_meshes,
+            )
 
-            ok_r, msg_r = audit_researcher_render_meshes(
-                scene_data.body, scene_data.render_meshes
+            label = scene_data.labels[i] if i < len(scene_data.labels) else f"tile_{i}"
+            audit_researcher_render_meshes(
+                scene_data.body,
+                scene_data.render_meshes,
+                arm=scene_data.arm,
+            )
+            ok_r, msg_r = assert_render_island_audit(
+                scene_data.body,
+                scene_data.render_meshes,
+                frame=int(fr),
+                panel=label,
             )
             if not ok_r:
-                print(
-                    f"FAIL staff-researcher-idle render_islands frame={int(fr)} {msg_r}"
-                )
+                print(f"FAIL staff-researcher-idle {msg_r}")
                 return 1
+            print(f"OK researcher_render_islands {msg_r}")
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")
