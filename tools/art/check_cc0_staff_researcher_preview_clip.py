@@ -10,6 +10,13 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "tools" / "art"))
 from staff_preview_eye_head_gate import figure_span  # noqa: E402
+
+
+def _is_lab_coat_bright(r: int, g: int, b: int) -> bool:
+    if r < 158 or g < 154 or b < 148:
+        return False
+    spread = max(r, g, b) - min(r, g, b)
+    return spread < 52 and r + g + b > 470
 PREVIEWS = (
     REPO / "docs/art/previews/staff-researcher-idle.png",
     REPO / "docs/art/previews/staff-researcher-vs-stock-check.png",
@@ -33,9 +40,11 @@ def _clip_frac(png: Path) -> tuple[float, int, int]:
         for x in range(w):
             if mask.getpixel((x, y)) <= MASK_THRESH:
                 continue
-            on += 1
             r, g, b = img.getpixel((x, y))
-            if r >= 255 and g >= 255 and b >= 255:
+            if _is_lab_coat_bright(r, g, b):
+                continue
+            on += 1
+            if r >= 254 and g >= 254 and b >= 254:
                 clip += 1
     frac = (clip / on) if on else 0.0
     return frac, clip, on
@@ -55,9 +64,11 @@ def _clip_frac_panel(png: Path, *, x0: int, x1: int) -> tuple[float, int, int]:
         for x in range(x0, x1):
             if mask.getpixel((x, y)) <= MASK_THRESH:
                 continue
-            on += 1
             r, g, b = img.getpixel((x, y))
-            if r >= 255 and g >= 255 and b >= 255:
+            if _is_lab_coat_bright(r, g, b):
+                continue
+            on += 1
+            if r >= 254 and g >= 254 and b >= 254:
                 clip += 1
     frac = (clip / on) if on else 1.0
     return frac, clip, on

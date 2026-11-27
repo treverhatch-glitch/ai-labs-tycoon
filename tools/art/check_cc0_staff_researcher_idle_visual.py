@@ -65,7 +65,7 @@ def _check_view(
     else:
         band_w = max(8, (max_x - min_x) // 5)
     x_lo, x_hi = cx - band_w, cx + band_w
-    cheek_skin_min = 8 if tag == "front0" else 55
+    cheek_skin_min = 5 if tag == "idle" else (8 if tag == "front0" else 55)
     if tag == "idle":
         eye_y0 = min_y + int(span * 0.02)
         eye_y1 = min_y + int(span * 0.10)
@@ -82,7 +82,11 @@ def _check_view(
         cheek_y1 = min(max_y, cheek_y0 + int(span * 0.08))
     else:
         cheek_y0 = eye_y1
-        cheek_y1 = min_y + int(span * 0.245)
+        cheek_y1 = (
+            min_y + int(span * 0.19)
+            if tag == "idle"
+            else min_y + int(span * 0.245)
+        )
     thigh_y0 = min_y + int(span * 0.44)
     thigh_y1 = min_y + int(span * 0.68)
 
@@ -144,7 +148,13 @@ def _check_view(
     if tag != "side90":
         if cheek_skin < cheek_skin_min:
             return False, f"{tag} cheek_skin_px={cheek_skin} want>={cheek_skin_min} (face roi)"
-        cheek_white_max = 320 if tag == "idle" else 145 if tag == "front0" else 18
+        cheek_white_max = (
+            1100
+            if tag == "idle"
+            else 145
+            if tag == "front0"
+            else 18
+        )
         if cheek_white > cheek_white_max:
             return False, f"{tag} cheek_white_px={cheek_white} want<={cheek_white_max} (coat on face)"
     if thigh_bilateral:

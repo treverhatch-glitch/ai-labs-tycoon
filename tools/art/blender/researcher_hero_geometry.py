@@ -970,7 +970,7 @@ def apply_researcher_body_lab_coat_displace(body: bpy.types.Object) -> None:
         for vi in poly.vertices:
             coat_vert.add(vi)
 
-    if len(coat_vert) < 48:
+    if len(coat_vert) < 120:
         raise RuntimeError(f"FAIL staff-researcher-idle body_coat_verts={len(coat_vert)} too_few")
 
     bm = bmesh.new()
@@ -978,13 +978,13 @@ def apply_researcher_body_lab_coat_displace(body: bpy.types.Object) -> None:
     bm.faces.ensure_lookup_table()
     bm.verts.ensure_lookup_table()
 
-    push = max(body.dimensions.length * 0.015, 0.010)
+    push = max(body.dimensions.length * 0.012, 0.008)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     for vi in coat_vert:
         v = bm.verts[vi]
         if v.normal.length > 1e-6:
             arm = _vg_weight(body, vi, _VG_SLEEVE)
-            scale = 0.42 if arm > 0.32 else 0.88
+            scale = 0.26 if arm > 0.32 else 0.56
             v.co += v.normal * push * scale
 
     bm.to_mesh(body.data)

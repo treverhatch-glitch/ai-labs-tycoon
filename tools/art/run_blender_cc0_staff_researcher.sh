@@ -73,6 +73,15 @@ set -e
 echo "$conn_out" | grep -E '^OK staff-researcher-idle' || { echo "$conn_out"; exit 1; }
 
 python3 tools/art/check_cc0_staff_kenney_rig_pivot.py
+python3 tools/art/check_cc0_staff_hero_facing.py
+
+echo "=== tools/art/blender/render_kenney_staff_turnaround.py ==="
+turn_r=$("$BLENDER" -b --python tools/art/blender/render_kenney_staff_turnaround.py -- staff-researcher-idle 2>&1) || { echo "$turn_r"; exit 1; }
+echo "$turn_r"
+echo "$turn_r" | grep -q '^OK turnaround' || { echo "FAIL researcher turnaround"; exit 1; }
+
 python3 tools/art/check_cc0_staff_hero_walk_cycle.py staff-researcher-idle
+python3 tools/art/check_cc0_staff_hero_turnaround.py
+python3 tools/art/check_cc0_staff_researcher_walk_history_gates.py
 
 echo "OK cc0 staff researcher hero lane"

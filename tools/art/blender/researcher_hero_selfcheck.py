@@ -19,8 +19,8 @@ def _assert_mesh_basics() -> None:
     coat_n = 0
     if body and body.data.polygons:
         coat_n = sum(1 for p in body.data.polygons if p.material_index == SLOT_LAB_COAT)
-    if coat_n < 120:
-        raise RuntimeError(f"FAIL researcher_hero_selfcheck body_coat_faces={coat_n} want>=120")
+    if coat_n < 220:
+        raise RuntimeError(f"FAIL researcher_hero_selfcheck body_coat_faces={coat_n} want>=220")
     glasses = bpy.data.objects.get("ResearcherGlasses")
     gv = 0 if glasses is None else len(glasses.data.vertices)
     print(

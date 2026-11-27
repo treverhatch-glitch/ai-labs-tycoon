@@ -388,7 +388,6 @@ def apply_researcher_materials(
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_researcher_hand_skin_only(bm, slots, ob, lm)
-    _stamp_researcher_chest_v_shirt(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_tie(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
@@ -402,6 +401,7 @@ def apply_researcher_materials(
     _stamp_lab_coat_vgroups(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _grow_lab_coat_mesh_slots(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _finalize_researcher_body_coat(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _enforce_trousers_below_coat_hem(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -579,6 +579,18 @@ _VG_BODY_COAT = frozenset(
         "RightUpLeg",
     }
 )
+_VG_TORSO_COAT = frozenset(
+    {
+        "Hips",
+        "Spine",
+        "Chest",
+        "UpperChest",
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftUpLeg",
+        "RightUpLeg",
+    }
+)
 
 
 def _vg_mean_on_face(ob: bpy.types.Object, face: bmesh.types.BMFace, names: frozenset[str]) -> float:
@@ -636,34 +648,79 @@ def _finalize_researcher_body_coat(
     fwd: Vector,
     y_face_fn,
 ) -> None:
+    """Continuous lab coat: torso neck base → mid-thigh, front+back; narrow open V only."""
     lo, span = lm.zmin, lm.span
-    coat_hi = lm.h_waist + 0.58
+    coat_hem = lm.h_waist + 0.52
+    coat_top = lm.h_neck - 0.05
+    block = {SLOT_HAIR, SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_SOLE, SLOT_SHOE}
     for face in bm.faces:
         fi = face.index
-        if slots[fi] in (SLOT_HAIR, SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_SOLE, SLOT_SHOE):
+        if slots[fi] in block:
             continue
-        if _vg_mean_on_face(ob, face, frozenset({"Head", "Neck"})) > 0.12:
+        if _vg_mean_on_face(ob, face, frozenset({"Head", "Neck"})) > 0.20:
             continue
-        if _vg_mean_on_face(ob, face, _VG_HANDS) > 0.18:
+        if _vg_mean_on_face(ob, face, _VG_HANDS) > 0.20:
             continue
         wc = Vector()
         for v in face.verts:
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.08 or h > coat_hi:
+        if h < coat_top or h > coat_hem:
             continue
         y_face = y_face_fn(wc)
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        on_arm = lat > thw * 0.52 and lm.h_neck - 0.18 <= h <= lm.h_waist + 0.06
-        on_torso = lat <= thw * 1.12 and lm.h_neck - 0.08 <= h <= lm.h_waist + 0.55
-        if not (on_arm or on_torso):
-            continue
-        if y_face > 0.05 and lat < thw * 0.14 and lm.h_neck <= h <= lm.h_waist - 0.03:
+        arm_v = _vg_mean_on_face(
+            ob,
+            face,
+            frozenset(
+                {
+                    "LeftArm",
+                    "RightArm",
+                    "LeftForeArm",
+                    "RightForeArm",
+                    "LeftShoulder",
+                    "RightShoulder",
+                }
+            ),
+        )
+        if lat > thw * 1.24:
+            if arm_v < 0.14 or h > lm.h_waist + 0.04:
+                continue
+        if (
+            y_face > 0.10
+            and lat < thw * 0.09
+            and lm.h_neck + 0.01 <= h <= lm.h_waist - 0.06
+        ):
             slots[fi] = SLOT_SHIRT
             continue
         slots[fi] = SLOT_LAB_COAT
+
+
+def _enforce_trousers_below_coat_hem(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    hem = lm.h_waist + 0.50
+    for face in bm.faces:
+        if slots[face.index] != SLOT_JEANS:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if h < hem and lat < thw * 1.12:
+            slots[face.index] = SLOT_LAB_COAT
 
 
 def _grow_lab_coat_mesh_slots(
@@ -900,9 +957,9 @@ def _stamp_lab_coat_open_front(
     fwd: Vector,
     y_face_fn,
 ) -> None:
-    """Off-white lab coat torso to mid-thigh; center V left for teal undershirt."""
+    """Lab coat torso front+back to mid-thigh (narrow front V left for finalize)."""
     lo, span = lm.zmin, lm.span
-    coat_hi = lm.h_waist + 0.58
+    coat_hi = lm.h_waist + 0.55
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -912,13 +969,13 @@ def _stamp_lab_coat_open_front(
         h = (wc.z - lo) / span
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if h < lm.h_neck - 0.05 or h > coat_hi:
+        if h < lm.h_neck - 0.06 or h > coat_hi:
             continue
-        if y_face < -0.06:
+        if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_EYE, SLOT_BROW, SLOT_MOUTH):
             continue
-        if y_face > 0.06 and lat < thw * 0.30:
+        if y_face > 0.08 and lat < thw * 0.11:
             continue
-        if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
+        if lat > thw * 1.22:
             continue
         slots[face.index] = SLOT_LAB_COAT
 

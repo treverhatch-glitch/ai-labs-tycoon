@@ -29,7 +29,7 @@ MAX_GREY_NEUTRAL = 22.0
 MAX_CAMERA_CENTROID_DRIFT_PX = 22
 MAX_ARM_SPAN_FRAC = 0.58
 COAT_FLARE_SHOULDER_PAD = 0.15
-MIN_COAT_FLARE_FAIL_PX = 40
+MIN_COAT_FLARE_FAIL_PX = 14
 MAX_COAT_OUTSIDE_SIL_PX = 10
 SILHOUETTE_DILATE_PX = 5
 MAX_HEAD_FACE_BLUE_PX = 10
@@ -38,8 +38,9 @@ MAX_SLEEVE_BLUE_PX = 12
 MIN_COAT_BODY_PX = 80
 MIN_COAT_MAJOR_COMPONENT_PX = 20
 MAX_COAT_ENCLOSED_DARK_FRAC = 0.02
-MIN_TORSO_COAT_FRAC = 0.63
-MAX_TORSO_SKIN_FRAC = 0.15
+MIN_TORSO_COAT_FRAC = 0.85
+MAX_TORSO_SKIN_FRAC = 0.05
+MIN_RESEARCHER_TORSO_MEAN_R = 158.0
 MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
@@ -155,12 +156,23 @@ def _is_trouser_blue(r: int, g: int, b: int) -> bool:
     return b > 92 and r < 95 and g < 102 and b > g + 6
 
 
+def _is_researcher_trouser_pixel(r: int, g: int, b: int) -> bool:
+    """Charcoal walk-strip trousers below coat hem."""
+    if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b):
+        return False
+    spread = max(r, g, b) - min(r, g, b)
+    return r < 95 and g < 95 and b < 105 and spread < 36 and r + g + b < 240 and r + g + b > 55
+
+
 def _is_skin_tone(r: int, g: int, b: int) -> bool:
     if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b):
         return False
     if _is_coat_coverage_pixel(r, g, b):
         return False
     if _is_trouser_blue(r, g, b):
+        return False
+    spread = max(r, g, b) - min(r, g, b)
+    if spread < 32 and r + g + b < 380:
         return False
     return 88 <= r <= 210 and 58 <= g <= 178 and 42 <= b <= 165 and r >= g - 18
 
@@ -193,51 +205,44 @@ def _is_coat_coverage_pixel(r: int, g: int, b: int) -> bool:
     if _is_lab_coat_white(r, g, b):
         return True
     spread = max(r, g, b) - min(r, g, b)
-    return (
-        r >= 118
-        and g >= 112
-        and b >= 104
-        and r + g + b >= 338
+    if (
+        r >= 132
+        and g >= 128
+        and b >= 120
+        and r + g + b >= 400
         and spread < 52
         and r >= g - 16
+    ):
+        return True
+    # Shaded lab-coat folds (still white slot, not skin tee).
+    return (
+        96 <= r <= 148
+        and g >= r - 14
+        and b >= r - 24
+        and r + g + b >= 298
+        and spread < 26
     )
 
 
 def _researcher_torso_coat_coverage(
     img: Image.Image, tile_w: int, h: int, i: int
 ) -> tuple[float, float]:
+    """Chest box shoulders→hips: coat vs skin among non-backdrop pixels."""
     x0, x1, y0, y1 = _torso_coat_coverage_window(tile_w, h, i)
-    cx = i * tile_w + tile_w // 2
-    v_half = max(6, tile_w // 11)
-    skin_y0 = h // 6
-    skin_y1 = int(h * 0.34)
-    coat_lat = skin_lat = skin_center = fig_all = 0
-    lat_pad = max(10, tile_w // 5)
+    coat = skin = 0
     for y in range(y0, y1, 2):
         for x in range(x0, x1, 2):
             r, g, b = img.getpixel((x, y))[:3]
             if _is_neutral_grey(r, g, b):
                 continue
-            lateral = x < cx - v_half or x > cx + v_half
-            is_coat = _is_coat_coverage_pixel(r, g, b)
-            is_skin = _is_skin_tone(r, g, b)
-            fig_all += 1
-            if is_skin and not lateral and skin_y0 <= y <= skin_y1:
-                skin_center += 1
-            if not lateral:
-                continue
-            if x < cx - v_half and x < x0 + lat_pad:
-                continue
-            if x > cx + v_half and x > x1 - lat_pad:
-                continue
-            if is_coat:
-                coat_lat += 1
-            elif is_skin:
-                skin_lat += 1
-    lat_denom = max(1, coat_lat + skin_lat)
-    if fig_all < 40:
+            if _is_coat_coverage_pixel(r, g, b):
+                coat += 1
+            elif _is_skin_tone(r, g, b):
+                skin += 1
+    fig = coat + skin
+    if fig < 40:
         return 0.0, 1.0
-    return coat_lat / lat_denom, skin_center / fig_all
+    return coat / fig, skin / fig
 
 
 def _researcher_arm_coat_coverage(img: Image.Image, tile_w: int, h: int, i: int) -> float:
@@ -415,6 +420,20 @@ def _tile_stats_excluding_coat(
     return sum(rs) / len(rs), sum(gs) / len(gs), sum(bs) / len(bs), len(rs)
 
 
+def _tile_stats_trousers(
+    img: Image.Image, x0: int, x1: int, y0: int, y1: int
+) -> tuple[float, float, float, int]:
+    rs: list[int] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_researcher_trouser_pixel(r, g, b):
+                rs.append(r)
+    if len(rs) < 24:
+        return 0.0, 0.0, 0.0, 0
+    return sum(rs) / len(rs), 0.0, 0.0, len(rs)
+
+
 def _coat_body_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
     x0 = i * tile_w + tile_w // 10
     x1 = (i + 1) * tile_w - tile_w // 10
@@ -445,8 +464,9 @@ def _researcher_coat_shell_gate(
     for yi in range(hh):
         for xi in range(w):
             r, g, b = img.getpixel((x0 + xi * step, y0 + yi * step))[:3]
-            if _is_lab_coat_white(r, g, b):
+            if _is_coat_coverage_pixel(r, g, b):
                 coat[yi][xi] = True
+    coat = _dilate_mask(coat, 1)
     total_coat = sum(sum(row) for row in coat)
     seen = [[False] * w for _ in range(hh)]
     sizes: list[int] = []
@@ -516,20 +536,26 @@ def _researcher_coat_sleeve_flare_px(
     x0, x1 = i * tile_w + tile_w // 12, (i + 1) * tile_w - tile_w // 12
     y_sh0, y_sh1 = h // 5, h // 3
     xs_sh: list[int] = []
+    xs_coat: list[int] = []
     for y in range(y_sh0, y_sh1, 2):
         for x in range(x0, x1, 2):
             r, g, b = img.getpixel((x, y))[:3]
             if _is_neutral_grey(r, g, b):
                 continue
-            if _is_lab_coat_white(r, g, b):
-                continue
-            xs_sh.append(x)
-    if len(xs_sh) < 36:
+            if _is_coat_coverage_pixel(r, g, b):
+                xs_coat.append(x)
+            elif not _is_lab_coat_white(r, g, b):
+                xs_sh.append(x)
+    if len(xs_sh) < 36 and len(xs_coat) < 36:
         return 0, 0.0
-    shoulder_w = float(max(xs_sh) - min(xs_sh))
-    center = (max(xs_sh) + min(xs_sh)) * 0.5
+    # Shoulder span includes lit coat on deltoids (sleeves follow arms).
+    xs_all = xs_sh if len(xs_sh) >= 36 else []
+    if xs_coat:
+        xs_all = xs_all + xs_coat
+    shoulder_w = float(max(xs_all) - min(xs_all))
+    center = (max(xs_all) + min(xs_all)) * 0.5
     half_allow = shoulder_w * 0.5 * (1.0 + COAT_FLARE_SHOULDER_PAD)
-    y0, y1 = h // 7, int(h * 0.56)
+    y0, y1 = h // 7, int(h * 0.49)
     flare = 0
     for y in range(y0, y1, 2):
         for x in range(x0, x1, 2):
@@ -755,8 +781,14 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
         if max(tile_means) < 90:
             return False, f"founder_tile_washed means={tile_means}"
     else:
-        if sum(tile_means) / len(tile_means) < 70:
+        mean_torso_r = sum(tile_means) / len(tile_means)
+        if mean_torso_r < 70:
             return False, f"researcher_tile_washed means={tile_means}"
+        if mean_torso_r < MIN_RESEARCHER_TORSO_MEAN_R:
+            return (
+                False,
+                f"researcher_coat_dim mean_r={mean_torso_r:.1f} want>={MIN_RESEARCHER_TORSO_MEAN_R}",
+            )
     torso_spread = max(tile_means) - min(tile_means)
     min_torso_spread = (
         0.12 if asset_id == "staff-researcher-idle" else MIN_TILE_SPREAD
@@ -768,7 +800,10 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
     leg_means = []
     for i in range(4):
         lx0, lx1, ly0, ly1 = _leg_window(tile_w, h, i)
-        lr, _, _, ln = _tile_stats_excluding_coat(img, lx0, lx1, ly0, ly1)
+        if asset_id == "staff-researcher-idle":
+            lr, _, _, ln = _tile_stats_trousers(img, lx0, lx1, ly0, ly1)
+        else:
+            lr, _, _, ln = _tile_stats_excluding_coat(img, lx0, lx1, ly0, ly1)
         if ln > 30:
             leg_means.append(lr)
     min_leg_spread = 0.72 if asset_id == "staff-researcher-idle" else 1.35

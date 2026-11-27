@@ -93,6 +93,14 @@ echo "$conn_out" | grep -E '^OK staff-founder-idle' || true
 echo "$conn_out" | grep -q '^OK staff-founder-idle' || { echo "FAIL connectivity founder"; exit 1; }
 
 python3 tools/art/check_cc0_staff_kenney_rig_pivot.py
+python3 tools/art/check_cc0_staff_hero_facing.py
+
+echo "=== tools/art/blender/render_kenney_staff_turnaround.py ==="
+turn_f=$("$BLENDER" -b --python tools/art/blender/render_kenney_staff_turnaround.py -- staff-founder-idle 2>&1) || { echo "$turn_f"; exit 1; }
+echo "$turn_f"
+echo "$turn_f" | grep -q '^OK turnaround' || { echo "FAIL founder turnaround"; exit 1; }
+
 python3 tools/art/check_cc0_staff_hero_walk_cycle.py staff-founder-idle
+python3 tools/art/check_cc0_staff_hero_turnaround.py
 
 echo "cc0 staff founder OK"

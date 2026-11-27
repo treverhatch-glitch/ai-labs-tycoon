@@ -819,14 +819,14 @@ def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
                 continue
             bsdf = mat.node_tree.nodes.get("Principled BSDF")
             if bsdf:
-                bsdf.inputs["Base Color"].default_value = (1.0, 0.99, 0.96, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.28
+                bsdf.inputs["Base Color"].default_value = (1.0, 0.995, 0.98, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.26
                 em = bsdf.inputs.get("Emission") or bsdf.inputs.get("Emission Color")
                 if em is not None:
-                    em.default_value = (0.92, 0.91, 0.88, 1.0)
+                    em.default_value = (0.96, 0.95, 0.92, 1.0)
                 stren = bsdf.inputs.get("Emission Strength")
                 if stren is not None:
-                    stren.default_value = 0.30
+                    stren.default_value = 0.14
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:
