@@ -352,16 +352,8 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         if name == "Torso":
             _drop_tiny_islands(ob, min_verts=28)
         elif name == "Head":
-            ob.scale = (1.0, 1.0, 0.96)
-            bpy.context.view_layer.objects.active = ob
-            ob.select_set(True)
-            bpy.ops.object.transform_apply(scale=True)
             _drop_tiny_islands(ob, min_verts=24)
         elif name == "Hair":
-            ob.scale = (0.82, 0.86, 0.84)
-            bpy.context.view_layer.objects.active = ob
-            ob.select_set(True)
-            bpy.ops.object.transform_apply(scale=True)
             _drop_tiny_islands(ob, min_verts=18)
         elif name == "Neck":
             _drop_tiny_islands(ob, min_verts=12)
@@ -797,7 +789,8 @@ def _add_face_features() -> None:
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
 
-def build_founder_kenney() -> None:
+def bake_stock_kenney_mesh() -> bpy.types.Object:
+    """Single smooth Kenney idle bake (same mesh as stock check frame)."""
     arm, mesh = _import_rigged()
     _pose_kenney_idle_arms(arm)
     _ground_rig(arm, mesh)
@@ -813,8 +806,36 @@ def build_founder_kenney() -> None:
     head_ref, foot_ref = refs
     baked = _bake_mesh(mesh, arm, head_ref, foot_ref)
     _ensure_upright_z(baked, head_ref, foot_ref)
-    _face_forward_z(baked)
     _scale_character(baked)
+    return baked
+
+
+def _face_features_on_stock_head() -> None:
+    """Tiny eye markers on baked Kenney head (front toward +Y, same as stock check)."""
+    for tag in ("Eye_-1", "Eye_1", "Mouth", "Eyebrows"):
+        old = bpy.data.objects.get(tag)
+        if old:
+            bpy.data.objects.remove(old, do_unlink=True)
+    head = bpy.data.objects.get("Head")
+    if not head:
+        return
+    import staff_connectivity as sc
+
+    h_lo, h_hi = sc._world_bbox(head)
+    cx = (h_lo.x + h_hi.x) * 0.5
+    span_z = h_hi.z - h_lo.z
+    depth = max(0.08, h_hi.y - h_lo.y)
+    face_y = h_hi.y - depth * 0.04
+    eye_z = h_lo.z + span_z * 0.58
+    eye_sep = 0.10
+    for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
+        ex = cx + eye_sep * 0.5 * x_sign
+        eye = bc.add_cube(name, (0.16, 0.08, 0.12), (ex, face_y, eye_z))
+        bc.assign_solid(eye, FOUNDER_EYE, 0.32)
+
+
+def build_founder_kenney() -> None:
+    baked = bake_stock_kenney_mesh()
     _drop_tiny_islands(baked, min_verts=40)
     parts = _split_parts(baked)
     if len(parts) < 11:
@@ -823,32 +844,12 @@ def build_founder_kenney() -> None:
     _snap_soles_to_feet()
     _purge_floor_stray_meshes()
     _ground_z_meshes()
-    _trim_torso_chest_flap()
-    _ensure_kenney_head_volume()
-    _seat_head_on_neck()
-    _center_head_on_torso()
-    _ensure_side_arms()
-    _weld_shoulder_sockets()
-    _beef_hands()
-    _add_hair_cap()
-    _add_face_features()
-    _seat_head_on_neck()
-    _center_head_on_torso()
-    for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):
-        ob = bpy.data.objects.get(tag)
-        if ob:
-            bc.smooth_shade(ob)
+    _nudge_arm_outward(-1.0, 0.17)
+    _nudge_arm_outward(1.0, 0.17)
+    _face_features_on_stock_head()
     for ob in bpy.context.scene.objects:
-        if ob.type != "MESH":
-            continue
-        base = ob.name.split(".")[0]
-        try:
-            if base == "Head":
-                bc.bevel_object(ob, width=0.004, segments=2)
-            else:
-                bc.bevel_object(ob, width=0.0025, segments=1)
-        except RuntimeError:
-            pass
+        if ob.type == "MESH":
+            bc.smooth_shade(ob)
     _ground_z_meshes()
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "Cube":

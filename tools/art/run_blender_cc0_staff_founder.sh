@@ -4,7 +4,7 @@ set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=32
 export STAFF_PREVIEW_ELEV_DEG=8
-export STAFF_PREVIEW_MARGIN=1.52
+export STAFF_PREVIEW_MARGIN=1.45
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -61,6 +61,9 @@ python3 tools/art/check_cc0_staff_founder_pixel_hues.py
 python3 tools/art/check_cc0_staff_founder_assembly.py
 python3 tools/art/check_cc0_staff_founder_head_mesh.py
 python3 tools/art/check_cc0_staff_founder_chunky_bake.py
+python3 tools/art/check_cc0_staff_founder_silhouette_overlay_v13.py
+python3 tools/art/compose_founder_stock_preview.py
+test -s "docs/art/previews/staff-founder-vs-stock-check.png" || { echo "FAIL missing founder-vs-stock png"; exit 1; }
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)
