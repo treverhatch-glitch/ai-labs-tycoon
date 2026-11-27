@@ -749,6 +749,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     from kenney_researcher_from_founder import (
         apply_researcher_founder_base_materials,
         spawn_researcher_shirt_derived_parts,
+        swap_body_mesh_from_founder_stock,
     )
     from kenney_researcher_stock_recolor import spawn_researcher_eye_meshes
     from researcher_hero_geometry import spawn_researcher_hair_cap
@@ -760,21 +761,21 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     kf._pose_kenney_idle_arms(arm)
     idle_arms = _capture_arm_idle(arm)
     bpy.context.view_layer.update()
+    swap_body_mesh_from_founder_stock(mesh)
     apply_researcher_founder_base_materials(mesh)
-    mesh.name = "KenneyResearcherStock"
     reinforce_founder_forearm_weights(mesh)
     coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm)
     eyes = spawn_researcher_eye_meshes(mesh)
     hair = spawn_researcher_hair_cap(mesh)
     _weight_mesh_to_head(hair, arm)
-    extras = [*coat_parts, hair]
+    extras = [*coat_parts, *eyes, hair]
     keep = {
         arm.name.split(".")[0],
         mesh.name.split(".")[0],
         "KenneyResearcherStock",
         "Root",
     }
-    keep |= {o.name.split(".")[0] for o in [*eyes, *extras]}
+    keep |= {o.name.split(".")[0] for o in extras}
     act, start, end = _assign_locomotion_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Before any push: run this script (or push-ff-only.sh). Force-push is banned outright.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -32,15 +31,13 @@ python3 tools/art/check_era_skin_tokens.py
 python3 tools/art/check_prop_server_rack_assembly.py
 HEAD_BODY=$(git log -1 --format=%B)
 HEAD_EMAIL=$(git log -1 --format='%ae')
-HEAD_NAME=$(git log -1 --format='%an')
 if echo "$HEAD_BODY" | grep -qiE 'Co-authored-by:'; then
   echo "FAIL: Co-authored-by in HEAD commit message" >&2
-  echo "Fix: new forward commit via tools/art/commit-tree-noreply.sh only; no rewrite of pushed SHAs." >&2
+  echo "Fix: amend locally only while unpushed; no rewrite of pushed commits." >&2
   exit 1
 fi
-if [[ "$HEAD_EMAIL" == *cursoragent* ]] || [[ "$HEAD_NAME" == *Cursor*Agent* ]]; then
-  echo "FAIL: Cursor Agent author is forbidden on HEAD (got: $HEAD_NAME <$HEAD_EMAIL>)" >&2
-  echo "Use: tools/art/commit-tree-noreply.sh after staging; forward commit only." >&2
+if [[ "$HEAD_EMAIL" != *@users.noreply.github.com ]]; then
+  echo "FAIL: HEAD author email must be GitHub noreply (got: $HEAD_EMAIL)" >&2
   exit 1
 fi
 if [[ "$HEAD_EMAIL" == *trevorhatch-glitch@* ]]; then

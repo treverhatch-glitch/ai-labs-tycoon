@@ -43,6 +43,31 @@ from researcher_shirt_derived_meshes import (
 
 STOCK_OBJECT_NAME = "KenneyResearcherStock"
 
+
+def swap_body_mesh_from_founder_stock(mesh: bpy.types.Object) -> None:
+    """Replace Kenney FBX body with founder stock topology (matches bake GLB)."""
+    if not STOCK_BLEND.is_file():
+        raise RuntimeError(f"FAIL staff-researcher-idle missing stock blend {STOCK_BLEND}")
+    with bpy.data.libraries.load(str(STOCK_BLEND), link=False) as (data_from, data_to):
+        if FOUNDER_STOCK_NAME not in data_from.objects:
+            raise RuntimeError("FAIL staff-researcher-idle stock_blend missing KenneyFounderStock")
+        data_to.meshes = list(data_from.meshes)
+        data_to.objects = [FOUNDER_STOCK_NAME]
+    stock_ob = bpy.data.objects.get(FOUNDER_STOCK_NAME)
+    if stock_ob is None:
+        stock_ob = next(
+            (o for o in bpy.data.objects if o.name.split(".")[0] == FOUNDER_STOCK_NAME),
+            None,
+        )
+    if stock_ob is None:
+        raise RuntimeError("FAIL staff-researcher-idle stock_blend import failed")
+    mesh.data = stock_ob.data
+    mesh.data.name = f"{STOCK_OBJECT_NAME}Mesh"
+    bpy.data.objects.remove(stock_ob, do_unlink=True)
+    mesh.name = STOCK_OBJECT_NAME
+    while mesh.vertex_groups:
+        mesh.vertex_groups.remove(mesh.vertex_groups[0])
+
 # Match founder slot indices; slot 3 is lab coat (was shirt).
 SLOT_SHOE = 1
 RESEARCHER_LAB_COAT_RGBA = (0.99, 0.97, 0.94, 1.0)

@@ -85,5 +85,6 @@ python3 tools/art/check_cc0_staff_hero_turnaround.py
 python3 tools/art/check_cc0_staff_hero_turnaround_history_gates.py
 python3 tools/art/check_cc0_staff_researcher_walk_history_gates.py
 python3 tools/art/check_researcher_geometry_gates.py
+python3 tools/art/check_researcher_glb_preview_sync.py HEAD^
 
 echo "OK cc0 staff researcher hero lane"
