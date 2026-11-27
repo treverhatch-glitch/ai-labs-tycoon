@@ -102,5 +102,6 @@ echo "$turn_f" | grep -q '^OK turnaround' || { echo "FAIL founder turnaround"; e
 
 python3 tools/art/check_cc0_staff_hero_walk_cycle.py staff-founder-idle
 python3 tools/art/check_cc0_staff_hero_turnaround.py
+python3 tools/art/check_cc0_staff_hero_turnaround_history_gates.py
 
 echo "cc0 staff founder OK"

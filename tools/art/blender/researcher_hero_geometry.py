@@ -980,7 +980,10 @@ def apply_researcher_body_lab_coat_displace(body: bpy.types.Object) -> None:
 
     push = max(body.dimensions.length * 0.012, 0.008)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    _VG_NO_DISPLACE = frozenset({"Head", "Neck"})
     for vi in coat_vert:
+        if _vg_weight(body, vi, _VG_NO_DISPLACE) > 0.18:
+            continue
         v = bm.verts[vi]
         if v.normal.length > 1e-6:
             arm = _vg_weight(body, vi, _VG_SLEEVE)

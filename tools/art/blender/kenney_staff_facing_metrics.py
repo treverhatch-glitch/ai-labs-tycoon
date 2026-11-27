@@ -39,6 +39,16 @@ def _bone_dir_eval(arm_ev, name: str) -> Vector | None:
     return d
 
 
+def mesh_bone_forward_ref(mesh_obs: list[bpy.types.Object], arm: bpy.types.Object) -> Vector:
+    """Reference facing: blend shoe-derived toe axis with chest bone +Y."""
+    toe = toe_forward(mesh_obs).normalized()
+    chest = _chest_forward(arm)
+    mix = toe + chest
+    if mix.length > 1e-5:
+        return _xy_unit(mix)
+    return toe
+
+
 def _chest_forward(arm: bpy.types.Object) -> Vector:
     dg = bpy.context.evaluated_depsgraph_get()
     arm_ev = arm.evaluated_get(dg)
@@ -232,7 +242,7 @@ def measure_facing(
     travel: Vector | None = None,
     travel_motion: Vector | None = None,
 ) -> FacingReport:
-    ref = toe_forward(mesh_obs).normalized()
+    ref = mesh_bone_forward_ref(mesh_obs, arm)
     ref_xy = (ref.x, ref.y)
     head = _align_with_ref(_head_forward(mesh_obs, body), ref)
     chest = _align_with_ref(_chest_forward(arm), ref)

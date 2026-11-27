@@ -3,37 +3,37 @@
     "asset_id": "staff-founder-idle",
     "idle": {
       "ref_xy": [
-        -0.0,
+        0.0088,
         1.0
       ],
-      "head_deg": 0.0,
-      "chest_deg": 1.01,
-      "foot_l_deg": 6.19,
-      "foot_r_deg": 6.08,
-      "knee_l_deg": 13.39,
-      "knee_r_deg": 84.63,
-      "travel_deg": 0.0,
-      "travel_motion_deg": 0.0,
+      "head_deg": 0.5,
+      "chest_deg": 0.5,
+      "foot_l_deg": 6.69,
+      "foot_r_deg": 5.58,
+      "knee_l_deg": 12.88,
+      "knee_r_deg": 84.13,
+      "travel_deg": 0.5,
+      "travel_motion_deg": 0.5,
       "shin_l_dot_travel": 0.236,
       "shin_r_dot_travel": -0.01,
-      "max_delta_deg": 84.63
+      "max_delta_deg": 84.13
     },
     "walk_mid_stride": {
       "ref_xy": [
-        -0.0,
-        1.0
+        0.0373,
+        0.9993
       ],
-      "head_deg": 0.0,
-      "chest_deg": 4.28,
-      "foot_l_deg": 11.48,
-      "foot_r_deg": 10.72,
-      "knee_l_deg": 9.04,
-      "knee_r_deg": 4.08,
-      "travel_deg": 0.0,
-      "travel_motion_deg": 0.0,
+      "head_deg": 2.14,
+      "chest_deg": 2.14,
+      "foot_l_deg": 13.62,
+      "foot_r_deg": 8.58,
+      "knee_l_deg": 11.18,
+      "knee_r_deg": 1.94,
+      "travel_deg": 2.14,
+      "travel_motion_deg": 2.14,
       "shin_l_dot_travel": 0.255,
       "shin_r_dot_travel": 0.428,
-      "max_delta_deg": 11.48
+      "max_delta_deg": 13.62
     },
     "gate_idle": "idle_facing_ok",
     "gate_walk": "walk_facing_ok"
@@ -42,37 +42,37 @@
     "asset_id": "staff-researcher-idle",
     "idle": {
       "ref_xy": [
-        -0.0,
+        0.0088,
         1.0
       ],
-      "head_deg": 0.0,
-      "chest_deg": 1.01,
-      "foot_l_deg": 6.19,
-      "foot_r_deg": 6.08,
-      "knee_l_deg": 13.39,
-      "knee_r_deg": 84.63,
-      "travel_deg": 0.0,
-      "travel_motion_deg": 0.0,
+      "head_deg": 0.5,
+      "chest_deg": 0.5,
+      "foot_l_deg": 6.69,
+      "foot_r_deg": 5.58,
+      "knee_l_deg": 12.88,
+      "knee_r_deg": 84.13,
+      "travel_deg": 0.5,
+      "travel_motion_deg": 0.5,
       "shin_l_dot_travel": 0.236,
       "shin_r_dot_travel": -0.01,
-      "max_delta_deg": 84.63
+      "max_delta_deg": 84.13
     },
     "walk_mid_stride": {
       "ref_xy": [
-        -0.0,
-        1.0
+        0.0373,
+        0.9993
       ],
-      "head_deg": 0.0,
-      "chest_deg": 4.28,
-      "foot_l_deg": 11.48,
-      "foot_r_deg": 10.72,
-      "knee_l_deg": 9.04,
-      "knee_r_deg": 4.08,
-      "travel_deg": 0.0,
-      "travel_motion_deg": 0.0,
+      "head_deg": 2.14,
+      "chest_deg": 2.14,
+      "foot_l_deg": 13.62,
+      "foot_r_deg": 8.58,
+      "knee_l_deg": 11.18,
+      "knee_r_deg": 1.94,
+      "travel_deg": 2.14,
+      "travel_motion_deg": 2.14,
       "shin_l_dot_travel": 0.255,
       "shin_r_dot_travel": 0.428,
-      "max_delta_deg": 11.48
+      "max_delta_deg": 13.62
     },
     "gate_idle": "idle_facing_ok",
     "gate_walk": "walk_facing_ok"

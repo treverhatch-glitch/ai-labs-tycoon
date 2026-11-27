@@ -44,6 +44,8 @@ MIN_RESEARCHER_TORSO_MEAN_R = 158.0
 MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
+MIN_HEAD_SKIN_FRAC = 0.60
+MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -162,6 +164,15 @@ def _is_researcher_trouser_pixel(r: int, g: int, b: int) -> bool:
         return False
     spread = max(r, g, b) - min(r, g, b)
     return r < 95 and g < 95 and b < 105 and spread < 36 and r + g + b < 240 and r + g + b > 55
+
+
+def _is_below_hem_trouser_pixel(r: int, g: int, b: int) -> bool:
+    if _is_researcher_trouser_pixel(r, g, b):
+        return True
+    if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b) or _is_skin_tone(r, g, b):
+        return False
+    spread = max(r, g, b) - min(r, g, b)
+    return r < 118 and g < 112 and b < 118 and spread < 32 and 90 < r + g + b < 310
 
 
 def _is_skin_tone(r: int, g: int, b: int) -> bool:
@@ -337,6 +348,62 @@ def _head_face_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
     y0 = h // 10
     y1 = h // 3
     return x0, x1, y0, y1
+
+
+def _is_hair_tone(r: int, g: int, b: int) -> bool:
+    if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b):
+        return False
+    spread = max(r, g, b) - min(r, g, b)
+    return (
+        r < 135
+        and g < 125
+        and b < 145
+        and spread < 72
+        and r + g + b < 310
+        and r + g + b > 45
+    )
+
+
+def _researcher_head_skin_frac(img: Image.Image, tile_w: int, h: int, i: int) -> tuple[float, int]:
+    """Face/head ROI: skin+hair among non-coat head pixels (anti white-helmet)."""
+    x0, x1, y0, y1 = _head_face_window(tile_w, h, i)
+    skin = fig = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b):
+                continue
+            fig += 1
+            if _is_skin_tone(r, g, b) or _is_hair_tone(r, g, b):
+                skin += 1
+    if fig < 24:
+        return 0.0, fig
+    return skin / fig, fig
+
+
+def _below_hem_leg_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0, x1, legy0, legy1 = _leg_window(tile_w, h, i)
+    y0 = legy0 + (legy1 - legy0) // 5
+    y1 = legy1 - (legy1 - legy0) // 12
+    return x0, x1, y0, y1
+
+
+def _researcher_below_hem_charcoal_frac(img: Image.Image, tile_w: int, h: int, i: int) -> float:
+    x0, x1, y0, y1 = _below_hem_leg_window(tile_w, h, i)
+    charcoal = fig = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            if _is_lab_coat_white(r, g, b):
+                continue
+            fig += 1
+            if _is_below_hem_trouser_pixel(r, g, b):
+                charcoal += 1
+    if fig < 20:
+        return 0.0
+    return charcoal / fig
 
 
 def _researcher_head_face_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
@@ -692,6 +759,15 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             lr, lg, lb, ln = _tile_stats(img, legx0, legx1, legy0, legy1)
             if ln > 40 and _rgb_dist((lr, lg, lb), GREY) < MAX_GREY_NEUTRAL:
                 return False, f"tile{i}_grey_trousers mean={(round(lr,1), round(lg,1), round(lb,1))}"
+            head_skin, head_n = _researcher_head_skin_frac(img, tile_w, h, i)
+            if head_n >= 24 and head_skin < MIN_HEAD_SKIN_FRAC:
+                return False, f"tile{i}_head_skin_frac={head_skin:.3f} want>={MIN_HEAD_SKIN_FRAC}"
+            hem_charcoal = _researcher_below_hem_charcoal_frac(img, tile_w, h, i)
+            if hem_charcoal < MIN_BELOW_HEM_CHARCOAL_FRAC:
+                return (
+                    False,
+                    f"tile{i}_below_hem_charcoal={hem_charcoal:.3f} want>={MIN_BELOW_HEM_CHARCOAL_FRAC}",
+                )
             head_blue = _researcher_head_face_blue_px(img, tile_w, h, i)
             if head_blue > MAX_HEAD_FACE_BLUE_PX:
                 return False, f"tile{i}_head_blue_px={head_blue}"
