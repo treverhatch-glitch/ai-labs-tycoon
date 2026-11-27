@@ -19,6 +19,7 @@ def main() -> None:
     _face_only = frozenset(
         {
             "KenneyResearcherStock",
+            "ResearcherLabCoat",
             "FounderEye_L",
             "FounderEye_R",
             "ResearcherGlasses",
