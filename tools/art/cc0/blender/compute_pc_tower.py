@@ -12,8 +12,8 @@ def build() -> dict:
     cc.reset_scene()
     root = kit.build_pc_tower_cc0()
     sources = [
-        "procedural:era1 beige 90s desktop tower (flat per-part vertex colors)",
-        "style: TPH chunky rect; saturated power/hdd accents only",
+        "procedural:era1 solid beige tower 0.20x0.45x0.45 front-only bays",
+        "style: TPH chunky 5.25/floppy/power; no side fans or glass",
     ]
     out = cc.finish_cc0_asset("compute-pc-tower-era1", root, sources)
     out["generator"] = "tools/art/cc0/blender/compute_pc_tower.py"
