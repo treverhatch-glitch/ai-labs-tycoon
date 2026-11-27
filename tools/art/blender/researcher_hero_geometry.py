@@ -21,7 +21,19 @@ _VG_COAT_BODY = frozenset(
     {"Hips", "Spine", "Chest", "UpperChest", "LeftShoulder", "RightShoulder"}
 )
 _VG_COAT_UPPER_ARM = frozenset({"LeftArm", "RightArm"})
+_VG_COAT_FOREARM = frozenset({"LeftForeArm", "RightForeArm"})
+_VG_COAT_SHOULDER = frozenset({"LeftShoulder", "RightShoulder"})
 _VG_COAT_THIGH = frozenset({"LeftUpLeg", "RightUpLeg"})
+_VG_HANDS = frozenset(
+    {
+        "LeftHand",
+        "RightHand",
+        "LeftHandIndex1",
+        "RightHandIndex1",
+        "LeftHandThumb1",
+        "RightHandThumb1",
+    }
+)
 _VG_COAT_EXCLUDE = frozenset({"Head", "Neck"})
 
 
@@ -46,7 +58,7 @@ def _face_dominated_by_coat_bones(
         coat += _vg_weight(ob, v.index, _VG_COAT_BODY)
         coat += _vg_weight(ob, v.index, _VG_COAT_UPPER_ARM) * 0.85
         bad += _vg_weight(ob, v.index, _VG_COAT_EXCLUDE)
-    if coat < 0.55:
+    if coat < 0.38:
         return False
     if exclude_head_neck and bad > 0.12:
         return False
@@ -76,7 +88,7 @@ def _all_verts_under_chin(
     return True
 
 
-def _face_thigh_drape(
+def _arm_coat_face(
     face: bmesh.types.BMFace,
     ob: bpy.types.Object,
     *,
@@ -84,24 +96,64 @@ def _face_thigh_drape(
     hc: Vector,
     fwd: Vector,
     ws: list[Vector],
-    y_face_fn,
 ) -> bool:
-    leg = sum(_vg_weight(ob, v.index, _VG_COAT_THIGH) for v in face.verts)
-    if leg < 0.65:
+    arm = sum(
+        _vg_weight(ob, v.index, _VG_COAT_UPPER_ARM)
+        + _vg_weight(ob, v.index, _VG_COAT_FOREARM) * 0.9
+        for v in face.verts
+    )
+    if arm < 0.85:
         return False
     if not _all_verts_under_chin(face, ob, lm, lm.h_neck - 0.14):
         return False
+    for v in face.verts:
+        if _vg_weight(ob, v.index, _VG_HANDS) > 0.14:
+            return False
+        if _vg_weight(ob, v.index, _VG_COAT_EXCLUDE) > 0.06:
+            return False
     lo, span = lm.zmin, lm.span
     wc = _world_centroid(face, ob)
     h = (wc.z - lo) / span
-    if h < lm.h_waist - 0.05 or h > lm.h_waist + 0.46:
-        return False
-    y_face = y_face_fn(wc)
-    if y_face < -0.55:
+    wrist = lm.h_waist - 0.06
+    if h < wrist or h > lm.h_neck - 0.16:
         return False
     lat = lateral_from_front(wc, hc, fwd)
     thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-    return lat < thw * 1.12
+    return lat > thw + span * 0.008
+
+
+def _append_coat_hem_quads(
+    bm: bmesh.types.BMesh,
+    body: bpy.types.Object,
+    *,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> None:
+    from founder_face_decals import _fwd_basis
+
+    _, right = _fwd_basis(fwd)
+    lo, span = lm.zmin, lm.span
+    hw = _head_width_at(ws, lo, span, lm.h_eye)
+    z0 = lo + span * (lm.h_waist + 0.01)
+    z1 = lo + span * (lm.h_waist + 0.44)
+    proud = hw * 0.11
+    flare = hw * 0.15
+    inv = body.matrix_world.inverted()
+
+    def _lv(w: Vector) -> Vector:
+        return inv @ w
+
+    for side in (-1.0, 1.0):
+        mid = hc + right * (side * hw * 0.22) + fwd * proud
+        inner_lo = _lv(Vector((mid.x - right.x * hw * 0.05, mid.y - right.y * hw * 0.05, z0)))
+        inner_hi = _lv(Vector((mid.x - right.x * hw * 0.05, mid.y - right.y * hw * 0.05, z1)))
+        out = mid + right * (side * flare * 1.15)
+        outer_lo = _lv(Vector((out.x, out.y, z0)))
+        outer_hi = _lv(Vector((out.x, out.y, z1)))
+        vs = [bm.verts.new(c) for c in (inner_lo, outer_lo, outer_hi, inner_hi)]
+        bm.faces.new(tuple(vs))
 
 
 def _is_coat_source_face(
@@ -114,11 +166,40 @@ def _is_coat_source_face(
     ws: list[Vector],
     y_face_fn,
 ) -> bool:
-    if _face_thigh_drape(face, ob, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn):
+    if _arm_coat_face(face, ob, lm=lm, hc=hc, fwd=fwd, ws=ws):
         return True
+    chest_w = sum(
+        _vg_weight(ob, v.index, frozenset({"Chest", "UpperChest", "Spine"}))
+        for v in face.verts
+    )
+    lo, span = lm.zmin, lm.span
+    wc = _world_centroid(face, ob)
+    h = (wc.z - lo) / span
+    lat = lateral_from_front(wc, hc, fwd)
+    thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+    if (
+        chest_w >= 0.75
+        and _all_verts_under_chin(face, ob, lm, lm.h_neck - 0.17)
+        and lm.h_waist - 0.14 <= h <= lm.h_neck - 0.19
+        and lat <= thw + span * 0.018
+    ):
+        y_face = y_face_fn(wc)
+        if not (y_face > 0.07 and lat < thw * 0.11):
+            for v in face.verts:
+                if _vg_weight(ob, v.index, _VG_COAT_EXCLUDE) > 0.06:
+                    break
+            else:
+                return True
     if not _face_dominated_by_coat_bones(face, ob, exclude_head_neck=True):
         return False
-    if not _all_verts_under_chin(face, ob, lm, lm.h_neck - 0.16):
+    coat_w = sum(
+        _vg_weight(ob, v.index, _VG_COAT_BODY) + _vg_weight(ob, v.index, _VG_COAT_UPPER_ARM)
+        for v in face.verts
+    )
+    lo, span = lm.zmin, lm.span
+    wc = _world_centroid(face, ob)
+    h = (wc.z - lo) / span
+    if not _all_verts_under_chin(face, ob, lm, lm.h_neck - 0.17):
         return False
     for v in face.verts:
         if _vg_weight(ob, v.index, _VG_COAT_EXCLUDE) > 0.05:
@@ -126,20 +207,21 @@ def _is_coat_source_face(
     lo, span = lm.zmin, lm.span
     wc = _world_centroid(face, ob)
     h = (wc.z - lo) / span
-    if h < lm.h_waist - 0.06 or h > lm.h_waist + 0.12:
-        return False
-    if h > lm.h_neck - 0.16:
-        return False
-    y_face = y_face_fn(wc)
     lat = lateral_from_front(wc, hc, fwd)
     thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-    arm = lat > thw + span * 0.012
-    sleeve_top = lm.h_waist + 0.10
-    if arm and h > sleeve_top:
+    hip_w = sum(_vg_weight(ob, v.index, frozenset({"Hips"})) for v in face.verts)
+    if hip_w >= 0.85 and lm.h_waist - 0.12 <= h <= lm.h_waist + 0.06:
+        y_face = y_face_fn(wc)
+        if y_face > -0.22 and lat < thw * 1.08:
+            return True
+    if h < lm.h_waist - 0.14 or h > lm.h_neck - 0.20:
         return False
-    if not arm and y_face < -0.12:
+    y_face = y_face_fn(wc)
+    if lat > thw + span * 0.016:
         return False
-    if y_face > 0.06 and lat < thw * 0.22:
+    if y_face < -0.36:
+        return False
+    if y_face > 0.05 and lat < thw * 0.26:
         return False
     return True
 
@@ -154,7 +236,7 @@ def _trim_coat_above_chin(
     y_face_fn,
 ) -> None:
     lo, span = lm.zmin, lm.span
-    chin_z = lo + span * (lm.h_neck - 0.18)
+    chin_z = lo + span * (lm.h_neck - 0.20)
     bm = bmesh.new()
     bm.from_mesh(coat.data)
     bm.faces.ensure_lookup_table()
@@ -177,43 +259,42 @@ def _trim_coat_above_chin(
     bm.free()
 
 
-def _add_thigh_coat_panels(
+def _trim_coat_orphan_shards(
     coat: bpy.types.Object,
     body: bpy.types.Object,
-    *,
     lm,
     hc: Vector,
     fwd: Vector,
     ws: list[Vector],
+    y_face_fn,
 ) -> None:
-    from founder_face_decals import _fwd_basis
-
+    """Remove floating hip / forearm coat islands."""
     lo, span = lm.zmin, lm.span
-    head_w = _head_width_at(ws, lo, span, lm.h_eye)
-    waist_z = lo + span * (lm.h_waist + 0.06)
-    hem_z = lo + span * (lm.h_waist + 0.41)
-    depth = head_w * 0.045
-    _, right = _fwd_basis(fwd)
-    panels: list[bpy.types.Object] = []
-    for sign in (-1.0, 1.0):
-        center = hc + right * (sign * head_w * 0.18) + fwd * (head_w * 0.14)
-        center.z = waist_z + (hem_z - waist_z) * 0.58
-        local = body.matrix_world.inverted() @ center
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=local)
-        panel = bpy.context.active_object
-        panel.scale = (head_w * 0.13, depth, (hem_z - waist_z) * 0.78)
-        rot = fwd.to_track_quat("Y", "Z").to_euler()
-        panel.rotation_euler = rot
-        bpy.ops.object.transform_apply(scale=True, rotation=True)
-        if coat.data.materials:
-            panel.data.materials.append(coat.data.materials[0])
-        panels.append(panel)
-    bpy.ops.object.select_all(action="DESELECT")
-    coat.select_set(True)
-    for p in panels:
-        p.select_set(True)
-    bpy.context.view_layer.objects.active = coat
-    bpy.ops.object.join()
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.faces.ensure_lookup_table()
+    doomed: list[bmesh.types.BMFace] = []
+    for face in bm.faces:
+        if len(face.verts) < 3:
+            doomed.append(face)
+            continue
+        wc = coat.matrix_world @ face.calc_center_median()
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if (
+            lm.h_waist + 0.21 <= h <= lm.h_waist + 0.30
+            and lat > thw * 1.08
+            and y_face_fn(wc) < 0.05
+        ):
+            doomed.append(face)
+        if h < lm.h_waist - 0.06 and lat > thw * 0.62:
+            doomed.append(face)
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
 
 
 def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
@@ -244,6 +325,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
                 vmap[sv.index] = bm.verts.new(sv.co.copy())
             new_vs.append(vmap[sv.index])
         bm.faces.new(new_vs)
+    _append_coat_hem_quads(bm, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
 
     mesh = bpy.data.meshes.new("ResearcherLabCoatMesh")
     bm.to_mesh(mesh)
@@ -259,13 +341,13 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     thick = max(body.dimensions.length * 0.011, 0.0045)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
-    solid.offset = 0.92
+    solid.offset = 1.0
     bpy.context.view_layer.objects.active = coat
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
     bpy.ops.object.shade_smooth()
     _trim_coat_above_chin(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _add_thigh_coat_panels(coat, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
     return coat
 
 
@@ -312,9 +394,9 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     fwd_xy, right = _fwd_basis(fwd)
     eye_z = lm.zmin + lm.span * lm.h_eye
     sep = head_w * 0.178
-    depth = head_w * 0.009
-    lens_r = head_w * 0.065
-    mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.22, specular=0.18)
+    depth = head_w * 0.014
+    lens_r = head_w * 0.072
+    mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.18, specular=0.12)
     parts: list[bpy.types.Object] = []
 
     def _ring(center: Vector, name: str) -> bpy.types.Object:
@@ -334,7 +416,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
         parts.append(ob)
         return ob
 
-    proud = head_w * 0.19
+    proud = head_w * 0.22
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
         lat = right * (sep * sign)

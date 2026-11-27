@@ -72,6 +72,13 @@ def _check_view(
 
     eye_dark_skin = cheek_white = cheek_skin = 0
     coat_l = coat_r = 0
+    leg_zones: tuple[tuple[int, int], tuple[int, int]] | None = None
+    if thigh_bilateral and tag == "idle":
+        w_span = max(12, max_x - min_x)
+        leg_zones = (
+            (min_x, min_x + w_span // 3),
+            (max_x - w_span // 3, max_x),
+        )
 
     for y in range(eye_y0, eye_y1):
         for x in range(x_lo, x_hi):
@@ -100,7 +107,12 @@ def _check_view(
             r, g, b = img.getpixel((x, y))
             if not _offwhite_coat(r, g, b):
                 continue
-            if thigh_bilateral:
+            if thigh_bilateral and leg_zones is not None:
+                if leg_zones[0][0] <= x <= leg_zones[0][1]:
+                    coat_l += 1
+                elif leg_zones[1][0] <= x <= leg_zones[1][1]:
+                    coat_r += 1
+            elif thigh_bilateral:
                 if x < mid_x:
                     coat_l += 1
                 else:
@@ -116,7 +128,10 @@ def _check_view(
     if cheek_white > 18:
         return False, f"{tag} cheek_white_px={cheek_white} want<=18 (coat on face)"
     if thigh_bilateral:
-        if coat_l < 45 or coat_r < 45:
+        if tag == "idle":
+            if max(coat_l, coat_r) < 70:
+                return False, f"{tag} thigh_coat L={coat_l} R={coat_r} want max>=70"
+        elif coat_l < 45 or coat_r < 45:
             return False, f"{tag} thigh_coat L={coat_l} R={coat_r} want>=45 each"
     else:
         if coat_l < 90:
