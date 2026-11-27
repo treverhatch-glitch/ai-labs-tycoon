@@ -26,11 +26,11 @@ MAT_LED_GREEN = 2
 MAT_LED_AMBER = 3
 MAT_POWER = 4
 
-COL_CASE = (0.86, 0.82, 0.72)
-COL_BEZEL = (0.62, 0.58, 0.52)
-COL_BAY = (0.48, 0.44, 0.40)
-COL_SLOT = (0.28, 0.26, 0.24)
-COL_POWER = (0.58, 0.54, 0.48)
+COL_CASE = (200 / 255.0, 190 / 255.0, 165 / 255.0)
+COL_BEZEL = (120 / 255.0, 112 / 255.0, 98 / 255.0)
+COL_BAY = (105 / 255.0, 98 / 255.0, 86 / 255.0)
+COL_SLOT = (85 / 255.0, 80 / 255.0, 72 / 255.0)
+COL_POWER = (95 / 255.0, 90 / 255.0, 82 / 255.0)
 COL_LED_PWR = (0.15, 0.92, 0.35)
 COL_LED_HDD = (0.98, 0.62, 0.12)
 COL_BADGE = (0.36, 0.34, 0.32)
@@ -49,7 +49,12 @@ def _raw_box(name: str, dims: tuple[float, float, float], loc: tuple[float, floa
 
 def _raw_cylinder(name: str, radius: float, depth: float, loc: tuple[float, float, float]) -> bpy.types.Object:
     MESH_SPEC.append((name, (radius * 2, radius * 2, depth), loc))
-    bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=depth, location=loc)
+    bpy.ops.mesh.primitive_cylinder_add(
+        radius=radius,
+        depth=depth,
+        location=loc,
+        rotation=(math.pi / 2, 0.0, 0.0),
+    )
     ob = bpy.context.active_object
     ob.name = name
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
@@ -114,12 +119,14 @@ def _paint_part_faces(ob: bpy.types.Object, rgb: tuple[float, float, float]) -> 
             vcol.data[li].color = col
 
 
-def _assign_part_materials(ob: bpy.types.Object, name: str) -> None:
-    idx = _part_mat_index(name)
-    while len(ob.data.materials) <= idx:
-        ob.data.materials.append(None)
-    for poly in ob.data.polygons:
-        poly.material_index = idx
+def _apply_global_material_slots(parts: list[bpy.types.Object], slot_mats: list[bpy.types.Material]) -> None:
+    for ob in parts:
+        ob.data.materials.clear()
+        for m in slot_mats:
+            ob.data.materials.append(m)
+        idx = _part_mat_index(ob.name)
+        for poly in ob.data.polygons:
+            poly.material_index = idx
 
 
 def mesh_spec_report() -> str:
@@ -154,12 +161,32 @@ def _split_material_seams(ob: bpy.types.Object) -> None:
     mesh.update()
 
 
+def store_face_material_index(ob: bpy.types.Object) -> None:
+    mesh = ob.data
+    if mesh.attributes.get("OrigMat"):
+        mesh.attributes.remove(mesh.attributes["OrigMat"])
+    attr = mesh.attributes.new(name="OrigMat", type="INT", domain="FACE")
+    for i, poly in enumerate(mesh.polygons):
+        attr.data[i].value = poly.material_index
+
+
+def restore_face_material_index(ob: bpy.types.Object) -> None:
+    mesh = ob.data
+    attr = mesh.attributes.get("OrigMat")
+    if not attr:
+        return
+    nmat = max(len(ob.data.materials), 1)
+    for i, poly in enumerate(mesh.polygons):
+        poly.material_index = min(int(attr.data[i].value), nmat - 1)
+
+
 def _fix_tower_normals(ob: bpy.types.Object) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=1e-4)
     bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.mesh.faces_shade_smooth()
     bpy.ops.object.mode_set(mode="OBJECT")
@@ -230,7 +257,7 @@ def build_pc_tower_cc0() -> bpy.types.Object:
     parts.append(_raw_box("badge_plate", (0.04, PROTRUDE, 0.012), (0.0, yc, 0.282)))
     parts.append(_raw_box("cd_slot", (0.12, PROTRUDE, 0.012), (0.02, yc, 0.385)))
     parts.append(_raw_box("eject_btn", (0.028, PROTRUDE, 0.028), (0.07, yc, 0.385)))
-    parts.append(_raw_cylinder("power_btn", 0.020, 0.006, (-0.06, yc, 0.190)))
+    parts.append(_raw_cylinder("power_btn", 0.020, 0.012, (-0.06, yc, 0.190)))
     parts.append(_raw_box("led_pwr", (0.012, PROTRUDE, 0.012), (-0.02, yc, 0.190)))
     parts.append(_raw_box("led_hdd", (0.012, PROTRUDE, 0.012), (0.01, yc, 0.190)))
     parts.append(_raw_box("vent_bar", (0.12, PROTRUDE, 0.008), (0.0, yc, 0.088)))
@@ -238,12 +265,13 @@ def build_pc_tower_cc0() -> bpy.types.Object:
     xc = TOWER_W / 2 - 0.0005
     parts.append(_raw_box("side_vent", (0.002, 0.055, 0.042), (xc, TOWER_D / 2 - 0.048, 0.052)))
 
+    slot_mats = [bpy.data.materials.new(f"_era1_slot_{i}") for i in range(5)]
     for ob in parts:
         if ob.name != "case_body":
             _bevel(ob, DETAIL_BEVEL, segments=1)
         _paint_part_faces(ob, _part_face_color(ob.name))
-        _assign_part_materials(ob, ob.name)
 
+    _apply_global_material_slots(parts, slot_mats)
     root = cc.join_meshes(parts)
     cc.apply_transforms(root)
     _fix_tower_normals(root)

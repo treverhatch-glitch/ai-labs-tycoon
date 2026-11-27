@@ -20,6 +20,7 @@ HDR_PATH = INCOMING / "polyhaven/studio_small_09_1k.hdr"
 TEX_SIZE = 1024
 COMPUTE_BASE = (0.55, 0.40, 0.95)
 GREY150 = 150.0 / 255.0
+GREY150_PREVIEW = 149.35 / 255.0
 PREVIEW_FILL = 0.70
 
 
@@ -178,7 +179,7 @@ def rasterize_vertex_colors(ob: bpy.types.Object, tex_path: Path, asset_id: str 
     tex_path.parent.mkdir(parents=True, exist_ok=True)
     img = bpy.data.images.new(f"T_raster_{ob.name}", TEX_SIZE, TEX_SIZE, alpha=False)
     if "pc-tower-era1" in asset_id:
-        fill = (0.84, 0.80, 0.72, 1.0)
+        fill = (200 / 255.0, 190 / 255.0, 165 / 255.0, 1.0)
     elif "pc-tower" in asset_id:
         fill = (0.26, 0.40, 0.42, 1.0)
     else:
@@ -218,44 +219,42 @@ def bake_ao(ob: bpy.types.Object, mat: bpy.types.Material, ao_path: Path) -> Non
 
 
 def urp_material_era1_tower(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
-    """Body/bezel from albedo; LED slots emissive for Unity + preview bloom."""
+    """Distinct solid slot colours (survive glTF); LEDs emissive strength 5+."""
+    import pc_tower_kit as kit
+
+    case = kit.COL_CASE
+    bezel = kit.COL_BEZEL
+    power = kit.COL_POWER
+    led_g = kit.COL_LED_PWR
+    led_a = kit.COL_LED_HDD
     ob.data.materials.clear()
-    slots = [
-        ("body", albedo_path, False, (0.38, 0.08)),
-        ("bezel", albedo_path, False, (0.42, 0.06)),
-        ("led_pwr", None, True, (0.2, 0.0), (0.15, 0.92, 0.35)),
-        ("led_hdd", None, True, (0.2, 0.0), (0.98, 0.62, 0.12)),
-        ("power", albedo_path, False, (0.45, 0.05)),
-    ]
-    for spec in slots:
-        name = spec[0]
-        mat = bpy.data.materials.new(f"M_{asset_id}_{name}")
+
+    def _solid_mat(suffix: str, rgb: tuple[float, float, float], rough: float, emission: float = 0.0) -> bpy.types.Material:
+        mat = bpy.data.materials.new(f"M_{asset_id}_{suffix}")
         mat.use_nodes = True
         nodes = mat.node_tree.nodes
         links = mat.node_tree.links
         nodes.clear()
         out = nodes.new("ShaderNodeOutputMaterial")
         bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-        if spec[2]:
-            emission = (spec[4][0], spec[4][1], spec[4][2], 1.0)
-            bsdf.inputs["Base Color"].default_value = emission
-            bsdf.inputs["Emission Color"].default_value = emission
-            bsdf.inputs["Emission Strength"].default_value = 8.0
-        else:
-            tex = nodes.new("ShaderNodeTexImage")
-            img = bpy.data.images.load(str(spec[1])) if str(spec[1]) not in bpy.data.images else bpy.data.images[str(spec[1])]
-            img.colorspace_settings.name = "sRGB"
-            tex.image = img
-            links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-            bsdf.inputs["Roughness"].default_value = spec[3][0]
-            bsdf.inputs["Metallic"].default_value = spec[3][1]
+        col = (rgb[0], rgb[1], rgb[2], 1.0)
+        bsdf.inputs["Base Color"].default_value = col
+        bsdf.inputs["Roughness"].default_value = rough
+        bsdf.inputs["Metallic"].default_value = 0.05
+        if emission > 0 and "Emission Color" in bsdf.inputs:
+            bsdf.inputs["Emission Color"].default_value = col
+            bsdf.inputs["Emission Strength"].default_value = emission
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
         mat.blend_method = "OPAQUE"
         mat.shadow_method = "OPAQUE"
-        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-        ob.data.materials.append(mat)
-    while len(ob.data.polygons) and max(p.material_index for p in ob.data.polygons) >= len(ob.data.materials):
-        for p in ob.data.polygons:
-            p.material_index = min(p.material_index, len(ob.data.materials) - 1)
+        return mat
+
+    ob.data.materials.append(_solid_mat("body", case, 0.40))
+    ob.data.materials.append(_solid_mat("bezel", bezel, 0.44))
+    ob.data.materials.append(_solid_mat("led_pwr", led_g, 0.25, emission=6.5))
+    ob.data.materials.append(_solid_mat("led_hdd", led_a, 0.25, emission=6.5))
+    ob.data.materials.append(_solid_mat("power", power, 0.46))
+    kit.restore_face_material_index(ob)
 
 
 def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
@@ -351,6 +350,74 @@ def _setup_hdri_grey_world(hdri_strength: float = 0.42) -> None:
         links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
+def _setup_preview_garage_style_world(*, lit_strength: float = 0.16) -> None:
+    """Match passed garage #96 hero: camera sees grey-150; HDRI lights mesh only."""
+    world = bpy.context.scene.world or bpy.data.worlds.new("World")
+    bpy.context.scene.world = world
+    world.use_nodes = True
+    nodes = world.node_tree.nodes
+    links = world.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputWorld")
+    g = GREY150_PREVIEW
+    bg_grey = nodes.new("ShaderNodeBackground")
+    bg_grey.inputs["Color"].default_value = (g, g, g, 1.0)
+    bg_grey.inputs["Strength"].default_value = 1.0
+    if HDR_PATH.is_file():
+        env = nodes.new("ShaderNodeTexEnvironment")
+        env.image = bpy.data.images.load(str(HDR_PATH), check_existing=True)
+        env.image.colorspace_settings.name = "Linear Rec.709"
+        bg_lit = nodes.new("ShaderNodeBackground")
+        bg_lit.inputs["Strength"].default_value = lit_strength
+        links.new(env.outputs["Color"], bg_lit.inputs["Color"])
+        path = nodes.new("ShaderNodeLightPath")
+        mix = nodes.new("ShaderNodeMixShader")
+        links.new(path.outputs["Is Camera Ray"], mix.inputs["Fac"])
+        links.new(bg_lit.outputs["Background"], mix.inputs[1])
+        links.new(bg_grey.outputs["Background"], mix.inputs[2])
+        links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    else:
+        links.new(bg_grey.outputs["Background"], out.inputs["Surface"])
+
+
+def _tower_preview_lights(center: Vector, span: float, mins: Vector) -> None:
+    """Garage presentation_150 sun + area fill."""
+    bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
+    key = bpy.context.active_object
+    key.data.energy = 2.86
+    key.data.angle = math.radians(4)
+    key.rotation_euler = (math.radians(52), 0, math.radians(35))
+
+    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
+    fill = bpy.context.active_object
+    fill.data.energy = 84.0
+    fill.data.size = span * 0.9
+    fill.rotation_euler = (math.radians(60), 0, math.radians(25))
+
+    g = GREY150_PREVIEW
+    bpy.ops.mesh.primitive_plane_add(size=span * 1.05, location=(center.x, center.y, mins.z - 0.002))
+    ground = bpy.context.active_object
+    gmat = bpy.data.materials.new("Ground")
+    gmat.use_nodes = True
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (g, g, g, 1)
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
+    ground.data.materials.append(gmat)
+
+
+def _boost_tower_emissive_mats() -> None:
+    for mat in bpy.data.materials:
+        low = mat.name.lower()
+        if not mat.use_nodes:
+            continue
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if not bsdf:
+            continue
+        if "led_pwr" in low or "led_hdd" in low:
+            es = bsdf.inputs.get("Emission Strength")
+            if es is not None:
+                es.default_value = 7.0
+
+
 def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     """3/4 ortho preview on grey ground using committed GLB."""
     import hashlib
@@ -359,7 +426,12 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     preview = PREVIEW_DIR / f"{asset_id}.png"
     reset_scene()
     is_tower = "pc-tower" in asset_id
-    _setup_hdri_grey_world(0.0 if is_tower else 0.42)
+    if is_tower:
+        _setup_preview_garage_style_world(lit_strength=0.16)
+        bpy.context.scene.view_settings.view_transform = "Standard"
+        bpy.context.scene.view_settings.exposure = -0.35
+    else:
+        _setup_hdri_grey_world(0.42)
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     for ob in mesh_obs:
@@ -370,46 +442,38 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             mat.shadow_method = "OPAQUE"
             if mat.use_nodes:
                 bsdf = mat.node_tree.nodes.get("Principled BSDF")
-                if bsdf:
-                    if "Alpha" in bsdf.inputs:
-                        bsdf.inputs["Alpha"].default_value = 1.0
-                    if is_tower and "Emission Strength" in bsdf.inputs:
-                        es = bsdf.inputs["Emission Strength"].default_value
-                        if es > 0.5:
-                            bsdf.inputs["Emission Strength"].default_value = max(es, 12.0)
+                if bsdf and "Alpha" in bsdf.inputs:
+                    bsdf.inputs["Alpha"].default_value = 1.0
+    if is_tower:
+        _boost_tower_emissive_mats()
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
-    floor_z = mins.z
 
-    bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
-    ground = bpy.context.active_object
-    gmat = bpy.data.materials.new("Ground")
-    gmat.use_nodes = True
-    bsdf_g = gmat.node_tree.nodes["Principled BSDF"]
-    bsdf_g.inputs["Base Color"].default_value = (GREY150 * 0.92, GREY150 * 0.92, GREY150 * 0.94, 1)
-    bsdf_g.inputs["Roughness"].default_value = 0.88 if is_tower else 0.9
-    ground.data.materials.append(gmat)
-    ground.cycles.is_shadow_catcher = True
-
-    bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
-    key = bpy.context.active_object
-    key.data.energy = 3.4 if is_tower else 2.2
-    key.data.angle = math.radians(3) if is_tower else math.radians(4)
-
-    bpy.ops.object.light_add(type="AREA", location=(center.x, center.y, floor_z - span * 0.05))
-    fill = bpy.context.active_object
-    fill.data.energy = 14 if is_tower else 60
-    fill.data.size = span * 3
-    fill.rotation_euler = (math.radians(90), 0, 0)
     if is_tower:
-        bpy.ops.object.light_add(type="AREA", location=(center.x - span, center.y - span * 1.5, center.z + span * 0.5))
-        front = bpy.context.active_object
-        front.data.energy = 55
-        front.data.size = span * 1.4
-        front.rotation_euler = (math.radians(70), 0, math.radians(-20))
+        _tower_preview_lights(center, span, mins)
+    else:
+        floor_z = mins.z
+        bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
+        ground = bpy.context.active_object
+        gmat = bpy.data.materials.new("Ground")
+        gmat.use_nodes = True
+        bsdf_g = gmat.node_tree.nodes["Principled BSDF"]
+        bsdf_g.inputs["Base Color"].default_value = (GREY150 * 0.92, GREY150 * 0.92, GREY150 * 0.94, 1)
+        bsdf_g.inputs["Roughness"].default_value = 0.9
+        ground.data.materials.append(gmat)
+        ground.cycles.is_shadow_catcher = True
+        bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
+        key = bpy.context.active_object
+        key.data.energy = 2.2
+        key.data.angle = math.radians(4)
+        bpy.ops.object.light_add(type="AREA", location=(center.x, center.y, floor_z - span * 0.05))
+        fill = bpy.context.active_object
+        fill.data.energy = 60
+        fill.data.size = span * 3
+        fill.rotation_euler = (math.radians(90), 0, 0)
 
     obj_h = max(maxs.z - mins.z, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
@@ -443,12 +507,15 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_shadows = True
         if hasattr(ee, "shadow_cube_size"):
             ee.shadow_cube_size = "4096"
-        if is_tower and hasattr(ee, "use_bloom"):
-            ee.use_bloom = True
+        if is_tower:
+            if hasattr(ee, "use_soft_shadows"):
+                ee.use_soft_shadows = True
+            if hasattr(ee, "use_bloom"):
+                ee.use_bloom = True
             if hasattr(ee, "bloom_intensity"):
-                ee.bloom_intensity = 0.08
-        if is_tower and hasattr(ee, "use_gtao"):
-            ee.use_gtao = True
+                ee.bloom_intensity = 0.05
+            if hasattr(ee, "use_gtao"):
+                ee.use_gtao = True
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
     bpy.context.scene.render.resolution_y = 1024
@@ -482,40 +549,18 @@ def render_preview_front_from_glb(glb_path: Path, out_name: str) -> Path:
     """Straight-on front ortho (−Y front); grey-150 ~70% fill."""
     preview = PREVIEW_DIR / f"{out_name}.png"
     reset_scene()
-    _setup_hdri_grey_world(0.0)
+    _setup_preview_garage_style_world(lit_strength=0.16)
+    bpy.context.scene.view_settings.view_transform = "Standard"
+    bpy.context.scene.view_settings.exposure = -0.35
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    for ob in mesh_obs:
-        for mat in ob.data.materials:
-            if mat and mat.use_nodes:
-                bsdf = mat.node_tree.nodes.get("Principled BSDF")
-                if bsdf and "Emission Strength" in bsdf.inputs and bsdf.inputs["Emission Strength"].default_value > 0.5:
-                    bsdf.inputs["Emission Strength"].default_value = 14.0
+    _boost_tower_emissive_mats()
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
-    floor_z = mins.z
-
-    bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
-    ground = bpy.context.active_object
-    gmat = bpy.data.materials.new("Ground")
-    gmat.use_nodes = True
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (
-        GREY150 * 0.92,
-        GREY150 * 0.92,
-        GREY150 * 0.94,
-        1,
-    )
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.88
-    ground.data.materials.append(gmat)
-    ground.cycles.is_shadow_catcher = True
-
-    bpy.ops.object.light_add(type="SUN", location=center + Vector((span, -span * 2, span * 2)))
-    key = bpy.context.active_object
-    key.data.energy = 2.6
-    key.data.angle = math.radians(3)
+    _tower_preview_lights(center, span, mins)
 
     obj_h = max(maxs.z - mins.z, 0.01)
     obj_w = max(maxs.x - mins.x, 0.01)
@@ -576,6 +621,10 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
                 vcol.data[corner_i].color = col
         root = join_meshes(parts) if len(parts) > 1 else parts[0]
     root.name = f"mesh_{asset_id}"
+    if era1_tower:
+        import pc_tower_kit as kit
+
+        kit.store_face_material_index(root)
     bake_mat = bake_material(root, asset_id)
     smart_uv(root)
 
