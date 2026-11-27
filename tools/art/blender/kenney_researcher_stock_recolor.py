@@ -30,7 +30,7 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
-RESEARCHER_TROUSERS = (0.15, 0.15, 0.17, 1.0)
+RESEARCHER_TROUSERS = (0.12, 0.12, 0.15, 1.0)
 RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
@@ -709,9 +709,9 @@ def _finalize_researcher_body_coat(
             if arm_v < 0.14 or h > lm.h_waist + 0.04:
                 continue
         if (
-            y_face > 0.10
-            and lat < thw * 0.09
-            and lm.h_neck + 0.01 <= h <= lm.h_waist - 0.06
+            y_face > 0.14
+            and lat < thw * 0.055
+            and lm.h_neck + 0.10 <= h <= lm.h_neck + 0.20
         ):
             slots[fi] = SLOT_SHIRT
             continue
@@ -766,7 +766,7 @@ def _strip_coat_from_head_neck_hair(
         h = (wc.z - lo) / span
         head_w = _vg_mean_on_face(ob, face, frozenset({"Head"}))
         neck_w = _vg_mean_on_face(ob, face, frozenset({"Neck"}))
-        if head_w > 0.08 or h > lm.h_neck + 0.12:
+        if head_w > 0.04 or h > lm.h_neck + 0.09:
             slots[fi] = SLOT_HAIR if h > lm.h_neck + 0.08 else SLOT_SKIN
             continue
         if neck_w > 0.42 and h > lm.h_neck + 0.01:
@@ -780,7 +780,7 @@ def _force_leg_trousers_below_hem(
     lm: FounderLandmarks,
 ) -> None:
     lo, span = lm.zmin, lm.span
-    hem = lm.h_waist + 0.36
+    hem = lm.h_waist + 0.34
     leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
     for face in bm.faces:
         fi = face.index

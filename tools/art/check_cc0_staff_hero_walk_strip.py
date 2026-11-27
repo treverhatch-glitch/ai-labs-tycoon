@@ -47,6 +47,10 @@ MAX_WHITE_SHARD_FRAC = 0.02
 MIN_HEAD_SKIN_FRAC = 0.60
 MAX_HEAD_COAT_WHITE_FRAC = 0.05
 MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
+# Pre-FAIL#14 walk strip (no render/material refresh since fa371474).
+STALE_RESEARCHER_WALK_STRIP_SHA256 = (
+    "5ed87e94464b1bcfd037aa72994bd12fcb483592183ec42acbd8d915817e736c"
+)
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -739,6 +743,12 @@ def _rgb_dist(a: tuple[float, float, float], b: tuple[float, float, float]) -> f
 def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
     if not png.is_file() or png.stat().st_size < 2000:
         return False, "missing_strip"
+    if asset_id == "staff-researcher-idle":
+        import hashlib
+
+        digest = hashlib.sha256(png.read_bytes()).hexdigest()
+        if digest == STALE_RESEARCHER_WALK_STRIP_SHA256:
+            return False, f"walk_strip_stale_bytes match_fa371474 sha={digest[:12]}"
     img = Image.open(png).convert("RGB")
     w, h = img.size
     if w < 4 * 64 or h < 64:

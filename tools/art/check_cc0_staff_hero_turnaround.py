@@ -16,17 +16,20 @@ from turnaround_panel_gates import (
     head_mean_rgb,
     founder_eye_blobs,
     load_panel_mask,
+    figure_column_span,
+    MAX_SIDE_SPAN_VS_FRONT,
+    MIN_FRONT_BACK_SILHOUETTE_XOR,
     mirror_iou,
     panel_material_metrics,
     researcher_eye_blobs,
     rgb_l1,
+    silhouette_xor_frac,
 )
 
 REPO = Path(__file__).resolve().parents[2]
 GAP = 8
 PANELS = 5
 MIN_FRONT_BACK_HEAD_L1 = 7.0
-MAX_BACK_MIRROR_IOU = 0.92
 
 
 def _panel_bounds(w: int, h: int, i: int) -> tuple[int, int, int, int]:
@@ -104,13 +107,19 @@ def _check(path: Path, name: str, asset_id: str) -> tuple[bool, str]:
     fb = rgb_l1(means[0], means[2])
     if fb < MIN_FRONT_BACK_HEAD_L1:
         return False, f"front_back_flat head_l1={fb:.1f} want>={MIN_FRONT_BACK_HEAD_L1}"
-    back_iou = mirror_iou(masks[2])
-    front_iou = mirror_iou(masks[0])
-    if back_iou > MAX_BACK_MIRROR_IOU and abs(front_iou - back_iou) < 0.04:
-        return False, f"back_too_symmetric iou_back={back_iou:.3f} iou_front={front_iou:.3f}"
+    sil_xor = silhouette_xor_frac(masks[0], masks[2])
+    if sil_xor < MIN_FRONT_BACK_SILHOUETTE_XOR:
+        return False, f"front_back_silhouette_xor={sil_xor:.3f} want>={MIN_FRONT_BACK_SILHOUETTE_XOR}"
+    front_span = figure_column_span(masks[0])
+    side_span = min(figure_column_span(masks[1]), figure_column_span(masks[3]))
+    if front_span >= 48 and side_span / front_span > MAX_SIDE_SPAN_VS_FRONT:
+        return False, (
+            f"side_not_narrower span_side={side_span} span_front={front_span} "
+            f"ratio={side_span / front_span:.3f} want<={MAX_SIDE_SPAN_VS_FRONT}"
+        )
     return True, (
         f"ok eyes={eye_counts} textures={[round(t, 2) for t in textures]} "
-        f"grey={[round(g, 2) for g in greys]} head_l1_front_back={fb:.1f}"
+        f"grey={[round(g, 2) for g in greys]} head_l1={fb:.1f} sil_xor={sil_xor:.3f}"
     )
 
 

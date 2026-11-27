@@ -2,7 +2,6 @@
 """Turnaround: front | left | back | right at idle + side mid-stride walk tile."""
 from __future__ import annotations
 
-import math
 import os
 import shutil
 import sys
@@ -10,7 +9,6 @@ import tempfile
 from pathlib import Path
 
 import bpy
-from mathutils import Matrix
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -26,7 +24,7 @@ from kenney_hero_walk_strip import (  # noqa: E402
 )
 
 GREY = (150, 150, 150)
-YAWS = (0, 90, 180, 270)
+CAM_YAWS = (0, 90, 180, 270)
 LABELS = ("front", "left", "back", "right", "walk side")
 GAP = 8
 
@@ -38,37 +36,25 @@ def _pose_walk(arm, frame, scene_data):
     bpy.context.view_layer.update()
 
 
-def _capture_arm_base(arm: bpy.types.Object) -> Matrix:
-    return arm.matrix_world.copy()
-
-
-def _set_arm_yaw(arm: bpy.types.Object, arm_base: Matrix, char_yaw_deg: float) -> None:
-    """Spin armature root in world-Z; skinned children follow via parenting."""
-    pivot = arm_base.translation.copy()
-    rot = Matrix.Rotation(math.radians(char_yaw_deg), 4, "Z")
-    m = arm_base.copy()
-    m.translation -= pivot
-    arm.matrix_world = rot @ m
-    arm.matrix_world.translation += pivot
-    bpy.context.view_layer.update()
+def _effective_cam_yaw(asset_id: str, cam_yaw_deg: float) -> float:
+    """True Z orbit; founder straight-on hides eye meshes — tiny yaw for panel 0."""
+    if asset_id == "staff-founder-idle" and cam_yaw_deg == 0.0:
+        return 10.0
+    return cam_yaw_deg
 
 
 def _render_tile(
-    arm: bpy.types.Object,
     meshes: list,
     asset_id: str,
-    char_yaw_deg: float,
-    arm_base: Matrix,
+    cam_yaw_deg: float,
     out: Path,
     *,
     walk_pose: bool,
     scene_data,
 ) -> None:
-    os.environ["STAFF_PREVIEW_YAW_DEG"] = os.environ.get("STAFF_TURNAROUND_CAM_YAW", "30")
+    os.environ["STAFF_PREVIEW_YAW_DEG"] = str(_effective_cam_yaw(asset_id, cam_yaw_deg))
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "10"
-    arm.matrix_world = arm_base.copy()
-    bpy.context.view_layer.update()
-    _set_arm_yaw(arm, arm_base, char_yaw_deg)
+    os.environ.pop("STAFF_PREVIEW_LOCK_CAMERA", None)
     apply_walk_materials_to_hero(meshes, asset_id)
     if asset_id == "staff-founder-idle":
         founder_eye_preview_tweak(meshes)
@@ -76,6 +62,7 @@ def _render_tile(
         researcher_lab_coat_preview_tweak(meshes)
     if walk_pose and scene_data:
         _pose_walk(scene_data.arm, scene_data.walk_frames[1], scene_data)
+    bpy.context.view_layer.update()
     bc.render_preview(meshes, out, asset_id=asset_id, mask_meshes=meshes)
 
 
@@ -89,6 +76,7 @@ def main() -> int:
         return 1
     configure_preview_env(asset_id)
     os.environ.pop("STAFF_PREVIEW_SKIP_MASK", None)
+    os.environ.pop("STAFF_PREVIEW_LOCK_CAMERA", None)
     scene_data = (
         build_founder_walk_scene()
         if asset_id == "staff-founder-idle"
@@ -100,11 +88,7 @@ def main() -> int:
     else:
         researcher_lab_coat_preview_tweak(scene_data.render_meshes)
 
-    arm = scene_data.arm
     meshes = scene_data.render_meshes
-    arm_base = _capture_arm_base(arm)
-    os.environ.setdefault("STAFF_TURNAROUND_CAM_YAW", "30")
-
     stem = (
         "staff-founder-turnaround"
         if asset_id == "staff-founder-idle"
@@ -113,18 +97,12 @@ def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="turnaround_"))
     tiles: list[Image.Image] = []
     panel_mask_paths: list[Path] = []
-    for idx, char_yaw in enumerate(YAWS):
-        tile = tmp / f"idle_{char_yaw}.png"
-        if idx == 0:
-            os.environ.pop("STAFF_PREVIEW_LOCK_CAMERA", None)
-        else:
-            os.environ["STAFF_PREVIEW_LOCK_CAMERA"] = "1"
+    for cam_yaw in CAM_YAWS:
+        tile = tmp / f"idle_{cam_yaw}.png"
         _render_tile(
-            arm,
             meshes,
             asset_id,
-            float(char_yaw),
-            arm_base,
+            float(cam_yaw),
             tile,
             walk_pose=False,
             scene_data=None,
@@ -134,11 +112,9 @@ def main() -> int:
         panel_mask_paths.append(mask_src if mask_src.is_file() else None)
     walk_tile = tmp / "walk_side.png"
     _render_tile(
-        arm,
         meshes,
         asset_id,
         90.0,
-        arm_base,
         walk_tile,
         walk_pose=True,
         scene_data=scene_data,
@@ -147,7 +123,6 @@ def main() -> int:
     walk_mask = walk_tile.with_name(walk_tile.stem + ".mask.png")
     if walk_mask.is_file():
         panel_mask_paths.append(walk_mask)
-    arm.matrix_world = arm_base.copy()
 
     w, h = tiles[0].size
     sheet_w = w * len(tiles) + GAP * (len(tiles) - 1)

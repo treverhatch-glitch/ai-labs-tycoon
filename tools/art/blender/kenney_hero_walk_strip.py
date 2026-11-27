@@ -826,7 +826,7 @@ def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
                     em.default_value = (0.96, 0.95, 0.92, 1.0)
                 stren = bsdf.inputs.get("Emission Strength")
                 if stren is not None:
-                    stren.default_value = 0.24
+                    stren.default_value = 0.28
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:

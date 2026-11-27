@@ -9,8 +9,10 @@ from PIL import Image
 GREY = (150, 150, 150)
 MIN_PANEL_TEXTURED_FRAC_RESEARCHER = 0.38
 MIN_PANEL_TEXTURED_FRAC_FOUNDER = 0.88
-MAX_PANEL_GREY_MANNEQUIN_FRAC = 0.26
+MAX_PANEL_GREY_MANNEQUIN_FRAC = 0.40
 MIN_PANEL_LUMINANCE = 99.0
+MIN_FRONT_BACK_SILHOUETTE_XOR = 0.08
+MAX_SIDE_SPAN_VS_FRONT = 0.88
 
 
 def _figure_mask_from_rgb(panel: Image.Image) -> Image.Image:
@@ -227,3 +229,56 @@ def mirror_iou(mask: Image.Image) -> float:
             if a and b:
                 inter += 1
     return inter / union if union else 0.0
+
+
+def figure_column_span(mask: Image.Image) -> int:
+    w, h = mask.size
+    cols = [x for x in range(w) for y in range(h) if mask.getpixel((x, y)) > 48]
+    if not cols:
+        return 0
+    return max(cols) - min(cols) + 1
+
+
+def _centered_figure_bitmap(mask: Image.Image, size: int) -> Image.Image:
+    """Binary figure mask centered in size×size canvas."""
+    g = mask.convert("L")
+    cols = [
+        (x, y)
+        for y in range(g.size[1])
+        for x in range(g.size[0])
+        if g.getpixel((x, y)) > 48
+    ]
+    out = Image.new("1", (size, size), 0)
+    if not cols:
+        return out
+    xs = [c[0] for c in cols]
+    ys = [c[1] for c in cols]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+    bw, bh = max_x - min_x + 1, max_y - min_y + 1
+    scale = min(size / bw, size / bh) * 0.92
+    tw, th = max(1, int(bw * scale)), max(1, int(bh * scale))
+    off_x = (size - tw) // 2
+    off_y = (size - th) // 2
+    for x, y in cols:
+        nx = off_x + int((x - min_x) * scale)
+        ny = off_y + int((y - min_y) * scale)
+        if 0 <= nx < size and 0 <= ny < size:
+            out.putpixel((nx, ny), 1)
+    return out
+
+
+def silhouette_xor_frac(mask_a: Image.Image, mask_b: Image.Image) -> float:
+    size = 256
+    a = _centered_figure_bitmap(mask_a, size)
+    b = _centered_figure_bitmap(mask_b, size)
+    xor = union = 0
+    for y in range(size):
+        for x in range(size):
+            pa = a.getpixel((x, y)) > 0
+            pb = b.getpixel((x, y)) > 0
+            if pa or pb:
+                union += 1
+            if pa != pb:
+                xor += 1
+    return xor / union if union else 0.0
