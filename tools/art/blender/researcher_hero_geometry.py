@@ -14,7 +14,7 @@ from kenney_researcher_stock_recolor import (
     _head_width_at,
 )
 
-LAB_COAT_RGB = (237 / 255, 237 / 255, 230 / 255, 1.0)
+LAB_COAT_RGB = (228 / 255, 226 / 255, 220 / 255, 1.0)
 GLASSES_RGB = (32 / 255, 32 / 255, 32 / 255, 1.0)
 
 
@@ -45,6 +45,34 @@ _VG_COAT_UPPER_ARM = frozenset({"LeftArm", "RightArm"})
 _VG_COAT_FOREARM = frozenset({"LeftForeArm", "RightForeArm"})
 _VG_COAT_SHOULDER = frozenset({"LeftShoulder", "RightShoulder"})
 _VG_COAT_THIGH = frozenset({"LeftUpLeg", "RightUpLeg"})
+_VG_COAT_SHELL = frozenset(
+    {
+        "Hips",
+        "Spine",
+        "Chest",
+        "UpperChest",
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+        "LeftUpLeg",
+        "RightUpLeg",
+    }
+)
+_VG_COAT_BLOCK = frozenset(
+    {
+        "Head",
+        "Neck",
+        "LeftLeg",
+        "RightLeg",
+        "LeftFoot",
+        "RightFoot",
+        "LeftToes",
+        "RightToes",
+    }
+)
 _VG_HANDS = frozenset(
     {
         "LeftHand",
@@ -419,15 +447,8 @@ def _trim_coat_hands_crotch(
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         y_face = y_face_fn(wc)
-        if h < lm.h_waist - 0.11 and lat > thw * 0.52:
-            handish = lat > thw * 0.72 and h < lm.h_waist - 0.09
-            if handish:
-                doomed.append(face)
-                continue
-        if h < lm.h_waist - 0.16 and lat < thw * 0.52 and y_face > -0.20:
-            doomed.append(face)
-            continue
-        if h < lm.h_waist + 0.02 and lat < thw * 0.45 and y_face > -0.12:
+        handish = lat > thw * 0.68 and h < lm.h_waist - 0.07
+        if handish and y_face > -0.08:
             doomed.append(face)
     if doomed:
         bmesh.ops.delete(bm, geom=doomed, context="FACES")
@@ -436,15 +457,133 @@ def _trim_coat_hands_crotch(
     bm.free()
 
 
-def _prune_coat_below_hem(coat: bpy.types.Object, lm, coat_hem: float) -> None:
+def _face_mean_vg(ob: bpy.types.Object, face: bmesh.types.BMFace, names: frozenset[str]) -> float:
+    return sum(_vg_weight(ob, v.index, names) for v in face.verts) / max(1, len(face.verts))
+
+
+def _face_in_coat_height_band(
+    face: bmesh.types.BMFace,
+    ob: bpy.types.Object,
+    *,
+    lo: float,
+    span: float,
+    h_lo: float,
+    h_hi: float,
+) -> bool:
+    for v in face.verts:
+        h = ((ob.matrix_world @ v.co).z - lo) / span
+        if h < h_lo or h > h_hi:
+            return False
+    return True
+
+
+def _coat_open_front(
+    face: bmesh.types.BMFace,
+    body: bpy.types.Object,
+    *,
+    lm,
+    lo: float,
+    span: float,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+    y_face_fn,
+) -> bool:
+    wc = _world_centroid(face, body)
+    h = (wc.z - lo) / span
+    lat = lateral_from_front(wc, hc, fwd)
+    thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+    y_face = y_face_fn(wc)
+    if y_face < 0.04:
+        return False
+    if h < lm.h_neck - 0.10 or h > lm.h_neck + 0.05:
+        return False
+    neck_w = _face_mean_vg(body, face, frozenset({"Neck"}))
+    if neck_w < 0.06:
+        return False
+    return lat < thw * 0.26
+
+
+def _duplicate_coat_shell_faces(
+    body: bpy.types.Object,
+    bm_src: bmesh.types.BMesh,
+    *,
+    lm,
+    lo: float,
+    span: float,
+    coat_hem: float,
+    coat_top: float,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+    y_face_fn,
+) -> set[int]:
+    pick: set[int] = set()
+    for f in bm_src.faces:
+        if not _face_in_coat_height_band(
+            f, body, lo=lo, span=span, h_lo=coat_hem, h_hi=coat_top
+        ):
+            continue
+        if _face_mean_vg(body, f, _VG_COAT_BLOCK) > 0.10:
+            continue
+        if _face_mean_vg(body, f, _VG_HANDS) > 0.16:
+            continue
+        if _face_mean_vg(body, f, _VG_COAT_SHELL) < 0.20:
+            continue
+        if _coat_open_front(
+            f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
+        ):
+            continue
+        pick.add(f.index)
+
+    changed = True
+    while changed:
+        changed = False
+        for f in bm_src.faces:
+            if f.index in pick:
+                continue
+            if not any(nb.index in pick for e in f.edges for nb in e.link_faces):
+                continue
+            if not _face_in_coat_height_band(
+                f, body, lo=lo, span=span, h_lo=coat_hem, h_hi=coat_top
+            ):
+                continue
+            if _face_mean_vg(body, f, _VG_COAT_BLOCK) > 0.12:
+                continue
+            if _face_mean_vg(body, f, _VG_HANDS) > 0.20:
+                continue
+            if _face_mean_vg(body, f, _VG_COAT_SHELL) < 0.06:
+                continue
+            if _coat_open_front(
+                f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
+            ):
+                continue
+            pick.add(f.index)
+            changed = True
+    return pick
+
+
+def _bisect_coat_below_hem(coat: bpy.types.Object, lm, coat_hem: float) -> None:
     lo, span = lm.zmin, lm.span
     z_cut = lo + span * coat_hem
+    inv = coat.matrix_world.inverted()
+    plane_co = inv @ Vector((0.0, 0.0, z_cut))
+    plane_no = (inv.to_3x3() @ Vector((0.0, 0.0, 1.0))).normalized()
     bm = bmesh.new()
     bm.from_mesh(coat.data)
-    bm.verts.ensure_lookup_table()
-    doomed = [v for v in bm.verts if (coat.matrix_world @ v.co).z < z_cut - span * 0.008]
-    if doomed:
-        bmesh.ops.delete(bm, geom=doomed, context="VERTS")
+    geom = list(bm.verts) + list(bm.edges) + list(bm.faces)
+    bmesh.ops.bisect_plane(
+        bm,
+        geom=geom,
+        dist=0.0002,
+        plane_co=plane_co,
+        plane_no=plane_no,
+        clear_inner=True,
+        clear_outer=False,
+    )
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
     bm.to_mesh(coat.data)
     coat.data.update()
     bm.free()
@@ -510,113 +649,21 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     lo, span = lm.zmin, lm.span
     coat_hem = lm.h_waist - 0.20
     coat_top = lm.h_neck + 0.05
-    pick: list[bmesh.types.BMFace] = []
-    for f in bm_src.faces:
-        wc = _world_centroid(f, body)
-        h = (wc.z - lo) / span
-        if h > coat_top or h < coat_hem:
-            continue
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        y_face = y_face_fn(wc)
-        neck_w = sum(_vg_weight(body, v.index, frozenset({"Neck"})) for v in f.verts) / len(f.verts)
-        open_chest = _coat_open_v(lat, thw, h, lm, y_face)
-        if neck_w > 0.18 and y_face > -0.05 and lat < thw * 0.42:
-            open_chest = True
-        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.50:
-            open_chest = True
-        lapel_only = (
-            y_face > 0.06
-            and thw * 0.22 <= lat <= thw * 0.46
-            and lm.h_neck - 0.10 <= h <= lm.h_waist - 0.04
-        )
-        on_torso = lat <= thw * 1.30 and y_face > -0.40 and not open_chest
-        if on_torso and y_face > 0.05 and h >= lm.h_neck - 0.10 and not lapel_only:
-            on_torso = lat > thw * 0.48
-        arm_pick_w = sum(
-            _vg_weight(
-                body,
-                v.index,
-                frozenset(
-                    {
-                        "LeftShoulder",
-                        "RightShoulder",
-                        "LeftArm",
-                        "RightArm",
-                        "LeftForeArm",
-                        "RightForeArm",
-                    }
-                ),
-            )
-            for v in f.verts
-        ) / len(f.verts)
-        hand_pick = sum(_vg_weight(body, v.index, _VG_HANDS) for v in f.verts) / len(
-            f.verts
-        )
-        on_arm = (
-            arm_pick_w > 0.06
-            and hand_pick < 0.12
-            and lat > thw * 0.52
-            and lm.h_neck - 0.24 <= h <= lm.h_waist - 0.04
-        )
-        leg_w = sum(
-            _vg_weight(body, v.index, frozenset({"LeftUpLeg", "RightUpLeg"}))
-            for v in f.verts
-        ) / len(f.verts)
-        if leg_w > 0.32 and h < lm.h_waist - 0.02:
-            continue
-        torso_w = sum(
-            _vg_weight(
-                body,
-                v.index,
-                frozenset({"Chest", "UpperChest", "Spine", "Hips"}),
-            )
-            for v in f.verts
-        ) / len(f.verts)
-        on_hem_tail = (
-            not open_chest
-            and torso_w > 0.30
-            and leg_w < 0.26
-            and coat_hem <= h <= lm.h_waist - 0.03
-            and lat < thw * 1.02
-            and y_face > -0.08
-            and not (y_face > -0.05 and lat < thw * 0.40)
-        )
-        if open_chest:
-            continue
-        if on_torso or on_arm or on_hem_tail or _is_coat_source_face(
-            f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
-        ):
-            pick.append(f)
-    pick_set = {pf.index for pf in pick}
-    for f in bm_src.faces:
-        if f.index in pick_set:
-            continue
-        if _sleeve_grow_face(
-            f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
-        ):
-            pick.append(f)
-            pick_set.add(f.index)
-    changed = True
-    while changed:
-        changed = False
-        for f in bm_src.faces:
-            if f.index in pick_set:
-                continue
-            if not _sleeve_grow_face(
-                f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
-            ):
-                continue
-            for e in f.edges:
-                for nb in e.link_faces:
-                    if nb.index in pick_set:
-                        pick.append(f)
-                        pick_set.add(f.index)
-                        changed = True
-                        break
-                if changed:
-                    break
-    if len(pick) < 24:
+    pick_set = _duplicate_coat_shell_faces(
+        body,
+        bm_src,
+        lm=lm,
+        lo=lo,
+        span=span,
+        coat_hem=coat_hem,
+        coat_top=coat_top,
+        hc=hc,
+        fwd=fwd,
+        ws=ws,
+        y_face_fn=y_face_fn,
+    )
+    pick = [f for f in bm_src.faces if f.index in pick_set]
+    if len(pick) < 48:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
 
     bm = bmesh.new()
@@ -639,7 +686,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
 
     coat = bpy.data.objects.new("ResearcherLabCoat", mesh)
     bpy.context.collection.objects.link(coat)
-    mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.68)
+    mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.74)
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
@@ -658,10 +705,8 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.remove_doubles(threshold=0.0008)
     bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.object.mode_set(mode="OBJECT")
+    _bisect_coat_below_hem(coat, lm, coat_hem)
     _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
-    _prune_coat_below_hem(coat, lm, coat_hem)
     if len(coat.data.polygons) < 8:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
