@@ -4,6 +4,7 @@ from __future__ import annotations
 import bpy
 
 import cc0_common as cc
+import era1_mesh_selfcheck as sc
 import mesh_builders as mb
 import pc_tower_kit as tower
 
@@ -11,6 +12,9 @@ RACK_W = 0.50
 RACK_D = 0.60
 RACK_H = 1.80
 POST = 0.028
+RAIL_Z = (0.04, RACK_H - 0.04)
+
+POST_NAMES = ("post_fl", "post_fr", "post_bl", "post_br")
 
 MESH_SPEC: list[tuple[str, tuple[float, float, float], tuple[float, float, float]]] = []
 
@@ -50,9 +54,9 @@ def _part_mat_index(name: str) -> int:
         return MAT_CABLE
     if "unit" in name and "face" in name:
         return MAT_UNIT_FACE
-    if "unit" in name:
+    if "unit" in name or "bay" in name:
         return MAT_UNIT
-    if "rail" in name or "shelf" in name or "hole" in name:
+    if "rail" in name or "hole" in name:
         return MAT_RAIL
     return MAT_FRAME
 
@@ -66,7 +70,7 @@ def _part_color(name: str) -> tuple[float, float, float]:
         return COL_CABLE
     if "unit" in name and "face" in name:
         return COL_FACE
-    if "unit" in name:
+    if "unit" in name or "bay" in name:
         return COL_UNIT
     if "rail" in name or "hole" in name:
         return COL_RAIL
@@ -77,55 +81,91 @@ def mesh_spec_report() -> str:
     lines = ["| Object | Wx×D×H (m) | center (x,y,z) |", "|--------|-----------|----------------|"]
     for name, dims, loc in MESH_SPEC:
         lines.append(f"| {name} | {dims[0]:.3f}×{dims[1]:.3f}×{dims[2]:.3f} | ({loc[0]:.3f}, {loc[1]:.3f}, {loc[2]:.3f}) |")
-    lines.append("\n*Parent: single joined mesh; floor z=0.*")
+    lines.append("\n*Parent: `post_fl` then join → floor z=0; 4 posts only.*")
     return "\n".join(lines)
+
+
+def _closed_frame_rails(parts: list, hx: float, hy: float, z: float, tag: str) -> None:
+    parts.append(_raw_box(f"rail_{tag}_front", (RACK_W, POST, POST), (0, -hy, z)))
+    parts.append(_raw_box(f"rail_{tag}_back", (RACK_W, POST, POST), (0, hy, z)))
+    parts.append(_raw_box(f"rail_{tag}_left", (POST, POST, RACK_D), (-hx, 0, z)))
+    parts.append(_raw_box(f"rail_{tag}_right", (POST, POST, RACK_D), (hx, 0, z)))
+
+
+def _drooping_cables(parts: list, hy: float) -> None:
+    y_back = hy - POST
+    for i, xo in enumerate((-0.10, 0.0, 0.10)):
+        z0 = 1.62 - i * 0.04
+        segs = 5
+        for s in range(segs):
+            t = s / max(segs - 1, 1)
+            z = z0 - t * (0.35 + i * 0.08)
+            y = y_back - 0.02 - t * (0.22 + i * 0.05)
+            parts.append(_raw_box(f"cable_{i}_{s}", (0.028, 0.055, 0.022), (xo, y, z)))
 
 
 def build_rack_era1() -> bpy.types.Object:
     MESH_SPEC.clear()
     hh = RACK_H / 2
-    hx = RACK_W / 2 - POST
-    hy = RACK_D / 2 - POST
+    hx = RACK_W / 2 - POST / 2
+    hy = RACK_D / 2 - POST / 2
     y_front = -hy
+    inner_w = RACK_W - POST * 3
+    inner_d = RACK_D - POST * 3
+
     parts: list[bpy.types.Object] = []
 
-    for tag, loc in (
+    locs = (
         ("post_fl", (-hx, -hy, hh)),
         ("post_fr", (hx, -hy, hh)),
         ("post_bl", (-hx, hy, hh)),
         ("post_br", (hx, hy, hh)),
-    ):
+    )
+    for tag, loc in locs:
         parts.append(_raw_box(tag, (POST, POST, RACK_H), loc))
 
-    for z in (0.04, RACK_H - 0.04):
-        parts.append(_raw_box(f"rail_bot_{z:.2f}", (RACK_W, POST, POST), (0, -hy, z)))
-        parts.append(_raw_box(f"rail_bot_b_{z:.2f}", (RACK_W, POST, POST), (0, hy, z)))
-        parts.append(_raw_box(f"rail_side_l_{z:.2f}", (POST, POST, RACK_D), (-hx, 0, z)))
-        parts.append(_raw_box(f"rail_side_r_{z:.2f}", (POST, POST, RACK_D), (hx, 0, z)))
+    for z, tag in zip(RAIL_Z, ("bottom", "top")):
+        _closed_frame_rails(parts, hx, hy, z, tag)
 
-    for i, z in enumerate([0.55, 0.85, 1.15, 1.45, 1.75]):
-        parts.append(_raw_box(f"rail_mount_f_{i}", (POST, 0.012, RACK_W - POST * 2), (-hx + 0.01, y_front + 0.02, z)))
-        if i % 2 == 0:
-            parts.append(_raw_box(f"hole_{i}", (0.008, 0.008, 0.008), (-hx + 0.022, y_front + 0.03, z)))
+    mount_heights = (0.88, 1.18, 1.52)
+    span = RACK_W - POST * 2
+    for i, z in enumerate(mount_heights):
+        parts.append(_raw_box(f"rail_mount_h_{i}", (span, 0.015, POST), (0, y_front + POST * 0.5, z)))
+        for j, xo in enumerate((-span * 0.42, 0.0, span * 0.42)):
+            parts.append(_raw_box(f"hole_{i}_{j}", (0.008, 0.008, 0.008), (xo, y_front + POST * 0.65, z)))
 
-    uw, ud = RACK_W - POST * 4, RACK_D - POST * 2.5
+    uw, ud = inner_w, inner_d
     parts.append(_raw_box("unit_4u_body", (uw, ud, 0.18), (0, 0, 1.52)))
-    parts.append(_raw_box("unit_4u_face", (uw - 0.02, 0.008, 0.16), (0, y_front + 0.04, 1.52)))
+    parts.append(_raw_box("unit_4u_face", (uw - 0.02, 0.01, 0.16), (0, y_front + ud * 0.48, 1.52)))
+    for bi, xo in enumerate((-0.12, 0.0, 0.12)):
+        parts.append(_raw_box(f"bay_{bi}", (0.09, 0.008, 0.03), (xo, y_front + ud * 0.48 + 0.006, 1.54 + bi * 0.04)))
     parts.append(_raw_box("unit_2u_body", (uw, ud, 0.09), (0, 0, 1.18)))
-    parts.append(_raw_box("unit_2u_face", (uw - 0.02, 0.008, 0.07), (0, y_front + 0.04, 1.18)))
-    parts.append(_raw_box("unit_1u_body", (uw, ud, 0.045), (0, 0, 0.88)))
-    parts.append(_raw_box("unit_1u_face", (uw - 0.02, 0.008, 0.035), (0, y_front + 0.04, 0.88)))
-    for j, xo in enumerate((-0.12, -0.04, 0.04, 0.12)):
-        parts.append(_raw_box(f"led_g_{j}", (0.008, 0.006, 0.006), (xo, y_front + 0.045, 0.88)))
-        if j < 3:
-            parts.append(_raw_box(f"led_a_{j}", (0.006, 0.005, 0.005), (xo + 0.02, y_front + 0.045, 0.875)))
+    parts.append(_raw_box("unit_2u_face", (uw - 0.02, 0.01, 0.07), (0, y_front + ud * 0.48, 1.18)))
 
-    for i, xo in enumerate((-0.08, 0.0, 0.08)):
-        parts.append(_raw_box(f"cable_{i}", (0.035, 0.18, 0.025), (xo, hy - 0.12, 1.0 + i * 0.15)))
+    parts.append(_raw_box("unit_1u_body", (uw, ud, 0.045), (0, 0, 0.88)))
+    parts.append(_raw_box("unit_1u_face", (uw - 0.02, 0.01, 0.035), (0, y_front + ud * 0.48, 0.88)))
+    for j, xo in enumerate((-0.14, -0.05, 0.04, 0.13)):
+        parts.append(_raw_box(f"led_g_{j}", (0.008, 0.006, 0.006), (xo, y_front + ud * 0.48 + 0.006, 0.88)))
+        if j < 3:
+            parts.append(_raw_box(f"led_a_{j}", (0.006, 0.005, 0.005), (xo + 0.025, y_front + ud * 0.48 + 0.006, 0.877)))
+
+    _drooping_cables(parts, hy)
+
+    sc.assert_rack_parts(parts, POST_NAMES, RAIL_Z)
+
+    root_post = next(p for p in parts if p.name == "post_fl")
+    for p in parts:
+        if p != root_post:
+            p.parent = root_post
+    bpy.ops.object.select_all(action="DESELECT")
+    for p in parts:
+        p.select_set(True)
+    bpy.context.view_layer.objects.active = root_post
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
     slot_mats = [bpy.data.materials.new(f"_rack_slot_{i}") for i in range(7)]
     for ob in parts:
-        tower._bevel(ob, 0.002 if "unit" in ob.name else 0.0015, segments=1)
+        tower._bevel(ob, 0.002 if "unit" in ob.name or "bay" in ob.name else 0.0015, segments=1)
         tower._paint_part_faces(ob, _part_color(ob.name))
     tower._apply_global_material_slots(parts, slot_mats, _part_mat_index)
 
