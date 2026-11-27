@@ -64,6 +64,13 @@ fi
 CURRENT_BRANCH="$(git symbolic-ref -q --short HEAD 2>/dev/null || true)"
 UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/${CURRENT_BRANCH:-cursor/graphics-pipeline-5032}}"
 if git rev-parse --verify "$UPSTREAM" >/dev/null 2>&1; then
+  if ! git merge-base --is-ancestor "$UPSTREAM" HEAD; then
+    echo "FAIL: $UPSTREAM is not an ancestor of HEAD (diverged history)." >&2
+    echo "  Force-push is banned (--force, --force-with-lease, +refspec)." >&2
+    echo "  Leave remote as-is; publish fixes as a new forward commit only." >&2
+    exit 1
+  fi
+  echo "OK: forward-only push ($UPSTREAM -> HEAD)"
   if git log "$UPSTREAM"..HEAD --format=%B | grep -qiE 'Co-authored-by:'; then
     echo "FAIL: Co-authored-by in commits ahead of $UPSTREAM" >&2
     exit 1

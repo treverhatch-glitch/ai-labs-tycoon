@@ -13,7 +13,8 @@
 
 | `validate_unity_meta_guids.py` | Exit 1 if any `unity/Assets/**/*.meta` guid ≠ 32 hex chars |
 | `check_catalog_manifest.py` | `CampusPropCatalog` ids ↔ `manifest.json` |
-| `prepush.sh` | All generators + meta/catalog/icon/bloc/era checks |
+| `prepush.sh` | Generators + checks + **forward-only** gate (`merge-base --is-ancestor` on `ART_PREPUSH_UPSTREAM`) |
+| `push-branch.sh` | `prepush.sh` then plain `git push -u` (force flags rejected) |
 | `prepush-early-game.sh` | Early-game lane: garage/staff/hud/wisp/texture + `prepush.sh` + garage/hud manifest checks |
 | `generate_garage_kit.py` | `unity/Assets/Art/EarlyGame/garage-kit/*.obj` |
 | `generate_early_staff.py` | `unity/Assets/Art/EarlyGame/staff-kit/*.obj` |

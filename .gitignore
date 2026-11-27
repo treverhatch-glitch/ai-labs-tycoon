@@ -45,6 +45,10 @@ id_ed25519*
 .studio/
 .lanes/
 
+# Python bytecode (art tools)
+tools/art/**/__pycache__/
+*.pyc
+
 # OS
 .DS_Store
 Thumbs.db
