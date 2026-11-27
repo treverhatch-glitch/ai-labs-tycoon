@@ -1,0 +1,9 @@
+{
+  "regressionHead": "05ca3975",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-05ca3975-regression.png",
+  "intendedGateFailures": [
+    "front panel blown silver — rack_front_clip_frac > 0.5%",
+    "rack_front_panel_mean_lum above gunmetal band (fridge wash)"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate."
+}

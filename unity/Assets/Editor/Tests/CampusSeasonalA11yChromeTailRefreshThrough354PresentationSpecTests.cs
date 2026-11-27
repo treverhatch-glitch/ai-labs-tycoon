@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusSeasonalA11yChromeTailRefreshThrough354PresentationSpecTests { [Test] public void B507() { Assert.AreEqual(354,CampusSeasonalA11yChromeTailRefreshThrough354PresentationSpec.TailRefreshThroughPresentationBatch); } } }

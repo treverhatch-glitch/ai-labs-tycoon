@@ -3,9 +3,9 @@
 1. **Download** — `./tools/art/cc0/download_packs.sh` (curl → `incoming/archives/`, unzip → `incoming/*`).
 2. **Restyle** — headless Blender scripts under `tools/art/cc0/blender/` (game role palette, bevels, 1024 AO + albedo bakes).
 3. **Export** — glTF **+Y up** (`export_scene.gltf`), URP-friendly albedo + AO textures.
-4. **Previews** — Poly Haven HDRI, 3/4 ortho camera, mid-grey ground from committed GLB (`docs/art/previews/`).
+4. **Previews** — Poly Haven HDRI, 3/4 ortho camera, mid-grey **RGB 150** ground from committed GLB (`docs/art/previews/`).
 
-Compute hardware hero lane: `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`.
+**Lanes:** `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`; garage interior → `tools/art/run_blender_cc0_garage_hero.sh`.
 
 Branch commits must not include `Co-authored-by` trailers on **lane tip commits you intend to land** (squash merge should carry a clean message).
 
@@ -28,12 +28,10 @@ NEW=$(git commit-tree "$TREE" -p "$FIRST" -p "$(git rev-parse origin/main)" \
 git reset --hard "$NEW"
 ```
 
-If `MERGE_HEAD` is unset after `--no-commit`, use first parent `HEAD` before merge and second parent `origin/main`.
-
 Optional: `GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=commit.template GIT_CONFIG_VALUE_0= git merge …` to disable a template that injects trailers.
 
 **Hatch policy:** If a merge is **already pushed** with a trailer, do **not** force-push; squash-merge drops it. `prepush.sh` may still FAIL on HEAD — that is OK for branch-only merge SHAs.
 
-**Push (forward-only):** force-push is banned (`--force`, `--force-with-lease`, `+refspec`). Before every push run
-`./tools/art/cc0/prepush.sh` (ancestor check via `git merge-base --is-ancestor origin/<branch> HEAD` — abort if it fails).
-Plain `git push -u origin cursor/art-compute-hardware-cc0` only. If remote is already wrong, leave it as-is and fix with a new commit.
+**Do not commit** `__pycache__` or `.pyc` under `tools/art/`.
+
+**Push (forward-only):** force-push is banned. Before every push run `./tools/art/cc0/prepush.sh` (ancestor check). Plain `git push -u origin <branch>` only.

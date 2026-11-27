@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusPresentationIndexHubThrough440PresentationSpecTests { [Test] public void B451() { Assert.AreEqual(440,CampusPresentationIndexHubThrough440PresentationSpec.LastHubBatch); } } }
