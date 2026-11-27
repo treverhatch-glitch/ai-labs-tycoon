@@ -2,7 +2,7 @@
   "assetId": "compute-pc-tower-era1",
   "preview": "docs/art/previews/compute-pc-tower-era1.png",
   "glb": "unity/Assets/Art/Cc0/compute-kit/compute-pc-tower-era1/compute-pc-tower-era1.glb",
-  "glb_sha256": "d6f2cf48cc3d99216bdd8d16d2b1a53fdc5e9fa7b8ceedfe585848b1521af0de",
+  "glb_sha256": "30c468fb923196fd54c5391562cbc1e028f20f225ba9dd35acf651c5cda1ccd1",
   "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
   "resolution": 1024,
   "silhouetteFill": 0.7,
