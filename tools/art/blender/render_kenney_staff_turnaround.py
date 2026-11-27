@@ -91,10 +91,14 @@ def _render_tile(
         from researcher_scene_mesh_audit import (
             assert_render_island_audit,
             audit_researcher_render_meshes,
+            maybe_log_sleeve_posed_audit_for_render,
         )
 
         panel = "turnaround_walk_side" if walk_pose else f"yaw_{cam_yaw_deg:.0f}"
         fr = bpy.context.scene.frame_current
+        maybe_log_sleeve_posed_audit_for_render(
+            scene_data.arm, meshes, frame=int(fr), panel=f"turnaround:{panel}"
+        )
         audit_researcher_render_meshes(
             scene_data.body, meshes, arm=scene_data.arm
         )

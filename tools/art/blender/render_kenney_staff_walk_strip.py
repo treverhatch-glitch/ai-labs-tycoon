@@ -101,9 +101,16 @@ def main() -> int:
             from researcher_scene_mesh_audit import (
                 assert_render_island_audit,
                 audit_researcher_render_meshes,
+                maybe_log_sleeve_posed_audit_for_render,
             )
 
             label = scene_data.labels[i] if i < len(scene_data.labels) else f"tile_{i}"
+            maybe_log_sleeve_posed_audit_for_render(
+                scene_data.arm,
+                scene_data.render_meshes,
+                frame=int(fr),
+                panel=f"walk:{label}",
+            )
             audit_researcher_render_meshes(
                 scene_data.body,
                 scene_data.render_meshes,

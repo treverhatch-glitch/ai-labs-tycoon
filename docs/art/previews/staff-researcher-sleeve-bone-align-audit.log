@@ -1,9 +1,9 @@
-# staff-researcher sleeve tube vs bone axis
+# staff-researcher sleeve tube vs bone axis (rest + posed panels)
 # spawn span=3.765 rest=1
-bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(0.6045,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
-bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(1.0527,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
-bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(-0.6040,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
-bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(-1.0522,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.5944,-0.0125,2.3402) sleeve_bbox_size=(0.3892,0.3181,0.3365) vert_mean=(0.6045,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
+bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(1.0521,-0.0168,2.3031) sleeve_bbox_size=(0.4182,0.2598,0.2663) vert_mean=(1.0527,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
+bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(-0.5939,-0.0125,2.3402) sleeve_bbox_size=(0.3892,0.3181,0.3365) vert_mean=(-0.6040,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
+bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(-1.0516,-0.0168,2.3031) sleeve_bbox_size=(0.4182,0.2598,0.2663) vert_mean=(-1.0522,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
 
 ---
 ## sleeve-bone audit rest pose (post armature eval)
@@ -37,11 +37,36 @@ bone=RightShoulder head=(-0.0880,-0.0312,2.4340) tail=(-0.3353,-0.0167,2.3589)
 
 island_Left verts=228 center=(-0.8831,-0.0136,2.3411) size=(1.1241,0.3223,0.3505)
 island_Right verts=228 center=(0.8836,-0.0136,2.3411) size=(1.1241,0.3223,0.3505)
+# posed frame=1 panel=turnaround:yaw_0
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.4410,-0.0110,1.9000) sleeve_bbox_center=(0.6069,-0.0120,2.4617) sleeve_bbox_size=(0.4144,0.3192,0.3423) vert_mean=(0.5158,-0.0024,2.1188) axis_dist=0.1223 max=0.01 ok=False
+bone=LeftForeArm head=(0.4410,-0.0110,1.9000) tail=(0.4553,-0.0529,1.3747) sleeve_bbox_center=(1.0915,-0.0181,2.4256) sleeve_bbox_size=(0.4969,0.2626,0.2704) vert_mean=(0.5732,-0.0331,1.6093) axis_dist=0.1242 max=0.01 ok=False
+bone=RightArm head=(-0.3022,0.0119,2.2952) tail=(-0.3798,0.0063,1.8309) sleeve_bbox_center=(-0.6065,-0.0120,2.4647) sleeve_bbox_size=(0.4144,0.3192,0.3365) vert_mean=(-0.4705,0.0242,2.0525) axis_dist=0.1269 max=0.01 ok=False
+bone=RightForeArm head=(-0.3798,0.0063,1.8309) tail=(-0.5370,-0.0381,1.3296) sleeve_bbox_center=(-1.0910,-0.0181,2.4256) sleeve_bbox_size=(0.4969,0.2626,0.2704) vert_mean=(-0.5861,-0.0069,1.5864) axis_dist=0.1242 max=0.01 ok=False
+# posed frame=1 panel=turnaround:yaw_90
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.4410,-0.0110,1.9000) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4086,-0.0066,2.0912) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4410,-0.0110,1.9000) tail=(0.4553,-0.0529,1.3747) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5075,-0.0344,1.5997) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.3022,0.0119,2.2952) tail=(-0.3798,0.0063,1.8309) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3568,0.0099,2.0417) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3798,0.0063,1.8309) tail=(-0.5370,-0.0381,1.3296) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5256,-0.0137,1.5597) axis_dist=0.0583 max=0.01 ok=False
+# posed frame=1 panel=turnaround:yaw_180
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.4410,-0.0110,1.9000) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4086,-0.0066,2.0912) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4410,-0.0110,1.9000) tail=(0.4553,-0.0529,1.3747) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5075,-0.0344,1.5997) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.3022,0.0119,2.2952) tail=(-0.3798,0.0063,1.8309) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3568,0.0099,2.0417) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3798,0.0063,1.8309) tail=(-0.5370,-0.0381,1.3296) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5256,-0.0137,1.5597) axis_dist=0.0583 max=0.01 ok=False
+# posed frame=1 panel=turnaround:yaw_270
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.4410,-0.0110,1.9000) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4086,-0.0066,2.0912) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4410,-0.0110,1.9000) tail=(0.4553,-0.0529,1.3747) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5075,-0.0344,1.5997) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.3022,0.0119,2.2952) tail=(-0.3798,0.0063,1.8309) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3568,0.0099,2.0417) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3798,0.0063,1.8309) tail=(-0.5370,-0.0381,1.3296) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5256,-0.0137,1.5597) axis_dist=0.0583 max=0.01 ok=False
+# posed frame=4 panel=turnaround:turnaround_walk_side
+bone=LeftArm head=(0.3472,-0.0160,2.3172) tail=(0.4452,-0.0103,1.8568) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4158,-0.0059,2.0484) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4452,-0.0103,1.8568) tail=(0.4514,-0.0522,1.3313) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5070,-0.0336,1.5554) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.2917,0.0115,2.2635) tail=(-0.3766,0.0057,1.8005) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3502,0.0094,2.0109) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3766,0.0057,1.8005) tail=(-0.5415,-0.0389,1.3017) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5266,-0.0146,1.5316) axis_dist=0.0583 max=0.01 ok=False
 # spawn span=3.765 rest=1
-bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(0.6045,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
-bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(1.0527,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
-bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(-0.6040,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
-bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(0.0002,-0.0136,2.3411) sleeve_bbox_size=(2.8909,0.3223,0.3505) vert_mean=(-1.0522,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.5944,-0.0125,2.3402) sleeve_bbox_size=(0.3892,0.3181,0.3365) vert_mean=(0.6045,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
+bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(1.0521,-0.0168,2.3031) sleeve_bbox_size=(0.4182,0.2598,0.2663) vert_mean=(1.0527,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
+bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(-0.5939,-0.0125,2.3402) sleeve_bbox_size=(0.3892,0.3181,0.3365) vert_mean=(-0.6040,-0.0095,2.3350) axis_dist=0.0000 mid_dist=0.0345 max=0.01 ok=True
+bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(-1.0516,-0.0168,2.3031) sleeve_bbox_size=(0.4182,0.2598,0.2663) vert_mean=(-1.0522,-0.0222,2.2977) axis_dist=0.0013 mid_dist=0.0141 max=0.01 ok=True
 
 ---
 ## sleeve-bone audit rest pose (post armature eval)
@@ -75,3 +100,23 @@ bone=RightShoulder head=(-0.0880,-0.0312,2.4340) tail=(-0.3353,-0.0167,2.3589)
 
 island_Left verts=228 center=(-0.8831,-0.0136,2.3411) size=(1.1241,0.3223,0.3505)
 island_Right verts=228 center=(0.8836,-0.0136,2.3411) size=(1.1241,0.3223,0.3505)
+# posed frame=2 panel=walk:contact_L
+bone=LeftArm head=(0.3370,-0.0156,2.3370) tail=(0.4411,-0.0096,1.8780) sleeve_bbox_center=(0.6069,-0.0120,2.4617) sleeve_bbox_size=(0.4144,0.3192,0.3423) vert_mean=(0.5164,-0.0007,2.0966) axis_dist=0.1223 max=0.01 ok=False
+bone=LeftForeArm head=(0.4411,-0.0096,1.8780) tail=(0.4544,-0.0514,1.3526) sleeve_bbox_center=(1.0915,-0.0181,2.4256) sleeve_bbox_size=(0.4969,0.2626,0.2704) vert_mean=(0.5727,-0.0312,1.5869) axis_dist=0.1242 max=0.01 ok=False
+bone=RightArm head=(-0.3012,0.0109,2.2748) tail=(-0.3799,0.0050,1.8107) sleeve_bbox_center=(-0.6065,-0.0120,2.4647) sleeve_bbox_size=(0.4144,0.3192,0.3365) vert_mean=(-0.4701,0.0226,2.0325) axis_dist=0.1269 max=0.01 ok=False
+bone=RightForeArm head=(-0.3799,0.0050,1.8107) tail=(-0.5380,-0.0398,1.3098) sleeve_bbox_center=(-1.0910,-0.0181,2.4256) sleeve_bbox_size=(0.4969,0.2626,0.2704) vert_mean=(-0.5866,-0.0089,1.5667) axis_dist=0.1242 max=0.01 ok=False
+# posed frame=4 panel=walk:down
+bone=LeftArm head=(0.3472,-0.0160,2.3172) tail=(0.4452,-0.0103,1.8568) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4158,-0.0059,2.0484) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4452,-0.0103,1.8568) tail=(0.4514,-0.0522,1.3313) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5070,-0.0336,1.5554) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.2917,0.0115,2.2635) tail=(-0.3766,0.0057,1.8005) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3502,0.0094,2.0109) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3766,0.0057,1.8005) tail=(-0.5415,-0.0389,1.3017) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5266,-0.0146,1.5316) axis_dist=0.0583 max=0.01 ok=False
+# posed frame=3 panel=walk:contact_R
+bone=LeftArm head=(0.3526,-0.0134,2.3904) tail=(0.5765,-0.0528,1.9781) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4958,-0.0344,2.1535) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.5765,-0.0528,1.9781) tail=(0.6277,-0.2746,1.5026) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.6558,-0.2053,1.7219) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.3301,-0.0185,2.3194) tail=(-0.3588,-0.0581,1.8511) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3579,-0.0408,2.0625) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3588,-0.0581,1.8511) tail=(-0.2555,-0.1518,1.3427) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.3565,-0.1178,1.5484) axis_dist=0.0583 max=0.01 ok=False
+# posed frame=14 panel=walk:up
+bone=LeftArm head=(0.3473,-0.0179,2.3480) tail=(0.4458,-0.0128,1.8877) sleeve_bbox_center=(0.5970,-0.0118,2.3444) sleeve_bbox_size=(0.3945,0.2778,0.1077) vert_mean=(0.4162,-0.0082,2.0793) axis_dist=0.0130 max=0.01 ok=False
+bone=LeftForeArm head=(0.4458,-0.0128,1.8877) tail=(0.4522,-0.0548,1.3622) sleeve_bbox_center=(1.0868,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(0.5078,-0.0365,1.5864) axis_dist=0.0583 max=0.01 ok=False
+bone=RightArm head=(-0.2914,0.0132,2.2937) tail=(-0.3759,0.0078,1.8306) sleeve_bbox_center=(-0.5885,-0.0124,2.3474) sleeve_bbox_size=(0.3785,0.2766,0.1018) vert_mean=(-0.3497,0.0114,2.0411) axis_dist=0.0121 max=0.01 ok=False
+bone=RightForeArm head=(-0.3759,0.0078,1.8306) tail=(-0.5405,-0.0359,1.3317) sleeve_bbox_center=(-1.0863,-0.0217,2.3610) sleeve_bbox_size=(0.4875,0.2554,0.1413) vert_mean=(-0.5257,-0.0116,1.5617) axis_dist=0.0583 max=0.01 ok=False

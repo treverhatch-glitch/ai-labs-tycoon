@@ -7,6 +7,8 @@ import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
+_IDENTITY = Matrix.Identity(4)
+
 from kenney_face_axis import face_shell_coord, toe_forward
 from kenney_geometry_landmarks import compute_landmarks, torso_half_width
 from researcher_shirt_derived_meshes import (
@@ -44,14 +46,18 @@ def pose_bone_world_segment(
     *,
     rest_pose: bool = True,
 ) -> tuple[Vector, Vector] | None:
-    """Rest bind head→tail world segment (armature deform from rest)."""
-    del rest_pose
+    """Bone head→tail in world space (rest bind or current pose)."""
     if arm is None:
         return None
+    bpy.context.view_layer.update()
+    mw = arm.matrix_world
+    if not rest_pose:
+        pb = arm.pose.bones.get(bone_name)
+        if pb is not None:
+            return mw @ pb.head, mw @ pb.tail
     bone = arm.data.bones.get(bone_name)
     if bone is None:
         return None
-    mw = arm.matrix_world
     return mw @ bone.head_local, mw @ bone.tail_local
 
 
@@ -67,26 +73,18 @@ def _bone_armature_local_segment(
     return Vector(bone.head_local), Vector(bone.tail_local)
 
 
-def _attach_sleeves_armature_bone_parent(
+def _attach_sleeves_to_armature_object(
     sleeves: bpy.types.Object, arm: bpy.types.Object
 ) -> None:
-    """Parent sleeves to armature bone (zero offset); mesh verts in armature-local space."""
+    """Armature-local mesh + modifier (deforms with LeftArm/ForeArm VGs, not Spine parent)."""
     if sleeves.parent:
         sleeves.parent = None
     for mod in list(sleeves.modifiers):
         if mod.type == "ARMATURE":
             sleeves.modifiers.remove(mod)
-    anchor = None
-    for nm in ("Spine", "Chest", "Hips", "UpperChest"):
-        if nm in arm.data.bones:
-            anchor = nm
-            break
-    anchor = anchor or arm.data.bones[0].name
     sleeves.parent = arm
-    sleeves.parent_type = "BONE"
-    sleeves.parent_bone = anchor
-    bone = arm.data.bones[anchor]
-    sleeves.matrix_parent_inverse = (arm.matrix_world @ bone.matrix_local).inverted()
+    sleeves.parent_type = "OBJECT"
+    sleeves.matrix_local = _IDENTITY.copy()
     sleeves.matrix_world = arm.matrix_world.copy()
     mod = sleeves.modifiers.new("CoatWalkArmature", "ARMATURE")
     mod.object = arm
@@ -249,18 +247,19 @@ def _assign_sleeve_weights_lateral(sleeves: bpy.types.Object, lm) -> None:
 
 
 def _assign_sleeve_weights_from_bones(sleeves: bpy.types.Object, arm: bpy.types.Object) -> None:
+    """VG 1.0 on upper/lower arm bones only (not Spine / not Hand competition)."""
     bones = ("LeftArm", "RightArm", "LeftForeArm", "RightForeArm")
     for b in bones:
         _ensure_vg(sleeves, b)
     for vi in range(len(sleeves.data.vertices)):
-        wc = sleeves.matrix_world @ sleeves.data.vertices[vi].co
+        co = sleeves.data.vertices[vi].co
         best = None
         best_d = 1e9
         for bone in bones:
-            seg = _bone_world_segment(arm, bone)
+            seg = _bone_armature_local_segment(arm, bone)
             if seg is None:
                 continue
-            d = _segment_distance(wc, seg[0], seg[1])
+            d = _segment_distance(co, seg[0], seg[1])
             if d < best_d:
                 best_d = d
                 best = bone
@@ -407,10 +406,16 @@ def _assign_hand_weights_on_cuff_ring(
             continue
         _ensure_vg(sleeves, hand)
         wrist = seg[0]
+        hand_axis = seg[1] - seg[0]
+        hand_len2 = hand_axis.length_squared
         for vi in range(len(sleeves.data.vertices)):
             co = sleeves.data.vertices[vi].co
             if (co - wrist).length > span * 0.12:
                 continue
+            if hand_len2 > 1e-12:
+                t = (co - wrist).dot(hand_axis) / hand_len2
+                if t > 0.22:
+                    continue
             fa = _vg_weight(sleeves, vi, f"{side}ForeArm")
             ua = _vg_weight(sleeves, vi, f"{side}Arm")
             if fa + ua < 0.15:
@@ -650,7 +655,7 @@ def spawn_procedural_lab_coat(
             fh.write("\n---\n" + block + "\n")
     _attach_coat_part_to_body_or_arm(torso, body, arm)
     if arm is not None:
-        _attach_sleeves_armature_bone_parent(sleeves, arm)
+        _attach_sleeves_to_armature_object(sleeves, arm)
     else:
         _attach_coat_part_to_body_or_arm(sleeves, body, arm)
     return [torso, sleeves]

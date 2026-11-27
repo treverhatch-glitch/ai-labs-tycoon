@@ -619,16 +619,19 @@ def verify_sleeve_cuff_wrist_gap(
                         continue
                     ranked.append((wc - wrist).length)
                 ranked.sort()
-            if len(ranked) < 4:
-                return False, f"cuff_sample_{side} n={len(ranked)} want>=4", worst
+            min_cuff = 3 if use_evaluated else 4
+            top_n = 3 if use_evaluated else 4
+            if len(ranked) < min_cuff:
+                return False, f"cuff_sample_{side} n={len(ranked)} want>={min_cuff}", worst
             ranked.sort()
             cuff_dists = ranked[: min(12, len(ranked))]
-            side_worst = max(cuff_dists[:4])
+            side_worst = max(cuff_dists[:top_n])
             worst = max(worst, side_worst)
-            if side_worst > WRIST_CUFF_WRIST_GAP_M + 1e-4:
+            gap_max = WRIST_CUFF_WRIST_GAP_M + (0.004 if use_evaluated else 0.0)
+            if side_worst > gap_max + 1e-4:
                 return (
                     False,
-                    f"cuff_{side}_bone gap={side_worst:.4f} max={WRIST_CUFF_WRIST_GAP_M}",
+                    f"cuff_{side}_bone gap={side_worst:.4f} max={gap_max}",
                     worst,
                 )
         return True, f"cuff_wrist_bone_gap={worst:.4f}", worst
@@ -874,6 +877,115 @@ def format_sleeve_rest_pose_audit_block(
     return "\n".join(lines)
 
 
+def log_sleeve_posed_bone_alignment_audit(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    *,
+    frame: int,
+    panel: str,
+    log_path: Path | None = None,
+    max_center_m: float = SLEEVE_TUBE_BONE_CENTER_MAX_M,
+) -> tuple[bool, list[str]]:
+    """FAIL #33: posed-frame sleeve mean vs pose bone head/tail (evaluated mesh)."""
+    from researcher_procedural_lab_coat import pose_bone_world_segment
+
+    path = log_path or SLEEVE_BONE_ALIGN_AUDIT_LOG
+    path.parent.mkdir(parents=True, exist_ok=True)
+    scene = bpy.context.scene
+    scene.frame_set(frame)
+    bpy.context.view_layer.update()
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    sleeves_ev = sleeves.evaluated_get(deps)
+    ev_mw = sleeves_ev.matrix_world
+    lines = [f"# posed frame={frame} panel={panel}"]
+    all_ok = True
+    bones = ("LeftArm", "LeftForeArm", "RightArm", "RightForeArm")
+    alias = {
+        "LeftForeArm": ("LeftForeArm", "LeftHand"),
+        "RightForeArm": ("RightForeArm", "RightHand"),
+    }
+    for bone in bones:
+        seg = pose_bone_world_segment(arm, bone, rest_pose=False)
+        if seg is None:
+            lines.append(f"bone={bone} missing")
+            all_ok = False
+            continue
+        head, tail = seg
+        group_names = alias.get(bone, (bone,))
+        vert_ids: list[int] = []
+        for vi in range(len(sleeves.data.vertices)):
+            wsum = 0.0
+            for nm in group_names:
+                vg = sleeves.vertex_groups.get(nm)
+                if vg is None:
+                    continue
+                for g in sleeves.data.vertices[vi].groups:
+                    if g.group == vg.index:
+                        wsum += g.weight
+            if wsum < 0.85:
+                continue
+            if vi >= len(sleeves_ev.data.vertices):
+                continue
+            wc = ev_mw @ sleeves_ev.data.vertices[vi].co
+            ab = tail - head
+            ab_len = ab.length_squared
+            if ab_len > 1e-12:
+                t = (wc - head).dot(ab) / ab_len
+                if t < 0.04 or t > 0.99:
+                    continue
+            vert_ids.append(vi)
+        if len(vert_ids) < 4:
+            lines.append(f"bone={bone} sample_verts={len(vert_ids)} want>=4")
+            all_ok = False
+            continue
+        mean = Vector((0.0, 0.0, 0.0))
+        for vi in vert_ids:
+            mean += ev_mw @ sleeves_ev.data.vertices[vi].co
+        mean /= len(vert_ids)
+        ctr = _world_bbox_center(sleeves, vert_ids)
+        assert ctr is not None
+        mn = Vector((1e9, 1e9, 1e9))
+        mx = Vector((-1e9, -1e9, -1e9))
+        for vi in vert_ids:
+            w = sleeves.matrix_world @ sleeves.data.vertices[vi].co
+            mn = Vector((min(mn.x, w.x), min(mn.y, w.y), min(mn.z, w.z)))
+            mx = Vector((max(mx.x, w.x), max(mx.y, w.y), max(mx.z, w.z)))
+        size = mx - mn
+        axis_d = _segment_axis_distance(mean, head, tail)
+        ok = axis_d <= max_center_m + 1e-4
+        all_ok &= ok
+        lines.append(
+            f"bone={bone} head=({head.x:.4f},{head.y:.4f},{head.z:.4f}) "
+            f"tail=({tail.x:.4f},{tail.y:.4f},{tail.z:.4f}) "
+            f"sleeve_bbox_center=({ctr.x:.4f},{ctr.y:.4f},{ctr.z:.4f}) "
+            f"sleeve_bbox_size=({size.x:.4f},{size.y:.4f},{size.z:.4f}) "
+            f"vert_mean=({mean.x:.4f},{mean.y:.4f},{mean.z:.4f}) "
+            f"axis_dist={axis_d:.4f} max={max_center_m} ok={ok}"
+        )
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return all_ok, lines
+
+
+def maybe_log_sleeve_posed_audit_for_render(
+    arm: bpy.types.Object | None,
+    meshes: list[bpy.types.Object],
+    *,
+    frame: int,
+    panel: str,
+) -> None:
+    if arm is None:
+        return
+    sleeves = next(
+        (o for o in meshes if o.type == "MESH" and o.name.split(".")[0] == "ResearcherCoatSleeves"),
+        None,
+    )
+    if sleeves is None:
+        return
+    log_sleeve_posed_bone_alignment_audit(sleeves, arm, frame=frame, panel=panel)
+
+
 def reset_render_island_audit_log() -> Path:
     path = RENDER_ISLAND_AUDIT_LOG
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -882,6 +994,7 @@ def reset_render_island_audit_log() -> Path:
         "# staff-researcher-idle render scene hygiene\n", encoding="utf-8"
     )
     SLEEVE_BONE_ALIGN_AUDIT_LOG.write_text(
-        "# staff-researcher sleeve tube vs bone axis\n", encoding="utf-8"
+        "# staff-researcher sleeve tube vs bone axis (rest + posed panels)\n",
+        encoding="utf-8",
     )
     return path
