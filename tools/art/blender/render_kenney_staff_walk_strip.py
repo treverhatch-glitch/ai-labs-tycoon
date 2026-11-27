@@ -76,11 +76,11 @@ def main() -> int:
     tiles: list[Image.Image] = []
     tmp_dir = Path(bpy.app.tempdir)
     ensure_locomotion_action(scene_data.arm, scene_data.action_name)
-    use_pose_bake = False
+    use_pose_bake = asset_id == "staff-researcher-idle"
     for i, fr in enumerate(scene_data.walk_frames):
         label = scene_data.labels[i] if i < len(scene_data.labels) else f"tile_{i}"
         pose_walk_for_render(scene, scene_data, int(fr))
-        metrics = measure_walk_frame_pose(scene_data, int(fr))
+        metrics = measure_walk_frame_pose(scene_data, int(fr), repose=False)
         if asset_id == "staff-researcher-idle":
             print(
                 f"OK researcher_walk_render frame={int(fr)} label={label} "
@@ -93,7 +93,8 @@ def main() -> int:
             researcher_lab_coat_preview_tweak(scene_data.render_meshes)
         elif asset_id == "staff-founder-idle":
             founder_eye_preview_tweak(scene_data.render_meshes)
-        pose_walk_for_render(scene, scene_data, int(fr))
+        bpy.context.view_layer.update()
+        bpy.context.evaluated_depsgraph_get().update()
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")

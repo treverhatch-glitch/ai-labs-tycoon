@@ -13,7 +13,7 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import kenney_researcher_lib as kr  # noqa: E402
-from kenney_face_axis import toe_forward  # noqa: E402
+from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward  # noqa: E402
 from kenney_geometry_landmarks import compute_landmarks  # noqa: E402
 from researcher_shirt_derived_meshes import (  # noqa: E402
     SKIRT_NAME,
@@ -94,16 +94,33 @@ def main() -> int:
         return 1
     z_neck = _neck_cut_world_z(arm, lm)
     above_neck = sum(
-        1 for v in skirt.data.vertices if (skirt.matrix_world @ v.co).z > z_neck - 0.01
+        1 for v in skirt.data.vertices if (skirt.matrix_world @ v.co).z > z_neck + 0.006
     )
     if above_neck > 0:
         print(f"FAIL staff-researcher-idle skirt_verts_above_neck={above_neck} neck_z={z_neck:.4f}")
         return 1
     _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
+    fwd = toe_forward([body]).normalized()
+    hc, y_face_fn = face_shell_coord(body, fwd)
+    coat_front = coat_back = 0
+    for v in skirt.data.vertices:
+        wc = skirt.matrix_world @ v.co
+        if wc.z > z_neck + 0.01 or wc.z < z_hip - span * 0.08:
+            continue
+        yf = y_face_fn(wc)
+        if yf >= -0.02:
+            coat_front += 1
+        if yf <= 0.03:
+            coat_back += 1
+    if coat_front < 24 or coat_back < 24:
+        print(
+            f"FAIL staff-researcher-idle coat_shell front={coat_front} back={coat_back} want>=24"
+        )
+        return 1
     zmin = min((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     zmax = max((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     if (
-        zmin < z_hip - span * 0.10
+        zmin > z_mid_thigh + span * 0.02
         or zmax < z_mid_thigh - span * 0.08
         or zmax > z_knee + span * 0.02
     ):
@@ -136,8 +153,11 @@ def main() -> int:
     hw = _bbox_width(hair)
     bw = _head_bbox_width(body, lm)
     ratio = hw / bw
-    if ratio > 1.05:
-        print(f"FAIL staff-researcher-idle hair_bbox_ratio={ratio:.3f} want<=1.05 hw={hw:.4f} head={bw:.4f}")
+    if ratio > 1.05 or ratio < 0.58:
+        print(
+            f"FAIL staff-researcher-idle hair_bbox_ratio={ratio:.3f} "
+            f"want=[0.58,1.05] hw={hw:.4f} head={bw:.4f}"
+        )
         return 1
     print(
         f"OK staff-researcher-idle geometry skirt_z=({zmin:.3f},{zmax:.3f}) "

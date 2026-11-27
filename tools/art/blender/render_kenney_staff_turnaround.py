@@ -88,7 +88,7 @@ def _render_tile(
     bpy.context.view_layer.update()
     render_meshes = meshes
     cleanup: list = []
-    if False and walk_pose and asset_id == "staff-researcher-idle":
+    if walk_pose and asset_id == "staff-researcher-idle":
         try:
             render_meshes, cleanup = bake_evaluated_render_meshes(meshes)
         except Exception as exc:  # noqa: BLE001

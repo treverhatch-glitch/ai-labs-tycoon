@@ -198,17 +198,31 @@ def pick_shirt_skirt_faces(
         if lat > thw * 1.85:
             continue
         pick.add(f.index)
+    torso_lo = z_hip - span * 0.02
+    for f in bm_src.faces:
+        if f.index in pick or f.material_index not in (shirt_slot, jeans_slot):
+            continue
+        wc = _face_world_centroid(body, f)
+        if wc.z < torso_lo or wc.z > skirt_top_z + span * 0.03:
+            continue
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.14:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat > thw * 1.92:
+            continue
+        pick.add(f.index)
     return pick
 
 
 def _neck_cut_world_z(arm: bpy.types.Object | None, lm) -> float:
     lo, span = lm.zmin, lm.span
     if arm and arm.type == "ARMATURE":
-        for name in ("Neck", "Head"):
-            b = arm.data.bones.get(name)
-            if b:
-                return (arm.matrix_world @ b.head_local).z
-    return lo + span * (lm.h_neck - 0.08)
+        neck = arm.data.bones.get("Neck")
+        if neck:
+            return (arm.matrix_world @ neck.head_local).z
+    return lo + span * (lm.h_neck - 0.10)
 
 
 def _stretch_skirt_hem_to_mid_thigh(
@@ -238,14 +252,14 @@ def _stretch_skirt_hem_to_mid_thigh(
     bm.free()
 
 
-def _prune_verts_above_z(ob: bpy.types.Object, z_cut: float, *, margin_m: float = 0.012) -> int:
+def _prune_verts_above_z(ob: bpy.types.Object, z_cut: float, *, margin_m: float = 0.006) -> int:
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     bm.verts.ensure_lookup_table()
     kill = [
         v.index
         for v in bm.verts
-        if (ob.matrix_world @ v.co).z > z_cut - margin_m
+        if (ob.matrix_world @ v.co).z > z_cut + margin_m
     ]
     if not kill:
         bm.free()

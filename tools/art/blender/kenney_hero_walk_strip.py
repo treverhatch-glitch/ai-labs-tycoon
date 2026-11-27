@@ -71,10 +71,17 @@ class WalkHeroScene:
     bind_arm_quats: dict[str, Quaternion]
 
 
-def measure_walk_frame_pose(data: WalkHeroScene, frame: int) -> dict[str, float]:
+def measure_walk_frame_pose(
+    data: WalkHeroScene, frame: int, *, repose: bool = True
+) -> dict[str, float]:
     """Bone metrics after pose_walk_for_render (same armature as walk PNG tiles)."""
     scene = bpy.context.scene
-    pose_walk_for_render(scene, data, frame)
+    if repose:
+        pose_walk_for_render(scene, data, frame)
+    else:
+        bpy.context.view_layer.update()
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
     arm = data.arm
     spread = _ankle_spread_x(arm)
     knee_l = 180.0
@@ -740,32 +747,62 @@ def _skin_mesh_to_armature(
     bpy.context.view_layer.update()
 
 
+def _mesh_needs_walk_pose_bake(ob: bpy.types.Object) -> bool:
+    if ob.type != "MESH":
+        return False
+    base = ob.name.split(".")[0]
+    if base in (
+        "KenneyResearcherStock",
+        "ResearcherCoatSkirt",
+        "ResearcherCoatSleeves",
+        "ResearcherHairCap",
+    ):
+        return True
+    return any(mod.type == "ARMATURE" for mod in ob.modifiers)
+
+
+def _duplicate_mesh_with_armature_applied(ob: bpy.types.Object) -> bpy.types.Object:
+    view_layer = bpy.context.view_layer
+    prev_active = view_layer.objects.active
+    prev_sel = {o for o in bpy.context.selected_objects}
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    view_layer.objects.active = ob
+    bpy.ops.object.duplicate()
+    dup = view_layer.objects.active
+    assert dup is not None
+    dup.name = f"{ob.name.split('.')[0]}_WalkBake"
+    for mod in list(dup.modifiers):
+        if mod.type != "ARMATURE":
+            dup.modifiers.remove(mod)
+    arm_mods = [m for m in dup.modifiers if m.type == "ARMATURE"]
+    for mod in arm_mods:
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    if dup.parent:
+        world = dup.matrix_world.copy()
+        dup.parent = None
+        dup.matrix_world = world
+    for o in bpy.context.selected_objects:
+        o.select_set(False)
+    for o in prev_sel:
+        o.select_set(True)
+    view_layer.objects.active = prev_active or ob
+    return dup
+
+
 def bake_evaluated_render_meshes(
     sources: list[bpy.types.Object],
 ) -> tuple[list[bpy.types.Object], list[bpy.types.Object]]:
-    """Meshes from depsgraph-evaluated geometry (matches rendered pose)."""
-    deps = bpy.context.evaluated_depsgraph_get()
-    deps.update()
+    """Posed static meshes for walk PNGs (armature applied at current frame)."""
+    bpy.context.view_layer.update()
+    bpy.context.evaluated_depsgraph_get().update()
     baked: list[bpy.types.Object] = []
     cleanup: list[bpy.types.Object] = []
     for ob in sources:
-        if ob.type != "MESH":
+        if ob.type != "MESH" or not _mesh_needs_walk_pose_bake(ob):
             baked.append(ob)
             continue
-        eval_ob = ob.evaluated_get(deps)
-        me = bpy.data.meshes.new_from_object(
-            eval_ob, preserve_all_data_layers=True, depsgraph=deps
-        )
-        dup = bpy.data.objects.new(f"{ob.name.split('.')[0]}_WalkBake", me)
-        dup.matrix_world = eval_ob.matrix_world.copy()
-        dup.data.materials.clear()
-        used = {m for m in eval_ob.data.materials if m}
-        for slot in ob.material_slots:
-            if slot.material:
-                used.add(slot.material)
-        for mat in used:
-            dup.data.materials.append(mat)
-        bpy.context.collection.objects.link(dup)
+        dup = _duplicate_mesh_with_armature_applied(ob)
         baked.append(dup)
         cleanup.append(dup)
     return baked, cleanup
@@ -884,7 +921,6 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     from kenney_researcher_from_founder import (
         apply_researcher_founder_base_materials,
         spawn_researcher_shirt_derived_parts,
-        swap_body_mesh_from_founder_stock,
     )
     from kenney_researcher_stock_recolor import spawn_researcher_eye_meshes
     from researcher_hero_geometry import spawn_researcher_hair_cap
@@ -896,8 +932,8 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     kf._pose_kenney_idle_arms(arm)
     idle_arms = _capture_arm_idle(arm)
     bpy.context.view_layer.update()
-    swap_body_mesh_from_founder_stock(mesh)
-    apply_researcher_founder_base_materials(mesh)
+    mesh.name = "KenneyResearcherStock"
+    apply_researcher_founder_base_materials(mesh, preserve_armature_weights=True)
     reinforce_founder_forearm_weights(mesh)
     coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm)
     eyes = spawn_researcher_eye_meshes(mesh)

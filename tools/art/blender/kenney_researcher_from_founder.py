@@ -67,8 +67,6 @@ def swap_body_mesh_from_founder_stock(mesh: bpy.types.Object) -> None:
     mesh.data.name = f"{STOCK_OBJECT_NAME}Mesh"
     bpy.data.objects.remove(stock_ob, do_unlink=True)
     mesh.name = STOCK_OBJECT_NAME
-    while mesh.vertex_groups:
-        mesh.vertex_groups.remove(mesh.vertex_groups[0])
 
 # Match founder slot indices; slot 3 is lab coat (was shirt).
 SLOT_SHOE = 1
@@ -110,8 +108,13 @@ def _finalize_researcher_coat_slots(
             if not throat:
                 slots[face.index] = SLOT_SHIRT
 
-        if z_hip - span * 0.03 <= wc.z <= z_mid_thigh + span * 0.04 and lat <= thw * 1.42:
+        if z_hip - span * 0.04 <= wc.z <= z_mid_thigh + span * 0.05 and lat <= thw * 1.58:
             if slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
+                slots[face.index] = SLOT_SHIRT
+
+        if coat_top <= h <= lm.h_waist + 0.12 and lat <= thw * 1.35:
+            throat = y_face > 0.10 and lat < thw * 0.20 and lm.h_neck - 0.03 <= h <= lm.h_neck + 0.05
+            if not throat and slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
                 slots[face.index] = SLOT_SHIRT
 
         if lat > thw * 0.82 and coat_top <= h <= wrist_h:
@@ -157,7 +160,10 @@ def _tune_coat_mat(ob: bpy.types.Object) -> None:
 
 
 def apply_researcher_founder_base_materials(
-    ob: bpy.types.Object, *, world_verts: list | None = None
+    ob: bpy.types.Object,
+    *,
+    world_verts: list | None = None,
+    preserve_armature_weights: bool = False,
 ) -> None:
     """Founder topology + landmark slots; shirt→white coat, jeans→charcoal."""
     _strip_mesh_vertex_colors(ob.data)
@@ -209,10 +215,11 @@ def apply_researcher_founder_base_materials(
                 head_w=head_w,
             )
         )
-    _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
-    _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
-    _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _apply_hand_skin_vertex_groups(bm, slots, ob)
+    if not preserve_armature_weights:
+        _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
+        _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
+        _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+        _apply_hand_skin_vertex_groups(bm, slots, ob)
     _finalize_researcher_coat_slots(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot

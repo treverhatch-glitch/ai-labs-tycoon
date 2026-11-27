@@ -44,8 +44,24 @@ def main() -> int:
         )
 
     by_label = {r[0]: r for r in rows}
-    contact_spreads = [by_label["contact_L"][2]["ankle_x"], by_label["contact_R"][2]["ankle_x"]]
+    for contact in ("contact_L", "contact_R"):
+        m = by_label[contact][2]
+        knee = max(m["knee_l"], m["knee_r"])
+        swing = max(m["arm_swing_l"], m["arm_swing_r"])
+        if knee < KNEE_PASS_MIN_DEG:
+            print(
+                f"FAIL researcher_walk_pose contact={contact} knee={knee:.2f} "
+                f"want>={KNEE_PASS_MIN_DEG}"
+            )
+            return 1
+        if swing < ARM_SWING_MIN_DEG:
+            print(
+                f"FAIL researcher_walk_pose contact={contact} arm_swing={swing:.2f} "
+                f"want>={ARM_SWING_MIN_DEG}"
+            )
+            return 1
     passing_spreads = [by_label["down"][2]["ankle_x"], by_label["up"][2]["ankle_x"]]
+    contact_spreads = [by_label["contact_L"][2]["ankle_x"], by_label["contact_R"][2]["ankle_x"]]
     ankle_delta = max(
         max(contact_spreads) - min(passing_spreads),
         max(passing_spreads) - min(contact_spreads),
