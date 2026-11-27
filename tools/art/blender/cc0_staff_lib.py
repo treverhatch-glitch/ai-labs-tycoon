@@ -92,6 +92,7 @@ def _clear_scene() -> None:
 
 
 def _pose_idle_arms(arm: bpy.types.Object) -> None:
+    """Relaxed symmetric A-pose — arms down, not hip-hands."""
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode="POSE")
     for side, sign in (("l", 1.0), ("r", -1.0)):
@@ -99,10 +100,10 @@ def _pose_idle_arms(arm: bpy.types.Object) -> None:
         la = arm.pose.bones.get(f"lowerarm_{side}")
         if ua:
             ua.rotation_mode = "ZYX"
-            ua.rotation_euler = (0.0, sign * math.radians(8), sign * math.radians(-78))
+            ua.rotation_euler = (0.0, sign * math.radians(6), sign * math.radians(-82))
         if la:
             la.rotation_mode = "ZYX"
-            la.rotation_euler = (0.0, 0.0, sign * math.radians(-18))
+            la.rotation_euler = (0.0, 0.0, sign * math.radians(-14))
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
@@ -237,7 +238,7 @@ def _split_eyes(eyes: bpy.types.Object) -> list[bpy.types.Object]:
         me.update()
         bm.free()
         if len(ob.data.vertices) >= 4:
-            bc.assign_solid(ob, (0.95, 0.96, 0.98, 1.0), 0.32)
+            bc.assign_solid(ob, (0.10, 0.08, 0.11, 1.0), 0.32)
             out.append(ob)
         else:
             bpy.data.objects.remove(ob, do_unlink=True)
@@ -340,7 +341,7 @@ def _reseal_skin_chain_gaps() -> None:
         parent = bpy.data.objects.get(parent_name)
         if not child or not parent:
             continue
-        for _ in range(4):
+        for _ in range(6):
             gap = sc.bbox_gap(sc._world_bbox(parent), sc._world_bbox(child))
             if gap <= 0.018:
                 break
@@ -353,29 +354,79 @@ def _reseal_skin_chain_gaps() -> None:
         bpy.context.view_layer.update()
 
 
-def _apply_founder_hospital_proportions() -> None:
-    """TP Hospital: larger head, chunkier limbs, readable hands."""
+def _snap_founder_head_onto_neck_bbox() -> None:
+    """BBox-stack head on neck after chibi (single step — avoids centroid crush)."""
+    import staff_connectivity as sc
+
+    head = bpy.data.objects.get("Head")
+    neck = bpy.data.objects.get("Neck")
+    if not head or not neck:
+        return
+    bpy.context.view_layer.update()
+    nlo, nhi = sc._world_bbox(neck)
+    hlo, hhi = sc._world_bbox(head)
+    overlap = max(0.012, (nhi.y - nlo.y) * 0.10)
+    dy = (nhi.y - hlo.y) - overlap
+    nc = (nlo + nhi) * 0.5
+    hc = (hlo + hhi) * 0.5
+    head.location += Vector((nc.x - hc.x, dy, nc.z - hc.z))
+    bpy.context.view_layer.update()
+
+
+def _snap_founder_head_onto_neck() -> None:
+    _snap_founder_head_onto_neck_bbox()
+
+
+def _rebuild_founder_hood(head: bpy.types.Object) -> None:
+    import staff_connectivity as sc
+
+    stale = bpy.data.objects.get("Hood")
+    if stale:
+        bpy.data.objects.remove(stale, do_unlink=True)
+    lo, hi = sc._world_bbox(head)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    hood = bc.add_cube(
+        "Hood",
+        (ext.x * 0.92, ext.y * 0.22, ext.z * 0.46),
+        (center.x, center.y - ext.y * 0.20, center.z + ext.z * 0.08),
+    )
+    bc.assign_solid(hood, FOUNDER_HOODIE_NAVY, 0.58)
+    bc.smooth_shade(hood)
+
+
+def _apply_founder_chibi_proportions() -> None:
+    """Two Point–style: oversized head/hands, short stocky torso/legs."""
     _apply_scale_to_parts(
         {
-            "Head": (1.20, 1.14, 1.18),
-            "Neck": (1.10, 1.08, 1.08),
-            "Hand_-1": (1.16, 1.14, 1.12),
-            "Hand_1": (1.16, 1.14, 1.12),
-            "UpperArm_-1": (1.10, 1.06, 1.10),
-            "UpperArm_1": (1.10, 1.06, 1.10),
-            "LowerArm_-1": (1.08, 1.06, 1.08),
-            "LowerArm_1": (1.08, 1.06, 1.08),
-            "Foot_-1": (1.12, 1.08, 1.14),
-            "Foot_1": (1.12, 1.08, 1.14),
-            "Torso": (1.06, 1.04, 1.05),
-            "Hips": (1.05, 1.04, 1.05),
+            "Head": (1.24, 1.10, 1.24),
+            "Hand_-1": (1.14, 1.10, 1.10),
+            "Hand_1": (1.14, 1.10, 1.10),
+            "Torso": (1.06, 0.84, 1.05),
+            "Leg_-1": (0.98, 0.86, 0.98),
+            "Leg_1": (0.98, 0.86, 0.98),
+            "Hips": (1.04, 0.92, 1.03),
         }
     )
     _reseal_skin_chain_gaps()
 
 
-FOUNDER_HOODIE = (0.10, 0.08, 0.18, 1.0)
-FOUNDER_JEANS = (0.14, 0.22, 0.46, 1.0)
+def _reset_head_neck_pitch() -> None:
+    for tag in ("Head", "Neck"):
+        ob = bpy.data.objects.get(tag)
+        if not ob:
+            continue
+        ob.rotation_euler = (0.0, 0.0, 0.0)
+        bpy.context.view_layer.objects.active = ob
+        ob.select_set(True)
+        bpy.ops.object.transform_apply(rotation=True)
+        ob.select_set(False)
+
+
+FOUNDER_HOODIE_NAVY = (0.08, 0.10, 0.32, 1.0)
+FOUNDER_HOODIE_RED = (0.62, 0.14, 0.12, 1.0)
+FOUNDER_JEANS = (0.04, 0.20, 0.72, 1.0)
+FOUNDER_HAIR = (0.36, 0.22, 0.14, 1.0)
 
 
 def _build_founder_hoodie_jeans(
@@ -395,19 +446,19 @@ def _build_founder_hoodie_jeans(
 
     built: list[bpy.types.Object] = []
     if torso:
-        bc.assign_solid(torso, FOUNDER_HOODIE, 0.62)
+        bc.assign_solid(torso, FOUNDER_HOODIE_RED, 0.58)
     for leg in (leg_l, leg_r):
         if leg:
             bc.assign_solid(leg, FOUNDER_JEANS, 0.56)
     if neck:
-        bc.assign_solid(neck, FOUNDER_HOODIE, 0.60)
+        bc.assign_solid(neck, FOUNDER_HOODIE_RED, 0.55)
 
     body = _fit_box_garment(
         "HoodieTorso",
         [o for o in (torso, neck) if o],
-        (1.42, 1.36, 1.14),
-        FOUNDER_HOODIE,
-        0.64,
+        (1.68, 1.52, 1.28),
+        FOUNDER_HOODIE_RED,
+        0.58,
         y_shift=span * 0.04,
     )
     if body:
@@ -416,8 +467,8 @@ def _build_founder_hoodie_jeans(
         slv = _fit_box_garment(
             f"HoodieSleeve_{tag}",
             [o for o in arms if o],
-            (1.22, 1.08, 1.12),
-            FOUNDER_HOODIE,
+            (1.34, 1.14, 1.20),
+            FOUNDER_HOODIE_NAVY,
             0.62,
         )
         if slv:
@@ -431,7 +482,7 @@ def _build_founder_hoodie_jeans(
             (ext.x * 1.02, ext.y * 0.55, ext.z * 0.72),
             (center.x, center.y - ext.y * 0.12, center.z + ext.z * 0.18),
         )
-        bc.assign_solid(hood, (0.08, 0.06, 0.14, 1.0), 0.58)
+        bc.assign_solid(hood, FOUNDER_HOODIE_NAVY, 0.58)
         built.append(hood)
     if torso:
         tc = _mesh_centroid(torso)
@@ -440,7 +491,7 @@ def _build_founder_hoodie_jeans(
             (span * 0.14, span * 0.04, span * 0.11),
             (tc.x + span * 0.05, tc.y + span * 0.22, tc.z - span * 0.06),
         )
-        bc.assign_solid(pocket, (0.12, 0.10, 0.20, 1.0), 0.60)
+        bc.assign_solid(pocket, FOUNDER_HOODIE_RED, 0.58)
         built.append(pocket)
     hip_box = _fit_box_garment(
         "JeansHips",
@@ -511,6 +562,148 @@ def _add_shoes(span: float) -> list[bpy.types.Object]:
     return shoes
 
 
+def _add_founder_mouth(head: bpy.types.Object, span: float) -> None:
+    import staff_connectivity as sc
+
+    lo, hi = sc._world_bbox(head)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    mouth = bc.add_cube(
+        "Mouth",
+        (span * 0.052, span * 0.016, span * 0.011),
+        (center.x, center.y + ext.y * 0.08, center.z - ext.z * 0.10),
+    )
+    bc.assign_solid(mouth, (0.52, 0.30, 0.26, 1.0), 0.52)
+
+
+def _snap_eyes_to_head(head: bpy.types.Object, span: float) -> None:
+    import staff_connectivity as sc
+
+    lo, hi = sc._world_bbox(head)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    eye_y = center.y + ext.y * 0.10
+    eye_z = center.z + ext.z * 0.06
+    sep = ext.x * 0.12
+    for tag, sign in (("-1", -1), ("1", 1)):
+        eye = bpy.data.objects.get(f"Eye_{tag}")
+        if not eye:
+            continue
+        ec = _mesh_centroid(eye)
+        target = Vector((center.x + sign * sep, eye_y, eye_z))
+        eye.location += target - ec
+    bpy.context.view_layer.update()
+
+
+def _add_founder_hair_cap(head: bpy.types.Object, span: float) -> bpy.types.Object | None:
+    import staff_connectivity as sc
+
+    lo, hi = sc._world_bbox(head)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    cap = bc.add_cube(
+        "Hair",
+        (ext.x * 0.72, ext.y * 0.16, ext.z * 0.30),
+        (center.x, center.y - ext.y * 0.16, center.z + ext.z * 0.12),
+    )
+    bc.assign_solid(cap, FOUNDER_HAIR, 0.55)
+    bc.smooth_shade(cap)
+    return cap
+
+
+def _build_founder_clean_garments(span: float) -> list[bpy.types.Object]:
+    """Single solid hoodie + jeans (no modular cloth ring/skirt)."""
+    import staff_connectivity as sc
+
+    for stale in ("Hoodie", "Jeans", "Hood", "HoodieTorso", "JeansHips", "HoodiePocket"):
+        ob = bpy.data.objects.get(stale)
+        if ob:
+            bpy.data.objects.remove(ob, do_unlink=True)
+    torso = bpy.data.objects.get("Torso")
+    neck = bpy.data.objects.get("Neck")
+    ua_l = bpy.data.objects.get("UpperArm_-1")
+    ua_r = bpy.data.objects.get("UpperArm_1")
+    hips = bpy.data.objects.get("Hips")
+    leg_l = bpy.data.objects.get("Leg_-1")
+    leg_r = bpy.data.objects.get("Leg_1")
+    built: list[bpy.types.Object] = []
+    hoodie = _fit_box_garment(
+        "Hoodie",
+        [o for o in (torso, neck, ua_l, ua_r) if o],
+        (1.24, 1.14, 1.08),
+        FOUNDER_HOODIE_RED,
+        0.62,
+        y_shift=span * 0.018,
+    )
+    if hoodie:
+        built.append(hoodie)
+    jeans = _fit_box_garment(
+        "Jeans",
+        [o for o in (hips, leg_l, leg_r) if o],
+        (1.12, 1.06, 1.08),
+        FOUNDER_JEANS,
+        0.60,
+        y_shift=-span * 0.015,
+    )
+    if jeans:
+        built.append(jeans)
+    head = bpy.data.objects.get("Head")
+    if head:
+        lo, hi = sc._world_bbox(head)
+        center = (lo + hi) * 0.5
+        ext = hi - lo
+        hood = bc.add_cube(
+            "Hood",
+            (ext.x * 0.82, ext.y * 0.18, ext.z * 0.40),
+            (center.x, center.y - ext.y * 0.22, center.z + ext.z * 0.10),
+        )
+        bc.assign_solid(hood, FOUNDER_HOODIE_NAVY, 0.62)
+        built.append(hood)
+    if hoodie and torso:
+        aa, ab = sc._world_bbox(torso)
+        ba, bb = sc._world_bbox(hoodie)
+        hoodie.location += ((aa + ab) - (ba + bb)) * 0.5
+    if jeans and hips:
+        aa, ab = sc._world_bbox(hips)
+        ba, bb = sc._world_bbox(jeans)
+        jeans.location += ((aa + ab) - (ba + bb)) * 0.5
+    bpy.context.view_layer.update()
+    return built
+
+
+def _snap_modular_cloth_to_body() -> None:
+    """Quaternius cloth imports offset from skin after height scale — re-center on torso/hips."""
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    hips = bpy.data.objects.get("Hips")
+    for cloth_key, anchor_key in (("ClothTop", "Torso"), ("ClothBottom", "Hips"), ("Hoodie", "Torso"), ("Jeans", "Hips")):
+        cloth = bpy.data.objects.get(cloth_key)
+        anchor = bpy.data.objects.get(anchor_key)
+        if not cloth or not anchor:
+            continue
+        aa, ab = sc._world_bbox(anchor)
+        ba, bb = sc._world_bbox(cloth)
+        cloth.location += ((aa + ab) - (ba + bb)) * 0.5
+    bpy.context.view_layer.update()
+
+
+def _paint_founder_body_under_clothes() -> None:
+    """Tint skin meshes as garment colors so preview never shows bare body."""
+    legs = frozenset({"Hips", "Leg_-1", "Leg_1", "Foot_-1", "Foot_1"})
+    sleeves = frozenset({"Shoulder_-1", "Shoulder_1", "UpperArm_-1", "UpperArm_1", "LowerArm_-1", "LowerArm_1"})
+    for tag in ("Torso", "Neck", *legs, *sleeves):
+        ob = bpy.data.objects.get(tag)
+        if not ob:
+            continue
+        if tag in legs:
+            bc.assign_solid(ob, FOUNDER_JEANS, 0.56)
+        elif tag in sleeves:
+            bc.assign_solid(ob, FOUNDER_HOODIE_NAVY, 0.58)
+        else:
+            bc.assign_solid(ob, FOUNDER_HOODIE_RED, 0.58)
+
+
 def _style_founder(
     objects: dict[str, bpy.types.Object],
     skin: tuple[float, float, float, float],
@@ -519,38 +712,36 @@ def _style_founder(
     cz: float,
     min_y: float,
 ) -> None:
-    hair = objects.get("Hair_Long")
-    eyebrows = objects.get("Eyebrows")
+    hair_long = objects.get("Hair_Long") or bpy.data.objects.get("Hair_Long")
+    eyebrows = objects.get("Eyebrows") or bpy.data.objects.get("Eyebrows")
+    head = bpy.data.objects.get("Head")
+    if hair_long:
+        bpy.data.objects.remove(hair_long, do_unlink=True)
+    if eyebrows:
+        _rename_ob(eyebrows, "Eyebrows")
+        bc.assign_solid(eyebrows, (0.14, 0.09, 0.07, 1.0), 0.48)
     torso = bpy.data.objects.get("Torso")
     neck = bpy.data.objects.get("Neck")
     ua_l = bpy.data.objects.get("UpperArm_-1")
     ua_r = bpy.data.objects.get("UpperArm_1")
+    la_l = bpy.data.objects.get("LowerArm_-1")
+    la_r = bpy.data.objects.get("LowerArm_1")
     hips = bpy.data.objects.get("Hips")
     leg_l = bpy.data.objects.get("Leg_-1")
     leg_r = bpy.data.objects.get("Leg_1")
-    if eyebrows:
-        _rename_ob(eyebrows, "Eyebrows")
-        bc.assign_solid(eyebrows, (0.14, 0.09, 0.07, 1.0), 0.45)
-    head = bpy.data.objects.get("Head")
-    la_l = bpy.data.objects.get("LowerArm_-1")
-    la_r = bpy.data.objects.get("LowerArm_1")
-    _build_founder_hoodie_jeans(span, torso, neck, head, ua_l, ua_r, la_l, la_r, hips, leg_l, leg_r)
-    if hair:
-        _rename_ob(hair, "Hair")
-        hair.scale = (1.0, 1.0, 1.05)
-        bc.assign_solid(hair, (0.10, 0.07, 0.05, 1.0), 0.42)
+    _build_founder_hoodie_jeans(
+        span, torso, neck, head, ua_l, ua_r, la_l, la_r, hips, leg_l, leg_r
+    )
+    _paint_founder_body_under_clothes()
+    if head:
+        _add_founder_mouth(head, span)
+        _add_founder_hair_cap(head, span)
+        _snap_eyes_to_head(head, span)
+        bc.assign_solid(head, skin, 0.88)
+        bc.smooth_shade(head)
     shoes = _add_shoes(span)
     for ob in shoes:
         bc.assign_solid(ob, (0.92, 0.94, 0.96, 1.0), 0.38)
-    hand_r = bpy.data.objects.get("Hand_1")
-    if hand_r:
-        hr = _mesh_centroid(hand_r)
-        mug = bc.add_cube(
-            "FounderMug",
-            (span * 0.09, span * 0.10, span * 0.08),
-            (hr.x + span * 0.04, hr.y + span * 0.01, hr.z + span * 0.03),
-        )
-        bc.assign_solid(mug, (0.94, 0.52, 0.12, 1.0), 0.38)
 
 
 def _style_researcher(
@@ -622,10 +813,11 @@ def _scene_mesh_map() -> dict[str, bpy.types.Object]:
     return {o.name.split(".")[0]: o for o in bpy.context.scene.objects if o.type == "MESH"}
 
 
-def _tighten_skin_to_torso() -> None:
+def _tighten_skin_to_torso(*, skip: frozenset[str] | None = None) -> None:
     torso = bpy.data.objects.get("Torso")
     if not torso:
         return
+    skip = skip or frozenset()
     tc = _mesh_centroid(torso)
     for tag in (
         "Neck",
@@ -642,11 +834,13 @@ def _tighten_skin_to_torso() -> None:
         "Leg_-1",
         "Leg_1",
     ):
+        if tag in skip:
+            continue
         ob = bpy.data.objects.get(tag)
         if not ob:
             continue
         c = _mesh_centroid(ob)
-        ob.location += (tc - c) * 0.045
+        ob.location += (tc - c) * 0.028
 
 
 def _snap_outfits_to_torso() -> None:
@@ -683,7 +877,7 @@ def _snap_outfits_to_torso() -> None:
             if ob:
                 nudge(ob, torso)
     if head:
-        for name in ("Hair", "Eyebrows", "Glasses"):
+        for name in ("Hair", "Eyebrows", "Glasses", "Hood"):
             ob = bpy.data.objects.get(name)
             if ob:
                 nudge(ob, head)
@@ -700,6 +894,14 @@ def _snap_outfits_to_torso() -> None:
     jeans_hips = bpy.data.objects.get("JeansHips")
     if hips and jeans_hips:
         nudge(jeans_hips, hips)
+    jeans = bpy.data.objects.get("Jeans")
+    if hips and jeans:
+        for _ in range(6):
+            nudge(jeans, hips)
+    hoodie = bpy.data.objects.get("Hoodie")
+    if torso and hoodie:
+        for _ in range(6):
+            nudge(hoodie, torso)
     bpy.context.view_layer.update()
 
 
@@ -717,7 +919,8 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
     _scale_scene_to_height()
     _drop_modular_cloth()
     if role == "founder":
-        _apply_founder_hospital_proportions()
+        _apply_founder_chibi_proportions()
+        _reset_head_neck_pitch()
     parts = _scene_mesh_map()
     torso = parts.get("Torso") or parts.get("Hips")
     if not torso:
@@ -728,15 +931,33 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
     cz = sum(v.z for v in co) / len(co)
     styler(parts, skin, span, cx, cz, _min)
     _snap_outfits_to_torso()
-    _tighten_skin_to_torso()
+    if role != "founder":
+        _tighten_skin_to_torso()
     _snap_outfits_to_torso()
+    if role == "founder":
+        for _ in range(2):
+            _snap_founder_head_onto_neck_bbox()
+        for _ in range(2):
+            _reseal_skin_chain_gaps()
+        head_ob = bpy.data.objects.get("Head")
+        if head_ob:
+            _rebuild_founder_hood(head_ob)
+            _snap_eyes_to_head(head_ob, span)
+        _snap_outfits_to_torso()
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue
+        base = ob.name.split(".")[0]
+        if base in ("Hoodie", "Jeans", "Hood", "Mouth", "Hair") or base.startswith("Shoe_"):
+            bc.smooth_shade(ob)
+            continue
+        width = 0.002 if base == "Head" else 0.004
         try:
-            bc.bevel_object(ob, width=0.004, segments=1)
+            bc.bevel_object(ob, width=width, segments=1)
         except RuntimeError:
             pass
+        if base == "Head" or base.startswith("Hand_"):
+            bc.smooth_shade(ob)
 
 
 _SPINE_SKIP_PREFIXES = (
@@ -767,9 +988,16 @@ def check_spine_clearance(
     head = by_name.get("Head")
     if not hips or not head:
         return False, "spine_parts_missing"
-    p0 = _mesh_centroid(hips)
-    p1 = _mesh_centroid(head)
+    hip_c = _mesh_centroid(hips)
+    hip_lo = min((hips.matrix_world @ v.co).y for v in hips.data.vertices)
+    p0 = Vector((hip_c.x, hip_lo, hip_c.z))
+    hc = _mesh_centroid(head)
+    head_top = max((head.matrix_world @ v.co).y for v in head.data.vertices)
+    p1 = Vector((hc.x, head_top, hc.z))
     axis = p1 - p0
+    if axis.length < 0.2:
+        p1 = hc
+        axis = p1 - p0
     if axis.length < 0.2:
         return False, "spine_axis_short"
     axis_n = axis.normalized()
@@ -789,6 +1017,45 @@ def check_spine_clearance(
     if worst[1] > max_radius:
         return False, f"spine_clearance {worst[0]} r={worst[1]:.3f}m"
     return True, f"spine_ok r={worst[1]:.3f}m"
+
+
+def check_founder_stock_single_mesh(ob: bpy.types.Object, min_verts: int = 750) -> tuple[bool, str]:
+    """Stock GLB import: one intact mesh; head band has real geometry."""
+    import staff_connectivity as sc
+
+    if ob.type != "MESH":
+        return False, "stock_not_mesh"
+    verts = len(ob.data.vertices)
+    if verts < min_verts:
+        return False, f"stock_sparse verts={verts}"
+    lo, hi = sc._world_bbox(ob)
+    span = hi.z - lo.z
+    if span < 1.4:
+        return False, f"stock_short span={span:.3f}"
+    head_lo = lo.z + span * 0.58
+    head_verts = sum(
+        1 for v in ob.data.vertices if (ob.matrix_world @ v.co).z >= head_lo
+    )
+    if head_verts < 32:
+        return False, f"stock_head_sparse head_verts={head_verts}"
+    return True, f"head_ok verts={head_verts} total={verts}"
+
+
+def check_founder_head_geometry(mesh_obs: list[bpy.types.Object], min_verts: int = 32) -> tuple[bool, str]:
+    """Bake gate: head skin mesh must exist with real geometry (not empty / stray cube)."""
+    import staff_connectivity as sc
+
+    head = next((o for o in mesh_obs if o.name.split(".")[0] == "Head"), None)
+    if not head or head.type != "MESH":
+        return False, "head_missing"
+    verts = len(head.data.vertices)
+    if verts < min_verts:
+        return False, f"head_empty verts={verts} need>={min_verts}"
+    lo, hi = sc._world_bbox(head)
+    ext = hi - lo
+    if min(ext.x, ext.y, ext.z) < 0.04:
+        return False, f"head_flat ext=({ext.x:.3f},{ext.y:.3f},{ext.z:.3f})"
+    return True, f"head_ok verts={verts}"
 
 
 def build_founder_cc0() -> None:

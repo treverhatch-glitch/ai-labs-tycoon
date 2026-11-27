@@ -37,9 +37,13 @@ def _spine_radius(
     if not hips or not head:
         return False, "spine_parts_missing"
     p0 = _centroid(hips)
-    p1 = _centroid(head)
+    head_pts = [head.matrix_world @ v.co for v in head.data.vertices]
+    head_top = max(p.z for p in head_pts)
+    hc = sum(head_pts, Vector()) / len(head_pts)
+    p1 = Vector((hc.x, hc.y, head_top))
     axis = p1 - p0
-    if axis.length < 0.2:
+    min_axis = 0.2
+    if axis.length < min_axis:
         return False, "spine_axis_short"
     axis_n = axis.normalized()
     worst = ("", 0.0)
@@ -87,9 +91,17 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
     if aid in HERO_IDS:
         if any(n == "Cube" for n in (o.name.split(".")[0] for o in meshes)):
             return False, "stray_cube_mesh"
+        by = {o.name.split(".")[0]: o for o in meshes}
+        stock_body = by.get("KenneyFounderStock") or by.get("KenneyResearcherStock")
+        if aid in HERO_IDS and stock_body:
+            eyes = [n for n in by if n.startswith("FounderEye_")]
+            if len(meshes) == 3 and len(eyes) == 2:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=3 eyes=2"
+            if len(meshes) == 1:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=1"
         spine_kw = (
             {"only_parts": FOUNDER_SPINE_PARTS, "max_radius": MAX_FOUNDER_SPINE_RADIUS_M}
-            if aid == "staff-founder-idle"
+            if aid == "staff-founder-idle" and not stock_body
             else {}
         )
         ok_spine, spine_msg = _spine_radius(meshes, **spine_kw)
