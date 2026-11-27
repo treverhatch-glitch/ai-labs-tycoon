@@ -221,14 +221,35 @@ def _visible_scene_meshes() -> list[bpy.types.Object]:
     return out
 
 
+def log_all_scene_objects(
+    *,
+    hygiene_log: Path | None = None,
+    header: str = "",
+) -> None:
+    path = hygiene_log or RENDER_SCENE_HYGIENE_LOG
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        if header:
+            fh.write(f"# {header}\n")
+        for ob in sorted(bpy.context.scene.objects, key=lambda o: o.name):
+            loc = tuple(round(c, 4) for c in ob.matrix_world.translation)
+            fh.write(
+                f"object name={ob.name} type={ob.type} "
+                f"hide_render={ob.hide_render} hide_viewport={ob.hide_get()} "
+                f"world_loc=({loc[0]},{loc[1]},{loc[2]})\n"
+            )
+
+
 def prepare_researcher_render_scene(
     hero_meshes: list[bpy.types.Object],
     *,
     hygiene_log: Path | None = None,
 ) -> list[str]:
     """Hide/remove non-character meshes before beauty render (mask pass already does)."""
+    log_all_scene_objects(hygiene_log=hygiene_log, header="pre-cull scene objects")
     hero_ids = {id(o) for o in hero_meshes}
     hero_bases = {o.name.split(".")[0] for o in hero_meshes}
+    allowed_bases = RESEARCHER_RENDER_MESH_ALLOW | hero_bases
     actions: list[str] = []
     for ob in list(bpy.context.scene.objects):
         if ob.type == "ARMATURE":
@@ -246,7 +267,7 @@ def prepare_researcher_render_scene(
                 bpy.data.objects.remove(ob, do_unlink=True)
                 actions.append(f"removed WalkBake {ob.name}")
                 continue
-            if base not in RESEARCHER_RENDER_MESH_ALLOW and base not in hero_bases:
+            if base not in allowed_bases:
                 me = ob.data
                 bpy.data.objects.remove(ob, do_unlink=True)
                 if me.users == 0:
@@ -460,9 +481,6 @@ def prune_researcher_visual_artifacts(
     for ob in meshes:
         if ob.type == "MESH" and ob.name.split(".")[0] == SKIRT_NAME:
             flatten_skirt_hem_mid_thigh(ob, z_mid)
-            _cull_verts_far_from_body(
-                ob, body, max_gap_m=RENDER_ISLAND_BODY_BBOX_GAP_M
-            )
 
 
 def _infer_vert_arm_side(
@@ -497,8 +515,8 @@ def _same_arm_side(
     if wrist is not None:
         return (wc.x - lm.cx) * (wrist.x - lm.cx) > -lm.span * 0.03
     if side == "Left":
-        return wc.x < lm.cx - lm.span * 0.08
-    return wc.x > lm.cx + lm.span * 0.08
+        return wc.x <= lm.cx - lm.span * 0.02
+    return wc.x >= lm.cx + lm.span * 0.02
 
 
 def _wrist_head_world(arm: bpy.types.Object | None, side: str) -> Vector | None:

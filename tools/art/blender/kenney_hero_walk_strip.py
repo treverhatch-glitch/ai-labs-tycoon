@@ -1028,54 +1028,14 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     scene.frame_set(start)
     bpy.context.view_layer.update()
-    from researcher_shirt_derived_meshes import (
-        snapshot_evaluated_body,
-        sync_coat_parts_to_body,
-    )
+    from researcher_shirt_derived_meshes import sync_coat_parts_to_body
 
-    snap = snapshot_evaluated_body(mesh)
-    try:
-        coat_parts = spawn_researcher_shirt_derived_parts(
-            snap, arm, weight_body=mesh
-        )
-    finally:
-        snap_me = snap.data
-        bpy.data.objects.remove(snap, do_unlink=True)
-        if snap_me.users == 0:
-            bpy.data.meshes.remove(snap_me)
+    coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm, weight_body=mesh)
     sync_coat_parts_to_body(mesh, coat_parts, arm)
     from researcher_scene_mesh_audit import audit_researcher_render_meshes
 
     render_set = [mesh, *coat_parts, *eyes, hair]
     audit_researcher_render_meshes(mesh, render_set, arm=arm, prune=False)
-    from researcher_shirt_derived_meshes import SLEEVES_NAME, finalize_coat_sleeve_islands
-    from kenney_geometry_landmarks import compute_landmarks
-
-    sleeves_ob = next(
-        (o for o in coat_parts if o.name.split(".")[0] == SLEEVES_NAME),
-        None,
-    )
-    if sleeves_ob is not None:
-        lm_walk = compute_landmarks(mesh)
-        from researcher_shirt_derived_meshes import (
-            _boost_sleeve_forearm_weights,
-            _prune_coat_loose_islands,
-            _transfer_coat_weights_nearest_face_interp,
-        )
-
-        _prune_coat_loose_islands(sleeves_ob, mesh, min_verts=4, touch_m=0.16)
-        _transfer_coat_weights_nearest_face_interp(sleeves_ob, mesh)
-        from researcher_shirt_derived_meshes import _snap_sleeve_cuffs_to_body_wrist
-
-        _snap_sleeve_cuffs_to_body_wrist(sleeves_ob, mesh, lm_walk)
-        _boost_sleeve_forearm_weights(
-            sleeves_ob, lm_walk, body_cx=lm_walk.cx, arm=arm
-        )
-        scene.frame_set(int(walk_frames[0]))
-        bpy.context.view_layer.update()
-        from researcher_shirt_derived_meshes import nudge_sleeve_cuffs_toward_wrists
-
-        nudge_sleeve_cuffs_toward_wrists(sleeves_ob, arm, lm_walk)
     extras = [*coat_parts, *eyes, hair]
     keep |= {o.name.split(".")[0] for o in extras}
     for ob in list(bpy.context.scene.objects):
