@@ -105,6 +105,8 @@ def ground_scene_meshes() -> None:
         return
     dy = -min_y
     for o in meshes:
+        if o.parent is not None:
+            continue
         o.location.y += dy
 
 
@@ -548,6 +550,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         _sanitize_solid_gltf_materials([o for o in mesh_obs if o.type == "MESH"])
         if asset_id == "staff-founder-idle" and not stock_recolor:
             _strip_uv_layers(mesh_obs)
+        if stock_recolor and asset_id == "staff-founder-idle":
+            from founder_face_decals import freeze_eyes_for_gltf_export
+
+            freeze_eyes_for_gltf_export(mesh_obs)
         export_gltf_selection(
             mesh_obs, glb_path, apply_transform=not stock_recolor
         )

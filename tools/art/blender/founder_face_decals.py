@@ -1,9 +1,9 @@
-"""Founder eyes/brows as separate mesh objects (visible in GLB + previews)."""
+"""Founder eyes as separate meshes parented to body (GLB-safe world matrices)."""
 from __future__ import annotations
 
 import bpy
 import bmesh
-from mathutils import Vector
+from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 import blender_common as bc
@@ -11,11 +11,8 @@ from kenney_face_axis import face_shell_coord, toe_forward
 from kenney_geometry_landmarks import compute_landmarks
 
 FOUNDER_EYE_RGBA = (26 / 255, 26 / 255, 26 / 255, 1.0)
-FOUNDER_BROW_RGBA = (0.20, 0.16, 0.14, 1.0)
-FOUNDER_MOUTH_RGBA = (0.18, 0.12, 0.12, 1.0)
 
 EYE_OBJECT_NAMES = ("FounderEye_L", "FounderEye_R")
-HEAD_ANCHOR_NAME = "FounderHeadAnchor"
 
 
 def _head_width_at(ws: list[Vector], lo: float, span: float, h: float) -> float:
@@ -39,11 +36,10 @@ def _fwd_basis(fwd: Vector) -> tuple[Vector, Vector]:
 
 def _purge_face_objects() -> None:
     for ob in list(bpy.context.scene.objects):
-        if ob.type == "MESH":
-            base = ob.name.split(".")[0]
-            if base.startswith(("FounderEye_", "FounderBrow_", "FounderMouth")):
-                bpy.data.objects.remove(ob, do_unlink=True)
-        elif ob.type == "EMPTY" and ob.name.split(".")[0] == HEAD_ANCHOR_NAME:
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base.startswith(("FounderEye_", "FounderBrow_", "FounderMouth")):
             bpy.data.objects.remove(ob, do_unlink=True)
 
 
@@ -60,116 +56,109 @@ def _make_solid_mat(name: str, rgba: tuple[float, float, float, float], rough: f
     return mat
 
 
-def _body_bvh_local(body: bpy.types.Object) -> BVHTree:
+def _body_bvh_evaluated(body: bpy.types.Object) -> BVHTree:
+    deps = bpy.context.evaluated_depsgraph_get()
+    eval_ob = body.evaluated_get(deps)
+    mesh = eval_ob.to_mesh()
     bm = bmesh.new()
-    bm.from_mesh(body.data)
-    bm.transform(body.matrix_world)
+    bm.from_mesh(mesh)
+    bm.transform(eval_ob.matrix_world)
+    eval_ob.to_mesh_clear()
     tree = BVHTree.FromBMesh(bm)
     bm.free()
     return tree
 
 
 def _ray_hit_face(
-    body: bpy.types.Object, bvh: BVHTree, origin_w: Vector, direction_w: Vector
+    bvh: BVHTree, origin_w: Vector, direction_w: Vector
 ) -> tuple[Vector, Vector] | None:
     direction_w = direction_w.normalized()
-    for scale in (2.5, 2.0, 1.5, 3.0):
-        loc, normal, _idx, _dist = bvh.ray_cast(origin_w, direction_w, scale)
+    for dist in (2.5, 2.0, 3.0, 1.5):
+        loc, normal, _idx, _d = bvh.ray_cast(origin_w, direction_w, dist)
         if loc is not None:
             return loc, normal.normalized()
     return None
 
 
-def _ensure_head_anchor(body: bpy.types.Object, head_center_w: Vector) -> bpy.types.Object:
-    old = bpy.data.objects.get(HEAD_ANCHOR_NAME)
-    if old:
-        bpy.data.objects.remove(old, do_unlink=True)
-    empty = bpy.data.objects.new(HEAD_ANCHOR_NAME, None)
-    bpy.context.scene.collection.objects.link(empty)
-    empty.parent = body
-    empty.empty_display_size = 0.05
-    empty.location = body.matrix_world.inverted() @ head_center_w
-    empty.matrix_parent_inverse = body.matrix_world.inverted()
-    return empty
-
-
-def _parent_eye_disc(
-    name: str,
-    center_w: Vector,
-    face_fwd: Vector,
-    radius: float,
-    proud: float,
-    mat: bpy.types.Material,
-    anchor: bpy.types.Object,
-) -> bpy.types.Object:
-    body = anchor.parent
-    if not body:
-        raise RuntimeError("FounderHeadAnchor missing body parent")
+def _eye_world_matrix(center_w: Vector, face_fwd: Vector, radius: float, proud: float) -> bpy.types.Object:
     bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, location=(0.0, 0.0, 0.0))
     ob = bpy.context.active_object
-    ob.name = name
     thick = radius * 0.5
     ob.scale = (radius, thick, radius)
     bpy.ops.object.transform_apply(scale=True)
-    ob.parent = anchor
-    f_world = face_fwd.normalized()
-    f_local = (anchor.matrix_world.inverted().to_3x3() @ f_world).normalized()
-    ob.rotation_mode = "QUATERNION"
-    ob.rotation_quaternion = f_local.to_track_quat("Y", "Z")
-    center_local = anchor.matrix_world.inverted() @ center_w
-    proud_local = ob.rotation_quaternion @ Vector((0.0, proud, 0.0))
-    ob.location = center_local + proud_local
-    ob.matrix_parent_inverse = anchor.matrix_world.inverted()
-    ob.data.materials.clear()
-    ob.data.materials.append(mat)
-    bc.smooth_shade(ob)
+    fwd = face_fwd.normalized()
+    rot4 = fwd.to_track_quat("Y", "Z").to_matrix().to_4x4()
+    ob.matrix_world = Matrix.Translation(center_w) @ rot4
     return ob
 
 
+def _parent_keep_world(ob: bpy.types.Object, parent: bpy.types.Object) -> None:
+    world = ob.matrix_world.copy()
+    ob.parent = parent
+    ob.matrix_parent_inverse = parent.matrix_world.inverted()
+    ob.matrix_world = world
+
+
 def spawn_founder_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
-    """Two #1a1a1a discs on head shell (BVH raycast, proud along surface normal)."""
     _purge_face_objects()
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
-    f_xy, right = _fwd_basis(fwd)
+    _, right = _fwd_basis(fwd)
     eye_z = lm.zmin + lm.span * lm.h_eye
     proud = head_w * 0.012
     sep = head_w * 0.17
     radius = head_w * 0.034
     cast_in = -fwd
     eye_mat = _make_solid_mat("FounderEyeMesh", FOUNDER_EYE_RGBA, 0.88)
-    anchor = _ensure_head_anchor(body, hc)
-    bvh = _body_bvh_local(body)
+    bvh = _body_bvh_evaluated(body)
     created: list[bpy.types.Object] = []
     eye_anchor = hc + Vector((0.0, 0.0, eye_z - hc.z))
-    shoot_dist = max(head_w * 0.65, 0.15)
+    shoot_dist = max(head_w * 0.55, 0.14)
     for name, sign in zip(EYE_OBJECT_NAMES, (-1.0, 1.0), strict=True):
         lateral = right * (sep * sign)
         origin = eye_anchor + lateral + fwd * shoot_dist
-        hit = _ray_hit_face(body, bvh, origin, cast_in)
+        hit = _ray_hit_face(bvh, origin, cast_in)
         if hit is None:
-            center = eye_anchor + lateral + fwd * (head_w * 0.09)
+            seed = eye_anchor + lateral + fwd * (head_w * 0.04)
+            face_fwd = fwd
         else:
             loc, norm = hit
+            seed = loc
             outward = norm if norm.dot(fwd) >= 0 else -norm
-            center = loc + outward * proud
-        created.append(
-            _parent_eye_disc(name, center, fwd, radius, proud, eye_mat, anchor)
-        )
+            face_fwd = outward
+        nearest, norm_n, _idx, _dist = bvh.find_nearest(seed)
+        if nearest is not None:
+            outward = norm_n if norm_n.dot(fwd) >= 0 else -norm_n
+            center = nearest + outward * proud
+            face_fwd = outward
+        else:
+            center = seed + face_fwd * proud
+        ob = _eye_world_matrix(center, face_fwd, radius, proud)
+        ob.name = name
+        ob.data.materials.clear()
+        ob.data.materials.append(eye_mat)
+        bc.smooth_shade(ob)
+        _parent_keep_world(ob, body)
+        created.append(ob)
     return created
 
 
 def attach_founder_face_decals(ob: bpy.types.Object) -> list[bpy.types.Object]:
-    """Legacy entry: only separate eye meshes (no painted polys on head)."""
     return spawn_founder_eye_meshes(ob)
 
 
 def founder_preview_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
-    eyes = spawn_founder_eye_meshes(ob)
-    anchor = bpy.data.objects.get(HEAD_ANCHOR_NAME)
-    if anchor:
-        return [body, anchor, *eyes]
-    return [body, *eyes]
+    return [body, *spawn_founder_eye_meshes(body)]
+
+
+def freeze_eyes_for_gltf_export(mesh_obs: list[bpy.types.Object]) -> None:
+    """glTF export with apply_transform=False drops parent-child offsets; root the eyes at world."""
+    for ob in mesh_obs:
+        if ob.type != "MESH" or not ob.name.split(".")[0].startswith("FounderEye_"):
+            continue
+        world = ob.matrix_world.copy()
+        ob.parent = None
+        ob.matrix_world = world

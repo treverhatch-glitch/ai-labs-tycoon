@@ -269,8 +269,6 @@ def _strip_mesh_vertex_colors(mesh: bpy.types.Mesh) -> None:
 
 
 def collect_founder_stock_meshes() -> list[bpy.types.Object]:
-    from founder_face_decals import HEAD_ANCHOR_NAME
-
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     body = next(
         (o for o in meshes if o.name.split(".")[0] == STOCK_OBJECT_NAME),
@@ -282,9 +280,6 @@ def collect_founder_stock_meshes() -> list[bpy.types.Object]:
         (o for o in meshes if o.name.split(".")[0].startswith("FounderEye_")),
         key=lambda o: o.name,
     )
-    anchor = bpy.data.objects.get(HEAD_ANCHOR_NAME)
-    if anchor:
-        return [body, anchor, *eyes]
     return [body, *eyes]
 
 
@@ -336,6 +331,7 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
     _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _apply_hand_skin_vertex_groups(bm, slots, ob)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -368,6 +364,39 @@ ARM_VG_BONES = (
     "RightHandThumb1",
     "RightHandThumb2",
 )
+
+
+def _apply_hand_skin_vertex_groups(
+    bm: bmesh.types.BMesh, slots: list[int], ob: bpy.types.Object
+) -> None:
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+
+    def skin_w(vi: int) -> float:
+        w = 0.0
+        for g in ob.data.vertices[vi].groups:
+            name = vg_names.get(g.group, "")
+            if name in _VG_HANDS or name in _VG_FOREARM_SKIN:
+                w += g.weight
+        return w
+
+    def shirt_w(vi: int) -> float:
+        w = 0.0
+        for g in ob.data.vertices[vi].groups:
+            if vg_names.get(g.group, "") in _VG_SHIRT_ARMS:
+                w += g.weight
+        return w
+
+    for face in bm.faces:
+        skin = shirt = 0.0
+        for v in face.verts:
+            skin += skin_w(v.index)
+            shirt += shirt_w(v.index)
+        if skin >= 0.22 and skin >= shirt * 0.55:
+            slots[face.index] = SLOT_HAND
+        elif shirt >= 0.28 and shirt > skin * 0.85:
+            slots[face.index] = SLOT_SHIRT
 
 
 def _apply_arm_vertex_groups(

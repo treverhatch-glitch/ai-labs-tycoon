@@ -4,7 +4,7 @@ set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
 export STAFF_PREVIEW_ELEV_DEG=10
-export STAFF_PREVIEW_MARGIN=1.42
+export STAFF_PREVIEW_MARGIN=1.44
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -45,6 +45,7 @@ out=$("$BLENDER" -b --python tools/art/blender/check_staff_gltf_blender.py -- "$
 set -e
 echo "$out" | grep -E '^OK staff-founder-idle '
 echo "$out" | grep -q '^OK staff-founder-idle ' || { echo "FAIL staff-founder-idle gltf gate"; exit 1; }
+python3 tools/art/check_cc0_staff_founder_eye_glb_world.py
 
 test -s "docs/art/previews/staff-founder-idle.png" || { echo "FAIL missing founder preview"; exit 1; }
 
