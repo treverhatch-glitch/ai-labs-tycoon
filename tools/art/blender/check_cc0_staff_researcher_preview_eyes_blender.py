@@ -46,10 +46,14 @@ def main() -> None:
         None,
     )
     hc = _centroid(head) if head else Vector()
-    stock_one = head and head.name.split(".")[0] == "KenneyResearcherStock" and len(meshes) in (1, 3)
-    visible = 0
     stock_eyes = [o for o in meshes if o.name.split(".")[0] in ("FounderEye_L", "FounderEye_R")]
-    if stock_one and len(stock_eyes) == 2:
+    stock_one = (
+        head
+        and head.name.split(".")[0] == "KenneyResearcherStock"
+        and len(stock_eyes) == 2
+    )
+    visible = 0
+    if stock_one:
         for ob in stock_eyes:
             ec = _centroid(ob)
             to_cam = (cam_loc - ec)

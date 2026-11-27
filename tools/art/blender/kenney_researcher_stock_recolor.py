@@ -23,11 +23,13 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
-RESEARCHER_TROUSERS = (0.05, 0.24, 0.64, 1.0)
-RESEARCHER_LAB_COAT = (0.78, 0.86, 0.98, 1.0)
-RESEARCHER_COLLAR = (0.12, 0.46, 0.84, 1.0)
-RESEARCHER_SKIN = (0.84, 0.68, 0.54, 1.0)
-RESEARCHER_HAIR = (0.28, 0.22, 0.18, 1.0)
+RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
+RESEARCHER_LAB_COAT = (0.70, 0.76, 0.74, 1.0)
+RESEARCHER_SHIRT = (0.22, 0.52, 0.48, 1.0)
+RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
+RESEARCHER_SKIN = (0.82, 0.66, 0.52, 1.0)
+RESEARCHER_HAIR = (0.22, 0.18, 0.16, 1.0)
+RESEARCHER_GLASSES = (0.12, 0.12, 0.14, 1.0)
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
 FOUNDER_MOUTH = (0.18, 0.12, 0.12, 1.0)
@@ -210,9 +212,15 @@ def _region_for_point(
         return SLOT_SKIN
 
     if h > lm.h_neck:
-        # Keep front eye band skin so spawned eye meshes read in 0° diagnostic.
         if lm.h_eye - 0.02 <= h <= lm.h_eye + 0.06 and y_face > -0.08:
             return SLOT_SKIN
+        shirt_open = (
+            lm.h_neck + 0.01 <= h <= lm.h_waist - 0.02
+            and y_face > 0.12
+            and lat < torso_hw * 0.55
+        )
+        if shirt_open:
+            return SLOT_COLLAR
         head_pts = [p for p in all_ws if (p.z - lo) / span > lm.h_neck]
         head_top = max((p.z - lo) / span for p in head_pts) if head_pts else 0.97
         h_hairline = lm.h_neck + 0.85 * (head_top - lm.h_neck)
@@ -290,7 +298,11 @@ def collect_researcher_stock_meshes() -> list[bpy.types.Object]:
         (o for o in meshes if o.name.split(".")[0].startswith("FounderEye_")),
         key=lambda o: o.name,
     )
-    return [body, *eyes]
+    props = sorted(
+        (o for o in meshes if o.name.split(".")[0].startswith("ResearcherGlasses")),
+        key=lambda o: o.name,
+    )
+    return [body, *eyes, *props]
 
 
 def apply_researcher_materials(ob: bpy.types.Object) -> None:
@@ -305,11 +317,11 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
         _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
-        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.40),
+        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.52),
         _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.50),
         _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.48),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
-        _ensure_material("ResearcherCollar", RESEARCHER_COLLAR, 0.48),
+        _ensure_material("ResearcherUndershirt", RESEARCHER_SHIRT, 0.48),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -584,6 +596,66 @@ def _height_span(ob: bpy.types.Object) -> tuple[float, float]:
     return min(zs), max(zs)
 
 
+def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
+    """Simple lab glasses (readability prop, parented to body)."""
+    from founder_face_decals import _fwd_basis
+    from kenney_geometry_landmarks import compute_landmarks
+
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "MESH" and ob.name.split(".")[0].startswith("ResearcherGlasses"):
+            bpy.data.objects.remove(ob, do_unlink=True)
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lm = compute_landmarks(body)
+    fwd = toe_forward([body]).normalized()
+    hc, _ = face_shell_coord(body, fwd)
+    head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
+    _, right = _fwd_basis(fwd)
+    eye_z = lm.zmin + lm.span * lm.h_eye
+    sep = head_w * 0.21
+    bar_y = head_w * 0.008
+    lens_r = head_w * 0.055
+    mat = _ensure_material("ResearcherGlassesFrame", RESEARCHER_GLASSES, 0.35)
+
+    def _lens(center: Vector) -> bpy.types.Object:
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=center)
+        ob = bpy.context.active_object
+        ob.scale = (lens_r, bar_y, lens_r * 0.65)
+        bpy.ops.object.transform_apply(scale=True)
+        ob.data.materials.append(mat)
+        bc.smooth_shade(ob)
+        return ob
+
+    anchors: list[Vector] = []
+    for sign in (-1.0, 1.0):
+        lateral = right * (sep * sign)
+        origin = hc + lateral + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * head_w * 0.12
+        anchors.append(origin)
+    left = _lens(anchors[0])
+    right_lens = _lens(anchors[1])
+    left.name = "ResearcherGlasses.L"
+    right_lens.name = "ResearcherGlasses.R"
+    mid = (anchors[0] + anchors[1]) * 0.5
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
+    bridge = bpy.context.active_object
+    bridge.name = "ResearcherGlasses"
+    bridge.scale = (sep * 0.35, bar_y * 1.2, bar_y * 1.5)
+    bridge.rotation_euler = fwd.to_track_quat("Y", "Z").to_euler()
+    bpy.ops.object.transform_apply(scale=True, rotation=True)
+    bridge.data.materials.append(mat)
+    bpy.ops.object.select_all(action="DESELECT")
+    bridge.select_set(True)
+    left.select_set(True)
+    right_lens.select_set(True)
+    bpy.context.view_layer.objects.active = bridge
+    bpy.ops.object.join()
+    bridge = bpy.context.active_object
+    bridge.name = "ResearcherGlasses"
+    bridge.parent = body
+    bridge.matrix_parent_inverse = body.matrix_world.inverted()
+    bc.smooth_shade(bridge)
+    return bridge
+
+
 def load_stock_and_recolor() -> bpy.types.Object:
     if not STOCK_BLEND.is_file() or not STOCK_META.is_file():
         raise RuntimeError(f"FAIL staff-researcher-idle missing stock blend {STOCK_BLEND}")
@@ -610,4 +682,5 @@ def load_stock_and_recolor() -> bpy.types.Object:
     from founder_face_decals import spawn_founder_eye_meshes
 
     spawn_founder_eye_meshes(ob)
+    spawn_researcher_glasses(ob)
     return ob

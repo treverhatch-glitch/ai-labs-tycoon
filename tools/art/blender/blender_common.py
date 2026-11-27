@@ -505,8 +505,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 mesh_obs = collect_founder_stock_meshes()
             mesh_only = [o for o in mesh_obs if o.type == "MESH"]
             part_count = len(mesh_only)
-            if part_count != 3:
-                raise RuntimeError(f"FAIL {asset_id}: stock_recolor need body+2eyes got {part_count}")
+            want_parts = 4 if asset_id == "staff-researcher-idle" else 3
+            if part_count != want_parts:
+                raise RuntimeError(
+                    f"FAIL {asset_id}: stock_recolor need {want_parts} parts got {part_count}"
+                )
             ob = next(o for o in mesh_only if o.name.split(".")[0] == stock_body_name)
             eyes = [o for o in mesh_only if o.name.split(".")[0].startswith("FounderEye_")]
             if {e.name.split('.')[0] for e in eyes} != {"FounderEye_L", "FounderEye_R"}:
@@ -1427,7 +1430,11 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
         os.environ["STAFF_PREVIEW_ASSET"] = asset_id
     mask_obs = mesh_obs
     if stock_hero:
-        mask_obs = [o for o in mesh_obs if not o.name.startswith("FounderEye")]
+        mask_obs = [
+            o
+            for o in mesh_obs
+            if not o.name.startswith("FounderEye") and not o.name.startswith("ResearcherGlasses")
+        ]
     try:
         render_preview(mesh_obs, path, asset_id=asset_id, mask_meshes=mask_obs)
     finally:

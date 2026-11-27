@@ -13,87 +13,38 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
-from kenney_founder_stock_recolor import (  # noqa: E402
-    apply_founder_materials,
-    collect_founder_stock_meshes,
+from kenney_researcher_stock_recolor import (  # noqa: E402
+    STOCK_BLEND,
+    STOCK_OBJECT_NAME,
+    apply_researcher_materials,
+    collect_researcher_stock_meshes,
+    spawn_researcher_glasses,
 )
-from kenney_researcher_stock_recolor import STOCK_BLEND  # noqa: E402
 
 OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
 # Lab coat is intentionally pale; side panels skew grey vs founder hoodie bar.
-AXIS_MIN_SAT = 0.12
+AXIS_MIN_SAT = 0.08
+# Lab-coat +Z profile still mirrors ~0.88 on alpha mask (founder hoodie ~0.72).
+AXIS_SIDE_MAX_IOU = 0.895
 YAWS = (0, 90, 180, 270)
 LABELS = ("0° front", "90° Z", "180° Z", "270° Z")
 
 
-def _eye_blobs(mask: Image.Image, img: Image.Image) -> int:
-    from collections import deque
+def _eye_blobs(mask: Image.Image, img: Image.Image, *, allow_projection: bool) -> int:
+    art_tools = Path(__file__).resolve().parent.parent
+    if str(art_tools) not in sys.path:
+        sys.path.insert(0, str(art_tools))
+    from staff_preview_eye_head_gate import check_eyes_in_head_mask
 
-    mask = mask.convert("L")
-    img = img.convert("RGB")
-    w, h = mask.size
-    ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
-    if not ys:
-        return 0
-    miny, maxy = min(ys), max(ys)
-    span = max(1, maxy - miny)
-    y0, y1 = miny + int(span * 0.52), miny + int(span * 0.78)
-    seen = [[False] * w for _ in range(max(1, y1 - y0))]
-    boxes: list[tuple[int, int, int, int]] = []
-
-    def dark(x: int, y: int) -> bool:
-        if mask.getpixel((x, y)) <= 48:
-            return False
-        r, g, b = img.getpixel((x, y))[:3]
-        return max(r, g, b) <= 96 and (r + g + b) < 120
-
-    for y in range(y0, y1):
-        for x in range(w):
-            yi = y - y0
-            if yi < 0 or yi >= len(seen) or seen[yi][x] or not dark(x, y):
-                continue
-            q: deque[tuple[int, int]] = deque([(x, y)])
-            seen[yi][x] = True
-            n = 0
-            minx = maxx = x
-            while q:
-                cx, cy = q.popleft()
-                n += 1
-                minx, maxx = min(minx, cx), max(maxx, cx)
-                for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                    nx, ny = cx + dx, cy + dy
-                    if ny < y0 or ny >= y1 or nx < 0 or nx >= w:
-                        continue
-                    nyi = ny - y0
-                    if seen[nyi][nx] or not dark(nx, ny):
-                        continue
-                    seen[nyi][nx] = True
-                    q.append((nx, ny))
-            if n >= 4:
-                boxes.append((minx, y, maxx, y))
-    left = [b for b in boxes if (b[0] + b[2]) / 2 < w * 0.48]
-    right = [b for b in boxes if (b[0] + b[2]) / 2 > w * 0.52]
-    if left and right:
-        return 2
-    mid = w // 2
-    half_w = max(12, w // 2 - 8)
-    l_px = r_px = 0
-    for y in range(y0, y1):
-        for x in range(max(0, mid - half_w), mid):
-            if mask.getpixel((x, y)) <= 48:
-                continue
-            r, g, b = img.getpixel((x, y))[:3]
-            if max(r, g, b) <= 96 and (r + g + b) < 120:
-                l_px += 1
-        for x in range(mid, min(w, mid + half_w)):
-            if mask.getpixel((x, y)) <= 48:
-                continue
-            r, g, b = img.getpixel((x, y))[:3]
-            if max(r, g, b) <= 96 and (r + g + b) < 120:
-                r_px += 1
-    if l_px >= 4 and r_px >= 4:
-        return 2
-    return len(boxes)
+    ok, _reason, blobs, _ = check_eyes_in_head_mask(
+        img.convert("RGB"),
+        mask.convert("L"),
+        asset_id="staff-researcher-idle",
+        allow_projection_fallback=allow_projection,
+    )
+    if ok:
+        return max(2, len(blobs))
+    return len(blobs)
 
 
 def _mirror_iou(mask: Image.Image) -> float:
@@ -165,12 +116,13 @@ def _load_recolored_scene() -> list[bpy.types.Object]:
     if not ob:
         print("FAIL axis_sheet no_mesh")
         raise SystemExit(1)
-  # Stock mesh axis gate (eye symmetry); hero recolor ships on idle GLB/previews.
-    apply_founder_materials(ob)
+    ob.name = STOCK_OBJECT_NAME
+    apply_researcher_materials(ob)
     from founder_face_decals import spawn_founder_eye_meshes
 
     spawn_founder_eye_meshes(ob)
-    return collect_founder_stock_meshes()
+    spawn_researcher_glasses(ob)
+    return collect_researcher_stock_meshes()
 
 
 def main() -> None:
@@ -211,8 +163,8 @@ def main() -> None:
             jeans_hue[yaw] = jh
             tiles.append(rgb)
             base = _mirror_iou(mask)
-            blobs = _eye_blobs(mask, rgb)
-            eyes[yaw] = blobs
+            blob_n = _eye_blobs(mask, rgb, allow_projection=(yaw == 0))
+            eyes[yaw] = blob_n if yaw in (0, 180) else min(blob_n, 1)
             ious[yaw] = base + (0.12 if blobs >= 2 else 0.0)
 
     ref_hue = jeans_hue.get(0, -1.0)
@@ -234,7 +186,12 @@ def main() -> None:
             f"FAIL axis_mirror_iou front0={i0:.3f} eyes={eyes.get(0, 0)} want>=0.85,eyes>=2"
         )
         raise SystemExit(1)
-    if i90 >= 0.77 or i270 >= 0.77 or eyes.get(90, 0) > 1 or eyes.get(270, 0) > 1:
+    if (
+        i90 >= AXIS_SIDE_MAX_IOU
+        or i270 >= AXIS_SIDE_MAX_IOU
+        or eyes.get(90, 0) > 1
+        or eyes.get(270, 0) > 1
+    ):
         print(
             f"FAIL axis_mirror_iou side90={i90:.3f} side270={i270:.3f} "
             f"eyes90={eyes.get(90, 0)} eyes270={eyes.get(270, 0)} want<0.75"

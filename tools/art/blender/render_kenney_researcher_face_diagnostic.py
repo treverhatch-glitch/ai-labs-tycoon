@@ -11,11 +11,12 @@ import bpy
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from founder_face_decals import spawn_founder_eye_meshes  # noqa: E402
-from kenney_founder_stock_recolor import (  # noqa: E402
-    apply_founder_materials,
-    collect_founder_stock_meshes,
+from kenney_researcher_stock_recolor import (  # noqa: E402
+    STOCK_BLEND,
+    STOCK_OBJECT_NAME,
+    apply_researcher_materials,
+    collect_researcher_stock_meshes,
 )
-from kenney_researcher_stock_recolor import STOCK_BLEND, STOCK_OBJECT_NAME  # noqa: E402
 
 
 def main() -> None:
@@ -28,10 +29,9 @@ def main() -> None:
         print("FAIL face_diagnostic no_mesh")
         raise SystemExit(1)
     ob.name = STOCK_OBJECT_NAME
-    # Founder slot map from stock blend; 0° gate is eye geometry only (hero colors on idle GLB).
-    apply_founder_materials(ob)
+    apply_researcher_materials(ob)
     spawn_founder_eye_meshes(ob)
-    meshes = collect_founder_stock_meshes()
+    meshes = collect_researcher_stock_meshes()
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "0"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"

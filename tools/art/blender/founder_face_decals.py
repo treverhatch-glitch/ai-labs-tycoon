@@ -112,8 +112,9 @@ def spawn_founder_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
     sep = head_w * 0.17
     radius = head_w * 0.034
     if body.name.split(".")[0] == "KenneyResearcherStock":
-        sep = head_w * 0.19
-        proud = head_w * 0.022
+        sep = head_w * 0.21
+        proud = head_w * 0.055
+        radius = head_w * 0.052
     cast_in = -fwd
     eye_mat = _make_solid_mat("FounderEyeMesh", FOUNDER_EYE_RGBA, 0.88)
     bvh = _body_bvh_evaluated(body)

@@ -215,11 +215,11 @@ def frame_staff_front_quarter(
     return cam, cam_dist
 
 
-def setup_three_point_lights(center: Vector, radius: float) -> None:
+def setup_three_point_lights(center: Vector, radius: float, *, energy_scale: float = 1.0) -> None:
     key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
     rim_loc = center + Vector((radius * 0.15, radius * 1.3, radius * 1.0))
-    energy = max(120.0, radius * 150.0)
+    energy = max(120.0, radius * 150.0) * energy_scale
     for name, loc, e_mul in (("Key", key_loc, 0.85), ("Fill", fill_loc, 0.30), ("Rim", rim_loc, 0.40)):
         bpy.ops.object.light_add(type="AREA", location=loc)
         light = bpy.context.active_object
@@ -462,8 +462,13 @@ def render_preview_studio(
         else:
             add_shadow_floor_z(mins, maxs)
         light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
-        setup_three_point_lights(center, light_r)
+        asset_id = os.environ.get("STAFF_PREVIEW_ASSET", "")
+        energy_scale = 0.62 if asset_id == "staff-researcher-idle" else 1.0
+        setup_three_point_lights(center, light_r, energy_scale=energy_scale)
         if preview_kind == "staff":
+            if asset_id == "staff-researcher-idle":
+                scene.view_settings.view_transform = "AgX"
+                scene.view_settings.exposure = -0.42
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(

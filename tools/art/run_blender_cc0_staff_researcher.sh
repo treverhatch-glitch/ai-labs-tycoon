@@ -55,7 +55,9 @@ python3 tools/art/check_cc0_staff_material_diversity.py
 python3 tools/art/check_cc0_staff_floor_loose.py
 python3 tools/art/check_cc0_staff_preview_front.py
 python3 tools/art/check_cc0_staff_preview_corner_grey.py
+python3 tools/art/check_cc0_staff_researcher_eye_blobs.py
 python3 tools/art/check_cc0_staff_researcher_eyes_in_head.py
+python3 tools/art/check_cc0_staff_researcher_preview_clip.py
 python3 tools/art/check_cc0_staff_researcher_preview_eyes.py
 python3 tools/art/check_cc0_staff_researcher_eye_project.py
 
