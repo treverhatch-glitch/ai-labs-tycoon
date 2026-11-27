@@ -30,12 +30,13 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
-RESEARCHER_LAB_COAT = (0.56, 0.58, 0.55, 1.0)
-RESEARCHER_SHIRT = (0.14, 0.62, 0.52, 1.0)
+RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
+RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
-RESEARCHER_SKIN = (0.62, 0.50, 0.40, 1.0)
-RESEARCHER_HAIR = (0.22, 0.18, 0.16, 1.0)
-RESEARCHER_GLASSES = (0.28, 0.30, 0.34, 1.0)
+RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
+RESEARCHER_SKIN = (0.54, 0.43, 0.35, 1.0)
+RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
+RESEARCHER_GLASSES = (0.07, 0.07, 0.08, 1.0)
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
 FOUNDER_MOUTH = (0.18, 0.12, 0.12, 1.0)
@@ -51,6 +52,7 @@ SLOT_COLLAR = 7
 SLOT_EYE = 8
 SLOT_BROW = 9
 SLOT_MOUTH = 10
+SLOT_LAPEL = 11
 
 _VG_SHIRT_ARMS = frozenset(
     {
@@ -155,7 +157,13 @@ def bisect_stock_landmarks(ob: bpy.types.Object) -> None:
     bm.free()
 
 
-def _ensure_material(name: str, rgba: tuple[float, float, float, float], rough: float) -> bpy.types.Material:
+def _ensure_material(
+    name: str,
+    rgba: tuple[float, float, float, float],
+    rough: float,
+    *,
+    specular: float = 0.12,
+) -> bpy.types.Material:
     mat = bpy.data.materials.get(name)
     if mat:
         bpy.data.materials.remove(mat)
@@ -166,9 +174,9 @@ def _ensure_material(name: str, rgba: tuple[float, float, float, float], rough: 
         bsdf.inputs["Base Color"].default_value = rgba
         bsdf.inputs["Roughness"].default_value = rough
         if "Specular IOR Level" in bsdf.inputs:
-            bsdf.inputs["Specular IOR Level"].default_value = 0.12
+            bsdf.inputs["Specular IOR Level"].default_value = specular
         elif "Specular" in bsdf.inputs:
-            bsdf.inputs["Specular"].default_value = 0.12
+            bsdf.inputs["Specular"].default_value = specular
     return mat
 
 
@@ -224,20 +232,13 @@ def _region_for_point(
     if h > lm.h_neck:
         if lm.h_eye - 0.02 <= h <= lm.h_eye + 0.06 and y_face > -0.08:
             return SLOT_SKIN
-        shirt_open = (
-            lm.h_neck - 0.02 <= h <= lm.h_waist - 0.12
-            and y_face > 0.02
-            and lat < torso_hw * 0.78
-        )
-        if shirt_open:
-            return SLOT_COLLAR
         head_pts = [p for p in all_ws if (p.z - lo) / span > lm.h_neck]
         head_top = max((p.z - lo) / span for p in head_pts) if head_pts else 0.97
-        h_hairline = lm.h_neck + 0.85 * (head_top - lm.h_neck)
+        h_hairline = lm.h_neck + 0.72 * (head_top - lm.h_neck)
         if h >= h_hairline:
-            if y_face < 0.05 or h >= h_hairline + 0.012:
+            if y_face < 0.12 or h >= h_hairline + 0.008:
                 return SLOT_HAIR
-        elif y_face < -0.03 or (h > lm.h_neck + 0.08 and y_face < 0.04):
+        elif y_face < 0.02 or (h > lm.h_neck + 0.06 and y_face < 0.10):
             return SLOT_HAIR
         return SLOT_SKIN
 
@@ -328,10 +329,11 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
         _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.72),
-        _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.50),
-        _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.48),
+        _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.54, specular=0.05),
+        _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.52, specular=0.06),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
         _ensure_material("ResearcherUndershirt", RESEARCHER_SHIRT, 0.48),
+        _ensure_material("ResearcherLapel", RESEARCHER_LAPEL, 0.62),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -366,7 +368,10 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_hand_skin_vertex_groups(bm, slots, ob)
     _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_coat_knee_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _grow_researcher_hair_cap(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -422,11 +427,121 @@ def _stamp_teal_undershirt_vneck(
         h = (wc.z - lo) / span
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if not (lm.h_neck - 0.02 <= h <= lm.h_waist - 0.14):
+        if not (lm.h_neck - 0.04 <= h <= lm.h_waist - 0.10):
             continue
-        if y_face < 0.14 or lat > thw * 0.22:
+        if y_face < 0.06 or lat > thw * 0.30:
             continue
         slots[face.index] = SLOT_COLLAR
+
+
+def _stamp_coat_knee_front(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Lab coat hem to knee on front/side panels (over trousers)."""
+    lo, span = lm.zmin, lm.span
+    coat_hi = lm.h_waist + 0.36
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if h < lm.h_waist - 0.02 or h > coat_hi or y_face < -0.10:
+            continue
+        if slots[face.index] != SLOT_JEANS:
+            continue
+        if y_face > -0.02 and lat < thw * 1.05:
+            slots[face.index] = SLOT_SHIRT
+
+
+def _stamp_lab_coat_lapels(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Open-front lapel strips (darker grey) beside teal V-neck."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if not (lm.h_neck <= h <= lm.h_waist - 0.06):
+            continue
+        if y_face < 0.10:
+            continue
+        lapel = thw * 0.20 <= lat <= thw * 0.38
+        if lapel:
+            slots[face.index] = SLOT_LAPEL
+
+
+def _grow_researcher_hair_cap(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """TPH-style puff: grow hair slot across crown sides."""
+    from collections import deque
+
+    lo, span = lm.zmin, lm.span
+    seeds = [
+        f.index
+        for f in bm.faces
+        if slots[f.index] == SLOT_HAIR
+    ]
+    if not seeds:
+        return
+    seen = set(seeds)
+    q: deque[int] = deque(seeds)
+    grown = 0
+    while q and grown < 280:
+        fi = q.popleft()
+        face = bm.faces[fi]
+        for edge in face.edges:
+            for other in edge.link_faces:
+                oi = other.index
+                if oi in seen:
+                    continue
+                wc = Vector()
+                for v in other.verts:
+                    wc += ob.matrix_world @ v.co
+                wc /= len(other.verts)
+                h = (wc.z - lo) / span
+                if h < lm.h_neck + 0.02 or h > lm.h_neck + 0.22:
+                    continue
+                y_face = y_face_fn(wc)
+                if slots[oi] in (SLOT_EYE, SLOT_BROW, SLOT_MOUTH) or slots[oi] == SLOT_SKIN and y_face > 0.22:
+                    continue
+                if slots[oi] == SLOT_SKIN and y_face > 0.18 and h < lm.h_neck + 0.12:
+                    continue
+                seen.add(oi)
+                slots[oi] = SLOT_HAIR
+                q.append(oi)
+                grown += 1
 
 
 def _stamp_lab_coat_open_front(
@@ -441,7 +556,7 @@ def _stamp_lab_coat_open_front(
 ) -> None:
     """Off-white lab coat torso to mid-thigh; center V left for teal undershirt."""
     lo, span = lm.zmin, lm.span
-    coat_hi = lm.h_waist + 0.20
+    coat_hi = lm.h_waist + 0.34
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -491,7 +606,7 @@ def _apply_hand_skin_vertex_groups(
             shirt += shirt_w(v.index)
         if skin >= 0.22 and skin >= shirt * 0.55:
             slots[face.index] = SLOT_HAND
-        elif shirt >= 0.28 and shirt > skin * 0.85:
+        elif shirt >= 0.42 and shirt > skin * 0.95 and skin < 0.18:
             slots[face.index] = SLOT_SHIRT
 
 
@@ -544,8 +659,6 @@ def _apply_arm_vertex_groups(
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         if lat <= thw + span * 0.01:
-            if slots[face.index] == SLOT_HAND:
-                slots[face.index] = SLOT_SHIRT
             continue
         skin_arm = hand + fore
         armish = skin_arm + shirt
@@ -554,7 +667,7 @@ def _apply_arm_vertex_groups(
         if leg > armish and armish < 0.22:
             continue
         if fore >= 0.12 and lat > thw + span * 0.008:
-            slots[face.index] = SLOT_HAND
+            slots[face.index] = SLOT_SHIRT if hand < 0.22 else SLOT_HAND
             continue
         if hand >= 0.12 and lat > thw + span * 0.008:
             slots[face.index] = SLOT_HAND
@@ -684,15 +797,15 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
     _, right = _fwd_basis(fwd)
     eye_z = lm.zmin + lm.span * lm.h_eye
-    sep = head_w * 0.21
-    bar_y = head_w * 0.008
-    lens_r = head_w * 0.085
-    mat = _ensure_material("ResearcherGlassesFrame", RESEARCHER_GLASSES, 0.35)
+    sep = head_w * 0.192
+    bar_y = head_w * 0.0055
+    lens_r = head_w * 0.068
+    mat = _ensure_material("ResearcherGlassesFrame", RESEARCHER_GLASSES, 0.32, specular=0.18)
 
     def _lens(center: Vector) -> bpy.types.Object:
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=center)
         ob = bpy.context.active_object
-        ob.scale = (lens_r, bar_y, lens_r * 0.65)
+        ob.scale = (lens_r, bar_y, lens_r * 0.52)
         bpy.ops.object.transform_apply(scale=True)
         ob.data.materials.append(mat)
         bc.smooth_shade(ob)
@@ -701,7 +814,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
         lateral = right * (sep * sign)
-        origin = hc + lateral + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * head_w * 0.16
+        origin = hc + lateral + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * head_w * 0.19
         anchors.append(origin)
     left = _lens(anchors[0])
     right_lens = _lens(anchors[1])
@@ -711,7 +824,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses"
-    bridge.scale = (sep * 0.35, bar_y * 1.2, bar_y * 1.5)
+    bridge.scale = (sep * 0.22, bar_y * 1.1, bar_y * 1.2)
     bridge.rotation_euler = fwd.to_track_quat("Y", "Z").to_euler()
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)
