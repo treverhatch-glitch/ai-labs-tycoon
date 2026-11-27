@@ -484,9 +484,11 @@ def _stamp_tee_short_sleeve(
     hc: Vector,
     fwd: Vector,
 ) -> None:
-    """Tee ends at upper arm; forearm and hands stay skin."""
+    """Wrists/hands only; forearms stay shirt white under lab-coat sleeve."""
     lo, span = lm.zmin, lm.span
-    wrist_h = lm.h_waist - 0.10
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -497,7 +499,17 @@ def _stamp_tee_short_sleeve(
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         if lat <= thw + span * 0.014:
             continue
-        if h > wrist_h and slots[face.index] == SLOT_SHIRT:
+        if h <= lm.h_waist - 0.11:
+            continue
+        hand = 0.0
+        for v in face.verts:
+            for g in ob.data.vertices[v.index].groups:
+                if vg_names.get(g.group, "") in ("LeftHand", "RightHand"):
+                    hand += g.weight
+        hand /= max(1, len(face.verts))
+        if hand < 0.22:
+            continue
+        if slots[face.index] == SLOT_SHIRT:
             slots[face.index] = SLOT_HAND
 
 
@@ -548,16 +560,20 @@ def _stamp_forearm_shirt_under_coat(
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.12 or h > lm.h_waist + 0.12:
+        if h < lm.h_neck - 0.14 or h > lm.h_waist - 0.05:
             continue
+        hand = 0.0
         arm = 0.0
         for v in face.verts:
             for g in ob.data.vertices[v.index].groups:
                 name = vg_names.get(g.group, "")
                 if name in ARM_VG_BONES:
                     arm += g.weight
+                if name in ("LeftHand", "RightHand"):
+                    hand += g.weight
         arm /= max(1, len(face.verts))
-        if arm < 0.22:
+        hand /= max(1, len(face.verts))
+        if hand > 0.16 or arm < 0.10:
             continue
         slots[face.index] = SLOT_SHIRT
 
@@ -758,9 +774,9 @@ def _apply_researcher_hand_skin_only(
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h > lm.h_waist - 0.08:
+        if h > lm.h_waist - 0.11:
             continue
-        if sum(hand_w(v.index) for v in face.verts) / len(face.verts) < 0.28:
+        if sum(hand_w(v.index) for v in face.verts) / len(face.verts) < 0.24:
             continue
         slots[face.index] = SLOT_HAND
 
@@ -813,7 +829,7 @@ def _apply_arm_vertex_groups(
     if not ob.vertex_groups:
         return
     vg_names = {g.index: g.name for g in ob.vertex_groups}
-    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    wrist_h = lm.h_waist - 0.10
     lo, span = lm.zmin, lm.span
 
     def _vert_weights(vi: int) -> tuple[float, float, float, float]:
@@ -863,8 +879,10 @@ def _apply_arm_vertex_groups(
         if shirt >= 0.14 and lat > thw + span * 0.008:
             slots[face.index] = SLOT_SHIRT
             continue
-        if h < hand_top and hand + fore >= shirt * 0.35:
+        if h < wrist_h and hand >= 0.14:
             slots[face.index] = SLOT_HAND
+        elif h < wrist_h and fore + shirt >= 0.12:
+            slots[face.index] = SLOT_SHIRT
         elif shirt >= hand * 0.3:
             slots[face.index] = SLOT_SHIRT
 
@@ -883,7 +901,7 @@ def _grow_arm_from_shoulders(
     if not ob.vertex_groups:
         return
     vg_names = {g.index: g.name for g in ob.vertex_groups}
-    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    wrist_h = lm.h_waist - 0.10
     lo, span = lm.zmin, lm.span
 
     def _shoulder_face(face: bmesh.types.BMFace) -> bool:
@@ -922,7 +940,7 @@ def _grow_arm_from_shoulders(
                 if lat <= thw + lm.span * 0.006:
                     continue
                 seen.add(oi)
-                slots[oi] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                slots[oi] = SLOT_HAND if h < wrist_h else SLOT_SHIRT
                 q.append(oi)
 
 
@@ -936,7 +954,7 @@ def _grow_arm_regions(
     fwd: Vector,
     y_face_fn,
 ) -> None:
-    hand_top = lm.h_waist + 0.25 * (lm.h_neck - lm.h_waist)
+    wrist_h = lm.h_waist - 0.10
     for _ in range(12):
         changed = False
         for face in bm.faces:
@@ -950,7 +968,7 @@ def _grow_arm_regions(
             arm = lat > thw + lm.span * 0.01
             idx = face.index
             if slots[idx] == SLOT_JEANS and arm and h < lm.h_neck:
-                slots[idx] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                slots[idx] = SLOT_HAND if h < wrist_h else SLOT_SHIRT
                 changed = True
             if slots[idx] != SLOT_JEANS or not arm:
                 continue
@@ -958,7 +976,7 @@ def _grow_arm_regions(
                 for other in e.link_faces:
                     oi = other.index
                     if slots[oi] in (SLOT_SHIRT, SLOT_HAND):
-                        slots[idx] = SLOT_HAND if h < hand_top else SLOT_SHIRT
+                        slots[idx] = SLOT_HAND if h < wrist_h else SLOT_SHIRT
                         changed = True
                         break
         if not changed:

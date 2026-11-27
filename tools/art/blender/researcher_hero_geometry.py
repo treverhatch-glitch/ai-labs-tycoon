@@ -92,18 +92,53 @@ def _sleeve_source_face(
     lm,
     lo: float,
     span: float,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
 ) -> bool:
-    arm = sum(_vg_weight(ob, v.index, _VG_SLEEVE) for v in face.verts) / max(1, len(face.verts))
-    if arm < 0.18:
-        return False
     wc = _world_centroid(face, ob)
     h = (wc.z - lo) / span
-    if h < lm.h_neck - 0.20 or h > lm.h_waist + 0.14:
+    if h < lm.h_neck - 0.22 or h > lm.h_waist - 0.05:
         return False
     hand = sum(_vg_weight(ob, v.index, _VG_HANDS) for v in face.verts) / max(1, len(face.verts))
-    if hand > 0.42:
+    if hand > 0.14:
         return False
-    return True
+    arm = sum(_vg_weight(ob, v.index, _VG_SLEEVE) for v in face.verts) / max(1, len(face.verts))
+    if arm < 0.08:
+        return False
+    lat = lateral_from_front(wc, hc, fwd)
+    thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+    return lat > thw * 0.54
+
+
+def _sleeve_grow_face(
+    face: bmesh.types.BMFace,
+    ob: bpy.types.Object,
+    *,
+    lm,
+    lo: float,
+    span: float,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> bool:
+    if _sleeve_source_face(
+        face, ob, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
+    ):
+        return True
+    wc = _world_centroid(face, ob)
+    h = (wc.z - lo) / span
+    if h < lm.h_neck - 0.24 or h > lm.h_waist - 0.04:
+        return False
+    hand = sum(_vg_weight(ob, v.index, _VG_HANDS) for v in face.verts) / max(1, len(face.verts))
+    if hand > 0.18:
+        return False
+    arm = sum(_vg_weight(ob, v.index, _VG_SLEEVE) for v in face.verts) / max(1, len(face.verts))
+    if arm < 0.06:
+        return False
+    lat = lateral_from_front(wc, hc, fwd)
+    thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+    return lat > thw * 0.50
 
 
 def _vg_weight(ob: bpy.types.Object, vi: int, names: frozenset[str]) -> float:
@@ -357,8 +392,89 @@ def _trim_coat_orphan_shards(
             and y_face_fn(wc) < 0.05
         ):
             doomed.append(face)
-        if h < lm.h_waist - 0.06 and lat > thw * 0.62:
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
+
+
+def _trim_coat_hands_crotch(
+    coat: bpy.types.Object,
+    body: bpy.types.Object,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+    y_face_fn,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.faces.ensure_lookup_table()
+    doomed: list[bmesh.types.BMFace] = []
+    for face in bm.faces:
+        wc = _world_centroid(face, coat)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        y_face = y_face_fn(wc)
+        if h < lm.h_waist - 0.11 and lat > thw * 0.52:
+            handish = lat > thw * 0.72 and h < lm.h_waist - 0.09
+            if handish:
+                doomed.append(face)
+                continue
+        if h < lm.h_waist - 0.16 and lat < thw * 0.52 and y_face > -0.20:
             doomed.append(face)
+            continue
+        if h < lm.h_waist + 0.02 and lat < thw * 0.45 and y_face > -0.12:
+            doomed.append(face)
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
+
+
+def _prune_coat_wrist_shards(
+    coat: bpy.types.Object,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> None:
+    lo, span = lm.zmin, lm.span
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    doomed: list[bmesh.types.BMFace] = []
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        stack = [seed]
+        island: list[bmesh.types.BMFace] = []
+        while stack:
+            face = stack.pop()
+            if face.index in visited:
+                continue
+            visited.add(face.index)
+            island.append(face)
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        stack.append(nb)
+        if len(island) > 20:
+            continue
+        wc = Vector()
+        for f in island:
+            wc += _world_centroid(f, coat)
+        wc /= len(island)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if h < lm.h_waist - 0.08 and lat > thw * 0.58:
+            doomed.extend(island)
     if doomed:
         bmesh.ops.delete(bm, geom=doomed, context="FACES")
     bm.to_mesh(coat.data)
@@ -378,7 +494,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bm_src.from_mesh(body.data)
     bm_src.faces.ensure_lookup_table()
     lo, span = lm.zmin, lm.span
-    coat_hem = lm.h_waist - 0.22
+    coat_hem = lm.h_waist - 0.20
     coat_top = lm.h_neck + 0.05
     pick: list[bmesh.types.BMFace] = []
     for f in bm_src.faces:
@@ -403,15 +519,58 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         on_torso = lat <= thw * 1.30 and y_face > -0.40 and not open_chest
         if on_torso and y_face > 0.05 and h >= lm.h_neck - 0.10 and not lapel_only:
             on_torso = lat > thw * 0.48
-        on_arm = _sleeve_source_face(f, body, lm=lm, lo=lo, span=span)
-        on_leg_panel = (
-            coat_hem <= h <= lm.h_waist - 0.04
-            and lat <= thw * 0.92
-            and 0.02 < y_face < 0.42
+        arm_pick_w = sum(
+            _vg_weight(
+                body,
+                v.index,
+                frozenset(
+                    {
+                        "LeftShoulder",
+                        "RightShoulder",
+                        "LeftArm",
+                        "RightArm",
+                        "LeftForeArm",
+                        "RightForeArm",
+                    }
+                ),
+            )
+            for v in f.verts
+        ) / len(f.verts)
+        hand_pick = sum(_vg_weight(body, v.index, _VG_HANDS) for v in f.verts) / len(
+            f.verts
+        )
+        on_arm = (
+            arm_pick_w > 0.06
+            and hand_pick < 0.12
+            and lat > thw * 0.52
+            and lm.h_neck - 0.24 <= h <= lm.h_waist - 0.04
+        )
+        leg_w = sum(
+            _vg_weight(body, v.index, frozenset({"LeftUpLeg", "RightUpLeg"}))
+            for v in f.verts
+        ) / len(f.verts)
+        if leg_w > 0.32 and h < lm.h_waist - 0.02:
+            continue
+        torso_w = sum(
+            _vg_weight(
+                body,
+                v.index,
+                frozenset({"Chest", "UpperChest", "Spine", "Hips"}),
+            )
+            for v in f.verts
+        ) / len(f.verts)
+        on_hem_tail = (
+            not open_chest
+            and torso_w > 0.30
+            and leg_w < 0.26
+            and coat_hem <= h <= lm.h_waist - 0.03
+            and lat < thw * 1.02
+            and y_face > -0.08
+            and not (y_face > -0.05 and lat < thw * 0.40)
         )
         if open_chest:
             continue
-        if on_torso or on_arm or on_leg_panel or _is_coat_source_face(
+        if on_torso or on_arm or on_hem_tail or _is_coat_source_face(
             f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
         ):
             pick.append(f)
@@ -419,7 +578,9 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     for f in bm_src.faces:
         if f.index in pick_set:
             continue
-        if _sleeve_source_face(f, body, lm=lm, lo=lo, span=span):
+        if _sleeve_grow_face(
+            f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
+        ):
             pick.append(f)
             pick_set.add(f.index)
     changed = True
@@ -428,7 +589,9 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         for f in bm_src.faces:
             if f.index in pick_set:
                 continue
-            if not _sleeve_source_face(f, body, lm=lm, lo=lo, span=span):
+            if not _sleeve_grow_face(
+                f, body, lm=lm, lo=lo, span=span, hc=hc, fwd=fwd, ws=ws
+            ):
                 continue
             for e in f.edges:
                 for nb in e.link_faces:
@@ -466,10 +629,10 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    thick = max(body.dimensions.length * 0.022, 0.016)
+    thick = max(body.dimensions.length * 0.018, 0.013)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
-    solid.offset = 1.0
+    solid.offset = 0.85
     bpy.context.view_layer.objects.active = coat
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
@@ -481,6 +644,9 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.remove_doubles(threshold=0.0008)
     bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.object.mode_set(mode="OBJECT")
+    _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
     if len(coat.data.polygons) < 8:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
@@ -536,8 +702,6 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     eye_diameter = eye_radius * 2.0
     half_sep = head_w * 0.158
     full_sep = half_sep * 2.0
-    tube = full_sep * 0.08
-    rim_radius = eye_diameter * 1.3 * 0.5
     proud = max(lm.span * 0.014, head_w * 0.048, 0.012)
     mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.04, specular=0.02)
     rot = fwd.to_track_quat("Y", "Z").to_euler()
@@ -546,25 +710,25 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     cast_in = -fwd
     parts: list[bpy.types.Object] = []
     outer = eye_diameter * 1.3
-    bar = max(full_sep * 0.08, head_w * 0.0075)
+    bar = max(full_sep * 0.090, head_w * 0.0088)
     half = outer * 0.5
 
     def _open_square_rim(center_w: Vector, lateral_sign: float, name: str) -> None:
         side_len = outer * 0.88
-        temple = center_w + right * (lateral_sign * (half - bar * 0.5))
+        temple = center_w + right * (lateral_sign * (half - bar * 0.48))
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=temple)
         side = bpy.context.active_object
         side.name = f"{name}.side"
-        side.scale = (bar, bar * 1.25, side_len)
+        side.scale = (bar * 1.06, bar * 1.12, side_len)
         side.rotation_euler = rot
         bpy.ops.object.transform_apply(scale=True, rotation=True)
         side.data.materials.append(mat)
         parts.append(side)
-        brow = center_w + up * (half - bar * 0.52)
+        brow = center_w + up * (half - bar * 0.50)
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=brow)
         top = bpy.context.active_object
         top.name = f"{name}.top"
-        top.scale = (outer * 0.92, bar * 1.15, bar)
+        top.scale = (outer * 0.92, bar * 1.10, bar * 1.06)
         top.rotation_euler = rot
         bpy.ops.object.transform_apply(scale=True, rotation=True)
         top.data.materials.append(mat)
@@ -588,7 +752,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses.bridge"
-    bridge.scale = (full_sep * 0.20, bar * 1.15, bar * 1.25)
+    bridge.scale = (full_sep * 0.20, bar * 1.08, bar * 1.18)
     bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)
