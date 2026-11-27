@@ -15,12 +15,8 @@ import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
 from kenney_researcher_stock_recolor import (  # noqa: E402
     STOCK_META,
-    STOCK_OBJECT_NAME,
-    apply_researcher_materials,
-    bake_researcher_stock_body,
+    load_stock_and_recolor,
     collect_researcher_stock_meshes,
-    spawn_researcher_eye_meshes,
-    spawn_researcher_glasses,
 )
 
 OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
@@ -113,11 +109,7 @@ def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
 
 
 def _load_recolored_scene() -> list[bpy.types.Object]:
-    ob = bake_researcher_stock_body()
-    ob.name = STOCK_OBJECT_NAME
-    apply_researcher_materials(ob)
-    spawn_researcher_eye_meshes(ob)
-    spawn_researcher_glasses(ob)
+    load_stock_and_recolor()
     return collect_researcher_stock_meshes()
 
 

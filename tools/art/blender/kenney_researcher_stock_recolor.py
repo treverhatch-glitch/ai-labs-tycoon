@@ -37,7 +37,7 @@ RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
 RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
 RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
 RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
-RESEARCHER_GLASSES = (0.07, 0.07, 0.08, 1.0)
+RESEARCHER_GLASSES = (34 / 255, 34 / 255, 34 / 255, 1.0)
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
 FOUNDER_MOUTH = (0.18, 0.12, 0.12, 1.0)
@@ -373,6 +373,7 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _apply_hand_skin_vertex_groups(bm, slots, ob)
     _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
+    _stamp_researcher_torso_tee_only(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -405,6 +406,33 @@ ARM_VG_BONES = (
     "RightHandThumb1",
     "RightHandThumb2",
 )
+
+
+def _stamp_researcher_torso_tee_only(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    """Grey tee on torso/cuff only; shoulders and upper arms stay skin under coat."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        if slots[face.index] != SLOT_SHIRT:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat > thw + span * 0.018:
+            slots[face.index] = SLOT_HAND
+        elif lat > thw * 0.92 and h > lm.h_waist + 0.04:
+            slots[face.index] = SLOT_HAND
 
 
 def _stamp_tee_short_sleeve(
