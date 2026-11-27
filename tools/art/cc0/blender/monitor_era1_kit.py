@@ -189,6 +189,7 @@ def build_monitor_era1() -> list[bpy.types.Object]:
 
     shell = mb._union_parts(shell_parts)
     cc.apply_transforms(shell)
+    _remove_screen_opening_occluder(shell, z_body)
     _clamp_rear_overhang(shell)
     tower._fix_tower_normals(shell)
     shell.name = "body_tapered"
@@ -196,6 +197,26 @@ def build_monitor_era1() -> list[bpy.types.Object]:
 
     tower._fix_tower_normals(screen)
     return [shell, screen, power_button, power_led]
+
+
+def _remove_screen_opening_occluder(ob: bpy.types.Object, z_center: float) -> None:
+    """Drop faces wholly inside the screen opening with glTF depth z > 0.205 (z-fight with screen)."""
+    x_half = SCREEN_W / 2 - 0.003
+    z0 = z_center - SCREEN_H / 2
+    z1 = z_center + SCREEN_H / 2
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    doomed: list[bmesh.types.BMFace] = []
+    for face in bm.faces:
+        if any(-v.co.y <= 0.205 for v in face.verts):
+            continue
+        if all(abs(v.co.x) <= x_half and z0 <= v.co.z <= z1 for v in face.verts):
+            doomed.append(face)
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bm.to_mesh(ob.data)
+    bm.free()
+    ob.data.update()
 
 
 def _clamp_rear_overhang(ob: bpy.types.Object) -> None:

@@ -126,8 +126,28 @@ def gate_monitor(names: set[str], mats: list[dict], geom: dict) -> list[str]:
         c = geom["power_button"].centroid
         if not (0.13 < c[0] < 0.19 and 0.04 < c[1] < 0.09):
             errs.append(f"power_button centroid ({c[0]:.4f},{c[1]:.4f}) outside lower bezel band")
-    if "body_tapered" in geom:
-        verts = geom["body_tapered"].vertices
+    if "body_tapered" in geom and "screen" in geom:
+        body, screen = geom["body_tapered"], geom["screen"]
+        sb = screen.bounds
+        inset = 0.003
+        x0 = float(sb[0][0]) + inset
+        x1 = float(sb[1][0]) - inset
+        y0 = float(sb[0][1]) + inset
+        y1 = float(sb[1][1]) - inset
+        for i, face in enumerate(body.faces):
+            v = body.vertices[face]
+            if float(v[:, 2].max()) <= 0.205 + 1e-3:
+                continue
+            if (
+                float(v[:, 0].min()) >= x0 - 1e-3
+                and float(v[:, 0].max()) <= x1 + 1e-3
+                and float(v[:, 1].min()) >= y0 - 1e-3
+                and float(v[:, 1].max()) <= y1 + 1e-3
+            ):
+                errs.append(
+                    f"body_tapered face {i} inside screen opening at z_max={float(v[:, 2].max()):.4f} (>0.205)"
+                )
+        verts = body.vertices
         rear = verts[verts[:, 2] < 0.215]
         if len(rear):
             if abs(rear[:, 0]).max() > 0.185 + 1e-3:

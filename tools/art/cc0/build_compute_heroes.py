@@ -32,13 +32,20 @@ def parse_json_tail(stdout: str) -> dict:
 def main() -> None:
     entries: list[dict] = []
     skip_tower = os.environ.get("CC0_SKIP_TOWER", "").strip() in ("1", "true", "yes")
+    skip_rack = os.environ.get("CC0_SKIP_RACK", "").strip() in ("1", "true", "yes")
     manifest_path = ROOT / "unity/Assets/Art/Cc0/compute-kit/compute-manifest.json"
     prior: dict[str, dict] = {}
-    if skip_tower and manifest_path.is_file():
+    if (skip_tower or skip_rack) and manifest_path.is_file():
         data = json.loads(manifest_path.read_text(encoding="utf-8"))
         prior = {a["id"]: a for a in data.get("assets", [])}
 
     for script in SCRIPTS:
+        if skip_rack and "compute_server_rack" in script.name:
+            entry = prior.get("compute-server-rack-era1")
+            if entry:
+                entries.append(entry)
+                print(f"==> skip rack (frozen); keep manifest {entry['id']}", flush=True)
+                continue
         if skip_tower and "compute_pc_tower" in script.name:
             entry = prior.get("compute-pc-tower-era1")
             if entry:
