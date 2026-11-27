@@ -1,20 +1,70 @@
 {
-  "generator": "tools/art/generate_early_staff.py",
   "fidelity": "packet-2",
+  "blenderVersion": "4.0.2",
   "assets": [
-    {
-      "id": "staff-researcher-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
     {
       "id": "staff-engineer-work",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-engineer-work.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
       "vertexCount": 276,
       "triangleCount": 136
+    },
+    {
+      "id": "staff-founder-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-founder-idle.png",
+      "license": "CC0-1.0 (Kenney Animated Characters 3 + in-repo bake)",
+      "vertexCount": 1054,
+      "triangleCount": 4290,
+      "meshIslands": 3,
+      "partCount": 3,
+      "grounded": true,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-founder-idle.py"
+    },
+    {
+      "id": "staff-gpu-tech-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 336,
+      "triangleCount": 164
+    },
+    {
+      "id": "staff-pose-typing",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 276,
+      "triangleCount": 136
+    },
+    {
+      "id": "staff-recruiter-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-recruiter-idle.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 252,
+      "triangleCount": 124
+    },
+    {
+      "id": "staff-researcher-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-researcher-idle.png",
+      "license": "CC0-1.0 (Kenney Animated Characters 3 + in-repo lab-coat recolour)",
+      "vertexCount": 1732,
+      "triangleCount": 7102,
+      "meshIslands": 5,
+      "partCount": 5,
+      "grounded": true,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-researcher-idle.py"
     },
     {
       "id": "staff-safety-idle",
@@ -29,34 +79,7 @@
       "license": "CC0-1.0 (procedural, in-repo)",
       "vertexCount": 252,
       "triangleCount": 124
-    },
-    {
-      "id": "staff-recruiter-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-recruiter-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
-    {
-      "id": "staff-gpu-tech-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 336,
-      "triangleCount": 164
-    },
-    {
-      "id": "staff-founder-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 294,
-      "triangleCount": 144
-    },
-    {
-      "id": "staff-pose-typing",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 276,
-      "triangleCount": 136
     }
-  ]
+  ],
+  "generator": "tools/art/generate_early_staff.py"
 }
