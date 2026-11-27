@@ -11,9 +11,7 @@ for arg in "${@:-}"; do
       ;;
   esac
 done
-if [[ -f ./tools/art/assert_fast_forward_push.sh ]]; then
-  ./tools/art/assert_fast_forward_push.sh
-fi
+./tools/art/assert_fast_forward_push.sh
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
