@@ -370,7 +370,21 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
     for tag in names:
         if tag in ("Head", "Neck", "Torso", "Hips", "SpineCore", "Mouth", "Tie", "BadgeLanyard"):
             continue
-        if tag.startswith(("Leg_", "Arm_", "UpperArm_", "LowerArm_", "Elbow_", "Hand_", "Foot_", "Eye_", "Pupil_", "Shoulder_")):
+        if tag.startswith(
+            (
+                "Leg_",
+                "Arm_",
+                "UpperArm_",
+                "LowerArm_",
+                "Elbow_",
+                "Hand_",
+                "Foot_",
+                "Sole_",
+                "Eye_",
+                "Pupil_",
+                "Shoulder_",
+            )
+        ):
             continue
         if PROP_RE.search(tag):
             continue

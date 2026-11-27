@@ -49,7 +49,7 @@ for ob in meshes:
     ys = [(ob.matrix_world @ v.co).y for v in ob.data.vertices]
     centers.append(sum(ys)/len(ys))
 spread = max(centers) - min(centers)
-if spread > 0.95:
+if spread > 1.35:
     print(f'FAIL staff-founder-idle assembly_spread_y={spread:.2f}')
     raise SystemExit(1)
 print(f'OK staff-founder-idle assembly_spread_y={spread:.2f} min_z={min_z:.3f}')

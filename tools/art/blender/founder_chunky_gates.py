@@ -25,12 +25,29 @@ CLOTHING_SHELLS = frozenset(
         "Leg_-1",
         "Leg_1",
         "Hips",
-        "Arm_-1",
-        "Arm_1",
         "Neck",
+        "UpperArm_-1",
+        "UpperArm_1",
+        "Foot_-1",
+        "Foot_1",
+        "Sole_-1",
+        "Sole_1",
     }
 )
-SKIN_OK = frozenset({"Head", "Hair", "Eye_-1", "Eye_1", "Mouth", "Eyebrows", "Hand_-1", "Hand_1"})
+SKIN_OK = frozenset(
+    {
+        "Head",
+        "Hair",
+        "Eye_-1",
+        "Eye_1",
+        "Mouth",
+        "Eyebrows",
+        "Hand_-1",
+        "Hand_1",
+        "LowerArm_-1",
+        "LowerArm_1",
+    }
+)
 MIN_HEAD_FRAC = 0.22
 MIN_CLOTHING_VERTS = 12
 
@@ -67,7 +84,12 @@ def _is_skin_rgba(ob: bpy.types.Object, skin=(0.84, 0.68, 0.54)) -> bool:
     if not bsdf:
         return False
     r, g, b, _ = tuple(bsdf.inputs["Base Color"].default_value)
-    return r > 0.72 and g > 0.58 and b > 0.42 and abs(r - skin[0]) < 0.2
+    return (
+        abs(r - skin[0]) < 0.12
+        and abs(g - skin[1]) < 0.12
+        and abs(b - skin[2]) < 0.12
+        and b < g < r
+    )
 
 
 def check_clothing_enclosure(mesh_obs: list[bpy.types.Object]) -> tuple[bool, str]:
@@ -90,7 +112,7 @@ def check_clothing_enclosure(mesh_obs: list[bpy.types.Object]) -> tuple[bool, st
     for name, ob in by.items():
         if name in SKIN_OK:
             continue
-        if name in CLOTHING_SHELLS or name.startswith("Foot_") or name.startswith("Arm_"):
+        if name in CLOTHING_SHELLS or name.startswith(("UpperArm_", "Foot_", "Sole_")):
             if _is_skin_rgba(ob):
                 return False, f"skin_outside_clothing={name}"
     return True, "clothing_enclosed"

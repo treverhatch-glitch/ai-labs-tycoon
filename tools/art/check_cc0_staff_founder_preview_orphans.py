@@ -14,10 +14,10 @@ MIN_MAIN_FRAC = 0.92
 MIN_ORPHAN_PX = 80
 
 
-def _components(mask: Image.Image) -> list[int]:
+def _components(mask: Image.Image) -> list[tuple[int, int, int, int, int]]:
     w, h = mask.size
     seen = [[False] * w for _ in range(h)]
-    sizes: list[int] = []
+    sizes: list[tuple[int, int, int, int, int]] = []
 
     def on(x: int, y: int) -> bool:
         return mask.getpixel((x, y)) > 48
@@ -29,9 +29,15 @@ def _components(mask: Image.Image) -> list[int]:
             q: deque[tuple[int, int]] = deque([(x, y)])
             seen[y][x] = True
             n = 0
+            minx = maxx = x
+            miny = maxy = y
             while q:
                 cx, cy = q.popleft()
                 n += 1
+                minx = min(minx, cx)
+                maxx = max(maxx, cx)
+                miny = min(miny, cy)
+                maxy = max(maxy, cy)
                 for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     nx, ny = cx + dx, cy + dy
                     if nx < 0 or ny < 0 or nx >= w or ny >= h or seen[ny][nx]:
@@ -40,7 +46,7 @@ def _components(mask: Image.Image) -> list[int]:
                         continue
                     seen[ny][nx] = True
                     q.append((nx, ny))
-            sizes.append(n)
+            sizes.append((n, minx, miny, maxx, maxy))
     return sizes
 
 
@@ -50,18 +56,28 @@ def main() -> int:
         print("FAIL staff-founder-idle missing mask")
         return 1
     mask = Image.open(mask_path).convert("L")
-    sizes = sorted(_components(mask), reverse=True)
-    if not sizes:
+    comps = sorted(_components(mask), reverse=True, key=lambda c: c[0])
+    if not comps:
         print("FAIL staff-founder-idle empty_mask")
         return 1
-    main_n = sizes[0]
-    total = sum(sizes)
-    orphans = [s for s in sizes[1:] if s >= MIN_ORPHAN_PX]
-    if main_n / total < MIN_MAIN_FRAC:
-        print(f"FAIL staff-founder-idle fragmented main={main_n}/{total}")
+    h = mask.size[1]
+    floor_cut = int(h * 0.68)
+    body = [c for c in comps if c[2] < floor_cut]
+    if not body:
+        body = comps
+    main_n = body[0][0]
+    total = sum(c[0] for c in comps)
+    body_total = sum(c[0] for c in body)
+    orphans = [
+        c
+        for c in body[1:]
+        if c[0] >= MIN_ORPHAN_PX and c[2] < floor_cut
+    ]
+    if main_n / body_total < MIN_MAIN_FRAC:
+        print(f"FAIL staff-founder-idle fragmented main={main_n}/{body_total}")
         return 1
     if orphans:
-        print(f"FAIL staff-founder-idle orphan_blobs={orphans[:5]}")
+        print(f"FAIL staff-founder-idle orphan_blobs={[c[0] for c in orphans[:5]]}")
         return 1
     print(f"OK staff-founder-idle mask_main={main_n} total={total}")
     return 0

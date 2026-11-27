@@ -25,8 +25,9 @@ FOUNDER_SKIN = (0.84, 0.68, 0.54, 1.0)
 FOUNDER_HAIR = (0.28, 0.16, 0.10, 1.0)
 FOUNDER_HOODIE = (0.08, 0.10, 0.32, 1.0)
 FOUNDER_HOODIE_RED = (0.62, 0.16, 0.14, 1.0)
-FOUNDER_JEANS = (0.14, 0.28, 0.52, 1.0)
-FOUNDER_SHOE = (0.14, 0.14, 0.16, 1.0)
+FOUNDER_JEANS = (0.05, 0.10, 0.32, 1.0)
+FOUNDER_SHOE = (0.88, 0.90, 0.92, 1.0)
+FOUNDER_SHOE_SOLE = (0.32, 0.35, 0.40, 1.0)
 FOUNDER_EYE = (0.12, 0.10, 0.14, 1.0)
 FBX_KW = {
     "use_manual_orientation": True,
@@ -272,6 +273,37 @@ def _extract_part(
     return ob
 
 
+def _drop_tiny_islands(ob: bpy.types.Object, *, min_verts: int) -> None:
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    islands: list[list[bmesh.types.BMVert]] = []
+    seen: set[int] = set()
+    for v in bm.verts:
+        if v.index in seen:
+            continue
+        stack = [v]
+        group: list[bmesh.types.BMVert] = []
+        while stack:
+            cur = stack.pop()
+            if cur.index in seen:
+                continue
+            seen.add(cur.index)
+            group.append(cur)
+            for e in cur.link_edges:
+                stack.extend(e.verts)
+        islands.append(group)
+    if len(islands) <= 1:
+        bm.free()
+        return
+    keep = max(islands, key=len)
+    drop = [v for grp in islands if grp is not keep for v in grp]
+    if drop:
+        bmesh.ops.delete(bm, geom=drop, context="VERTS")
+        bm.to_mesh(ob.data)
+        ob.data.update()
+    bm.free()
+
+
 def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
     lo, hi, span = _height_span_z(src)
 
@@ -279,14 +311,22 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         return lo + span * f0, lo + span * f1
 
     specs: list[tuple[str, float, float, int | None, tuple[float, float, float, float], float]] = [
+        ("Sole_-1", 0.00, 0.06, -1, FOUNDER_SHOE_SOLE, 0.72),
+        ("Sole_1", 0.00, 0.06, 1, FOUNDER_SHOE_SOLE, 0.72),
+        ("Foot_-1", 0.04, 0.13, -1, FOUNDER_SHOE, 0.38),
+        ("Foot_1", 0.04, 0.13, 1, FOUNDER_SHOE, 0.38),
         ("Leg_-1", 0.00, 0.50, -1, FOUNDER_JEANS, 0.56),
         ("Leg_1", 0.00, 0.50, 1, FOUNDER_JEANS, 0.56),
         ("Hips", 0.36, 0.56, None, FOUNDER_JEANS, 0.54),
-        ("Torso", 0.44, 0.68, None, FOUNDER_HOODIE_RED, 0.58),
-        ("Arm_-1", 0.48, 0.72, -1, FOUNDER_HOODIE, 0.56),
-        ("Arm_1", 0.48, 0.72, 1, FOUNDER_HOODIE, 0.56),
+        ("Torso", 0.44, 0.70, None, FOUNDER_HOODIE_RED, 0.58),
+        ("UpperArm_-1", 0.48, 0.58, -1, FOUNDER_HOODIE, 0.56),
+        ("UpperArm_1", 0.48, 0.58, 1, FOUNDER_HOODIE, 0.56),
+        ("LowerArm_-1", 0.56, 0.68, -1, FOUNDER_SKIN, 0.50),
+        ("LowerArm_1", 0.56, 0.68, 1, FOUNDER_SKIN, 0.50),
+        ("Hand_-1", 0.64, 0.74, -1, FOUNDER_SKIN, 0.48),
+        ("Hand_1", 0.64, 0.74, 1, FOUNDER_SKIN, 0.48),
         ("Neck", 0.58, 0.70, None, FOUNDER_HOODIE_RED, 0.52),
-        ("Head", 0.62, 0.90, None, FOUNDER_SKIN, 0.50),
+        ("Head", 0.60, 0.91, None, FOUNDER_SKIN, 0.50),
         ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
@@ -298,9 +338,81 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
                 bpy.data.objects.remove(ob, do_unlink=True)
             continue
         bc.assign_solid(ob, color, rough)
+        if name.startswith("Leg_") or name == "Hips":
+            ob.scale.x *= 1.12
+            bpy.context.view_layer.objects.active = ob
+            ob.select_set(True)
+            bpy.ops.object.transform_apply(scale=True)
         parts.append(ob)
     bpy.data.objects.remove(src, do_unlink=True)
     return parts
+
+
+def _strip_floor_junk(floor_y: float) -> None:
+    import staff_connectivity as sc
+
+    skip = frozenset({"Sole_-1", "Sole_1", "Foot_-1", "Foot_1", "Leg_-1", "Leg_1"})
+    torso = bpy.data.objects.get("Torso")
+    tcx = 0.0
+    if torso:
+        lo, hi = sc._world_bbox(torso)
+        tcx = (lo.x + hi.x) * 0.5
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base in skip:
+            continue
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        drop = []
+        for v in bm.verts:
+            w = ob.matrix_world @ v.co
+            if w.y < floor_y:
+                drop.append(v)
+            elif w.y < 0.38 and w.x > tcx + 0.06:
+                drop.append(v)
+        if not drop:
+            bm.free()
+            continue
+        bmesh.ops.delete(bm, geom=drop, context="VERTS")
+        if len(bm.verts) < 8:
+            bpy.data.objects.remove(ob, do_unlink=True)
+        else:
+            bm.to_mesh(ob.data)
+            ob.data.update()
+        bm.free()
+    _drop_floor_objects()
+
+
+def _drop_floor_objects() -> None:
+    import staff_connectivity as sc
+
+    keep = frozenset(
+        {
+            "Sole_-1",
+            "Sole_1",
+            "Foot_-1",
+            "Foot_1",
+            "Leg_-1",
+            "Leg_1",
+            "Hips",
+        }
+    )
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH" or not ob.data.vertices:
+            continue
+        base = ob.name.split(".")[0]
+        if base in keep:
+            continue
+        ys = [(ob.matrix_world @ v.co).y for v in ob.data.vertices]
+        lo, hi = min(ys), max(ys)
+        low_frac = sum(1 for y in ys if y < 0.22) / len(ys)
+        if hi < 0.62 and low_frac > 0.55:
+            bpy.data.objects.remove(ob, do_unlink=True)
+            continue
+        if base.startswith(("Hand_", "LowerArm_")) and lo < 0.18 and hi < 0.55:
+            bpy.data.objects.remove(ob, do_unlink=True)
 
 
 def _add_face_features() -> None:
@@ -315,6 +427,8 @@ def _add_face_features() -> None:
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
         eye = bc.add_cube(name, (0.048, 0.028, 0.026), (hc.x + 0.048 * x_sign, y_face, z_eye))
         bc.assign_solid(eye, FOUNDER_EYE, 0.35)
+    brows = bc.add_cube("Eyebrows", (0.11, 0.022, 0.02), (hc.x, y_face + 0.036, z_eye + 0.032))
+    bc.assign_solid(brows, (0.12, 0.08, 0.06, 1.0), 0.45)
     mouth = bc.add_cube("Mouth", (0.058, 0.02, 0.014), (hc.x, y_face - 0.034, z_eye - 0.052))
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
@@ -337,10 +451,10 @@ def build_founder_kenney() -> None:
     _ensure_upright_z(baked, head_ref, foot_ref)
     _face_forward_z(baked)
     _scale_character(baked)
+    _drop_tiny_islands(baked, min_verts=40)
     parts = _split_parts(baked)
-    if len(parts) < 9:
+    if len(parts) < 11:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
-    _add_face_features()
     for ob in list(bpy.context.scene.objects):
         if ob.type != "MESH":
             continue
@@ -360,6 +474,12 @@ def build_founder_kenney() -> None:
     )
     bpy.ops.object.transform_apply(rotation=True)
     bc.ground_scene_meshes()
+    _add_face_features()
+    _strip_floor_junk(0.14)
+    for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):
+        ob = bpy.data.objects.get(tag)
+        if ob:
+            bc.smooth_shade(ob)
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue
@@ -367,3 +487,4 @@ def build_founder_kenney() -> None:
             bc.bevel_object(ob, width=0.0025, segments=1)
         except RuntimeError:
             pass
+    bc.ground_scene_meshes()
