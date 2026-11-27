@@ -33,6 +33,9 @@ def _blobs(mask: Image.Image, img: Image.Image, y0: int, y1: int) -> list[tuple[
         r, g, b = img.getpixel((x, y))[:3]
         if max(r, g, b) > MAX_EYE_LUM or (r + g + b) >= 120:
             return False
+        # EEVEE can blue-shift very dark FounderEye_* albedo; still count as eye.
+        if b > r + 20 and max(r, g, b) > 52:
+            return False
         return True
 
     for y in range(y0, y1):
@@ -85,13 +88,17 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
             if mask.getpixel((x, y)) <= 48:
                 continue
             r, g, b = img.getpixel((x, y))
-            if max(r, g, b) <= MAX_EYE_LUM and not (b > r + 20):
+            if max(r, g, b) <= MAX_EYE_LUM and (
+                max(r, g, b) <= 52 or not (b > r + 20)
+            ):
                 l_px += 1
         for x in range(mid, min(w, mid + half_w)):
             if mask.getpixel((x, y)) <= 48:
                 continue
             r, g, b = img.getpixel((x, y))
-            if max(r, g, b) <= MAX_EYE_LUM and not (b > r + 20):
+            if max(r, g, b) <= MAX_EYE_LUM and (
+                max(r, g, b) <= 52 or not (b > r + 20)
+            ):
                 r_px += 1
     if l_px >= MIN_BLOB_PX and r_px >= MIN_BLOB_PX:
         return True, f"eye_blobs split_halves L={l_px} R={r_px}"

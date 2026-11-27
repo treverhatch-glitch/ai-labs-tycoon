@@ -578,6 +578,29 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                     and not o.name.startswith("ResearcherLabCoat")
                     and not o.name.startswith("ResearcherHairCap")
                 ]
+                if asset_id == "staff-founder-idle":
+                    for ob in mesh_obs:
+                        if ob.type != "MESH" or not ob.name.split(".")[0].startswith(
+                            "FounderEye_"
+                        ):
+                            continue
+                        mat = ob.active_material
+                        if not mat or not mat.use_nodes:
+                            continue
+                        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+                        if bsdf:
+                            bsdf.inputs["Base Color"].default_value = (
+                                0.05,
+                                0.05,
+                                0.05,
+                                1.0,
+                            )
+                            bsdf.inputs["Roughness"].default_value = 1.0
+                            spec = bsdf.inputs.get("Specular") or bsdf.inputs.get(
+                                "Specular IOR Level"
+                            )
+                            if spec is not None:
+                                spec.default_value = 0.0
                 render_preview(mesh_obs, preview_path, asset_id=asset_id, mask_meshes=hero_mask)
             except Exception as exc:  # noqa: BLE001
                 raise RuntimeError(f"FAIL {asset_id}: final_preview {exc}") from exc

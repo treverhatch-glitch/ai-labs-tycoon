@@ -72,4 +72,7 @@ conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)
 set -e
 echo "$conn_out" | grep -E '^OK staff-researcher-idle' || { echo "$conn_out"; exit 1; }
 
+python3 tools/art/check_cc0_staff_kenney_rig_pivot.py
+python3 tools/art/check_cc0_staff_hero_walk_cycle.py staff-researcher-idle
+
 echo "OK cc0 staff researcher hero lane"

@@ -61,7 +61,8 @@ def analyze_head_highlight(png: Path) -> tuple[bool, str]:
     stock_recolor = False
     if asset_meta.is_file():
         try:
-            stock_recolor = json.loads(asset_meta.read_text()).get("meshIslands") == 1
+            islands = int(json.loads(asset_meta.read_text()).get("meshIslands", 0))
+            stock_recolor = islands >= 3
         except json.JSONDecodeError:
             pass
     over_cap = 900 if stock_recolor else 140

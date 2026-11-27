@@ -5,6 +5,7 @@ export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
 export STAFF_PREVIEW_ELEV_DEG=10
 export STAFF_PREVIEW_MARGIN=1.44
+export STAFF_PREVIEW_FOUNDER_LIGHT=0.30
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -90,5 +91,8 @@ conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)
 set -e
 echo "$conn_out" | grep -E '^OK staff-founder-idle' || true
 echo "$conn_out" | grep -q '^OK staff-founder-idle' || { echo "FAIL connectivity founder"; exit 1; }
+
+python3 tools/art/check_cc0_staff_kenney_rig_pivot.py
+python3 tools/art/check_cc0_staff_hero_walk_cycle.py staff-founder-idle
 
 echo "cc0 staff founder OK"
