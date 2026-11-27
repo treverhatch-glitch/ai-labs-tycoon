@@ -55,7 +55,7 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
         unit_roots = {n for n in names if n in ("unit_1u", "unit_2u_a", "unit_2u_b", "unit_4u")}
         results_extra = {
             "e_named_meshes": "rack_frame" in names and len(unit_roots) == 4,
-            "e_detail_meshes": any("bay_" in n or "port_" in n or "vent_" in n for n in names),
+            "e_detail_meshes": any("drive_bay" in n or "port_led" in n or "vent_" in n or "side_rail" in n for n in names),
         }
     else:
         ob = meshes[0]

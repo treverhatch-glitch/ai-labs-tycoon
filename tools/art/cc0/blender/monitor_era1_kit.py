@@ -175,8 +175,8 @@ def build_monitor_era1() -> list[bpy.types.Object]:
     y_face = y_front - BEZEL_T - 0.0015
     bz = 0.235
     bx_pwr = FACE_W / 2 - 0.03
-    power_button = _overlap_box("power_button", (0.014, 0.003, 0.008), (bx_pwr, y_face, bz))
-    power_led = _overlap_box("power_led", (0.006, 0.003, 0.006), (bx_pwr - 0.018, y_face, bz))
+    power_button = _overlap_box("power_button", (0.014, 0.006, 0.008), (bx_pwr, y_face, bz))
+    power_led = _overlap_box("power_led", (0.006, 0.006, 0.006), (bx_pwr - 0.018, y_face, bz))
 
     sc.assert_monitor_parts(shell_parts + [screen, power_button, power_led], root_name="body_tapered")
 

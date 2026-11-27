@@ -17,4 +17,5 @@ if [[ -n "$(git ls-files '*.pyc')" ]]; then
   exit 1
 fi
 python3 tools/art/cc0/check_cc0_compute_manifest.py
+python3 tools/art/cc0/inspect_glb_trimesh.py --gate
 echo "compute CC0 prepush OK"

@@ -60,7 +60,7 @@ def _box(name: str, dims: tuple[float, float, float], loc: tuple[float, float, f
 
 
 def _part_mat_index(name: str) -> int:
-    if "led" in name or "port" in name:
+    if "led" in name or "port_led" in name:
         return MAT_LED_GREEN
     if "led_a" in name:
         return MAT_LED_AMBER
@@ -68,15 +68,17 @@ def _part_mat_index(name: str) -> int:
         return MAT_CABLE
     if "face" in name:
         return MAT_UNIT_FACE
-    if "unit" in name or "bay" in name or "slot" in name or "vent" in name or "port" in name:
+    if "drive_bay" in name or "vent" in name or "slot" in name:
+        return MAT_UNIT_FACE
+    if "unit" in name:
         return MAT_UNIT
-    if "rail" in name or "depth" in name or "frame_weld" in name:
+    if "side_rail" in name or "rail" in name or "depth" in name:
         return MAT_RAIL
     return MAT_FRAME
 
 
 def _part_color(name: str) -> tuple[float, float, float]:
-    if "led" in name or "port" in name:
+    if "led" in name or "port_led" in name:
         return COL_LED_G
     if "led_a" in name:
         return COL_LED_A
@@ -153,33 +155,41 @@ def build_rack_era1() -> list[bpy.types.Object]:
         z_shelf = z_c - h / 2 - u * 0.6
         y_mid = (y_ff + y_bk) / 2
         for side, sx in (("l", -hx + POST * 0.5), ("r", hx - POST * 0.5)):
-            server_parts.append(_box(f"{unit}_side_{side}", (POST + 0.024, ud_srv * 0.92, RAIL), (sx, y_mid, z_shelf)))
             server_parts.append(
-                _box(f"{unit}_side_{side}_leg", (RAIL, 0.022, h * 0.45), (sx, y_ff + 0.012, z_c - h * 0.22))
+                _box(f"{unit}_side_rail_{side}", (POST + 0.028, ud_srv * 0.95, RAIL * 1.2), (sx, y_mid, z_shelf))
+            )
+            server_parts.append(
+                _box(f"{unit}_side_rail_{side}_leg", (RAIL * 1.1, 0.026, h * 0.48), (sx, y_ff + 0.014, z_c - h * 0.22))
             )
 
     def _closed_unit(name: str, h: float, z: float, *, vents: int = 0, ports: int = 0, leds: int = 0) -> None:
-        yf = y_ff + 0.0025
+        yf = y_ff + 0.004
         server_parts.append(_box(name, (uw_srv, ud_srv, h), (0, uc_y, z)))
-        server_parts.append(_box(f"{name}_face", (uw_srv - 0.008, 0.006, h - 0.010), (0, yf, z)))
+        server_parts.append(_box(f"{name}_face", (uw_srv - 0.008, 0.010, h - 0.008), (0, yf, z)))
         if name == "unit_4u":
             for row in range(4):
                 for col in range(3):
                     xo = (col - 1) * 0.092
                     zo = z + (row - 1.5) * 0.036
                     server_parts.append(
-                        _box(f"{name}_bay_{row}_{col}", (0.082, 0.005, 0.028), (xo, yf + 0.003, zo))
+                        _box(
+                            f"{name}_drive_bay_{row}_{col}",
+                            (0.082, 0.012, 0.028),
+                            (xo, yf + 0.006, zo),
+                        )
                     )
             for li, xo in enumerate((0.10, 0.14)):
-                server_parts.append(_box(f"{name}_led_{li}", (0.008, 0.006, 0.006), (xo, yf + 0.004, z - h * 0.32)))
+                server_parts.append(_box(f"{name}_led_{li}", (0.009, 0.008, 0.008), (xo, yf + 0.007, z - h * 0.32)))
         for vi in range(vents):
             server_parts.append(
-                _box(f"{name}_vent_{vi}", (uw_srv - 0.10, 0.005, 0.014), (0, yf + 0.003, z + 0.024 - vi * 0.028))
+                _box(f"{name}_vent_{vi}", (uw_srv - 0.10, 0.010, 0.016), (0, yf + 0.006, z + 0.024 - vi * 0.028))
             )
         if ports:
             for pi in range(8):
                 xo = -0.14 + pi * 0.04
-                server_parts.append(_box(f"{name}_port_{pi}", (0.009, 0.006, 0.008), (xo, yf + 0.004, z)))
+                server_parts.append(
+                    _box(f"{name}_port_led_{pi}", (0.010, 0.008, 0.010), (xo, yf + 0.007, z))
+                )
         for li in range(leds):
             server_parts.append(
                 _box(

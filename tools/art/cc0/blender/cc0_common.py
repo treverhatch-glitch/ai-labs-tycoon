@@ -312,11 +312,11 @@ def apply_era1_rack_export_materials(asset_id: str, objects: list[bpy.types.Obje
             for m in frame_mats:
                 ob.data.materials.append(m)
             tower.restore_face_material_index(ob)
-        elif "led" in ob.name or "port" in ob.name:
+        elif "led" in ob.name or "port_led" in ob.name:
             ob.data.materials.append(led)
-        elif "face" in ob.name or "bay" in ob.name or "vent" in ob.name or "slot" in ob.name:
+        elif "face" in ob.name or "drive_bay" in ob.name or "vent" in ob.name or "slot" in ob.name:
             ob.data.materials.append(face)
-        elif "side" in ob.name:
+        elif "side_rail" in ob.name:
             ob.data.materials.append(frame_mats[1])
         elif ob.name.startswith("unit_"):
             ob.data.materials.append(unit)
@@ -378,12 +378,40 @@ def export_gltf_y_up(ob: bpy.types.Object, path: Path) -> None:
     export_gltf_y_up_multi([ob], path)
 
 
+def _apply_all_modifiers(ob: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    for mod in list(ob.modifiers):
+        try:
+            bpy.ops.object.modifier_apply(modifier=mod.name)
+        except RuntimeError:
+            ob.modifiers.remove(mod)
+    ob.data.name = ob.name
+
+
+def _purge_staging_meshes(keep: set[bpy.types.Object]) -> None:
+    keep_ids = {id(o) for o in keep}
+    for ob in list(bpy.data.objects):
+        if id(ob) in keep_ids or ob.type != "MESH":
+            continue
+        if ob.name.startswith("mesh_compute") or ob.name.startswith("_bake_staging"):
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+
 def export_gltf_y_up_multi(objects: list[bpy.types.Object], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    bpy.ops.object.select_all(action="DESELECT")
+    _purge_staging_meshes(set(objects))
+    leaves: list[bpy.types.Object] = []
     for ob in objects:
+        ob.parent = None
+        _apply_all_modifiers(ob)
+        ob.data.name = ob.name
+        leaves.append(ob)
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in leaves:
         ob.select_set(True)
-    bpy.context.view_layer.objects.active = objects[0]
+    bpy.context.view_layer.objects.active = leaves[0]
     for img in list(bpy.data.images):
         if img.filepath and not img.packed_file:
             try:
@@ -394,7 +422,7 @@ def export_gltf_y_up_multi(objects: list[bpy.types.Object], path: Path) -> None:
         filepath=str(path),
         export_format="GLB",
         use_selection=True,
-        export_apply=True,
+        export_apply=False,
         export_texcoords=True,
         export_materials="EXPORT",
         export_image_format="AUTO",
@@ -726,10 +754,9 @@ def finish_cc0_asset(
 
             mb.snap_root_to_floor(root)
 
-    bake_root = _join_for_bake(export_objs, f"mesh_{asset_id}") if export_objects else root
-    if export_objects:
-        root = bake_root
-    root.name = f"mesh_{asset_id}"
+    bake_root = _join_for_bake(export_objs, f"_bake_staging_{asset_id}") if export_objects else root
+    root = bake_root
+    root.name = f"_bake_staging_{asset_id}" if export_objects else f"mesh_{asset_id}"
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
     if not has_bake:
@@ -779,9 +806,7 @@ def finish_cc0_asset(
 
     glb = out_dir / f"{asset_id}.glb"
     if export_objects:
-        for ob in export_objs:
-            ob.name = ob.name or f"part_{export_objs.index(ob)}"
-            ob.data.name = ob.name
+        _purge_staging_meshes(set(export_objs))
         export_gltf_y_up_multi(export_objs, glb)
     else:
         export_gltf_y_up(root, glb)
