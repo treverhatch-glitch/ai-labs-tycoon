@@ -73,6 +73,8 @@ def analyze(png: Path) -> tuple[bool, str]:
     if min(left_red, right_red) < 40 and max(left_red, right_red) < 120:
         return False, f"arm_sleeve_one_side L={left_red} R={right_red}"
     if max(left_skin, right_skin) < min_skin:
+        if max(left_red, right_red) >= min_red:
+            return True, f"arm_red_wings_skin_occluded L={left_red} R={right_red}"
         return False, f"arm_skin_px L={left_skin} R={right_skin} need>={min_skin}"
     if min(left_skin, right_skin) < 35 and max(left_skin, right_skin) < 100:
         return False, f"arm_skin_one_side L={left_skin} R={right_skin}"

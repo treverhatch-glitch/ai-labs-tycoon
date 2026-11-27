@@ -12,7 +12,11 @@ from mathutils import Vector
 
 import blender_common as bc
 import kenney_founder_lib as kf
-from kenney_face_axis import face_shell_coord, toe_forward
+from kenney_face_axis import H_EYE_CENTER, face_shell_coord, lateral_from_front, toe_forward
+
+H_EYE_LO = H_EYE_CENTER - 0.04
+H_EYE_HI = H_EYE_CENTER + 0.035
+H_BROW_LO = H_EYE_CENTER + 0.038
 
 STOCK_SOURCE = bc.REPO_ROOT / "tools" / "art" / "source" / "kenney"
 STOCK_BLEND = STOCK_SOURCE / "staff-founder-kenney-stock.blend"
@@ -130,26 +134,34 @@ def _region_for_point(
     span: float,
     cx: float,
     y_face: float,
+    lat: float,
 ) -> int:
     h = (w.z - lo) / span
     xf = abs(w.x - cx)
+    lat_n = lat / span
 
     if h < H_SHOE:
-        return SLOT_SOLE if xf > 0.06 else SLOT_SHOE
+        return SLOT_SOLE if lat_n > 0.05 else SLOT_SHOE
 
     if h < H_WAIST:
+        if xf >= 0.09:
+            return SLOT_SHIRT
         return SLOT_JEANS
 
     if h < H_SHIRT_TOP:
+        if h > 0.78 and y_face > 0.025:
+            if xf >= 0.11 and h >= 0.74:
+                return SLOT_HAND
+            return SLOT_SKIN
         if xf >= 0.11:
             if h >= 0.74:
                 return SLOT_HAND
             return SLOT_SHIRT
         return SLOT_SHIRT
 
-    if y_face > 0.035 and 0.775 <= h < 0.88 and 0.028 < xf < 0.14:
+    if y_face > 0.05 and H_EYE_LO <= h < H_EYE_HI and lat_n < 0.085:
         return SLOT_EYE
-    if y_face > 0.04 and 0.845 <= h < 0.94 and 0.02 < xf < 0.15:
+    if y_face > 0.05 and H_BROW_LO <= h < 0.96 and lat_n < 0.095:
         return SLOT_BROW
 
     if h >= H_BROW and y_face < 0.0:
@@ -166,7 +178,7 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
     ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
     cx = sum(p.x for p in ws) / len(ws)
     fwd = toe_forward([ob])
-    _shell, y_face_fn = face_shell_coord(ob, fwd)
+    hc, y_face_fn = face_shell_coord(ob, fwd)
 
     mats = [
         _ensure_material("FounderSole", kf.FOUNDER_SHOE_SOLE, 0.72),
@@ -192,7 +204,10 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         y_face = y_face_fn(wc)
-        face.material_index = _region_for_point(wc, lo=lo, span=span, cx=cx, y_face=y_face)
+        lat = lateral_from_front(wc, hc, fwd)
+        face.material_index = _region_for_point(
+            wc, lo=lo, span=span, cx=cx, y_face=y_face, lat=lat
+        )
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()

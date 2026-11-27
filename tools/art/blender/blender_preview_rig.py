@@ -223,6 +223,12 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     return Vector((0.0, 1.0, 0.0))
 
 
+def _rotate_z_xy(v: Vector, yaw_deg: float) -> Vector:
+    yaw = math.radians(yaw_deg)
+    c, s = math.cos(yaw), math.sin(yaw)
+    return Vector((c * v.x - s * v.y, s * v.x + c * v.y, 0.0))
+
+
 def frame_staff_front_quarter(
     mesh_obs: list[bpy.types.Object],
     lens_mm: float,
@@ -230,22 +236,21 @@ def frame_staff_front_quarter(
     yaw_deg: float = 30.0,
     elev_deg: float = 11.0,
 ) -> tuple[bpy.types.Object, float]:
+    """Camera on center + front*d at yaw=0; idle adds yaw° about world Z (glTF −Y forward ref)."""
     mins, maxs = mesh_bounds_world(mesh_obs)
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, mesh_obs)
     half_fov = math.radians(22.0)
     cam_dist = (radius / math.tan(half_fov)) * margin
-    fwd = staff_face_forward(mesh_obs).normalized()
-    right = Vector((-fwd.y, fwd.x, 0.0))
-    if right.length < 1e-5:
-        right = Vector((1.0, 0.0, 0.0))
+    front = staff_face_forward(mesh_obs).normalized()
+    front_xy = Vector((front.x, front.y, 0.0))
+    if front_xy.length < 1e-5:
+        front_xy = Vector((0.0, -1.0, 0.0))
     else:
-        right.normalize()
-    yaw = math.radians(yaw_deg)
+        front_xy.normalize()
+    hdir = _rotate_z_xy(front_xy, yaw_deg)
     elev = math.radians(elev_deg)
-    offset = fwd * (math.cos(yaw) * math.cos(elev)) + right * (math.sin(yaw) * math.cos(elev))
-    offset.z = math.sin(elev)
-    offset = offset.normalized() * cam_dist
+    offset = hdir * (math.cos(elev) * cam_dist) + Vector((0.0, 0.0, 1.0)) * (math.sin(elev) * cam_dist)
     cam_loc = center + offset
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object

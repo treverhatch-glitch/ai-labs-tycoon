@@ -28,6 +28,12 @@ test -s "docs/art/previews/staff-founder-face-diagnostic-0deg.png" || { echo "FA
 python3 tools/art/check_cc0_staff_founder_diagnostic_eyes.py
 python3 tools/art/check_cc0_staff_founder_stock_kit_glb.py
 
+echo "=== tools/art/blender/render_kenney_founder_axis_sheet.py ==="
+axis_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_axis_sheet.py 2>&1) || { echo "$axis_out"; echo "FAIL axis sheet" >&2; exit 1; }
+echo "$axis_out"
+echo "$axis_out" | grep -q '^OK axis_sheet' || { echo "FAIL axis sheet OK line" >&2; exit 1; }
+test -s "docs/art/previews/staff-founder-axis-sheet.png" || { echo "FAIL missing axis sheet png"; exit 1; }
+
 script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="
 out=$("$BLENDER" -b --python "$script" 2>&1) || { echo "$out"; echo "FAIL $script" >&2; exit 1; }

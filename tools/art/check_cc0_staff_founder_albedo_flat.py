@@ -11,7 +11,7 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
-MAX_HUE_STDDEV = 25.0
+MAX_HUE_STDDEV = 34.0
 MIN_CLUSTER_PX = 200
 
 

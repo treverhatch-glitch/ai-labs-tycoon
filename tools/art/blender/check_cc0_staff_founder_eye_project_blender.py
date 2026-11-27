@@ -1,7 +1,8 @@
-"""Eye decals face preview camera (raycast or front-facing eye polys)."""
+"""Eye decals on front face: raycast + normals within 25° of shoe-forward."""
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -10,12 +11,13 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_preview_rig as rig  # noqa: E402
-from kenney_face_axis import eye_landmarks_world  # noqa: E402
+from kenney_face_axis import eye_landmarks_world, toe_forward  # noqa: E402
 
 REPO = Path(sys.argv[-1])
 FRAME = REPO / "docs/art/previews/staff-founder-idle.frame.json"
 STOCK_BLEND = REPO / "tools/art/source/kenney/staff-founder-kenney-stock.blend"
 DIAG_FRAME = REPO / "docs/art/previews/staff-founder-face-diagnostic-0deg.frame.json"
+COS_25 = math.cos(math.radians(25.0))
 
 
 def _eye_slot(ob: bpy.types.Object) -> int:
@@ -50,18 +52,32 @@ def _ray_hit_eye(depsgraph, cam: bpy.types.Object, target: Vector, ob: bpy.types
     return False
 
 
-def _visible_eye_polys(cam: bpy.types.Object, ob: bpy.types.Object, eye_idx: int) -> int:
+def _front_eye_polys(
+    cam: bpy.types.Object, ob: bpy.types.Object, eye_idx: int, front: Vector
+) -> int:
     cam_loc = cam.matrix_world.translation
     count = 0
-    mesh = ob.data
-    for poly in mesh.polygons:
+    for poly in ob.data.polygons:
         if poly.material_index != eye_idx:
             continue
         center, normal = _poly_centroid_normal(ob, poly.index)
+        if normal.dot(front) < COS_25:
+            continue
         to_cam = (cam_loc - center).normalized()
-        if normal.dot(to_cam) > 0.15:
+        if normal.dot(to_cam) > 0.12:
             count += 1
     return count
+
+
+def _aligned_eye_count(ob: bpy.types.Object, eye_idx: int, front: Vector) -> int:
+    n = 0
+    for poly in ob.data.polygons:
+        if poly.material_index != eye_idx:
+            continue
+        _, normal = _poly_centroid_normal(ob, poly.index)
+        if normal.dot(front) >= COS_25:
+            n += 1
+    return n
 
 
 def _gate(mesh_obs: list, yaw: float, elev: float, margin: float) -> bpy.types.Object:
@@ -84,6 +100,12 @@ def main() -> None:
 
     apply_founder_materials(ob)
     eye_idx = _eye_slot(ob)
+    front = toe_forward([ob]).normalized()
+    aligned = _aligned_eye_count(ob, eye_idx, front)
+    if aligned < 2:
+        print(f"FAIL staff-founder-idle eye_project front_normals={aligned}")
+        raise SystemExit(1)
+
     mesh_obs = [ob]
     depsgraph = bpy.context.evaluated_depsgraph_get()
     el, er, _ = eye_landmarks_world(ob)
@@ -105,7 +127,7 @@ def main() -> None:
             if _ray_hit_eye(depsgraph, cam, target, ob, eye_idx)
         )
         if hits < 2:
-            vis = _visible_eye_polys(cam, ob, eye_idx)
+            vis = _front_eye_polys(cam, ob, eye_idx, front)
             if vis < 2:
                 print(f"FAIL staff-founder-idle eye_project {tag} ray={hits} poly={vis}")
                 raise SystemExit(1)
