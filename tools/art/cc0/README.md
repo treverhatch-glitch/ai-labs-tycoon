@@ -7,6 +7,8 @@
 
 **Lanes:** `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`; garage interior → `tools/art/run_blender_cc0_garage_hero.sh`.
 
+**Era-tiered compute heroes:** asset ids like `compute-pc-tower-era1`; previews `docs/art/previews/<id>.png`.
+
 Branch commits must not include `Co-authored-by` trailers on **lane tip commits you intend to land** (squash merge should carry a clean message).
 
 ### Merging `origin/main` without a `Co-authored-by` trailer
