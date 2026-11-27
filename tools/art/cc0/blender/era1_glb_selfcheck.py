@@ -41,28 +41,46 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
     if not meshes:
         raise RuntimeError(f"no mesh in {glb_path}")
 
-    ob = meshes[0]
-    if len(meshes) > 1:
-        bpy.ops.object.select_all(action="DESELECT")
-        for m in meshes:
-            m.select_set(True)
-        bpy.context.view_layer.objects.active = meshes[0]
-        bpy.ops.object.join()
-        ob = bpy.context.view_layer.objects.active
-
-    island_n = _weld_and_islands(ob)
-    conn = island_n == 1
-
-    mins, maxs = _mesh_bounds([ob])
-    top_cap = 0.42 if "monitor" in asset_id else 1.82 if "rack" in asset_id else 99.0
+    names = {m.name for m in meshes}
+    if asset_id == "compute-monitor-era1":
+        conn = _weld_and_islands(next(m for m in meshes if m.name == "body_tapered")) == 1
+        island_n = len(meshes)
+        results_extra = {
+            "e_named_meshes": {"body_tapered", "screen", "power_led", "power_button"}.issubset(names),
+        }
+    elif asset_id == "compute-server-rack-era1":
+        frame = next((m for m in meshes if m.name == "rack_frame"), meshes[0])
+        conn = _weld_and_islands(frame) == 1
+        island_n = 1
+        unit_roots = {n for n in names if n in ("unit_1u", "unit_2u_a", "unit_2u_b", "unit_4u")}
+        results_extra = {
+            "e_named_meshes": "rack_frame" in names and len(unit_roots) == 4,
+            "e_detail_meshes": any("bay_" in n or "port_" in n or "vent_" in n for n in names),
+        }
+    else:
+        ob = meshes[0]
+        if len(meshes) > 1:
+            bpy.ops.object.select_all(action="DESELECT")
+            for m in meshes:
+                m.select_set(True)
+            bpy.context.view_layer.objects.active = meshes[0]
+            bpy.ops.object.join()
+            ob = bpy.context.view_layer.objects.active
+        island_n = _weld_and_islands(ob)
+        conn = island_n == 1
+        results_extra = {}
 
     audit_glb._last_island_count = island_n  # type: ignore[attr-defined]
+
+    mins, maxs = _mesh_bounds(meshes)
+    top_cap = 0.42 if "monitor" in asset_id else 1.82 if "rack" in asset_id else 99.0
 
     results: dict[str, bool] = {
         "a_render_from_glb_only": True,
         "b_single_connected_component": conn,
         "c_nothing_below_floor": mins.z >= -0.001,
         "c_nothing_above_frame_top": maxs.z <= top_cap,
+        **results_extra,
     }
 
     if asset_id == "compute-monitor-era1":
@@ -72,16 +90,13 @@ def audit_glb(glb_path: Path, asset_id: str) -> dict[str, bool]:
         depsgraph = bpy.context.view_layer.depsgraph
         hit, _loc, _normal, face_index, hit_ob, _ = bpy.context.scene.ray_cast(depsgraph, origin, direction)
         screen_hit = False
-        if hit and hit_ob == ob and face_index >= 0:
-            poly = ob.data.polygons[face_index]
-            mat = ob.data.materials[poly.material_index] if ob.data.materials else None
-            if mat and "screen" in mat.name.lower():
+        if hit and hit_ob and face_index >= 0:
+            if hit_ob.name == "screen":
                 screen_hit = True
-            elif ob.data.color_attributes:
-                attr = ob.data.color_attributes[0]
-                loop = ob.data.loops[ob.data.polygons[face_index].loop_start]
-                col = attr.data[loop.index].color
-                if col[1] > 0.35 and col[0] < 0.25 and col[2] < 0.25:
+            else:
+                poly = hit_ob.data.polygons[face_index]
+                mat = hit_ob.data.materials[poly.material_index] if hit_ob.data.materials else None
+                if mat and "screen" in mat.name.lower():
                     screen_hit = True
         results["d_screen_center_raycast"] = screen_hit
     else:

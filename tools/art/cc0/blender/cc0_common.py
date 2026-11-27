@@ -260,30 +260,90 @@ def urp_material_era1_tower(ob: bpy.types.Object, asset_id: str, albedo_path: Pa
 
 
 def urp_material_era1_monitor(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
+    apply_era1_monitor_export_materials(asset_id, [ob])
+
+
+def apply_era1_monitor_export_materials(asset_id: str, objects: list[bpy.types.Object]) -> None:
     import monitor_era1_kit as kit
     import pc_tower_kit as tower
 
-    ob.data.materials.clear()
-    ob.data.materials.append(_era1_solid_mat(asset_id, "body", kit.COL_CASE, 0.40))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "screen", kit.COL_SCREEN, 0.78, emission=1.6))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", kit.COL_LED_PWR, 0.25, emission=5.5))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "power", kit.COL_POWER, 0.46))
-    tower.restore_face_material_index(ob)
+    body = _era1_solid_mat(asset_id, "body", kit.COL_CASE, 0.40)
+    screen = _era1_solid_mat(asset_id, "screen", kit.COL_SCREEN, 0.78, emission=1.6)
+    led = _era1_solid_mat(asset_id, "led", kit.COL_LED_PWR, 0.25, emission=5.5)
+    power = _era1_solid_mat(asset_id, "power", kit.COL_POWER, 0.46)
+    for ob in objects:
+        ob.data.materials.clear()
+        if ob.name == "screen":
+            ob.data.materials.append(screen)
+        elif ob.name == "power_led":
+            ob.data.materials.append(led)
+        elif ob.name == "power_button":
+            ob.data.materials.append(power)
+        else:
+            ob.data.materials.append(body)
+    shell = next((o for o in objects if o.name == "body_tapered"), None)
+    if shell and shell.data.polygons and shell.data.polygons[0].material_index > 0:
+        tower.restore_face_material_index(shell)
 
 
 def urp_material_era1_rack(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
+    apply_era1_rack_export_materials(asset_id, [ob])
+
+
+def apply_era1_rack_export_materials(asset_id: str, objects: list[bpy.types.Object]) -> None:
     import rack_era1_frame_kit as kit
     import pc_tower_kit as tower
 
-    ob.data.materials.clear()
-    ob.data.materials.append(_era1_solid_mat(asset_id, "frame", kit.COL_FRAME, 0.48))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "rail", kit.COL_RAIL, 0.42))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "unit", kit.COL_UNIT, 0.40))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "unit_face", kit.COL_FACE, 0.44))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", kit.COL_LED_G, 0.25, emission=5.5))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "led_hdd", kit.COL_LED_A, 0.25, emission=5.5))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "cable", kit.COL_CABLE, 0.65))
-    tower.restore_face_material_index(ob)
+    frame_mats = [
+        _era1_solid_mat(asset_id, "frame", kit.COL_FRAME, 0.48),
+        _era1_solid_mat(asset_id, "rail", kit.COL_RAIL, 0.42),
+        _era1_solid_mat(asset_id, "unit", kit.COL_UNIT, 0.40),
+        _era1_solid_mat(asset_id, "unit_face", kit.COL_FACE, 0.44),
+        _era1_solid_mat(asset_id, "led", kit.COL_LED_G, 0.25, emission=5.5),
+        _era1_solid_mat(asset_id, "led_amber", kit.COL_LED_A, 0.25, emission=5.5),
+        _era1_solid_mat(asset_id, "cable", kit.COL_CABLE, 0.65),
+    ]
+    led = frame_mats[4]
+    face = frame_mats[3]
+    unit = frame_mats[2]
+    for ob in objects:
+        ob.data.materials.clear()
+        if ob.name == "rack_frame":
+            for m in frame_mats:
+                ob.data.materials.append(m)
+            tower.restore_face_material_index(ob)
+        elif "led" in ob.name or "port" in ob.name:
+            ob.data.materials.append(led)
+        elif "face" in ob.name or "bay" in ob.name or "vent" in ob.name or "slot" in ob.name:
+            ob.data.materials.append(face)
+        elif "side" in ob.name:
+            ob.data.materials.append(frame_mats[1])
+        elif ob.name.startswith("unit_"):
+            ob.data.materials.append(unit)
+        else:
+            ob.data.materials.append(frame_mats[0])
+
+
+def _snap_objects_to_floor(objects: list[bpy.types.Object]) -> None:
+    bpy.context.view_layer.update()
+    min_z = min((ob.matrix_world @ v.co).z for ob in objects for v in ob.data.vertices)
+    if abs(min_z) < 1e-6:
+        return
+    for ob in objects:
+        ob.location.z -= min_z
+    bpy.context.view_layer.update()
+
+
+def _join_for_bake(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
+    copies: list[bpy.types.Object] = []
+    for ob in objects:
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        copies.append(dup)
+    root = join_meshes(copies)
+    root.name = name
+    return root
 
 
 def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
@@ -315,10 +375,15 @@ def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None
 
 
 def export_gltf_y_up(ob: bpy.types.Object, path: Path) -> None:
+    export_gltf_y_up_multi([ob], path)
+
+
+def export_gltf_y_up_multi(objects: list[bpy.types.Object], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
+    for ob in objects:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
     for img in list(bpy.data.images):
         if img.filepath and not img.packed_file:
             try:
@@ -642,16 +707,29 @@ def render_preview_front_from_glb(glb_path: Path, out_name: str) -> Path:
     return preview
 
 
-def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
-    root.name = f"mesh_{asset_id}"
+def finish_cc0_asset(
+    asset_id: str,
+    root: bpy.types.Object,
+    sources: list[str],
+    export_objects: list[bpy.types.Object] | None = None,
+) -> dict:
+    export_objs = list(export_objects) if export_objects else [root]
     era1 = _is_era1_hero(asset_id)
     if not era1:
         bevel_w = 0.014 if "pc-tower" in asset_id else 0.016 if asset_id.startswith("compute-") else 0.012
         bevel_object(root, width=bevel_w, segments=2)
     if era1 or "pc-tower" in asset_id:
-        import mesh_builders as mb
+        if export_objects:
+            _snap_objects_to_floor(export_objs)
+        else:
+            import mesh_builders as mb
 
-        mb.snap_root_to_floor(root)
+            mb.snap_root_to_floor(root)
+
+    bake_root = _join_for_bake(export_objs, f"mesh_{asset_id}") if export_objects else root
+    if export_objects:
+        root = bake_root
+    root.name = f"mesh_{asset_id}"
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
     if not has_bake:
@@ -671,7 +749,7 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
                 vcol.data[corner_i].color = col
         root = join_meshes(parts) if len(parts) > 1 else parts[0]
     root.name = f"mesh_{asset_id}"
-    if era1:
+    if era1 and not export_objects:
         import pc_tower_kit as kit
 
         kit.store_face_material_index(root)
@@ -687,14 +765,26 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
     if asset_id == "compute-pc-tower-era1":
         urp_material_era1_tower(root, asset_id, albedo)
     elif asset_id == "compute-monitor-era1":
-        urp_material_era1_monitor(root, asset_id, albedo)
+        if export_objects:
+            apply_era1_monitor_export_materials(asset_id, export_objs)
+        else:
+            urp_material_era1_monitor(root, asset_id, albedo)
     elif asset_id == "compute-server-rack-era1":
-        urp_material_era1_rack(root, asset_id, albedo)
+        if export_objects:
+            apply_era1_rack_export_materials(asset_id, export_objs)
+        else:
+            urp_material_era1_rack(root, asset_id, albedo)
     else:
         urp_material(root, asset_id, albedo)
 
     glb = out_dir / f"{asset_id}.glb"
-    export_gltf_y_up(root, glb)
+    if export_objects:
+        for ob in export_objs:
+            ob.name = ob.name or f"part_{export_objs.index(ob)}"
+            ob.data.name = ob.name
+        export_gltf_y_up_multi(export_objs, glb)
+    else:
+        export_gltf_y_up(root, glb)
     if era1 and asset_id in ("compute-monitor-era1", "compute-server-rack-era1"):
         import era1_glb_selfcheck as glb_sc
 

@@ -60,7 +60,7 @@ def _box(name: str, dims: tuple[float, float, float], loc: tuple[float, float, f
 
 
 def _part_mat_index(name: str) -> int:
-    if "led_g" in name:
+    if "led" in name or "port" in name:
         return MAT_LED_GREEN
     if "led_a" in name:
         return MAT_LED_AMBER
@@ -76,7 +76,7 @@ def _part_mat_index(name: str) -> int:
 
 
 def _part_color(name: str) -> tuple[float, float, float]:
-    if "led_g" in name:
+    if "led" in name or "port" in name:
         return COL_LED_G
     if "led_a" in name:
         return COL_LED_A
@@ -107,7 +107,7 @@ def _weld_mesh(ob: bpy.types.Object, dist: float = WELD) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
-def build_rack_era1() -> bpy.types.Object:
+def build_rack_era1() -> list[bpy.types.Object]:
     MESH_SPEC.clear()
     hx = _hx()
     hy = _hy()
@@ -149,59 +149,76 @@ def build_rack_era1() -> bpy.types.Object:
 
     server_parts: list[bpy.types.Object] = []
 
+    def _side_rails(unit: str, z_c: float, h: float) -> None:
+        z_shelf = z_c - h / 2 - u * 0.6
+        y_mid = (y_ff + y_bk) / 2
+        for side, sx in (("l", -hx + POST * 0.5), ("r", hx - POST * 0.5)):
+            server_parts.append(_box(f"{unit}_side_{side}", (POST + 0.024, ud_srv * 0.92, RAIL), (sx, y_mid, z_shelf)))
+            server_parts.append(
+                _box(f"{unit}_side_{side}_leg", (RAIL, 0.022, h * 0.45), (sx, y_ff + 0.012, z_c - h * 0.22))
+            )
+
     def _closed_unit(name: str, h: float, z: float, *, vents: int = 0, ports: int = 0, leds: int = 0) -> None:
-        server_parts.append(_box(name, (uw_srv, ud_srv, h), (0, uc_y, z)))
         yf = y_ff + 0.0025
-        server_parts.append(_box(f"{name}_front", (uw_srv - 0.006, 0.005, h - 0.012), (0, yf, z)))
+        server_parts.append(_box(name, (uw_srv, ud_srv, h), (0, uc_y, z)))
+        server_parts.append(_box(f"{name}_face", (uw_srv - 0.008, 0.006, h - 0.010), (0, yf, z)))
         if name == "unit_4u":
-            for bi, xo in enumerate((-0.10, 0.0, 0.10)):
-                server_parts.append(
-                    _box(f"{name}_slot_{bi}", (0.085, 0.004, 0.030), (xo, yf + 0.002, z + (bi - 1) * 0.034))
-                )
+            for row in range(4):
+                for col in range(3):
+                    xo = (col - 1) * 0.092
+                    zo = z + (row - 1.5) * 0.036
+                    server_parts.append(
+                        _box(f"{name}_bay_{row}_{col}", (0.082, 0.005, 0.028), (xo, yf + 0.003, zo))
+                    )
             for li, xo in enumerate((0.10, 0.14)):
-                server_parts.append(_box(f"{name}_led_g_{li}", (0.008, 0.006, 0.006), (xo, yf + 0.003, z - h * 0.32)))
+                server_parts.append(_box(f"{name}_led_{li}", (0.008, 0.006, 0.006), (xo, yf + 0.004, z - h * 0.32)))
         for vi in range(vents):
             server_parts.append(
-                _box(f"{name}_vent_{vi}", (uw_srv - 0.08, 0.004, 0.012), (0, yf + 0.002, z + 0.02 - vi * 0.022))
+                _box(f"{name}_vent_{vi}", (uw_srv - 0.10, 0.005, 0.014), (0, yf + 0.003, z + 0.024 - vi * 0.028))
             )
         if ports:
-            for pi, xo in enumerate((-0.12, -0.04, 0.04, 0.12)):
-                server_parts.append(_box(f"{name}_led_g_{pi}", (0.009, 0.006, 0.006), (xo, yf + 0.003, z)))
+            for pi in range(8):
+                xo = -0.14 + pi * 0.04
+                server_parts.append(_box(f"{name}_port_{pi}", (0.009, 0.006, 0.008), (xo, yf + 0.004, z)))
         for li in range(leds):
             server_parts.append(
-                _box(f"{name}_led_g_{li}", (0.008, 0.006, 0.006), (uw_srv * 0.35 - li * 0.06, yf + 0.003, z - h * 0.25))
+                _box(
+                    f"{name}_led_{li}",
+                    (0.008, 0.006, 0.006),
+                    (uw_srv * 0.32 - li * 0.065, yf + 0.004, z - h * 0.26),
+                )
             )
+        _side_rails(name, z, h)
 
-    _closed_unit("unit_1u", 0.045, z1, ports=4)
-    _closed_unit("unit_2u_a", 0.090, z2a, vents=2, leds=1)
-    _closed_unit("unit_2u_b", 0.090, z2b, vents=2, leds=1)
+    _closed_unit("unit_1u", 0.045, z1, ports=8)
+    _closed_unit("unit_2u_a", 0.090, z2a, vents=3, leds=2)
+    _closed_unit("unit_2u_b", 0.090, z2b, vents=3, leds=2)
     _closed_unit("unit_4u", 0.180, z4)
 
-    all_parts = frame_parts + server_parts
     slot_mats = [bpy.data.materials.new(f"_rack_slot_{i}") for i in range(7)]
-    for ob in all_parts:
+    for ob in frame_parts:
         tower._bevel(ob, 0.0015, segments=1)
         tower._paint_part_faces(ob, _part_color(ob.name))
-    tower._apply_global_material_slots(all_parts, slot_mats, _part_mat_index)
+    tower._apply_global_material_slots(frame_parts, slot_mats, _part_mat_index)
 
-    root = mb._union_parts(all_parts)
-    cc.apply_transforms(root)
-    _weld_mesh(root, 0.002)
-    _weld_mesh(root, WELD)
-    tower._fix_tower_normals(root)
-    root.name = "post_fl"
+    frame = mb._union_parts(frame_parts)
+    cc.apply_transforms(frame)
+    _weld_mesh(frame, 0.002)
+    _weld_mesh(frame, WELD)
+    tower._fix_tower_normals(frame)
+    frame.name = "rack_frame"
     bm = bmesh.new()
-    bm.from_mesh(root.data)
+    bm.from_mesh(frame.data)
     for v in bm.verts:
         if v.co.z > RACK_H:
             v.co.z = RACK_H - 0.001
         if v.co.z < 0:
             v.co.z = 0.0
-    bm.to_mesh(root.data)
+    bm.to_mesh(frame.data)
     bm.free()
-    tower.store_face_material_index(root)
+    tower.store_face_material_index(frame)
     tower._merge_face_colors_generic(
-        root,
+        frame,
         {
             MAT_FRAME: COL_FRAME,
             MAT_RAIL: COL_RAIL,
@@ -212,6 +229,12 @@ def build_rack_era1() -> bpy.types.Object:
             MAT_CABLE: COL_CABLE,
         },
     )
-    mb.snap_root_to_floor(root)
-    _weld_mesh(root, WELD)
-    return root
+
+    for ob in server_parts:
+        tower._bevel(ob, 0.0015, segments=1)
+        tower._paint_part_faces(ob, _part_color(ob.name))
+    tower._apply_global_material_slots(server_parts, slot_mats, _part_mat_index)
+    for ob in server_parts:
+        tower._fix_tower_normals(ob)
+
+    return [frame] + server_parts

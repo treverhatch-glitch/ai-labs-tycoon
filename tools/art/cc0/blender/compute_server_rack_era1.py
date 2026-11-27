@@ -10,12 +10,12 @@ import rack_era1_frame_kit as kit  # noqa: E402
 
 def build() -> dict:
     cc.reset_scene()
-    root = kit.build_rack_era1()
+    export_objs = kit.build_rack_era1()
     sources = [
         "procedural:era1 open wire frame rack",
         "style: corner posts, horizontal rails, no enclosed cabinet",
     ]
-    out = cc.finish_cc0_asset("compute-server-rack-era1", root, sources)
+    out = cc.finish_cc0_asset("compute-server-rack-era1", export_objs[0], sources, export_objects=export_objs)
     out["generator"] = "tools/art/cc0/blender/compute_server_rack_era1.py"
     return out
 

@@ -129,9 +129,9 @@ def _bulged_screen(y_center: float, z_center: float) -> bpy.types.Object:
 def _part_mat_index(name: str) -> int:
     if name == "screen" or name.startswith("screen_tab"):
         return MAT_SCREEN
-    if name == "led_pwr":
+    if name in ("led_pwr", "power_led"):
         return MAT_LED_GREEN
-    if name == "power_btn":
+    if name in ("power_btn", "power_button"):
         return MAT_POWER
     return MAT_BODY
 
@@ -139,9 +139,9 @@ def _part_mat_index(name: str) -> int:
 def _part_color(name: str) -> tuple[float, float, float]:
     if name == "screen" or name.startswith("screen_tab"):
         return COL_SCREEN
-    if name == "led_pwr":
+    if name in ("led_pwr", "power_led"):
         return COL_LED_PWR
-    if name == "power_btn":
+    if name in ("power_btn", "power_button"):
         return COL_POWER
     if name == "bezel_frame":
         return COL_BEZEL
@@ -156,55 +156,45 @@ def mesh_spec_report() -> str:
     return "\n".join(lines)
 
 
-def build_monitor_era1() -> bpy.types.Object:
+def build_monitor_era1() -> list[bpy.types.Object]:
+    """Return separate export meshes: shell, screen, power_button, power_led."""
     MESH_SPEC.clear()
     z_body = 0.22
     y_front = -MON_D / 2
 
-    parts: list[bpy.types.Object] = []
-    body = _tapered_body("body_tapered", z_body)
-    parts.append(body)
-    parts.append(_bezel_frame(z_body, y_front))
+    shell_parts: list[bpy.types.Object] = []
+    shell_parts.append(_tapered_body("body_tapered", z_body))
+    shell_parts.append(_bezel_frame(z_body, y_front))
+    shell_parts.append(_overlap_cylinder("base_foot", 0.11, 0.024, (0, 0, 0.012)))
+    shell_parts.append(_overlap_box("neck", (0.082, 0.082, 0.090), (0, 0, 0.067)))
 
     y_scr = y_front - RECESS - SCREEN_BULGE * 0.55
-    parts.append(_bulged_screen(y_scr, z_body))
+    screen = _bulged_screen(y_scr, z_body)
+    screen.name = "screen"
 
-    parts.append(_rear_housing(z_body, y_front))
-
-    foot_r = 0.11
-    parts.append(_overlap_cylinder("base_foot", foot_r, 0.024, (0, 0, 0.012)))
-    parts.append(_overlap_box("neck", (0.082, 0.082, 0.090), (0, 0, 0.067)))
-
-    y_bezel = y_front - BEZEL_T / 2 + 0.002
-    opening_bottom = z_body - SCREEN_H / 2
-    bz = opening_bottom - 0.02
+    y_face = y_front - BEZEL_T - 0.0015
+    bz = 0.235
     bx_pwr = FACE_W / 2 - 0.03
-    parts.append(_overlap_box("power_btn", (0.014, BEZEL_T * 0.82, 0.008), (bx_pwr, y_bezel, bz)))
-    parts.append(_overlap_box("led_pwr", (0.006, BEZEL_T * 0.82, 0.012), (bx_pwr - 0.018, y_bezel, bz)))
+    power_button = _overlap_box("power_button", (0.014, 0.003, 0.008), (bx_pwr, y_face, bz))
+    power_led = _overlap_box("power_led", (0.006, 0.003, 0.006), (bx_pwr - 0.018, y_face, bz))
 
-    sc.assert_monitor_parts(parts, root_name="body_tapered")
-    _parent_apply(parts, "body_tapered")
+    sc.assert_monitor_parts(shell_parts + [screen, power_button, power_led], root_name="body_tapered")
 
     slot_mats = [bpy.data.materials.new(f"_mon_slot_{i}") for i in range(4)]
-    for ob in parts:
+    for ob in shell_parts + [screen, power_button, power_led]:
         bw = 0.010 if ob.name == "screen" else 0.003
         tower._bevel(ob, bw, segments=2 if ob.name == "screen" else 1)
         tower._paint_part_faces(ob, _part_color(ob.name))
-    tower._apply_global_material_slots(parts, slot_mats, _part_mat_index)
+    tower._apply_global_material_slots(shell_parts + [screen, power_button, power_led], slot_mats, _part_mat_index)
 
-    root = mb._union_parts(parts[:])
-    cc.apply_transforms(root)
-    tower._fix_tower_normals(root)
-    root.name = "body_tapered"
-    tower.store_face_material_index(root)
-    tower._split_material_seams(root)
-    tower._merge_face_colors_generic(
-        root,
-        {MAT_BODY: COL_CASE, MAT_SCREEN: COL_SCREEN, MAT_LED_GREEN: COL_LED_PWR, MAT_POWER: COL_POWER},
-    )
-    mb.snap_root_to_floor(root)
-    _final_weld(root)
-    return root
+    shell = mb._union_parts(shell_parts)
+    cc.apply_transforms(shell)
+    tower._fix_tower_normals(shell)
+    shell.name = "body_tapered"
+    _final_weld(shell)
+
+    tower._fix_tower_normals(screen)
+    return [shell, screen, power_button, power_led]
 
 
 def _rear_housing(z_center: float, y_front: float) -> bpy.types.Object:

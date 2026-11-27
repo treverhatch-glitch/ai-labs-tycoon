@@ -56,7 +56,9 @@ def assert_monitor_parts(parts: list[bpy.types.Object], root_name: str = "body_t
     errors: list[str] = []
     skip_gap = pedestal | {
         "power_btn",
+        "power_button",
         "led_pwr",
+        "power_led",
         "screen",
         "rear_housing",
     }
