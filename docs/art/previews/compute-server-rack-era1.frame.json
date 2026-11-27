@@ -1,0 +1,10 @@
+{
+  "assetId": "compute-server-rack-era1",
+  "preview": "docs/art/previews/compute-server-rack-era1.png",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-server-rack-era1/compute-server-rack-era1.glb",
+  "glb_sha256": "998b644fe2b92c1e76a75cd2be9722d1597eba7c799813aeeb7cda733c0f2b80",
+  "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
+  "resolution": 1024,
+  "silhouetteFill": 0.7,
+  "backdropGrey": 150
+}
