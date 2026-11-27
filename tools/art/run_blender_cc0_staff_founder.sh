@@ -2,8 +2,8 @@
 # Founder hero only — pause lane (researcher unchanged).
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
-export STAFF_PREVIEW_YAW_DEG=32
-export STAFF_PREVIEW_ELEV_DEG=8
+export STAFF_PREVIEW_YAW_DEG=30
+export STAFF_PREVIEW_ELEV_DEG=10
 export STAFF_PREVIEW_MARGIN=1.45
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -39,6 +39,8 @@ python3 tools/art/check_cc0_staff_founder_preview_upright.py
 python3 tools/art/check_cc0_staff_founder_preview_silhouette.py
 python3 tools/art/check_cc0_staff_founder_face_read.py
 python3 tools/art/check_cc0_staff_founder_torso_hue.py
+python3 tools/art/check_cc0_staff_founder_torso_red.py
+python3 tools/art/check_cc0_staff_founder_albedo_flat.py
 python3 tools/art/check_cc0_staff_founder_arm_symmetry.py
 python3 tools/art/check_cc0_staff_founder_framing_width.py
 python3 tools/art/check_cc0_staff_founder_head_highlight.py

@@ -993,6 +993,9 @@ def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
     while mesh.color_attributes:
         mesh.color_attributes.remove(mesh.color_attributes[0])
     vcol = mesh.color_attributes.new(name="BakeCol", type="BYTE_COLOR", domain="CORNER")
+    mesh.color_attributes.active_color = vcol
+    if hasattr(mesh.color_attributes, "active_render_color"):
+        mesh.color_attributes.active_render_color = vcol
     for poly in mesh.polygons:
         rgba = (0.55, 0.55, 0.55, 1.0)
         mat = ob.data.materials[poly.material_index] if poly.material_index < len(ob.data.materials) else None
@@ -1111,9 +1114,25 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     multi_solid = len(ob.data.materials) > 1 or (
         ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name
     )
+    staff_flat_bake = asset_id == "staff-founder-idle" and len(ob.data.materials) > 1
     if multi_solid:
         transfer_material_colors_to_vertex_layer(ob)
-        if not asset_id.startswith("staff-"):
+        if staff_flat_bake:
+            bake_mat = bpy.data.materials.new(f"{asset_id}_flat_bake")
+            bake_mat.use_nodes = True
+            nodes = bake_mat.node_tree.nodes
+            links = bake_mat.node_tree.links
+            nodes.clear()
+            out = nodes.new("ShaderNodeOutputMaterial")
+            emit = nodes.new("ShaderNodeEmission")
+            attr = nodes.new("ShaderNodeAttribute")
+            attr.attribute_name = "BakeCol"
+            links.new(attr.outputs["Color"], emit.inputs["Color"])
+            emit.inputs["Strength"].default_value = 1.0
+            links.new(emit.outputs["Emission"], out.inputs["Surface"])
+            ob.data.materials.clear()
+            ob.data.materials.append(bake_mat)
+        elif not asset_id.startswith("staff-"):
             unify_vertex_color_material(ob, asset_id)
         else:
             unify_vertex_color_material(ob, asset_id)
@@ -1168,7 +1187,9 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         bpy.context.scene.render.bake.margin = 8
         restore: list[tuple] = []
         try:
-            if kind == "albedo" and mesh_has_corner_color_layer(ob):
+            if kind == "albedo" and staff_flat_bake:
+                bpy.ops.object.bake(type="EMIT")
+            elif kind == "albedo" and mesh_has_corner_color_layer(ob):
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
             elif kind == "albedo":
                 slot = ob.data.materials[0]

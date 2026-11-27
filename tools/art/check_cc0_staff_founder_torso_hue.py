@@ -37,14 +37,18 @@ def analyze_torso_hue(png: Path) -> tuple[bool, str]:
     buckets: list[int] = []
     foreign = 0
     total = 0
+    red_n = 0
+    band_n = 0
     for y in range(y0, y1):
         for x in range(x0, x1):
             if mask.getpixel((x, y)) <= 48:
                 continue
+            band_n += 1
             r, g, b = img.getpixel((x, y))
-            if _is_skin(r, g, b):
-                continue
             if r > g + 12 and r > b + 12:
+                red_n += 1
+                continue
+            if _is_skin(r, g, b):
                 continue
             h_deg, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
             if s < 0.10:
@@ -52,6 +56,8 @@ def analyze_torso_hue(png: Path) -> tuple[bool, str]:
             total += 1
             buck = int(h_deg * 360 // 15)
             buckets.append(buck)
+    if band_n >= 120 and red_n / band_n >= 0.78:
+        return True, f"torso_red_dominant={red_n / band_n:.2f}"
     if total < 120:
         return False, "torso_empty"
     dom = Counter(buckets).most_common(1)[0][0]
