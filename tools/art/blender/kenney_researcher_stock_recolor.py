@@ -374,12 +374,13 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _apply_hand_skin_vertex_groups(bm, slots, ob)
+    _apply_researcher_hand_skin_only(bm, slots, ob, lm)
     _stamp_researcher_chest_v_shirt(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_tie(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_forearm_shirt_under_coat(bm, slots, ob, lm)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
@@ -469,7 +470,7 @@ def _stamp_researcher_shirt_torso_arms(
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         on_torso = lat <= thw * 1.10 and y_face_fn(wc) > -0.18
-        on_arm = lat > thw * 0.74 and lm.h_neck - 0.08 <= h <= lm.h_waist + 0.24
+        on_arm = lat > thw * 0.68 and lm.h_neck - 0.12 <= h <= lm.h_waist + 0.10
         if on_torso or on_arm:
             slots[face.index] = SLOT_SHIRT
 
@@ -485,7 +486,7 @@ def _stamp_tee_short_sleeve(
 ) -> None:
     """Tee ends at upper arm; forearm and hands stay skin."""
     lo, span = lm.zmin, lm.span
-    wrist_h = lm.h_waist - 0.02
+    wrist_h = lm.h_waist - 0.10
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -510,8 +511,10 @@ def _stamp_researcher_chest_v_shirt(
     fwd: Vector,
     y_face_fn,
 ) -> None:
-    """Light-blue shirt in open lab-coat front V."""
+    """Light-blue shirt in open lab-coat front V (collar through chest)."""
     lo, span = lm.zmin, lm.span
+    v_lo = lm.h_neck - 0.18
+    v_hi = lm.h_waist - 0.02
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -521,12 +524,42 @@ def _stamp_researcher_chest_v_shirt(
         h = (wc.z - lo) / span
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if not (lm.h_neck - 0.04 <= h <= lm.h_waist - 0.08):
+        if y_face < 0.03 or h < v_lo or h > v_hi:
             continue
-        if y_face < 0.05:
-            continue
-        if lat < thw * 0.34:
+        t = (h - v_lo) / max(1e-4, v_hi - v_lo)
+        if lat < thw * (0.36 - t * 0.16):
             slots[face.index] = SLOT_SHIRT
+
+
+def _stamp_forearm_shirt_under_coat(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    """Forearms stay shirt-coloured if coat mesh has elbow gaps (no bare skin)."""
+    if not ob.vertex_groups:
+        return
+    lo, span = lm.zmin, lm.span
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.12 or h > lm.h_waist + 0.12:
+            continue
+        arm = 0.0
+        for v in face.verts:
+            for g in ob.data.vertices[v.index].groups:
+                name = vg_names.get(g.group, "")
+                if name in ARM_VG_BONES:
+                    arm += g.weight
+        arm /= max(1, len(face.verts))
+        if arm < 0.22:
+            continue
+        slots[face.index] = SLOT_SHIRT
 
 
 def _stamp_researcher_tie(
@@ -698,6 +731,38 @@ def _stamp_lab_coat_open_front(
         if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
             continue
         slots[face.index] = SLOT_SHIRT
+
+
+def _apply_researcher_hand_skin_only(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    """Hands only (forearms stay shirt under coat sleeve)."""
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    lo, span = lm.zmin, lm.span
+
+    def hand_w(vi: int) -> float:
+        w = 0.0
+        for g in ob.data.vertices[vi].groups:
+            if vg_names.get(g.group, "") in _VG_HANDS:
+                w += g.weight
+        return w
+
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h > lm.h_waist - 0.08:
+            continue
+        if sum(hand_w(v.index) for v in face.verts) / len(face.verts) < 0.28:
+            continue
+        slots[face.index] = SLOT_HAND
 
 
 def _apply_hand_skin_vertex_groups(

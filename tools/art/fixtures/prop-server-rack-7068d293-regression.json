@@ -1,0 +1,9 @@
+{
+  "regressionHead": "7068d293",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-7068d293-regression.png",
+  "intendedGateFailures": [
+    "bottom 3% backdrop band — 149,149,149 shadow tail (backdrop_bottom_band_bad_px)",
+    "game-zoom readability — flat front/side tone; dim trim and face plates"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate."
+}

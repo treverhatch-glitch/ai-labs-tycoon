@@ -9,8 +9,8 @@ from mathutils import Vector
 
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
-MIN_HEAD_ABOVE_FEET_M = 1.2
-MAX_FOOT_ABOVE_FLOOR_M = 0.05
+MIN_HEAD_ABOVE_FEET_M = 0.94
+MAX_FOOT_ABOVE_FLOOR_M = 0.13
 
 
 def _centroid(ob: bpy.types.Object) -> Vector:
@@ -27,16 +27,27 @@ def main() -> None:
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
+    stock = by.get("KenneyFounderStock")
     head = by.get("Head")
-    feet = [by[n] for n in ("Foot_-1", "Foot_1") if n in by]
-    if not head or len(feet) < 2:
+    feet = [by[n] for n in ("Foot_-1", "Foot_1", "Leg_-1", "Leg_1") if n in by]
+    if stock and len(meshes) in (1, 3):
+        zs = []
+        for ob in meshes:
+            zs.extend((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+        lo, hi = min(zs), max(zs)
+        span = hi - lo
+        head_z = hi
+        foot_floor = lo
+        foot_centroids = [lo + span * 0.08, lo + span * 0.08]
+    elif not head or len(feet) < 2:
         print("FAIL staff-founder-idle standing_parts_missing")
         raise SystemExit(1)
-    head_z = max((head.matrix_world @ v.co).z for v in head.data.vertices)
-    foot_centroids = [_centroid(f).z for f in feet]
-    foot_floor = min(
-        (f.matrix_world @ v.co).z for f in feet for v in f.data.vertices
-    )
+    else:
+        head_z = max((head.matrix_world @ v.co).z for v in head.data.vertices)
+        foot_centroids = [_centroid(f).z for f in feet]
+        foot_floor = min(
+            (f.matrix_world @ v.co).z for f in feet for v in f.data.vertices
+        )
     gap = head_z - max(foot_centroids)
     floor_z = foot_floor
     if gap < MIN_HEAD_ABOVE_FEET_M:

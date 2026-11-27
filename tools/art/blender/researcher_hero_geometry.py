@@ -56,6 +56,54 @@ _VG_HANDS = frozenset(
     }
 )
 _VG_COAT_EXCLUDE = frozenset({"Head", "Neck"})
+_VG_SLEEVE = frozenset(
+    {
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+    }
+)
+
+
+def _coat_open_v(
+    lat: float,
+    thw: float,
+    h: float,
+    lm,
+    y_face: float,
+) -> bool:
+    if y_face < 0.02:
+        return False
+    v_lo = lm.h_neck - 0.18
+    v_hi = lm.h_waist - 0.02
+    if h < v_lo or h > v_hi:
+        return False
+    t = (h - v_lo) / max(1e-4, v_hi - v_lo)
+    return lat < thw * (0.36 - t * 0.16)
+
+
+def _sleeve_source_face(
+    face: bmesh.types.BMFace,
+    ob: bpy.types.Object,
+    *,
+    lm,
+    lo: float,
+    span: float,
+) -> bool:
+    arm = sum(_vg_weight(ob, v.index, _VG_SLEEVE) for v in face.verts) / max(1, len(face.verts))
+    if arm < 0.18:
+        return False
+    wc = _world_centroid(face, ob)
+    h = (wc.z - lo) / span
+    if h < lm.h_neck - 0.20 or h > lm.h_waist + 0.14:
+        return False
+    hand = sum(_vg_weight(ob, v.index, _VG_HANDS) for v in face.verts) / max(1, len(face.verts))
+    if hand > 0.42:
+        return False
+    return True
 
 
 def _vg_weight(ob: bpy.types.Object, vi: int, names: frozenset[str]) -> float:
@@ -341,17 +389,21 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         y_face = y_face_fn(wc)
-        open_chest = (
-            y_face > 0.04
-            and lat < thw * 0.36
-            and lm.h_neck - 0.02 <= h <= lm.h_waist - 0.02
+        neck_w = sum(_vg_weight(body, v.index, frozenset({"Neck"})) for v in f.verts) / len(f.verts)
+        open_chest = _coat_open_v(lat, thw, h, lm, y_face)
+        if neck_w > 0.18 and y_face > -0.05 and lat < thw * 0.42:
+            open_chest = True
+        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.50:
+            open_chest = True
+        lapel_only = (
+            y_face > 0.06
+            and thw * 0.22 <= lat <= thw * 0.46
+            and lm.h_neck - 0.10 <= h <= lm.h_waist - 0.04
         )
         on_torso = lat <= thw * 1.30 and y_face > -0.40 and not open_chest
-        on_arm = (
-            lat > thw * 0.62
-            and lm.h_neck - 0.12 <= h <= lm.h_waist + 0.08
-            and y_face > -0.48
-        )
+        if on_torso and y_face > 0.05 and h >= lm.h_neck - 0.10 and not lapel_only:
+            on_torso = lat > thw * 0.48
+        on_arm = _sleeve_source_face(f, body, lm=lm, lo=lo, span=span)
         on_leg_panel = (
             coat_hem <= h <= lm.h_waist - 0.04
             and lat <= thw * 0.92
@@ -363,6 +415,30 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
             f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
         ):
             pick.append(f)
+    pick_set = {pf.index for pf in pick}
+    for f in bm_src.faces:
+        if f.index in pick_set:
+            continue
+        if _sleeve_source_face(f, body, lm=lm, lo=lo, span=span):
+            pick.append(f)
+            pick_set.add(f.index)
+    changed = True
+    while changed:
+        changed = False
+        for f in bm_src.faces:
+            if f.index in pick_set:
+                continue
+            if not _sleeve_source_face(f, body, lm=lm, lo=lo, span=span):
+                continue
+            for e in f.edges:
+                for nb in e.link_faces:
+                    if nb.index in pick_set:
+                        pick.append(f)
+                        pick_set.add(f.index)
+                        changed = True
+                        break
+                if changed:
+                    break
     if len(pick) < 24:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
 

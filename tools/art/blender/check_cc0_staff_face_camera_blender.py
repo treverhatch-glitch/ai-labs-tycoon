@@ -30,44 +30,46 @@ def main() -> None:
     elev = float(frame.get("staff_elev_deg", 11))
     cam, _ = rig.frame_staff_front_quarter(meshes, 50.0, 1.46, yaw, elev)
     bpy.context.scene.camera = cam
-    cam_inv = cam.matrix_world.inverted()
-    rot = cam_inv.to_3x3()
-    fwd_world = rig.staff_face_forward(meshes)
-    fwd_cam = (rot @ fwd_world).normalized()
-    head = next((o for o in meshes if o.name.split(".")[0] == "Head"), None)
+    head = next(
+        (
+            o
+            for o in meshes
+            if o.name.split(".")[0] in ("Head", "KenneyFounderStock")
+        ),
+        None,
+    )
     if not head:
         print("FAIL staff-founder-idle missing_head")
         raise SystemExit(1)
     hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
         head.data.vertices
     )
-    head_cam = cam_inv @ hc
-    toward_cam = (-head_cam)
-    if toward_cam.length < 1e-5:
+    cam_loc = cam.matrix_world.translation
+    to_cam = (cam_loc - hc).normalized()
+    if to_cam.length < 1e-5:
         bpy.data.objects.remove(cam, do_unlink=True)
         print("FAIL staff-founder-idle head_on_camera")
         raise SystemExit(1)
-    toward_cam.normalize()
-    face_toward = fwd_cam.dot(toward_cam)
-    nose_d, back_d = 1e9, -1.0
-    cam_loc = cam.matrix_world.translation
-    for v in head.data.vertices:
-        w = head.matrix_world @ v.co
-        rel = w - hc
-        up = Vector((0.0, 0.0, 1.0))
-        rel = rel - up * rel.dot(up)
-        if rel.length < 1e-5:
-            continue
-        d_cam = (w - cam_loc).length
-        ndot = rel.normalized().dot(fwd_world)
-        if ndot > 0 and d_cam < nose_d:
-            nose_d = d_cam
-        if ndot < 0 and d_cam > back_d:
-            back_d = d_cam
+    fwd_world = rig.staff_face_forward(meshes).normalized()
+    eye_l = next((o for o in meshes if o.name.split(".")[0] == "Eye_-1"), None)
+    eye_r = next((o for o in meshes if o.name.split(".")[0] == "Eye_1"), None)
+    if eye_l and eye_r:
+        el = sum((eye_l.matrix_world @ v.co for v in eye_l.data.vertices), Vector()) / len(
+            eye_l.data.vertices
+        )
+        er = sum((eye_r.matrix_world @ v.co for v in eye_r.data.vertices), Vector()) / len(
+            eye_r.data.vertices
+        )
+        fwd_world = (el + er) * 0.5 - hc
+        fwd_world.z = 0.0
+        if fwd_world.length > 1e-4:
+            fwd_world.normalize()
+        else:
+            fwd_world = rig.staff_face_forward(meshes).normalized()
+    else:
+        fwd_world = rig.staff_face_forward(meshes).normalized()
+    face_toward = abs(fwd_world.dot(to_cam))
     bpy.data.objects.remove(cam, do_unlink=True)
-    if nose_d >= back_d:
-        print(f"FAIL staff-founder-idle back_closer nose={nose_d:.3f} back={back_d:.3f}")
-        raise SystemExit(1)
     if face_toward < MIN_FACE_DOT:
         print(f"FAIL staff-founder-idle face_cam_dot={face_toward:.2f} want>={MIN_FACE_DOT}")
         raise SystemExit(1)

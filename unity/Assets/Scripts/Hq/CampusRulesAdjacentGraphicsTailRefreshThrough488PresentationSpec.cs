@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusRulesAdjacentGraphicsTailRefreshThrough488PresentationSpec { public const int TailRefreshThroughBatch = 488; public static int PriorTailBatch => CampusRulesAdjacentGraphicsTailRefreshThrough476.TailRefreshThroughBatch; public const string RefreshDoc = "RULES-ADJACENT-GRAPHICS-TAIL-REFRESH-488.md"; } }

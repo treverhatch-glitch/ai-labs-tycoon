@@ -1,0 +1,56 @@
+{
+  "updatedAt": "2026-11-26T16:30:09Z",
+  "incomingRoot": "tools/art/cc0/incoming",
+  "packs": [
+    {
+      "id": "kenney-furniture-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "pageUrl": "https://kenney.nl/assets/furniture-kit",
+      "archive": "kenney_furniturePack.zip",
+      "mirrorUrl": "https://opengameart.org/content/furniture-kit",
+      "sha256": "68afa4e6dc8a53942379fb47f1e84ec735d46b77bb1c1ceb968e245693dde067",
+      "bytes": 5580414
+    },
+    {
+      "id": "kenney-factory-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "pageUrl": "https://kenney.nl/assets/factory-kit",
+      "archive": "kenney_factory-kit_3.0.zip",
+      "mirrorUrl": "https://opengameart.org/content/factory-kit",
+      "sha256": "7e31fb2308e90304672bd15cd18fa9d9f02c03731a8cbc57a8e3e1c181dfb0a7",
+      "bytes": 4511890
+    },
+    {
+      "id": "quaternius-scifi-megakit",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "pageUrl": "https://quaternius.com/packs/modularscifimegakit.html",
+      "archive": "modular_scifi_megakitstandard.zip",
+      "mirrorUrl": "https://opengameart.org/content/modular-sci-fi-megakit",
+      "sha256": "4ca9acbc7a13e7baa48e24c4853b779889b7ab21587004c36668826e705c8a10",
+      "bytes": 48563245
+    },
+    {
+      "id": "polyhaven-studio-small-09",
+      "author": "Poly Haven",
+      "license": "CC0-1.0",
+      "pageUrl": "https://polyhaven.com/a/studio_small_09",
+      "archive": "studio_small_09_1k.hdr",
+      "mirrorUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr",
+      "sha256": "e7cfda5f4e98e623db12b8bfd0184e048488e4855d9c83e2751fb44a32e80c45",
+      "bytes": 1615248
+    },
+    {
+      "id": "ambientcg-metal048a",
+      "author": "ambientCG",
+      "license": "CC0-1.0",
+      "pageUrl": "https://ambientcg.com/view?id=Metal048A",
+      "archive": "Metal048A_1K-JPG.zip",
+      "mirrorUrl": "https://ambientcg.com/get?file=Metal048A_1K-JPG.zip",
+      "sha256": "3915edefd3c8daaa3deb8be4070af19ff5663977ec01dbc677f1fa9bd3c07e5d",
+      "bytes": 2595307
+    }
+  ]
+}
