@@ -935,18 +935,16 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     mesh.name = "KenneyResearcherStock"
     apply_researcher_founder_base_materials(mesh, preserve_armature_weights=True)
     reinforce_founder_forearm_weights(mesh)
-    coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm)
     eyes = spawn_researcher_eye_meshes(mesh)
     hair = spawn_researcher_hair_cap(mesh)
     _weight_mesh_to_head(hair, arm)
-    extras = [*coat_parts, *eyes, hair]
     keep = {
         arm.name.split(".")[0],
         mesh.name.split(".")[0],
         "KenneyResearcherStock",
         "Root",
     }
-    keep |= {o.name.split(".")[0] for o in extras}
+    keep |= {o.name.split(".")[0] for o in (*eyes, hair)}
     act, start, end = _assign_locomotion_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start
@@ -954,6 +952,26 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     walk_frames = pick_walk_contact_frames(arm, scene, start, end, bind_arms, idle_arms)
     ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
+    scene.frame_set(start)
+    bpy.context.view_layer.update()
+    from researcher_shirt_derived_meshes import (
+        snapshot_evaluated_body,
+        sync_coat_parts_to_body,
+    )
+
+    snap = snapshot_evaluated_body(mesh)
+    try:
+        coat_parts = spawn_researcher_shirt_derived_parts(
+            snap, arm, weight_body=mesh
+        )
+    finally:
+        snap_me = snap.data
+        bpy.data.objects.remove(snap, do_unlink=True)
+        if snap_me.users == 0:
+            bpy.data.meshes.remove(snap_me)
+    sync_coat_parts_to_body(mesh, coat_parts, arm)
+    extras = [*coat_parts, *eyes, hair]
+    keep |= {o.name.split(".")[0] for o in extras}
     labels = ("contact_L", "down", "contact_R", "up")
     return WalkHeroScene(
         arm=arm,

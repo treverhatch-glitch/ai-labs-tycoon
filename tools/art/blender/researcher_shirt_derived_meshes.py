@@ -4,6 +4,7 @@ from __future__ import annotations
 import bpy
 import bmesh
 from mathutils import Vector
+from mathutils.bvhtree import BVHTree
 
 import blender_common as bc
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
@@ -27,6 +28,8 @@ SLEEVE_ALLOWED_VG = frozenset(
     }
 )
 VG_DENY_HEAD = frozenset({"Head", "Neck"})
+MAX_COAT_BODY_GAP_M = 0.08
+MAX_COAT_EDGE_M = 0.15
 
 
 def _face_world_centroid(body: bpy.types.Object, face: bmesh.types.BMFace) -> Vector:
@@ -34,6 +37,159 @@ def _face_world_centroid(body: bpy.types.Object, face: bmesh.types.BMFace) -> Ve
     for v in face.verts:
         wc += body.matrix_world @ v.co
     return wc / len(face.verts)
+
+
+def _body_bvh_world(body: bpy.types.Object) -> BVHTree:
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.transform(body.matrix_world)
+    bm.faces.ensure_lookup_table()
+    tree = BVHTree.FromBMesh(bm)
+    bm.free()
+    return tree
+
+
+def _transfer_coat_weights_nearest_face_interp(
+    coat: bpy.types.Object, body: bpy.types.Object
+) -> None:
+    """Data Transfer: nearest-face interpolated vertex groups from rigged body."""
+    if coat.type != "MESH" or body.type != "MESH":
+        return
+    for vg in body.vertex_groups:
+        if vg.name not in coat.vertex_groups:
+            coat.vertex_groups.new(name=vg.name)
+    mod = coat.modifiers.new("CoatWeightXfer", "DATA_TRANSFER")
+    mod.object = body
+    mod.use_vert_data = True
+    mod.data_types_verts = {"VGROUP_WEIGHTS"}
+    mod.vert_mapping = "POLYINTERP_NEAREST"
+    mod.mix_mode = "REPLACE"
+    mod.mix_factor = 1.0
+    view = bpy.context.view_layer
+    prev_active = view.objects.active
+    prev_mode = coat.mode
+    prev_sel = [o for o in view.objects if o.select_get()]
+    try:
+        if coat.mode != "OBJECT":
+            bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+        coat.select_set(True)
+        view.objects.active = coat
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    except RuntimeError as exc:
+        if mod.name in coat.modifiers:
+            coat.modifiers.remove(mod)
+        raise RuntimeError(f"FAIL staff-researcher-idle coat_weight_transfer {exc}") from exc
+    finally:
+        for o in view.objects:
+            o.select_set(False)
+        for o in prev_sel:
+            o.select_set(True)
+        if prev_active:
+            view.objects.active = prev_active
+        if prev_mode != "OBJECT" and prev_active == coat:
+            bpy.ops.object.mode_set(mode=prev_mode)
+
+
+def _cull_verts_far_from_body(
+    ob: bpy.types.Object, body: bpy.types.Object, *, max_gap_m: float
+) -> int:
+    tree = _body_bvh_world(body)
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    kill = []
+    for v in bm.verts:
+        co_w = ob.matrix_world @ v.co
+        _loc, _n, _idx, dist = tree.find_nearest(co_w)
+        if dist is None or dist > max_gap_m:
+            kill.append(v)
+    if not kill:
+        bm.free()
+        return 0
+    bmesh.ops.delete(bm, geom=kill, context="VERTS")
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0003)
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    n = len(kill)
+    bm.free()
+    return n
+
+
+def _cull_verts_below_z(ob: bpy.types.Object, z_cut: float) -> int:
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    kill = [v for v in bm.verts if (ob.matrix_world @ v.co).z < z_cut]
+    if not kill:
+        bm.free()
+        return 0
+    bmesh.ops.delete(bm, geom=kill, context="VERTS")
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    n = len(kill)
+    bm.free()
+    return n
+
+
+def _cull_spike_edges(ob: bpy.types.Object, *, max_edge_m: float) -> int:
+    mw = ob.matrix_world
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    bm.edges.ensure_lookup_table()
+    kill: set[bmesh.types.BMVert] = set()
+    for e in bm.edges:
+        a = mw @ e.verts[0].co
+        b = mw @ e.verts[1].co
+        if (a - b).length > max_edge_m:
+            kill.add(e.verts[0])
+            kill.add(e.verts[1])
+    if not kill:
+        bm.free()
+        return 0
+    bmesh.ops.delete(bm, geom=list(kill), context="VERTS")
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    n = len(kill)
+    bm.free()
+    return n
+
+
+def _project_verts_onto_body_shell(ob: bpy.types.Object, body: bpy.types.Object) -> None:
+    tree = _body_bvh_world(body)
+    inv = ob.matrix_world.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    for v in bm.verts:
+        co_w = ob.matrix_world @ v.co
+        loc, _n, _idx, _dist = tree.find_nearest(co_w)
+        if loc is not None:
+            v.co = inv @ loc
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+
+
+def _sanitize_coat_part(
+    ob: bpy.types.Object,
+    body: bpy.types.Object,
+    *,
+    allow: frozenset[str],
+    z_knee: float,
+    project_shell: bool = False,
+    cull_below_knee: bool = True,
+) -> None:
+    if project_shell:
+        _project_verts_onto_body_shell(ob, body)
+    _transfer_coat_weights_nearest_face_interp(ob, body)
+    _purge_vertex_groups(ob, allow=allow, deny=VG_DENY_HEAD)
+    _normalize_vertex_groups(ob)
+    _cull_spike_edges(ob, max_edge_m=MAX_COAT_EDGE_M)
+    if cull_below_knee:
+        _cull_verts_below_z(ob, z_knee - 0.008)
+    _cull_verts_far_from_body(ob, body, max_gap_m=MAX_COAT_BODY_GAP_M)
+    if len(ob.data.vertices) < 12:
+        raise RuntimeError(f"FAIL staff-researcher-idle coat_cull_empty name={ob.name}")
 
 
 def _repair_weights_from_nearest_body(
@@ -120,13 +276,17 @@ def _mesh_from_face_pick(
     return ob, src_for
 
 
+def knee_world_z(body: bpy.types.Object, lm) -> float:
+    return lm.zmin + lm.span * (lm.h_shoe + 0.36)
+
+
 def _skirt_z_band(
     body: bpy.types.Object, lm
 ) -> tuple[float, float, float, float, float, float]:
     lo, span = lm.zmin, lm.span
     skirt_top_z = lo + span * (lm.h_neck - 0.12)
     z_hip = lo + span * (lm.h_waist - 0.06)
-    z_knee = lo + span * (lm.h_waist + 0.55)
+    z_knee = lo + span * (lm.h_shoe + 0.38)
     hip_pts: list[float] = []
     knee_pts: list[float] = []
     for v in body.data.vertices:
@@ -134,22 +294,17 @@ def _skirt_z_band(
         h = (w.z - lo) / span
         if lm.h_waist - 0.08 < h < lm.h_waist + 0.06:
             hip_pts.append(w.z)
-        if lm.h_waist + 0.26 < h < lm.h_waist + 0.56:
+        if lm.h_shoe + 0.22 < h < lm.h_waist + 0.14:
             knee_pts.append(w.z)
     if hip_pts:
         z_hip = min(hip_pts)
     if knee_pts:
-        z_knee = max(knee_pts)
+        z_knee = sum(knee_pts) / len(knee_pts)
     arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     if arm:
-        for name, dst in (("Hips", "hip"), ("LeftLeg", "knee")):
-            b = arm.data.bones.get(name)
-            if b:
-                wz = (arm.matrix_world @ b.head_local).z
-                if dst == "hip":
-                    z_hip = wz - span * 0.02
-                else:
-                    z_knee = wz + span * 0.02
+        hip_b = arm.data.bones.get("Hips")
+        if hip_b:
+            z_hip = (arm.matrix_world @ hip_b.head_local).z - span * 0.02
     z_mid_thigh = (z_hip + z_knee) * 0.5
     return lo, span, skirt_top_z, z_hip, z_mid_thigh, z_knee
 
@@ -283,7 +438,7 @@ def pick_shirt_sleeve_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
-    wrist_lo = lm.h_shoe + 0.08
+    wrist_lo = lm.h_shoe + 0.02
     sleeve_hi = lm.h_neck + 0.08
     pick: set[int] = set()
     for f in bm_src.faces:
@@ -316,6 +471,28 @@ def pick_shirt_sleeve_faces(
     return pick
 
 
+def snapshot_evaluated_body(body: bpy.types.Object) -> bpy.types.Object:
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    me = bpy.data.meshes.new_from_object(body, depsgraph=deps)
+    snap = bpy.data.objects.new("_BodyPoseSnap", me)
+    snap.matrix_world = body.matrix_world.copy()
+    bpy.context.collection.objects.link(snap)
+    return snap
+
+
+def sync_coat_parts_to_body(
+    body: bpy.types.Object, parts: list[bpy.types.Object], arm: bpy.types.Object | None
+) -> None:
+    for ob in parts:
+        if arm is not None and any(m.type == "ARMATURE" for m in ob.modifiers):
+            ob.matrix_world = body.matrix_world.copy()
+        elif arm is None:
+            if ob.parent != body:
+                ob.parent = body
+                ob.matrix_parent_inverse = body.matrix_world.inverted()
+
+
 def _attach_coat_part_to_body_or_arm(
     ob: bpy.types.Object,
     body: bpy.types.Object,
@@ -323,9 +500,8 @@ def _attach_coat_part_to_body_or_arm(
 ) -> None:
     if arm is not None:
         if ob.parent:
-            world = ob.matrix_world.copy()
             ob.parent = None
-            ob.matrix_world = world
+        ob.matrix_world = body.matrix_world.copy()
         for mod in list(ob.modifiers):
             if mod.type == "ARMATURE":
                 ob.modifiers.remove(mod)
@@ -342,11 +518,13 @@ def spawn_shirt_derived_coat_parts(
     *,
     shirt_slot: int,
     coat_mat,
+    weight_body: bpy.types.Object | None = None,
 ) -> list[bpy.types.Object]:
     for name in (SKIRT_NAME, SLEEVES_NAME):
         for ob in list(bpy.context.scene.objects):
             if ob.type == "MESH" and ob.name.split(".")[0] == name:
                 bpy.data.objects.remove(ob, do_unlink=True)
+    weight_body = weight_body or body
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
@@ -396,6 +574,7 @@ def spawn_shirt_derived_coat_parts(
     sleeves, _ = _mesh_from_face_pick(body, bm_src, sleeve_pick, SLEEVES_NAME)
     bm_src.free()
     lo, span, skirt_top_z, z_hip, z_mid_thigh, _zk = _skirt_z_band(body, lm)
+    z_knee = knee_world_z(body, lm)
     arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     z_neck = _neck_cut_world_z(arm, lm)
     _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
@@ -405,12 +584,33 @@ def spawn_shirt_derived_coat_parts(
     removed = _prune_verts_above_z(skirt, z_neck)
     if removed > 0 and len(skirt.data.vertices) < 12:
         raise RuntimeError(f"FAIL staff-researcher-idle skirt_prune_neck removed={removed}")
-    for ob in (skirt, sleeves):
-        ob.data.materials.clear()
-        ob.data.materials.append(coat_mat)
-        allow = SKIRT_ALLOWED_VG if ob.name.startswith(SKIRT_NAME) else SLEEVE_ALLOWED_VG
-        _purge_vertex_groups(ob, allow=allow, deny=VG_DENY_HEAD)
-        _repair_weights_from_nearest_body(ob, body, allow=allow)
-        _normalize_vertex_groups(ob)
-        parts.append(ob)
+    skirt.data.materials.clear()
+    skirt.data.materials.append(coat_mat)
+    _sanitize_coat_part(
+        skirt,
+        weight_body,
+        allow=SKIRT_ALLOWED_VG,
+        z_knee=z_knee,
+        project_shell=True,
+    )
+    _stretch_skirt_hem_to_mid_thigh(skirt, z_hip, z_mid_thigh, skirt_top_z=skirt_top_z)
+    _project_verts_onto_body_shell(skirt, body)
+    _transfer_coat_weights_nearest_face_interp(skirt, weight_body)
+    _purge_vertex_groups(skirt, allow=SKIRT_ALLOWED_VG, deny=VG_DENY_HEAD)
+    _normalize_vertex_groups(skirt)
+    _cull_spike_edges(skirt, max_edge_m=MAX_COAT_EDGE_M)
+    _cull_verts_far_from_body(skirt, body, max_gap_m=MAX_COAT_BODY_GAP_M)
+    if len(skirt.data.vertices) < 12:
+        raise RuntimeError("FAIL staff-researcher-idle skirt_post_hem_empty")
+    sleeves.data.materials.clear()
+    sleeves.data.materials.append(coat_mat)
+    _sanitize_coat_part(
+        sleeves,
+        weight_body,
+        allow=SLEEVE_ALLOWED_VG,
+        z_knee=z_knee,
+        project_shell=False,
+        cull_below_knee=False,
+    )
+    parts.extend([skirt, sleeves])
     return parts

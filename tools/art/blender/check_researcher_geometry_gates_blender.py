@@ -16,9 +16,11 @@ import kenney_researcher_lib as kr  # noqa: E402
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward  # noqa: E402
 from kenney_geometry_landmarks import compute_landmarks  # noqa: E402
 from researcher_shirt_derived_meshes import (  # noqa: E402
+    MAX_COAT_BODY_GAP_M,
     SKIRT_NAME,
     SLEEVES_NAME,
     VG_DENY_HEAD,
+    _body_bvh_world,
     _neck_cut_world_z,
     _skirt_z_band,
     _stretch_skirt_hem_to_mid_thigh,
@@ -92,6 +94,20 @@ def main() -> int:
     if not skirt or not sleeves or not hair:
         print("FAIL staff-researcher-idle geometry missing_parts")
         return 1
+    shell_gap = 0.0
+    tree = _body_bvh_world(body)
+    for coat in (skirt, sleeves):
+        for v in coat.data.vertices:
+            co = coat.matrix_world @ v.co
+            _loc, _n, _idx, dist = tree.find_nearest(co)
+            if dist is not None:
+                shell_gap = max(shell_gap, dist)
+    if shell_gap > MAX_COAT_BODY_GAP_M + 1e-4:
+        print(
+            f"FAIL staff-researcher-idle coat_body_gap={shell_gap:.4f} "
+            f"max={MAX_COAT_BODY_GAP_M}"
+        )
+        return 1
     z_neck = _neck_cut_world_z(arm, lm)
     above_neck = sum(
         1 for v in skirt.data.vertices if (skirt.matrix_world @ v.co).z > z_neck + 0.006
@@ -120,9 +136,9 @@ def main() -> int:
     zmin = min((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     zmax = max((skirt.matrix_world @ v.co).z for v in skirt.data.vertices)
     if (
-        zmin > z_mid_thigh + span * 0.02
-        or zmax < z_mid_thigh - span * 0.08
-        or zmax > z_knee + span * 0.02
+        zmin > z_mid_thigh + span * 0.04
+        or zmax < z_mid_thigh - span * 0.06
+        or zmin < z_knee - span * 0.02
     ):
         print(
             f"FAIL staff-researcher-idle skirt_z_band zmin={zmin:.4f} zmax={zmax:.4f} "
@@ -162,7 +178,7 @@ def main() -> int:
     print(
         f"OK staff-researcher-idle geometry skirt_z=({zmin:.3f},{zmax:.3f}) "
         f"mid_thigh={z_mid_thigh:.3f} skirt_above_neck={above_neck} "
-        f"sleeve_verts L={cov_l} R={cov_r} hair_ratio={ratio:.3f}"
+        f"coat_gap={shell_gap:.4f} sleeve_verts L={cov_l} R={cov_r} hair_ratio={ratio:.3f}"
     )
     return 0
 

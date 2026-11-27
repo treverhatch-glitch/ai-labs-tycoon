@@ -71,7 +71,7 @@ def swap_body_mesh_from_founder_stock(mesh: bpy.types.Object) -> None:
 # Match founder slot indices; slot 3 is lab coat (was shirt).
 SLOT_SHOE = 1
 RESEARCHER_LAB_COAT_RGBA = (0.99, 0.97, 0.94, 1.0)
-RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
+RESEARCHER_SKIN = (0.62, 0.52, 0.44, 1.0)
 
 
 def _finalize_researcher_coat_slots(
@@ -115,6 +115,14 @@ def _finalize_researcher_coat_slots(
         if coat_top <= h <= lm.h_waist + 0.12 and lat <= thw * 1.35:
             throat = y_face > 0.10 and lat < thw * 0.20 and lm.h_neck - 0.03 <= h <= lm.h_neck + 0.05
             if not throat and slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
+                slots[face.index] = SLOT_SHIRT
+
+        if (
+            lm.h_waist - 0.04 <= h <= lm.h_waist + 0.20
+            and y_face > 0.02
+            and lat <= thw * 1.48
+        ):
+            if slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
                 slots[face.index] = SLOT_SHIRT
 
         if lat > thw * 0.82 and coat_top <= h <= wrist_h:
@@ -242,14 +250,20 @@ def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | 
 
 
 def spawn_researcher_shirt_derived_parts(
-    body: bpy.types.Object, arm: bpy.types.Object | None = None
+    body: bpy.types.Object,
+    arm: bpy.types.Object | None = None,
+    *,
+    weight_body: bpy.types.Object | None = None,
 ) -> list[bpy.types.Object]:
     from researcher_shirt_derived_meshes import _attach_coat_part_to_body_or_arm
 
     coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
-    parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
+    rig_body = weight_body or body
+    parts = spawn_shirt_derived_coat_parts(
+        body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat, weight_body=rig_body
+    )
     for ob in parts:
-        _attach_coat_part_to_body_or_arm(ob, body, arm)
+        _attach_coat_part_to_body_or_arm(ob, rig_body, arm)
     return parts
 
 
