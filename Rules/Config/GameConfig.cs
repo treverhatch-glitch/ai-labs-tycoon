@@ -198,6 +198,9 @@ namespace AiLabs.Rules.Config
         public HearingSharePriceEraBoostConfig HearingSharePriceEraBoost = new HearingSharePriceEraBoostConfig();
         public RungSixEraCooldownConfig RungSixEraCooldown = new RungSixEraCooldownConfig();
         public DataSourceAcquireEraDiscountConfig DataSourceAcquireEraDiscount = new DataSourceAcquireEraDiscountConfig();
+        public MarginSatisfyEraReliefConfig MarginSatisfyEraRelief = new MarginSatisfyEraReliefConfig();
+        public ScenarioGoalsEraSlackConfig ScenarioGoalsEraSlack = new ScenarioGoalsEraSlackConfig();
+        public TakeoffCrisisEraGraceConfig TakeoffCrisisEraGrace = new TakeoffCrisisEraGraceConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -394,6 +397,9 @@ namespace AiLabs.Rules.Config
             s.Obj("hearingSharePriceEraBoost", ref HearingSharePriceEraBoost);
             s.Obj("rungSixEraCooldown", ref RungSixEraCooldown);
             s.Obj("dataSourceAcquireEraDiscount", ref DataSourceAcquireEraDiscount);
+            s.Obj("marginSatisfyEraRelief", ref MarginSatisfyEraRelief);
+            s.Obj("scenarioGoalsEraSlack", ref ScenarioGoalsEraSlack);
+            s.Obj("takeoffCrisisEraGrace", ref TakeoffCrisisEraGrace);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

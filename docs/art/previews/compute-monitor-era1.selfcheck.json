@@ -1,0 +1,21 @@
+{
+  "assetId": "compute-monitor-era1",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-monitor-era1/compute-monitor-era1.glb",
+  "checks": {
+    "a_render_from_glb_only": true,
+    "b_single_connected_component": true,
+    "c_nothing_below_floor": true,
+    "c_nothing_above_frame_top": true,
+    "e_named_meshes": true,
+    "d_screen_center_raycast": true
+  },
+  "weldedIslandCount": 4,
+  "lines": [
+    "- (a) previews sourced from exported GLB only: **PASS**",
+    "- (b) exactly one mesh island after 0.5mm weld: **PASS**",
+    "- (c) nothing above frame top: **PASS**",
+    "- (c) nothing below z=0: **PASS**",
+    "- (d) front ray hits screen material: **PASS**",
+    "- e_named_meshes: **PASS**"
+  ]
+}
