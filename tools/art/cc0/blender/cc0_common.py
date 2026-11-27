@@ -272,7 +272,7 @@ def urp_material_era1_monitor(ob: bpy.types.Object, asset_id: str, albedo_path: 
 
 
 def urp_material_era1_rack(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
-    import rack_era1_kit as kit
+    import rack_era1_frame_kit as kit
     import pc_tower_kit as tower
 
     ob.data.materials.clear()
@@ -695,6 +695,11 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
 
     glb = out_dir / f"{asset_id}.glb"
     export_gltf_y_up(root, glb)
+    if era1 and asset_id in ("compute-monitor-era1", "compute-server-rack-era1"):
+        import era1_glb_selfcheck as glb_sc
+
+        audit = glb_sc.assert_glb_audit(glb, asset_id)
+        glb_sc.write_audit_json(glb, asset_id, audit)
     preview = render_preview_from_glb(glb, asset_id)
     preview_front: str | None = None
     if era1:

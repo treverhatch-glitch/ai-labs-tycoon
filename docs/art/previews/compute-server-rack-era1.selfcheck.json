@@ -1,0 +1,18 @@
+{
+  "assetId": "compute-server-rack-era1",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-server-rack-era1/compute-server-rack-era1.glb",
+  "checks": {
+    "a_render_from_glb_only": true,
+    "b_single_connected_component": true,
+    "c_nothing_below_floor": true,
+    "c_nothing_above_frame_top": true,
+    "d_screen_center_raycast": true
+  },
+  "lines": [
+    "- (a) previews sourced from exported GLB only: **PASS**",
+    "- (b) one connected component (2mm gap tolerance): **PASS**",
+    "- (c) nothing above frame top: **PASS**",
+    "- (c) nothing below z=0: **PASS**",
+    "- (d) front ray hits screen material: **PASS**"
+  ]
+}

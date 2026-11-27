@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cc0_common as cc  # noqa: E402
-import rack_era1_kit as kit  # noqa: E402
+import rack_era1_frame_kit as kit  # noqa: E402
 
 
 def build() -> dict:

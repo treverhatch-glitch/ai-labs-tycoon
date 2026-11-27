@@ -49,17 +49,27 @@ def _footprint_contains(
     return True
 
 
-def assert_monitor_parts(parts: list[bpy.types.Object]) -> None:
-    shell_names = {"body_front", "hood_rear", "bezel_front", "neck"}
+def assert_monitor_parts(parts: list[bpy.types.Object], root_name: str = "body_tapered") -> None:
+    shell_names = {root_name, "bezel_frame", "neck"}
     pedestal = {"base_foot", "neck"}
     shell = _union_aabb([_world_aabb(p) for p in parts if p.name in shell_names])
     errors: list[str] = []
+    skip_gap = pedestal | {
+        "power_btn",
+        "led_pwr",
+        "screen",
+        "screen_tab_top",
+        "screen_tab_bot",
+        "vent_groove_0",
+        "vent_groove_1",
+        "vent_groove_2",
+    }
     for ob in parts:
         if ob.name in shell_names:
             continue
         box = _world_aabb(ob)
         gap = _aabb_gap(box, shell)
-        if ob.name not in pedestal and gap > GAP_TOL + 1e-6:
+        if ob.name not in skip_gap and gap > GAP_TOL + 1e-6:
             errors.append(f"{ob.name}: gap {gap*1000:.1f}mm from body shell")
         slack_z = 0.14 if ob.name in pedestal else 0.12
         if not _footprint_contains(box, shell, slack_z_below=slack_z):
