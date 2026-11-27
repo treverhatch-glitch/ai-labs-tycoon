@@ -1,0 +1,10 @@
+{
+  "assetId": "compute-pc-tower-era1",
+  "preview": "docs/art/previews/compute-pc-tower-era1.png",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-pc-tower-era1/compute-pc-tower-era1.glb",
+  "glb_sha256": "e402c9deac4a1498772d0ed4901942c3ccb725f1c80ab40d1b14228f8546762f",
+  "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
+  "resolution": 1024,
+  "silhouetteFill": 0.7,
+  "backdropGrey": 150
+}

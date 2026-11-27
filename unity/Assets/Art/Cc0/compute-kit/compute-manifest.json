@@ -19,20 +19,6 @@
       "generator": "tools/art/cc0/blender/compute_monitor_set.py"
     },
     {
-      "id": "compute-pc-tower",
-      "path": "Assets/Art/Cc0/compute-kit/compute-pc-tower/compute-pc-tower.glb",
-      "textures": {
-        "albedo": "Assets/Art/Cc0/compute-kit/compute-pc-tower/textures/compute-pc-tower_albedo.png",
-        "ao": "Assets/Art/Cc0/compute-kit/compute-pc-tower/textures/compute-pc-tower_ao.png"
-      },
-      "preview": "docs/art/previews/compute-pc-tower.png",
-      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
-      "sources": [
-        "procedural:bpy desktop tower (single island)"
-      ],
-      "generator": "tools/art/cc0/blender/compute_pc_tower.py"
-    },
-    {
       "id": "compute-server-rack",
       "path": "Assets/Art/Cc0/compute-kit/compute-server-rack/compute-server-rack.glb",
       "textures": {
@@ -46,6 +32,21 @@
         "procedural:bpy 42U cabinet (single island)"
       ],
       "generator": "tools/art/cc0/blender/compute_server_rack.py"
+    },
+    {
+      "id": "compute-pc-tower-era1",
+      "path": "Assets/Art/Cc0/compute-kit/compute-pc-tower-era1/compute-pc-tower-era1.glb",
+      "textures": {
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-pc-tower-era1/textures/compute-pc-tower-era1_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-pc-tower-era1/textures/compute-pc-tower-era1_ao.png"
+      },
+      "preview": "docs/art/previews/compute-pc-tower-era1.png",
+      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
+      "sources": [
+        "procedural:era1 beige 90s desktop tower",
+        "style: TPH chunky rect"
+      ],
+      "generator": "tools/art/cc0/blender/compute_pc_tower.py"
     }
   ]
 }

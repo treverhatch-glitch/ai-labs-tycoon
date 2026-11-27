@@ -98,14 +98,13 @@ def part_palette(asset_id: str) -> list[tuple[float, float, float]]:
             (0.18, 0.45, 0.92),
             (0.62, 0.64, 0.68),
         ],
-        "compute-pc-tower": [
-            (0.72, 0.74, 0.80),
-            (0.58, 0.42, 0.96),
-            (0.98, 0.55, 0.18),
-            (0.25, 0.92, 0.88),
-            (0.95, 0.28, 0.72),
-            (0.38, 0.95, 0.48),
-            (0.35, 0.75, 0.95),
+        "compute-pc-tower-era1": [
+            (0.84, 0.80, 0.72),
+            (0.58, 0.54, 0.48),
+            (0.95, 0.48, 0.12),
+            (0.22, 0.78, 0.28),
+            (0.76, 0.72, 0.64),
+            (0.32, 0.30, 0.28),
         ],
         "compute-monitor-set": [
             (0.20, 0.22, 0.26),
@@ -170,7 +169,7 @@ def bake_material(ob: bpy.types.Object, asset_id: str) -> bpy.types.Material:
     return mat
 
 
-def rasterize_vertex_colors(ob: bpy.types.Object, tex_path: Path) -> None:
+def rasterize_vertex_colors(ob: bpy.types.Object, tex_path: Path, asset_id: str = "") -> None:
     mesh = ob.data
     attr = mesh.color_attributes.get("BakeColor")
     uv = mesh.uv_layers.active
@@ -178,7 +177,13 @@ def rasterize_vertex_colors(ob: bpy.types.Object, tex_path: Path) -> None:
         raise RuntimeError("missing BakeColor or UV")
     tex_path.parent.mkdir(parents=True, exist_ok=True)
     img = bpy.data.images.new(f"T_raster_{ob.name}", TEX_SIZE, TEX_SIZE, alpha=False)
-    px = [0.45, 0.45, 0.48, 1.0] * (TEX_SIZE * TEX_SIZE)
+    if "pc-tower-era1" in asset_id:
+        fill = (0.84, 0.80, 0.72, 1.0)
+    elif "pc-tower" in asset_id:
+        fill = (0.26, 0.40, 0.42, 1.0)
+    else:
+        fill = (0.45, 0.45, 0.48, 1.0)
+    px = list(fill) * (TEX_SIZE * TEX_SIZE)
     for poly in mesh.polygons:
         for li in poly.loop_indices:
             u, v = uv.data[li].uv
@@ -228,6 +233,10 @@ def urp_material(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None
     rough = 0.38 if "pc-tower" in asset_id else 0.52
     bsdf.inputs["Roughness"].default_value = rough
     bsdf.inputs["Metallic"].default_value = 0.08 if "pc-tower" in asset_id else 0.12
+    if "Alpha" in bsdf.inputs:
+        bsdf.inputs["Alpha"].default_value = 1.0
+    mat.blend_method = "OPAQUE"
+    mat.shadow_method = "OPAQUE"
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
@@ -272,7 +281,7 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
-def _setup_hdri_grey_world() -> None:
+def _setup_hdri_grey_world(hdri_strength: float = 0.42) -> None:
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
     world.use_nodes = True
@@ -289,11 +298,11 @@ def _setup_hdri_grey_world() -> None:
         mix = nodes.new("ShaderNodeMixShader")
         light = nodes.new("ShaderNodeBackground")
         light.inputs["Color"].default_value = (1, 1, 1, 1)
-        light.inputs["Strength"].default_value = 0.55
+        light.inputs["Strength"].default_value = 0.38
         links.new(env.outputs["Color"], light.inputs["Color"])
         links.new(bg.outputs["Background"], mix.inputs[1])
         links.new(light.outputs["Background"], mix.inputs[2])
-        mix.inputs["Fac"].default_value = 0.42
+        mix.inputs["Fac"].default_value = hdri_strength
         links.new(mix.outputs["Shader"], out.inputs["Surface"])
     else:
         links.new(bg.outputs["Background"], out.inputs["Surface"])
@@ -306,9 +315,20 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
     preview = PREVIEW_DIR / f"{asset_id}.png"
     reset_scene()
-    _setup_hdri_grey_world()
+    is_tower = "pc-tower" in asset_id
+    _setup_hdri_grey_world(0.26 if is_tower else 0.42)
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    for ob in mesh_obs:
+        for mat in ob.data.materials:
+            if mat is None:
+                continue
+            mat.blend_method = "OPAQUE"
+            mat.shadow_method = "OPAQUE"
+            if mat.use_nodes:
+                bsdf = mat.node_tree.nodes.get("Principled BSDF")
+                if bsdf and "Alpha" in bsdf.inputs:
+                    bsdf.inputs["Alpha"].default_value = 1.0
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
     mins, maxs = _world_bbox(mesh_obs)
@@ -328,12 +348,12 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.65 if "pc-tower" in asset_id else 2.2
+    key.data.energy = 1.55 if is_tower else 2.2
     key.data.angle = math.radians(4)
 
     bpy.ops.object.light_add(type="AREA", location=(center.x, center.y, floor_z - span * 0.05))
     fill = bpy.context.active_object
-    fill.data.energy = 60
+    fill.data.energy = 32 if is_tower else 60
     fill.data.size = span * 3
     fill.rotation_euler = (math.radians(90), 0, 0)
 
@@ -399,8 +419,8 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
-    bevel_w = 0.018 if asset_id == "compute-pc-tower" else 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
-    bevel_segments = 3 if asset_id == "compute-pc-tower" else 2
+    bevel_w = 0.014 if "pc-tower" in asset_id else 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
+    bevel_segments = 2
     bevel_object(root, width=bevel_w, segments=bevel_segments)
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
@@ -428,7 +448,7 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
     tex_dir = out_dir / "textures"
     albedo = tex_dir / f"{asset_id}_albedo.png"
     ao = tex_dir / f"{asset_id}_ao.png"
-    rasterize_vertex_colors(root, albedo)
+    rasterize_vertex_colors(root, albedo, asset_id)
     bake_ao(root, bake_mat, ao)
     urp_material(root, asset_id, albedo)
 

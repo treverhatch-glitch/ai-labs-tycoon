@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 MANIFEST = ROOT / "unity/Assets/Art/Cc0/compute-kit/compute-manifest.json"
-EXPECTED = {"compute-monitor-set", "compute-pc-tower", "compute-server-rack"}
+EXPECTED = {"compute-monitor-set", "compute-pc-tower-era1", "compute-server-rack"}
 
 
 def main() -> int:

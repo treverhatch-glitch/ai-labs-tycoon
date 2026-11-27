@@ -1,4 +1,4 @@
-"""CC0 hero: Quaternius Prop_Computer + Kenney factory accents (TP Hospital restyle)."""
+"""CC0 hero: compute-pc-tower-era1 — beige 90s rect desktop tower."""
 import json
 import sys
 from pathlib import Path
@@ -12,10 +12,12 @@ def build() -> dict:
     cc.reset_scene()
     root = kit.build_pc_tower_cc0()
     sources = [
-        "quaternius:Prop_Computer (Modular Sci-Fi MegaKit)",
-        "kenney:factory-kit screen-panel-small, screen-panel-flat, piston-*",
+        "procedural:era1 beige 90s desktop tower (flat per-part vertex colors)",
+        "style: TPH chunky rect; saturated power/hdd accents only",
     ]
-    return cc.finish_cc0_asset("compute-pc-tower", root, sources)
+    out = cc.finish_cc0_asset("compute-pc-tower-era1", root, sources)
+    out["generator"] = "tools/art/cc0/blender/compute_pc_tower.py"
+    return out
 
 
 if __name__ == "__main__":
