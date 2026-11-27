@@ -1,0 +1,18 @@
+{
+  "id": "staff-pose-typing",
+  "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_albedo.png",
+    "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_normal.png",
+    "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_roughness.png"
+  },
+  "preview": "docs/art/previews/staff-pose-typing.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 910,
+  "triangleCount": 3544,
+  "meshIslands": 25,
+  "partCount": 25,
+  "grounded": true,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/staff-pose-typing.py"
+}

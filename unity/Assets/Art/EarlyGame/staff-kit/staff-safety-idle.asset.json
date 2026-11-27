@@ -1,0 +1,18 @@
+{
+  "id": "staff-safety-idle",
+  "path": "Assets/Art/EarlyGame/staff-kit/staff-safety-idle.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_albedo.png",
+    "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_normal.png",
+    "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_roughness.png"
+  },
+  "preview": "docs/art/previews/staff-safety-idle.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 974,
+  "triangleCount": 3792,
+  "meshIslands": 27,
+  "partCount": 27,
+  "grounded": true,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/staff-safety-idle.py"
+}

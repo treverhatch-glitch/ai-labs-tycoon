@@ -1,0 +1,6 @@
+#!/bin/sh
+# Reject Co-authored-by trailers (Hatch standing rule).
+if grep -qiE 'Co-authored-by:' "$1"; then
+  echo "FAIL: remove Co-authored-by from commit message" >&2
+  exit 1
+fi

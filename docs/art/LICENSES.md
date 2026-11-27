@@ -2,6 +2,23 @@
 
 Only **CC0 1.0** sources listed here may feed `tools/art/cc0/` and Blender hero exports.
 
+## Staff engineer hero (`staff-engineer-work`, PR #89)
+
+| Pack | URL | Licence | Used for |
+|------|-----|---------|----------|
+| Kenney Starter Kit 3D Platformer | https://kenney.nl/assets/starter-kit-3d-platformer | CC0 (assets); Godot repo MIT for code | `staff-engineer-work` base mesh (`character.glb`), `Textures/colormap.png` |
+| Poly Haven `studio_small_09` (1k) | https://polyhaven.com/a/studio_small_09 | CC0 | Staff preview world HDRI (`third_party/cc0/polyhaven-studio_small_09_1k.exr`) |
+
+### Planned staff lanes (not imported in hero commit)
+
+| Pack | URL | Licence | Notes |
+|------|-----|---------|-------|
+| Quaternius rigged humanoids | https://quaternius.com | CC0 | Future staff lanes |
+| Kenney Animated Characters | https://kenney.nl/assets/animated-characters-1 | CC0 | Alternate staff bases |
+| ambientCG materials | https://ambientcg.com | CC0 | Prop/surface kits |
+
+Source files for the engineer hero live under `third_party/cc0/`. Do not add non-CC0 packs without updating this table and Hatch review.
+
 ## Compute hardware hero (`cursor/art-compute-hardware-cc0`, PR #94)
 
 Hero assets are **restyled derivatives** of the packs below.
@@ -46,8 +63,4 @@ Vendored subsets may also live under `docs/art/cc0/`.
 
 **Hero `prop-desk` (PR #92):** Kenney desk cluster; Poly Haven HDRI + mid-grey ground.
 
-<<<<<<< HEAD
-**Hero `prop-server-rack` (PR #99):** procedural dark charcoal cabinet (bevelled bpy meshes, Metal048A tint); Kenney accent **`screen-panel-flat.glb`** only for door glass strip; preview backdrop exactly RGB 150.
-=======
 **Hero `prop-server-rack` (PR #99):** procedural rack + Kenney `screen-panel-flat.glb`; preview backdrop RGB 150.
->>>>>>> origin/cursor/art-compute-hardware-cc0

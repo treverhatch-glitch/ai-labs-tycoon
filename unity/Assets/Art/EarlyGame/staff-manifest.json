@@ -1,62 +1,150 @@
 {
-  "generator": "tools/art/generate_early_staff.py",
-  "fidelity": "packet-2",
+  "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
-      "id": "staff-researcher-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
-    {
       "id": "staff-engineer-work",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-engineer-work.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 276,
-      "triangleCount": 136
-    },
-    {
-      "id": "staff-safety-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-safety-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
-    {
-      "id": "staff-sales-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-sales-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
-    {
-      "id": "staff-recruiter-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-recruiter-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 252,
-      "triangleCount": 124
-    },
-    {
-      "id": "staff-gpu-tech-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 336,
-      "triangleCount": 164
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-engineer-work.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-engineer-work.png",
+      "license": "CC0: Kenney Starter Kit 3D Platformer (character.glb) + in-repo bake; see docs/art/LICENSES.md",
+      "vertexCount": 886,
+      "triangleCount": 1722,
+      "meshIslands": 8,
+      "partCount": 8,
+      "grounded": false,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-engineer-work.py"
     },
     {
       "id": "staff-founder-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 294,
-      "triangleCount": 144
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-founder-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 27,
+      "grounded": true,
+      "vertexCount": 998,
+      "triangleCount": 3864,
+      "partCount": 27,
+      "generator": "tools/art/blender/staff-founder-idle.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "staff-gpu-tech-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-gpu-tech-idle/staff-gpu-tech-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-gpu-tech-idle/staff-gpu-tech-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-gpu-tech-idle/staff-gpu-tech-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-gpu-tech-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 29,
+      "grounded": true,
+      "vertexCount": 1022,
+      "triangleCount": 3972,
+      "partCount": 29,
+      "generator": "tools/art/blender/staff-gpu-tech-idle.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "staff-pose-typing",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.obj",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 276,
-      "triangleCount": 136
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-pose-typing/staff-pose-typing_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-pose-typing.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 25,
+      "grounded": true,
+      "vertexCount": 910,
+      "triangleCount": 3544,
+      "partCount": 25,
+      "generator": "tools/art/blender/staff-pose-typing.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "staff-recruiter-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-recruiter-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-recruiter-idle/staff-recruiter-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-recruiter-idle/staff-recruiter-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-recruiter-idle/staff-recruiter-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-recruiter-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 29,
+      "grounded": true,
+      "vertexCount": 1022,
+      "triangleCount": 3984,
+      "partCount": 29,
+      "generator": "tools/art/blender/staff-recruiter-idle.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "staff-researcher-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-researcher-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 26,
+      "grounded": true,
+      "vertexCount": 950,
+      "triangleCount": 3696,
+      "partCount": 26,
+      "generator": "tools/art/blender/staff-researcher-idle.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "staff-safety-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-safety-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-safety-idle/staff-safety-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-safety-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 27,
+      "grounded": true,
+      "vertexCount": 974,
+      "triangleCount": 3792,
+      "partCount": 27,
+      "generator": "tools/art/blender/staff-safety-idle.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "staff-sales-idle",
+      "path": "Assets/Art/EarlyGame/staff-kit/staff-sales-idle.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-sales-idle/staff-sales-idle_albedo.png",
+        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-sales-idle/staff-sales-idle_normal.png",
+        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-sales-idle/staff-sales-idle_roughness.png"
+      },
+      "preview": "docs/art/previews/staff-sales-idle.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "meshIslands": 28,
+      "grounded": true,
+      "vertexCount": 998,
+      "triangleCount": 3888,
+      "partCount": 28,
+      "generator": "tools/art/blender/staff-sales-idle.py",
+      "blenderVersion": "4.0.2"
     }
   ]
 }

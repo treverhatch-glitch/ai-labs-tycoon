@@ -4,7 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-game-art-bootstrap}"
-export ART_PREPUSH_UPSTREAM
+ART_PREPUSH_BRANCH="${ART_PREPUSH_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+export ART_PREPUSH_UPSTREAM ART_PREPUSH_BRANCH
 if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_garage_kit.py
   python3 tools/art/generate_early_staff.py
