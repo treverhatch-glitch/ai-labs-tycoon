@@ -649,7 +649,10 @@ namespace AiLabs.Rules.State
         MarginCallEraGraced,
         HearingShareEraBoosted,
         RungSixEraCooldownShortened,
-        DataSourceAcquireEraDiscounted
+        DataSourceAcquireEraDiscounted,
+        MarginSatisfyEraRelieved,
+        ScenarioGoalsEraSlacked,
+        TakeoffCrisisEraGraced
     }
 
     /// <summary>

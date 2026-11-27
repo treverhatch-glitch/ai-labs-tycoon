@@ -1,14 +1,23 @@
-# CC0 art pipeline
+# CC0 incoming art
 
-1. **Download** — `./tools/art/cc0/download_packs.sh` (curl → `incoming/archives/`, unzip → `incoming/*`).
-2. **Restyle** — headless Blender scripts under `tools/art/cc0/blender/` (game role palette, bevels, 1024 AO + albedo bakes).
-3. **Export** — glTF **+Y up** (`export_scene.gltf`), URP-friendly albedo + AO textures.
-4. **Previews** — Poly Haven HDRI, 3/4 ortho camera, mid-grey ground from committed GLB (`docs/art/previews/`).
+## Shared pipeline
 
-Compute hardware hero lane: `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`.
+1. `download_cc0_packs.sh` / `download_packs.sh` — curl Kenney / ambientCG / Poly Haven (+ itch Quaternius when not bot-blocked).
+2. Headless Blender scripts under `tools/art/blender/*cc0*` or `tools/art/cc0/blender/`.
+3. Licence log: `docs/art/LICENSES.md`.
+4. Previews — Poly Haven HDRI, 3/4 ortho camera, mid-grey ground from committed GLB (`docs/art/previews/`).
+
+**Do not commit** `__pycache__` or `.pyc` under `tools/art/`.
+
+## Compute hardware hero lane
+
+`run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/` (rack, tower, monitor).
 
 Branch commits must not include `Co-authored-by` trailers (use `git commit --no-verify` only if hooks inject one).
 
 **Push (forward-only):** force-push is banned (`--force`, `--force-with-lease`, `+refspec`). Before every push run
-`./tools/art/cc0/prepush.sh` (ancestor check via `git merge-base --is-ancestor origin/<branch> HEAD` — abort if it fails).
-Plain `git push -u origin cursor/art-compute-hardware-cc0` only. If remote is already wrong, leave it as-is and fix with a new commit.
+`./tools/art/cc0/prepush.sh` (ancestor check — abort if it fails). Plain `git push -u origin cursor/art-compute-hardware-cc0` only.
+
+## Garage interior hero
+
+`check_cc0_garage_hero.py` via `run_blender_cc0_garage_hero.sh`.
