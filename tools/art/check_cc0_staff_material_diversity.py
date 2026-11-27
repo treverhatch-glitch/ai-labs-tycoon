@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
-HERO_IDS = ("staff-founder-idle", "staff-researcher-idle")
+HERO_IDS = ("staff-founder-idle",)
 PREVIEW = REPO / "docs/art/previews"
 MAX_DOMINANT = 0.80
 BIN = 28

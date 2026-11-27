@@ -25,8 +25,8 @@
       },
       "preview": "docs/art/previews/staff-founder-idle.png",
       "license": "CC0-1.0 (Kenney Animated Characters 3 + in-repo bake)",
-      "vertexCount": 1978,
-      "triangleCount": 6760,
+      "vertexCount": 1948,
+      "triangleCount": 6613,
       "meshIslands": 21,
       "partCount": 21,
       "grounded": true,
@@ -71,24 +71,6 @@
       "license": "CC0-1.0 (Blender-baked, in-repo)",
       "vertexCount": 252,
       "triangleCount": 124
-    },
-    {
-      "id": "staff-researcher-idle",
-      "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.glb",
-      "textures": {
-        "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_albedo.png",
-        "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_normal.png",
-        "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_roughness.png"
-      },
-      "preview": "docs/art/previews/staff-researcher-idle.png",
-      "license": "CC0-1.0 (Quaternius Ultimate Modular Character + in-repo bake)",
-      "vertexCount": 13793,
-      "triangleCount": 56984,
-      "meshIslands": 27,
-      "partCount": 27,
-      "grounded": true,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/staff-researcher-idle.py"
     },
     {
       "id": "staff-safety-idle",

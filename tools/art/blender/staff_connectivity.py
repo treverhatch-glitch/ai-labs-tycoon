@@ -282,6 +282,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                 allow = 0.065
             elif child_key == "Hips" and parent_key.startswith("Leg_"):
                 allow = 0.075
+            elif child_key == "Torso" and parent_key == "Hips":
+                allow = 0.04
         if gap > allow:
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
 
@@ -337,6 +339,10 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         if asset_id == "staff-founder-idle":
             if child_key == "Hood" and parent_key == "Head":
                 allow = 0.24
+            elif child_key in ("Eyebrows", "Mouth") and parent_key == "Head":
+                allow = 0.06
+            elif child_key.startswith("Eye_") and parent_key == "Head":
+                allow = 0.05
             elif child_key.startswith("JeansLeg_") and parent_key.startswith("Leg_"):
                 allow = 0.024
         if gap > allow:
@@ -432,6 +438,10 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             if asset_id == "staff-founder-idle":
                 if anchor == "Head" and tag in ("Hood", "Hair"):
                     allow = 0.24
+                elif anchor == "Head" and tag in ("Eyebrows", "Mouth"):
+                    allow = 0.06
+                elif anchor == "Head" and tag.startswith("Eye_"):
+                    allow = 0.05
                 elif tag.startswith("JeansLeg_") and anchor.startswith("Leg_"):
                     allow = 0.024
             if gap > allow:

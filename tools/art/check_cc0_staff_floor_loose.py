@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-HERO_IDS = ("staff-founder-idle", "staff-researcher-idle")
+HERO_IDS = ("staff-founder-idle",)
 FLOOR_Y = 0.09
 MAX_FLOOR_H = 0.14
 MIN_FOOT_AWAY = 0.18

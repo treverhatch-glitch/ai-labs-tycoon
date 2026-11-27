@@ -69,8 +69,8 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
     mask = Image.open(mask_path).convert("L")
     w, _ = img.size
     min_y, _, span = _figure_span(mask)
-    head_hi = min_y + int(span * 0.30)
-    head_mid = min_y + int(span * 0.14)
+    head_hi = min_y + int(span * 0.28)
+    head_mid = min_y + int(span * 0.06)
     blobs = _blobs(mask, img, head_mid, head_hi)
     left = [b for b in blobs if (b[0] + b[2]) / 2 < w * 0.48]
     right = [b for b in blobs if (b[0] + b[2]) / 2 > w * 0.52]

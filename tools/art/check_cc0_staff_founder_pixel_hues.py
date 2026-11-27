@@ -49,10 +49,10 @@ def main() -> int:
         return 1
     img = Image.open(PNG).convert("RGBA")
     mask = Image.open(mask_path).convert("L")
-    torso = _band_pixels(img, mask, 0.38, 0.52, 0.32, 0.68)
-    legs = _band_pixels(img, mask, 0.52, 0.76, 0.32, 0.68, denim_only=True)
+    torso = _band_pixels(img, mask, 0.30, 0.46, 0.34, 0.66)
+    legs = _band_pixels(img, mask, 0.54, 0.78, 0.32, 0.68, denim_only=True)
     if len(legs) < 200:
-        legs = _band_pixels(img, mask, 0.52, 0.76, 0.32, 0.68, denim_only=False)
+        legs = _band_pixels(img, mask, 0.54, 0.78, 0.32, 0.68, denim_only=False)
     if len(torso) < 200:
         print(f"FAIL staff-founder-idle torso_px={len(torso)}")
         return 1

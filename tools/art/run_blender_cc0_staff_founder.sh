@@ -3,7 +3,7 @@
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
-export STAFF_PREVIEW_MARGIN=1.38
+export STAFF_PREVIEW_MARGIN=1.35
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -46,6 +46,8 @@ python3 tools/art/check_cc0_staff_preview_corner_grey.py
 python3 tools/art/check_cc0_staff_founder_pose.py
 python3 tools/art/check_cc0_staff_founder_arm_pose.py
 python3 tools/art/check_cc0_staff_face_visible.py
+python3 tools/art/check_cc0_staff_founder_eye_blobs.py
+python3 tools/art/check_cc0_staff_founder_glb_connected.py
 python3 tools/art/check_cc0_staff_founder_pixel_hues.py
 python3 tools/art/check_cc0_staff_founder_assembly.py
 python3 tools/art/check_cc0_staff_founder_head_mesh.py

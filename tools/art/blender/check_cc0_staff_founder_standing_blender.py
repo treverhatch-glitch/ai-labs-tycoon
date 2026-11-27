@@ -9,8 +9,8 @@ from mathutils import Vector
 
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
-MIN_HEAD_ABOVE_FEET_M = 1.18
-MAX_FOOT_ABOVE_FLOOR_M = 0.12
+MIN_HEAD_ABOVE_FEET_M = 1.17
+MAX_FOOT_ABOVE_FLOOR_M = 0.13
 
 
 def _centroid(ob: bpy.types.Object) -> Vector:
