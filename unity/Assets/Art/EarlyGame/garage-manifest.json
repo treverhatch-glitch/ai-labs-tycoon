@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -75,8 +76,8 @@
       },
       "preview": "docs/art/previews/garage-desk-crt.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 683,
-      "triangleCount": 1998,
+      "vertexCount": 509,
+      "triangleCount": 1062,
       "partCount": 3,
       "generator": "tools/art/blender/garage-desk-crt.py",
       "blenderVersion": "4.0.2"
@@ -171,9 +172,9 @@
       },
       "preview": "docs/art/previews/garage-roll-door.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 384,
-      "triangleCount": 1536,
-      "partCount": 4,
+      "vertexCount": 1340,
+      "triangleCount": 3312,
+      "partCount": 1,
       "generator": "tools/art/blender/garage-roll-door.py",
       "blenderVersion": "4.0.2"
     },
