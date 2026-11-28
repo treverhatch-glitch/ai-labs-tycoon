@@ -764,13 +764,18 @@ def _finish_garage_kit_asset(
     """Multipart garage Z-up build: per-part GLB, vcol preview join (quality pass #88)."""
     out_dir = ART_ROOT / category
     tex_dir = out_dir / "textures" / asset_id
-    from garage_canonical_materials import assign_part_materials  # type: ignore
+    kenney_import = os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
+    if kenney_import:
+        from kenney_garage_asset import apply_kenney_garage_materials  # type: ignore
 
-    assign_part_materials(mesh_obs, asset_id)
+        apply_kenney_garage_materials(mesh_obs, asset_id)
+    else:
+        from garage_canonical_materials import assign_part_materials  # type: ignore
+
+        assign_part_materials(mesh_obs, asset_id)
     parts = list(mesh_obs)
     min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
     cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
-    kenney_import = os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
     if part_count < min_parts and not cc0_import and not kenney_import:
         raise RuntimeError(f"{asset_id}: need >={min_parts} sub-objects (got {part_count})")
 
@@ -1673,7 +1678,8 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
         tex.image.reload()
     hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id.startswith("garage-"):
-        hue.inputs["Saturation"].default_value = 1.0
+        scene_sheet = os.environ.get("GARAGE_SCENE_PREVIEW", "").strip() in ("1", "true", "yes")
+        hue.inputs["Saturation"].default_value = 1.48 if scene_sheet else 1.0
     else:
         hue.inputs["Saturation"].default_value = 1.45
     hue.inputs["Value"].default_value = 1.0 if asset_id.startswith("garage-") else 1.05
@@ -1717,9 +1723,13 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name
     )
     staff_flat_bake = asset_id == "staff-founder-idle" and len(ob.data.materials) > 1
+    kenney_flat_bake = (
+        os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
+        and asset_id.startswith("garage-")
+    )
     if multi_solid:
         transfer_material_colors_to_vertex_layer(ob)
-        if staff_flat_bake:
+        if staff_flat_bake or kenney_flat_bake:
             bake_mat = bpy.data.materials.new(f"{asset_id}_flat_bake")
             bake_mat.use_nodes = True
             nodes = bake_mat.node_tree.nodes
@@ -1734,7 +1744,7 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
             links.new(emit.outputs["Emission"], out.inputs["Surface"])
             ob.data.materials.clear()
             ob.data.materials.append(bake_mat)
-        elif not asset_id.startswith("staff-"):
+        elif not asset_id.startswith("staff-") and not kenney_flat_bake:
             unify_vertex_color_material(ob, asset_id)
         else:
             unify_vertex_color_material(ob, asset_id)
@@ -1789,7 +1799,7 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         bpy.context.scene.render.bake.margin = 8
         restore: list[tuple] = []
         try:
-            if kind == "albedo" and staff_flat_bake:
+            if kind == "albedo" and (staff_flat_bake or kenney_flat_bake):
                 bpy.ops.object.bake(type="EMIT")
             elif kind == "albedo" and mesh_has_corner_color_layer(ob):
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -15,13 +16,13 @@ TEX = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures"
 PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
 
-COLS = 2
-SPACING = 0.32
-PROP_SCALE = 1.65
-FLOOR_Y = 0.0  # Blender Y-up floor
+COLS = 4
+SPACING = 0.34
+PROP_SCALE = 1.12
+FLOOR_Y = 0.0
 
 
-def import_joined(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Object | None:
+def import_asset(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Object | None:
     glb = KIT / f"{asset_id}.glb"
     if not glb.exists():
         print(f"WARN missing {glb}")
@@ -57,16 +58,19 @@ def layout_ids() -> list[str]:
 
 
 def main() -> None:
+    os.environ["GARAGE_SCENE_PREVIEW"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
     joins: list[bpy.types.Object] = []
     ids = layout_ids()
+    rows = (len(ids) + COLS - 1) // COLS
     ox = -((COLS - 1) * SPACING) * 0.5
+    oz = -((rows - 1) * SPACING) * 0.5
     for i, asset_id in enumerate(ids):
         col = i % COLS
         row = i // COLS
         x = ox + col * SPACING
-        y = row * SPACING
-        ob = import_joined(asset_id, (x, 0.0, y))
+        z = oz + row * SPACING
+        ob = import_asset(asset_id, (x, 0.0, z))
         if ob:
             joins.append(ob)
     if not joins:
@@ -88,8 +92,8 @@ def main() -> None:
         else:
             src = None
         hue = nodes.new("ShaderNodeHueSaturation")
-        hue.inputs["Saturation"].default_value = 1.38
-        hue.inputs["Value"].default_value = 1.08
+        hue.inputs["Saturation"].default_value = 1.80
+        hue.inputs["Value"].default_value = 1.12
         if src:
             links.new(src, hue.inputs["Color"])
         else:
@@ -108,7 +112,7 @@ def main() -> None:
         out,
         resolution=768,
         mode="scene",
-        fill=0.90,
+        fill=0.82,
         margin=0.03,
         frame_objects=joins,
         up_axis="Y",
@@ -121,7 +125,7 @@ def main() -> None:
                 "preview_kind": "garage",
                 "flat_backdrop": True,
                 "backdrop_rgb": [150, 150, 150],
-                "framing_fill": 0.68,
+                "framing_fill": 0.82,
                 "up_axis": "Y",
                 "floor_plane": "horizontal_y",
                 "props": len(joins),

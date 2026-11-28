@@ -157,7 +157,7 @@
       "license": "CC0-1.0 (Blender-baked, in-repo)",
       "vertexCount": 1340,
       "triangleCount": 3312,
-      "partCount": 2,
+      "partCount": 1,
       "generator": "tools/art/blender/garage-roll-door.py",
       "blenderVersion": "4.0.2"
     },

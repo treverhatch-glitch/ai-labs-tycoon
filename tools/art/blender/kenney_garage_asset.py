@@ -82,6 +82,76 @@ def _center_xz(ob: bpy.types.Object) -> None:
     ob.location.z -= cz
 
 
+def _orient_kenney_y_up(ob: bpy.types.Object) -> None:
+    """Kenney furniture often imports with Z or X as height; garage build is Y-up."""
+    import cc0_common as cc0  # type: ignore
+
+    bpy.context.view_layer.update()
+    lo, hi = cc0.world_bbox(ob)
+    ext = hi - lo
+    if ext.z > ext.y * 1.08 and ext.z >= ext.x * 0.95:
+        ob.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+    elif ext.x > ext.y * 1.08 and ext.x >= ext.z * 0.95:
+        ob.rotation_euler = (0.0, 0.0, -math.pi / 2.0)
+    else:
+        return
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(rotation=True)
+    bpy.context.view_layer.update()
+
+
+KENNEY_GARAGE_RESTYLE: dict[str, list[str] | dict[str, list[str]]] = {
+    "garage-folding-chair": ["wood", "metal", "wood"],
+    "garage-desk-crt": {
+        "desktop": ["wood", "metal", "wood"],
+        "crtbezel": ["prop", "screen", "prop"],
+        "keyboardgrey": ["wood", "prop"],
+    },
+    "garage-coffee-drip": {
+        "dripbase": ["wood", "metal"],
+        "driptower": ["metal", "lamp_accent", "wood"],
+    },
+    "garage-crt-tower": {
+        "towerframe": ["shelf", "wood", "metal"],
+        "towercrt": ["prop", "screen", "prop"],
+        "towerspeaker": ["speaker_dark", "metal", "prop"],
+    },
+    "garage-voodude-rack": {
+        "voorack": ["shelf", "wood", "metal"],
+        "voobooks": ["wood", "prop", "wood"],
+        "voospeaker": ["speaker_dark", "metal", "prop"],
+    },
+}
+
+
+def apply_kenney_garage_materials(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
+    """Flat Kenney restyle (no colormap UV) before bake — matches interior room kit tints."""
+    import cc0_common as cc0  # type: ignore
+    from garage_canonical_materials import assign_part_materials  # type: ignore
+
+    spec = KENNEY_GARAGE_RESTYLE.get(asset_id)
+    if spec is None:
+        assign_part_materials(mesh_obs, asset_id)
+        return
+    if isinstance(spec, list):
+        for ob in mesh_obs:
+            if ob.type == "MESH":
+                cc0.apply_kenney_restyle(ob, spec)
+        return
+    for ob in mesh_obs:
+        if ob.type != "MESH":
+            continue
+        lname = ob.name.lower().split(".")[0]
+        roles = ["wood", "metal", "wood"]
+        for key, tint_roles in spec.items():
+            if key in lname:
+                roles = tint_roles
+                break
+        cc0.apply_kenney_restyle(ob, roles)
+
+
 def _poly_gltf(polyhaven_id: str) -> Path:
     pack = INCOMING_PH / polyhaven_id
     entry = pack / "entry.gltf"
@@ -129,7 +199,12 @@ def _import_polyhaven(asset_id: str) -> list[bpy.types.Object]:
 
 
 def build_folding_chair() -> list[bpy.types.Object]:
-    chair = _import_kenney_furniture("chairDesk.glb", "ChairSeat")
+    import cc0_common as cc0  # type: ignore
+
+    path = cc0.kenney_furniture_glb("chairDesk.glb")
+    meshes = cc0.import_gltf(path, "ChairSeat")
+    chair = cc0.merge_mesh_objects(meshes, "ChairSeat")
+    _orient_kenney_y_up(chair)
     _scale_height(chair, 0.86)
     _center_xz(chair)
     _snap_floor(chair)
@@ -151,10 +226,12 @@ def _center_on_part(upper: bpy.types.Object, lower: bpy.types.Object, *, dx: flo
 
 def build_desk_crt() -> list[bpy.types.Object]:
     desk = _import_kenney_furniture("desk.glb", "Desktop")
+    _orient_kenney_y_up(desk)
     _scale_height(desk, 0.76)
     _center_xz(desk)
     _snap_floor(desk)
     screen = _import_kenney_furniture("computerScreen.glb", "CrtBezel")
+    _orient_kenney_y_up(screen)
     _scale_height(screen, 0.42)
     screen.location = desk.location.copy()
     _center_on_part(screen, desk, dx=0.08, dz=-0.04)
