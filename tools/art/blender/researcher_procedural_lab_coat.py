@@ -9,7 +9,7 @@ from mathutils import Matrix, Vector
 
 _IDENTITY = Matrix.Identity(4)
 
-from kenney_face_axis import face_shell_coord, toe_forward
+from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
 from kenney_geometry_landmarks import compute_landmarks, torso_half_width
 from researcher_shirt_derived_meshes import (
     MAX_COAT_BODY_GAP_M,
@@ -27,6 +27,8 @@ LEGACY_COAT_BASES = frozenset(
 
 # FAIL #34 option (a): shoulder caps only — no forearm tubes (bare forearms OK).
 RESEARCHER_SHORT_SLEEVES = True
+# FAIL #35: shoulder cap length along upper arm (not full upper-arm tube).
+SHOULDER_CAP_UPPER_ARM_T = 0.24
 
 
 def researcher_coat_short_sleeves(sleeves: bpy.types.Object) -> bool:
@@ -345,6 +347,138 @@ def _body_arm_axis_from_weights(
     return p0, p1, rad
 
 
+def _cull_torso_armpit_sliver_faces(
+    torso: bpy.types.Object,
+    body: bpy.types.Object,
+    lm,
+    span: float,
+    hc: Vector,
+    fwd: Vector,
+) -> int:
+    """Remove lateral coat columns under shoulder that read as armpit slivers (FAIL #35)."""
+    _, y_face_fn = face_shell_coord(body, fwd)
+    bm = bmesh.new()
+    bm.from_mesh(torso.data)
+    mw = torso.matrix_world
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lo = lm.zmin
+    to_del: list[bmesh.types.BMFace] = []
+    for f in bm.faces:
+        wc = sum((mw @ v.co for v in f.verts), Vector()) / len(f.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.06 or h > lm.h_waist - 0.04:
+            continue
+        if y_face_fn(wc) < -0.08:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if thw * 0.74 <= lat <= thw * 1.52:
+            to_del.append(f)
+    removed = len(to_del)
+    if to_del:
+        bmesh.ops.delete(bm, geom=to_del, context="FACES_ONLY")
+        bmesh.ops.delete(
+            bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS"
+        )
+        bm.to_mesh(torso.data)
+        torso.data.update()
+    bm.free()
+    return removed
+
+
+def _cull_short_sleeve_medial_armpit_faces(
+    sleeves: bpy.types.Object,
+    body: bpy.types.Object,
+    lm,
+    span: float,
+    hc: Vector,
+    fwd: Vector,
+) -> int:
+    """Drop inward-facing cap faces that read as vertical armpit slivers (FAIL #35)."""
+    _, y_face_fn = face_shell_coord(body, fwd)
+    bm = bmesh.new()
+    bm.from_mesh(sleeves.data)
+    bm.faces.ensure_lookup_table()
+    mw = sleeves.matrix_world
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lo = lm.zmin
+    removed = 0
+    for f in list(bm.faces):
+        wc = Vector((0.0, 0.0, 0.0))
+        for v in f.verts:
+            wc += mw @ v.co
+        wc /= len(f.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.14 or h > lm.h_waist - 0.06:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat < thw * 0.42:
+            continue
+        n_w = (mw.to_3x3() @ f.normal).normalized()
+        side = "Right" if wc.x >= lm.cx else "Left"
+        medial = (side == "Right" and n_w.x < -0.25) or (side == "Left" and n_w.x > 0.25)
+        torso_side = lat < thw * 1.12 and lat > thw * 0.32
+        front_shell = y_face_fn(wc) > -0.06
+        if medial and torso_side and front_shell:
+            bm.faces.remove(f)
+            removed += 1
+    if removed:
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+        bm.to_mesh(sleeves.data)
+        sleeves.data.update()
+    bm.free()
+    return removed
+
+
+def _nudge_short_cap_distal_to_torso(
+    sleeves: bpy.types.Object,
+    torso: bpy.types.Object,
+    body: bpy.types.Object,
+    lm,
+    span: float,
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    """Close render gap: cap hem meets torso shell (FAIL #35 front armpit line)."""
+    from researcher_shirt_derived_meshes import _body_bvh_world
+
+    tree = _body_bvh_world(torso)
+    if tree is None:
+        tree = _body_bvh_world(body)
+    if tree is None:
+        return
+    _, y_face_fn = face_shell_coord(body, fwd)
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lo = lm.zmin
+    inv = sleeves.matrix_world.inverted()
+    cap = span * 0.024
+    for vi in range(len(sleeves.data.vertices)):
+        w = sleeves.matrix_world @ sleeves.data.vertices[vi].co
+        h = (w.z - lo) / span
+        if h < lm.h_neck - 0.10 or h > lm.h_waist + 0.04:
+            continue
+        if y_face_fn(w) < -0.10:
+            continue
+        lat = lateral_from_front(w, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat < thw * 0.48:
+            continue
+        loc, n, _idx, dist = tree.find_nearest(w)
+        if loc is None or dist is None or dist > span * 0.14:
+            continue
+        if dist <= cap:
+            continue
+        outward = w - loc
+        if outward.length_squared < 1e-12 and n.length_squared > 1e-12:
+            outward = n.copy()
+        if outward.length_squared < 1e-12:
+            continue
+        w = loc + outward.normalized() * cap
+        sleeves.data.vertices[vi].co = inv @ w
+    sleeves.data.update()
+
+
 def _merge_armpit_overlap(
     torso: bpy.types.Object,
     sleeves: bpy.types.Object,
@@ -543,7 +677,7 @@ def spawn_procedural_lab_coat(
     z_bot = max(z_mid - span * 0.008, z_knee - span * 0.021)
     thw_top = torso_half_width(ws, lo, span, lm.h_neck - 0.04, lm.cx, lm.cy)
     thw_bot = torso_half_width(ws, lo, span, lm.h_waist + 0.02, lm.cx, lm.cy)
-    r_top = thw_top * 0.99
+    r_top = thw_top * 0.93
     r_bot = thw_bot * 1.08
 
     mw = body.matrix_world.copy()
@@ -580,7 +714,20 @@ def spawn_procedural_lab_coat(
                 p0, p1, r0, r1 = _arm_fallback_segment(
                     body, lm, hc, fwd, side, upper=True
                 )
-                _bmesh_tube(bm_slv, p0, p1, radius0=r0, radius1=r1, segments=12, rings=7)
+                cap_p1 = (
+                    p0.lerp(p1, SHOULDER_CAP_UPPER_ARM_T)
+                    if RESEARCHER_SHORT_SLEEVES
+                    else p1
+                )
+                _bmesh_tube(
+                    bm_slv,
+                    p0,
+                    cap_p1,
+                    radius0=r0,
+                    radius1=r1 * (0.88 if RESEARCHER_SHORT_SLEEVES else 1.0),
+                    segments=12,
+                    rings=5 if RESEARCHER_SHORT_SLEEVES else 7,
+                )
                 if RESEARCHER_SHORT_SLEEVES:
                     continue
                 overlap = (p1 - p0).length * 0.08
@@ -595,9 +742,13 @@ def spawn_procedural_lab_coat(
                     inv_a = arm.matrix_world.inverted()
                     p0, p1 = inv_a @ p0, inv_a @ p1
                 elbow = p0.lerp(p1, 0.48)
-                end = elbow if RESEARCHER_SHORT_SLEEVES else p1
-                r1 = rad * 0.82 if RESEARCHER_SHORT_SLEEVES else rad * 0.98
-                rings = 8 if RESEARCHER_SHORT_SLEEVES else 7
+                end = (
+                    p0.lerp(p1, SHOULDER_CAP_UPPER_ARM_T)
+                    if RESEARCHER_SHORT_SLEEVES
+                    else p1
+                )
+                r1 = rad * 0.88 if RESEARCHER_SHORT_SLEEVES else rad * 0.98
+                rings = 5 if RESEARCHER_SHORT_SLEEVES else 7
                 _bmesh_tube(
                     bm_slv, p0, end, radius0=rad, radius1=r1, segments=12, rings=rings
                 )
@@ -611,14 +762,15 @@ def spawn_procedural_lab_coat(
         f0, f1 = seg_f
         rad_u = max(span * 0.042, (u1 - u0).length * 0.098)
         if RESEARCHER_SHORT_SLEEVES and use_arm_local:
+            cap_u1 = u0.lerp(u1, SHOULDER_CAP_UPPER_ARM_T)
             _bmesh_tube(
                 bm_slv,
                 u0,
-                u1,
+                cap_u1,
                 radius0=rad_u,
-                radius1=rad_u * 0.82,
+                radius1=rad_u * 0.88,
                 segments=12,
-                rings=8,
+                rings=5,
             )
             continue
         rad_f = max(span * 0.034, (f1 - f0).length * 0.088)
@@ -644,6 +796,35 @@ def spawn_procedural_lab_coat(
             )
 
     bmesh.ops.remove_doubles(bm_slv, verts=bm_slv.verts, dist=0.014)
+    if RESEARCHER_SHORT_SLEEVES:
+        cap_mw = arm.matrix_world.copy() if use_arm_local else mw
+        ws_tmp = [body.matrix_world @ v.co for v in body.data.vertices]
+        lo = lm.zmin
+        for side in ("Left", "Right"):
+            to_del: list[bmesh.types.BMFace] = []
+            for f in bm_slv.faces:
+                wc = sum((cap_mw @ v.co for v in f.verts), Vector()) / len(f.verts)
+                h = (wc.z - lo) / span
+                if h < lm.h_neck - 0.14 or h > lm.h_waist - 0.06:
+                    continue
+                lat = lateral_from_front(wc, hc, fwd)
+                thw = torso_half_width(ws_tmp, lo, span, h, lm.cx, lm.cy)
+                if lat < thw * 0.38:
+                    continue
+                ax = (f.verts[0].co - f.verts[1].co).cross(
+                    f.verts[1].co - f.verts[2].co
+                )
+                if ax.length_squared < 1e-12:
+                    continue
+                n = ax.normalized()
+                if side == "Right" and wc.x >= lm.cx:
+                    if n.x < -0.2 and thw * 0.38 < lat < thw * 1.05:
+                        to_del.append(f)
+                elif side == "Left" and wc.x < lm.cx:
+                    if n.x > 0.2 and thw * 0.38 < lat < thw * 1.05:
+                        to_del.append(f)
+            if to_del:
+                bmesh.ops.delete(bm_slv, geom=to_del, context="FACES_ONLY")
     if not use_arm_local:
         _bmesh_to_local(bm_slv, mw)
     sleeves = _mesh_from_bmesh(bm_slv, SLEEVES_NAME)
@@ -669,6 +850,9 @@ def spawn_procedural_lab_coat(
         )
 
     _flatten_torso_hem(torso, z_bot, span)
+    if RESEARCHER_SHORT_SLEEVES:
+        _cull_torso_armpit_sliver_faces(torso, body, lm, span, hc, fwd)
+        _cull_torso_armpit_sliver_faces(torso, body, lm, span, hc, fwd)
     z_floor = z_knee - span * 0.02
     gap_cap = MAX_COAT_BODY_GAP_M * 0.98
     _clamp_verts_to_body_gap(torso, body, max_gap_m=gap_cap, z_min_world=z_hip - span * 0.02)
@@ -682,6 +866,9 @@ def spawn_procedural_lab_coat(
             torso.data.vertices[vi].co = inv_t @ w
     torso.data.update()
     _merge_armpit_overlap(torso, sleeves, arm, body, lm, span)
+    if RESEARCHER_SHORT_SLEEVES:
+        _nudge_short_cap_distal_to_torso(sleeves, torso, body, lm, span, hc, fwd)
+        _cull_short_sleeve_medial_armpit_faces(sleeves, body, lm, span, hc, fwd)
     if arm is not None:
         if not short_sl:
             _assign_hand_weights_on_cuff_ring(sleeves, arm, span)

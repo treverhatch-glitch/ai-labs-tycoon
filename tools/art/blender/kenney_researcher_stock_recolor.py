@@ -406,6 +406,7 @@ def apply_researcher_materials(
     _clamp_coat_hem_leg_trousers(bm, slots, ob, lm, ws, hc, fwd)
     _force_leg_trousers_below_hem(bm, slots, ob, lm)
     _widen_outer_leg_jeans(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _grow_jeans_front_leg_skin_shell(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _ban_torso_skin_shirt_band(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _force_head_vgroup_slots(bm, slots, ob, lm, y_face_fn)
     _purge_coat_slots_above_neck(bm, slots, ob, lm, y_face_fn)
@@ -414,6 +415,11 @@ def apply_researcher_materials(
     _convert_torso_skin_shirt_to_coat(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _seal_torso_lab_coat_shell(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _seal_head_hair_not_skin_back(bm, slots, ob, lm, y_face_fn)
+    _strip_body_armpit_coat_slivers(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _grow_jeans_front_leg_skin_shell(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _paint_front_leg_shell_jeans(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _shrink_front_leg_skin_under_trousers(bm, ob, lm, ws, hc, fwd, y_face_fn)
+    _strip_lab_coat_from_front_leg_shell(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     lo, span = lm.zmin, lm.span
     for face in bm.faces:
         fi = face.index
@@ -727,6 +733,14 @@ def _seal_torso_lab_coat_shell(
         ):
             slots[fi] = SLOT_SKIN
             continue
+        if (
+            y_face > -0.10
+            and lm.h_neck - 0.05 <= h <= lm.h_waist - 0.05
+            and thw * 0.76 <= lat <= thw * 1.48
+        ):
+            if slots[fi] == SLOT_LAB_COAT:
+                slots[fi] = SLOT_SKIN
+            continue
         if slots[fi] in (SLOT_SHIRT, SLOT_COLLAR, SLOT_LAPEL) and h > lm.h_neck + 0.14:
             slots[fi] = SLOT_LAB_COAT
             continue
@@ -957,6 +971,12 @@ def _stamp_lab_coat_vgroups(
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         if y_face > 0.06 and lat < thw * 0.28 and lm.h_neck <= h <= lm.h_waist - 0.05:
             continue
+        if (
+            y_face > -0.12
+            and lm.h_neck - 0.04 <= h <= lm.h_waist - 0.06
+            and thw * 0.82 <= lat <= thw * 1.38
+        ):
+            continue
         slots[face.index] = SLOT_LAB_COAT
 
 
@@ -1009,6 +1029,12 @@ def _finalize_researcher_body_coat(
                 }
             ),
         )
+        if (
+            y_face > -0.12
+            and lm.h_neck - 0.04 <= h <= lm.h_waist - 0.06
+            and thw * 0.82 <= lat <= thw * 1.38
+        ):
+            continue
         if lat > thw * 1.24:
             if arm_v < 0.14 or h > lm.h_waist + 0.04:
                 continue
@@ -1062,6 +1088,14 @@ def _strip_coat_from_head_neck_hair(
             slots[fi] = SLOT_SKIN
 
 
+def _leg_shell_lateral_cap(thw: float, span: float, leg_vg_mean: float) -> float:
+    """Leg silhouette extends past torso_half_width — widen cap for strong leg VGs."""
+    base = thw + max(span * 0.062, thw * 0.34)
+    if leg_vg_mean >= 0.22:
+        base = max(base, thw + span * 0.088)
+    return base
+
+
 def _widen_outer_leg_jeans(
     bm: bmesh.types.BMesh,
     slots: list[int],
@@ -1072,14 +1106,15 @@ def _widen_outer_leg_jeans(
     fwd: Vector,
     y_face_fn,
 ) -> None:
-    """Front/side outer thigh: jeans not skin bleed (FAIL #34)."""
+    """Front leg shell: jeans over skin strips on inner/outer edges (FAIL #34/#35)."""
     lo, span = lm.zmin, lm.span
     leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
     for face in bm.faces:
         fi = face.index
-        if slots[fi] in (SLOT_LAB_COAT, SLOT_HAIR, SLOT_EYE, SLOT_HAND):
+        if slots[fi] in (SLOT_LAB_COAT, SLOT_HAIR, SLOT_EYE, SLOT_HAND, SLOT_SHOE, SLOT_SOLE):
             continue
-        if _vg_mean_on_face(ob, face, leg_vg) < 0.14:
+        vg_leg = _vg_mean_on_face(ob, face, leg_vg)
+        if vg_leg < 0.08:
             continue
         wc = Vector()
         for v in face.verts:
@@ -1091,10 +1126,228 @@ def _widen_outer_leg_jeans(
         y_face = y_face_fn(wc)
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if y_face < -0.12:
+        if y_face < -0.10:
             continue
-        if lat > thw * 0.20 and slots[fi] in (SLOT_SKIN, SLOT_SHIRT):
+        if lat > _leg_shell_lateral_cap(thw, span, vg_leg):
+            continue
+        if slots[fi] not in (SLOT_SKIN, SLOT_SHIRT):
+            continue
+        if vg_leg >= 0.20 and y_face > -0.06:
             slots[fi] = SLOT_JEANS
+            continue
+        outer = lat > thw * 0.08
+        inner_front = y_face > -0.02 and lat > thw * 0.01
+        if outer or inner_front:
+            slots[fi] = SLOT_JEANS
+
+
+def _paint_front_leg_shell_jeans(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Last pass: front hemisphere leg VGs → charcoal trousers (FAIL #35)."""
+    lo, span = lm.zmin, lm.span
+    leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] in (SLOT_LAB_COAT, SLOT_HAIR, SLOT_HAND, SLOT_SHOE, SLOT_SOLE):
+            continue
+        vg_leg = _vg_mean_on_face(ob, face, leg_vg)
+        if vg_leg < 0.06:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_shoe - 0.02 or h > lm.h_waist + 0.02:
+            continue
+        y_face = y_face_fn(wc)
+        if y_face < -0.08:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat > _leg_shell_lateral_cap(thw, span, vg_leg):
+            continue
+        if slots[fi] in (SLOT_SKIN, SLOT_SHIRT):
+            slots[fi] = SLOT_JEANS
+        elif vg_leg >= 0.35 and y_face > -0.04 and slots[fi] == SLOT_SKIN:
+            slots[fi] = SLOT_JEANS
+
+
+def _strip_lab_coat_from_front_leg_shell(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """No white coat on leg VGs on front/side shell (FAIL #35 silhouette)."""
+    lo, span = lm.zmin, lm.span
+    leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] != SLOT_LAB_COAT:
+            continue
+        vg_leg = _vg_mean_on_face(ob, face, leg_vg)
+        if vg_leg < 0.14:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_shoe - 0.02 or h > lm.h_waist + 0.04:
+            continue
+        if y_face_fn(wc) < -0.12:
+            continue
+        slots[fi] = SLOT_JEANS
+
+
+def _shrink_front_leg_skin_under_trousers(
+    bm: bmesh.types.BMesh,
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Pull front leg shell verts slightly medial so skin does not silhouette past jeans."""
+    lo, span = lm.zmin, lm.span
+    leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+    inv = ob.matrix_world.inverted()
+    fwd_xy = Vector((fwd.x, fwd.y, 0.0))
+    if fwd_xy.length > 1e-5:
+        fwd_xy.normalize()
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    for v in bm.verts:
+        w = ob.matrix_world @ v.co
+        h = (w.z - lo) / span
+        if h < lm.h_shoe - 0.01 or h > lm.h_waist + 0.03:
+            continue
+        leg_w = 0.0
+        for g in ob.data.vertices[v.index].groups:
+            if vg_names.get(g.group, "") in leg_vg:
+                leg_w = max(leg_w, g.weight)
+        if leg_w < 0.28:
+            continue
+        if y_face_fn(w) < -0.04:
+            continue
+        lat = lateral_from_front(w, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat < thw * 0.06:
+            continue
+        rel = Vector((w.x - hc.x, w.y - hc.y, 0.0))
+        along = fwd_xy * rel.dot(fwd_xy)
+        lateral = rel - along
+        if lateral.length < 1e-6:
+            continue
+        cap = _leg_shell_lateral_cap(thw, span, leg_w)
+        if lat > cap * 0.98:
+            shrink = (cap * 0.96) / max(lat, 1e-6)
+            shrink = min(1.0, max(0.82, shrink))
+        else:
+            shrink = 0.88 if lat > thw * 0.20 else 0.94
+        w2 = Vector((hc.x, hc.y, w.z)) + along + lateral * shrink
+        v.co = inv @ w2
+
+
+def _strip_body_armpit_coat_slivers(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Lab coat on body mesh under shoulder → shirt/skin, not white slivers (FAIL #35)."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] != SLOT_LAB_COAT:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.05 or h > lm.h_waist - 0.05:
+            continue
+        if y_face_fn(wc) < -0.14:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if thw * 0.76 <= lat <= thw * 1.48:
+            slots[fi] = SLOT_SKIN
+
+
+def _grow_jeans_front_leg_skin_shell(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """BFS jeans over leg skin strips on front/side shell (FAIL #35)."""
+    from collections import deque
+
+    lo, span = lm.zmin, lm.span
+    leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+    adj: list[set[int]] = [set() for _ in slots]
+    for f in bm.faces:
+        fi = f.index
+        for e in f.edges:
+            for nb in e.link_faces:
+                if nb.index != fi:
+                    adj[fi].add(nb.index)
+    q: deque[int] = deque(
+        fi for fi, sl in enumerate(slots) if sl == SLOT_JEANS
+    )
+    seen = set(q)
+    for _ in range(14):
+        n = len(q)
+        for _ in range(n):
+            fi = q.popleft()
+            for ni in adj[fi]:
+                if ni in seen:
+                    continue
+                if slots[ni] not in (SLOT_SKIN, SLOT_SHIRT):
+                    continue
+                face = bm.faces[ni]
+                vg_leg = _vg_mean_on_face(ob, face, leg_vg)
+                if vg_leg < 0.05:
+                    continue
+                wc = Vector()
+                for v in face.verts:
+                    wc += ob.matrix_world @ v.co
+                wc /= len(face.verts)
+                h = (wc.z - lo) / span
+                if h < lm.h_shoe - 0.02 or h > lm.h_waist + 0.03:
+                    continue
+                if y_face_fn(wc) < -0.12:
+                    continue
+                lat = lateral_from_front(wc, hc, fwd)
+                thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+                if lat > _leg_shell_lateral_cap(thw, span, vg_leg):
+                    continue
+                slots[ni] = SLOT_JEANS
+                seen.add(ni)
+                q.append(ni)
 
 
 def _force_leg_trousers_below_hem(
