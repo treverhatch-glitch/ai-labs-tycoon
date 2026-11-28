@@ -38,9 +38,9 @@ public class BatchTwentyEightEraTierTests
         g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
         g.Do(Command.PublishMetrics(g.Id, m.Id));
         string save = g.Sim.Save();
-        Assert.Equal(185, g.State.Schema);
+        Assert.Equal(188, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(185, loaded.State.Schema);
+        Assert.Equal(188, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.PublicMetricsEraDiscounted);
     }
 

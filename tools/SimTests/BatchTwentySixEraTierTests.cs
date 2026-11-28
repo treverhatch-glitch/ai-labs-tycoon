@@ -102,9 +102,9 @@ public class BatchTwentySixEraTierTests
         });
         g.Do(Command.AcquireDataSource(g.Id, "licensed-corpus"));
         string save = g.Sim.Save();
-        Assert.Equal(182, g.State.Schema);
+        Assert.Equal(188, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(182, loaded.State.Schema);
+        Assert.Equal(188, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.DataSourceAcquireEraWeeksBonused);
     }
 

@@ -1,4 +1,5 @@
 using AiLabs.Rules.Config;
+using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
 using AiLabs.SimTests.Support;
@@ -30,5 +31,23 @@ public class BatchTwentyNineEraTierTests
         Assert.Equal(g.C.Office.ExpireWeeks, OfficeHearingEraGrace.AnswerWeeks(g.C, g.State));
         Assert.Equal(50, OpenWeightsCopyEraRelief.CopyTrustLoss(g.C, g.State, 50));
         Assert.Equal(-40, EvalFailEraRelief.TrustLoss(g.C, g.State, -40));
+    }
+
+    [Fact]
+    public void Save_load_preserves_schema_188_round_trip()
+    {
+        Game g = Lab(c =>
+        {
+            c.OfficeHearingEraGrace.Enabled = 1;
+            c.OfficeHearingEraGrace.MinEra = 0;
+            c.OfficeHearingEraGrace.GraceWeeks = 3;
+        });
+        g.State.Tick = 48 * 12;
+        OfficeEvents.OnHearing(g.C, g.State, g.Me, g.Me.HomeBlocId);
+        string save = g.Sim.Save();
+        Assert.Equal(188, g.State.Schema);
+        Simulation loaded = Simulation.Load(g.C, save);
+        Assert.Equal(188, loaded.State.Schema);
+        Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.OfficeHearingEraGraced);
     }
 }
