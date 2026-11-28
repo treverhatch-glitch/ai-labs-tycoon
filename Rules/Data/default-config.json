@@ -12583,6 +12583,24 @@
         "kind": "RivalIntentSurfaced",
         "pick": 1,
         "text": "{lab} lobbies in the open, rivals read the tea leaves"
+      },
+      {
+        "id": "lobbying-era-cooldown",
+        "kind": "LobbyingEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} got a shorter lobby cooldown"
+      },
+      {
+        "id": "metrics-miss-era-relief",
+        "kind": "PublicMetricsMissEraRelieved",
+        "pick": -1,
+        "text": "{lab} shrugged off a metrics miss"
+      },
+      {
+        "id": "weights-open-era-boost",
+        "kind": "OpenWeightsOpenEraBoosted",
+        "pick": -1,
+        "text": "{lab} won extra trust opening weights"
       }
     ],
     "filler": [
@@ -17207,6 +17225,39 @@
         "text": "The vendor queue bounced on tier unlock rules.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "lobby-cooldown-chat",
+        "kind": "LobbyingEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Influence buys a quicker reset.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-miss-relief-chat",
+        "kind": "PublicMetricsMissEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The uptime slide matters less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-open-boost-chat",
+        "kind": "OpenWeightsOpenEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Opening the weights lands softer now.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -20122,5 +20173,20 @@
     "enabled": 1,
     "minEra": 2,
     "reliefPermille": 150
+  },
+  "lobbyingEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 3
+  },
+  "publicMetricsMissEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
+  },
+  "openWeightsOpenEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 25
   }
 }

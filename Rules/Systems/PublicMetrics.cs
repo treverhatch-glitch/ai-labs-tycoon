@@ -34,8 +34,11 @@ namespace AiLabs.Rules.Systems
         {
             if (!Enabled(c) || !Publishing(model)) return;
             model.PubMiss++;
+            int listLoss = c.PublicMetrics.MissTrust;
+            int applied = PublicMetricsMissEraRelief.MissTrust(c, state, listLoss);
             for (int s = 0; s < model.Sectors.Count; s++)
-                TrustSystem.Shift(c, state, lab, model.Sectors[s], c.PublicMetrics.MissTrust, false);
+                TrustSystem.Shift(c, state, lab, model.Sectors[s], applied, false);
+            PublicMetricsMissEraRelief.OnMiss(c, state, lab, model, listLoss, applied);
         }
 
         static void ShiftTrust(GameConfig c, GameState state, LabState lab, ModelState model, int score)

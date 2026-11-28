@@ -668,7 +668,10 @@ namespace AiLabs.Rules.State
         PublicMetricsEraDiscounted,
         OfficeHearingEraGraced,
         OpenWeightsCopyEraRelieved,
-        EvalFailEraRelieved
+        EvalFailEraRelieved,
+        LobbyingEraCooldownShortened,
+        PublicMetricsMissEraRelieved,
+        OpenWeightsOpenEraBoosted
     }
 
     /// <summary>

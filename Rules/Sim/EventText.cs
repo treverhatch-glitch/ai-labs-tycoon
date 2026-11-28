@@ -746,6 +746,12 @@ namespace AiLabs.Rules.Sim
                     return who + " took a softer trust hit after open weights were copied on \"" + e.Ref + "\" (" + e.Amount + " saved).";
                 case EventKind.EvalFailEraRelieved:
                     return who + " took a softer trust hit after a failed eval on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.LobbyingEraCooldownShortened:
+                    return who + " got a shorter lobby cooldown after a " + (e.Ref == Lobbying.Subsidy ? "subsidy" : "quiet") + " push (" + e.SubjectId + " weeks cut).";
+                case EventKind.PublicMetricsMissEraRelieved:
+                    return who + " took a softer trust hit after a metrics miss on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.OpenWeightsOpenEraBoosted:
+                    return who + " got extra trust opening weights on \"" + e.Ref + "\" (+" + e.Amount + " permille).";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

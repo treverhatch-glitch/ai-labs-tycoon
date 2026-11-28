@@ -64,7 +64,10 @@ namespace AiLabs.Rules.Systems
         public static string Run(GameConfig c, GameState state, LabState lab, BlocStanding standing, string goal)
         {
             LobbyConfig l = c.Lobbying;
-            standing.LobbyUntilTick = state.Tick + l.CooldownWeeks;
+            int cd = LobbyingEraCooldown.EffectiveCooldownWeeks(c, state);
+            int cut = l.CooldownWeeks - cd;
+            standing.LobbyUntilTick = state.Tick + cd;
+            LobbyingEraCooldown.OnLobbied(c, state, lab, goal, cd, cut);
             if ((int)(Mix(state, lab, standing, 1) % MathI.Permille) < BackfireChancePermille(c, lab))
             {
                 standing.Attention = (int)MathI.Clamp((long)standing.Attention + l.BackfireAttention, 0, MathI.Permille);

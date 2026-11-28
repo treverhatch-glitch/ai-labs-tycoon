@@ -505,6 +505,16 @@ and says why in the commit message.
 
 269. **Batch twenty-nine news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyNineNewsChatTests`, `BatchTwentyNineTogetherTests` (Q526); target 440/393.
 
+### Era batch 30 (LOCAL prep on `x-af2f`, HOLD push)
+
+270. **Lobbying era cooldown.** ~~Done (local)~~: `LobbyingEraCooldown`, schema **189** (Q527).
+
+271. **Public metrics miss era relief.** ~~Done (local)~~: `PublicMetricsMissEraRelief`, schema **190** (Q528).
+
+272. **Open weights open era boost.** ~~Done (local)~~: `OpenWeightsOpenEraBoost`, schema **191** (Q529).
+
+273. **Batch thirty news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyNewsChatTests`, `BatchThirtyTogetherTests` (Q530); target 443/396.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

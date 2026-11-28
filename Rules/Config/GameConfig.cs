@@ -217,6 +217,9 @@ namespace AiLabs.Rules.Config
         public OfficeHearingEraGraceConfig OfficeHearingEraGrace = new OfficeHearingEraGraceConfig();
         public OpenWeightsCopyEraReliefConfig OpenWeightsCopyEraRelief = new OpenWeightsCopyEraReliefConfig();
         public EvalFailEraReliefConfig EvalFailEraRelief = new EvalFailEraReliefConfig();
+        public LobbyingEraCooldownConfig LobbyingEraCooldown = new LobbyingEraCooldownConfig();
+        public PublicMetricsMissEraReliefConfig PublicMetricsMissEraRelief = new PublicMetricsMissEraReliefConfig();
+        public OpenWeightsOpenEraBoostConfig OpenWeightsOpenEraBoost = new OpenWeightsOpenEraBoostConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -432,6 +435,9 @@ namespace AiLabs.Rules.Config
             s.Obj("officeHearingEraGrace", ref OfficeHearingEraGrace);
             s.Obj("openWeightsCopyEraRelief", ref OpenWeightsCopyEraRelief);
             s.Obj("evalFailEraRelief", ref EvalFailEraRelief);
+            s.Obj("lobbyingEraCooldown", ref LobbyingEraCooldown);
+            s.Obj("publicMetricsMissEraRelief", ref PublicMetricsMissEraRelief);
+            s.Obj("openWeightsOpenEraBoost", ref OpenWeightsOpenEraBoost);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

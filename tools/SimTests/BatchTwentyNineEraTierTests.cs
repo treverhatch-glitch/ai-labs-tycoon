@@ -45,9 +45,9 @@ public class BatchTwentyNineEraTierTests
         g.State.Tick = 48 * 12;
         OfficeEvents.OnHearing(g.C, g.State, g.Me, g.Me.HomeBlocId);
         string save = g.Sim.Save();
-        Assert.Equal(188, g.State.Schema);
+        Assert.Equal(191, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(188, loaded.State.Schema);
+        Assert.Equal(191, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.OfficeHearingEraGraced);
     }
 }

@@ -109,7 +109,7 @@ public class TraitsTests
             Assert.False(string.IsNullOrWhiteSpace(t.Name), t.Id);
             Assert.False(string.IsNullOrWhiteSpace(t.Blurb), t.Id);
         }
-        Assert.Equal(440, s.Traits.Sum(t => t.HirePermille));
+        Assert.Equal(443, s.Traits.Sum(t => t.HirePermille));
     }
 
     [Fact]

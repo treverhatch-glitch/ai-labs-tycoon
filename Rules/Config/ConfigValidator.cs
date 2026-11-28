@@ -222,6 +222,9 @@ namespace AiLabs.Rules.Config
             OfficeHearingEraGraceProblems(p, c);
             OpenWeightsCopyEraReliefProblems(p, c);
             EvalFailEraReliefProblems(p, c);
+            LobbyingEraCooldownProblems(p, c);
+            PublicMetricsMissEraReliefProblems(p, c);
+            OpenWeightsOpenEraBoostProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2464,6 +2467,35 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalFailEraRelief.minEra must be a valid era index");
             if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
                 p.Add("evalFailEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            LobbyingEraCooldownConfig k = c.LobbyingEraCooldown;
+            if (k == null) { p.Add("lobbyingEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("lobbyingEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void PublicMetricsMissEraReliefProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsMissEraReliefConfig k = c.PublicMetricsMissEraRelief;
+            if (k == null) { p.Add("publicMetricsMissEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsMissEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsMissEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("publicMetricsMissEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OpenWeightsOpenEraBoostProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsOpenEraBoostConfig k = c.OpenWeightsOpenEraBoost;
+            if (k == null) { p.Add("openWeightsOpenEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsOpenEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsOpenEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
+                p.Add("openWeightsOpenEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -2455,3 +2455,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q525. Softer trust loss on failed eval publish in late era? DECIDED (schema 188): `evalFailEraRelief`; `EvalFailEraRelieved` on `EvalHarness.Publish` fail path.
 
 ### Q526. Batch twenty-nine news, chat and combos. DECIDED: three headlines, three chat lines (440/393); `BatchTwentyNineNewsChatTests`, `BatchTwentyNineTogetherTests`.
+
+### Q527. Shorten lobby cooldown after a push in late era? DECIDED (schema 189): `lobbyingEraCooldown`; `LobbyingEraCooldownShortened` on `Lobbying.Run`.
+
+### Q528. Softer trust hit on public metrics incident miss in late era? DECIDED (schema 190): `publicMetricsMissEraRelief`; `PublicMetricsMissEraRelieved` on `PublicMetrics.OnIncident`.
+
+### Q529. Extra trust when opening weights in late era? DECIDED (schema 191): `openWeightsOpenEraBoost`; `OpenWeightsOpenEraBoosted` on `OpenWeights.SetPolicy`.
+
+### Q530. Batch thirty news, chat and combos. DECIDED: three headlines, three chat lines (443/396); `BatchThirtyNewsChatTests`, `BatchThirtyTogetherTests`.

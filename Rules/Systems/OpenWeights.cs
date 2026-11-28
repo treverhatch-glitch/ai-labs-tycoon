@@ -27,6 +27,7 @@ namespace AiLabs.Rules.Systems
                 for (int i = 0; i < model.Sectors.Count; i++)
                     TrustSystem.Shift(c, state, lab, model.Sectors[i], c.OpenWeights.TrustGain, false);
                 Events.Add(state, EventKind.WeightsOpened, lab.Id, model.Id, c.OpenWeights.TrustGain, model.Name);
+                OpenWeightsOpenEraBoost.OnOpened(c, state, lab, model);
             }
             else Events.Add(state, EventKind.WeightsClosed, lab.Id, model.Id, 0, model.Name);
         }
