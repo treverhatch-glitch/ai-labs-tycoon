@@ -64,7 +64,7 @@ Opens: Game AI and chess bots; Expert systems; Spam filtering and search; Transl
 
 - Techs: `state-machines`, `regression-tests`, `pathfinding`, `minimax`, `go-fish-heuristic`, `rules-engines`, `expert-shells`, `playtest-telemetry`, `opening-books`, `decision-trees`, `beowulf-clusters`, `spam-filters`, `search-ranking`, `neural-nets`, `bayes-nets`, `svm`, `speech-hmm`, `recommenders`, `gpgpu`, `feature-engineering`, `ensemble-methods`, `mapreduce`, `crowd-labelling`, `kernel-tricks`, `boosted-trees`, `ocr-engines`, `topic-models`, `speech-dictation`, `web-scale-crawl`
 - Sectors: `game-ai`, `game-bots`, `expert-systems`, `spam-search`, `machine-translation`, `web-ads`
-- Rooms: `research-lab`, `engineering-bay`, `safety-lab`, `sales-office`, `server-closet`, `labelling-room`, `ops-centre`, `policy-office`, `coffee-corner`
+- Rooms: `research-lab`, `general-dev-room`, `engineering-bay`, `safety-lab`, `sales-office`, `server-closet`, `labelling-room`, `ops-centre`, `policy-office`, `coffee-corner`, `bathroom`
 
 ## The Punchline (2009)
 

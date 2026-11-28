@@ -227,7 +227,13 @@ namespace AiLabs.Rules.Sim
         PickScenarioBaggage,
         SatisfyMarginCall,
         RespondRungSix,
-        SetLawTarget
+        SetLawTarget,
+        SellGarageClutter,
+        PlaceRoomDoor,
+        PlaceDesk,
+        RemoveDesk,
+        SeatStaffAtDesk,
+        PaintRoomTiles
     }
 
     /// <summary>
@@ -2192,6 +2198,58 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        public static Command SellGarageClutter(int labId, int clutterId)
+        {
+            Command c = Make(CommandKind.SellGarageClutter, labId);
+            c.TargetId = clutterId;
+            return c;
+        }
+
+        public static Command PlaceRoomDoor(int labId, int roomId, int localX, int localY)
+        {
+            Command c = Make(CommandKind.PlaceRoomDoor, labId);
+            c.TargetId = roomId;
+            c.X = localX;
+            c.Y = localY;
+            return c;
+        }
+
+        public static Command PlaceDesk(int labId, int roomId, string deskLineId, int localX, int localY)
+        {
+            Command c = Make(CommandKind.PlaceDesk, labId);
+            c.TargetId = roomId;
+            c.Id = deskLineId;
+            c.X = localX;
+            c.Y = localY;
+            return c;
+        }
+
+        public static Command RemoveDesk(int labId, int deskId)
+        {
+            Command c = Make(CommandKind.RemoveDesk, labId);
+            c.TargetId = deskId;
+            return c;
+        }
+
+        /// <summary><paramref name="roomId"/> in X; desk local coords in Y and Width.</summary>
+        public static Command SeatStaffAtDesk(int labId, int staffId, int roomId, int deskLocalX, int deskLocalY)
+        {
+            Command c = Make(CommandKind.SeatStaffAtDesk, labId);
+            c.TargetId = staffId;
+            c.X = roomId;
+            c.Y = deskLocalX;
+            c.Width = deskLocalY;
+            return c;
+        }
+
+        public static Command PaintRoomTiles(int labId, string roomTypeId, List<string> tileCoords)
+        {
+            Command c = Make(CommandKind.PaintRoomTiles, labId);
+            c.Id = roomTypeId;
+            c.Ids = tileCoords ?? new List<string>();
+            return c;
+        }
+
         /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>
         public static Command SetGauntletTuning(int labId, int permille)
         {
@@ -2215,7 +2273,8 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked, PledgeLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked, PledgeLocked,
+        DrawMenuLocked, RoomNeedsDoor
     }
 
     public struct CommandResult

@@ -49,6 +49,7 @@ Comfort rooms seat nobody: they are for the people already there ([workplace.md]
 | Id | Name | Purpose | Seats | Tiles/seat | GPU slots/tile | Min size | Build/tile | Upkeep/tile/week |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `research-lab` | Research Lab | Research | `researcher` | 4 | - | 3 x 3 | $400 | $8 |
+| `general-dev-room` | General Dev Room | Engineering | `engineer` | 4 | - | 3 x 3 | $350 | $6 |
 | `engineering-bay` | Engineering Bay | Engineering | `engineer` | 4 | - | 3 x 3 | $400 | $8 |
 | `safety-lab` | Safety & Evals Lab | Safety | `safety` | 4 | - | 3 x 3 | $450 | $8 |
 | `sales-office` | Sales & Partnerships | Sales | `sales` | 4 | - | 3 x 3 | $350 | $8 |
@@ -57,6 +58,7 @@ Comfort rooms seat nobody: they are for the people already there ([workplace.md]
 | `ops-centre` | Ops Centre | Infrastructure | `infra` | 4 | - | 3 x 3 | $400 | $8 |
 | `policy-office` | Policy Office | Policy | `policy` | 4 | - | 3 x 3 | $450 | $8 |
 | `coffee-corner` | Coffee Corner | Comfort | - | - | - | 2 x 2 | $250 | $4 |
+| `bathroom` | Bathroom | Comfort | - | - | - | 2 x 2 | $200 | $4 |
 
 ### The Punchline (2009)
 

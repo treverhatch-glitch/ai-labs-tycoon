@@ -187,6 +187,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 170) MigrateTo170(root);
             if (fromSchema < 171) MigrateTo171(root);
             if (fromSchema < 172) MigrateTo172(root);
+            if (fromSchema < 173) MigrateTo173(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -710,6 +711,28 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo171(JsonValue root) { }
 
         static void MigrateTo172(JsonValue root) { }
+
+        static void MigrateTo173(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "garageDrawActive", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "clutter", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "desks", JsonValue.Array());
+                JsonPatch.ForEach(lab, "rooms", room =>
+                {
+                    JsonPatch.AddIfMissing(room, "doorLocalX", JsonValue.Of(-1L));
+                    JsonPatch.AddIfMissing(room, "doorLocalY", JsonValue.Of(-1L));
+                });
+                JsonPatch.ForEach(lab, "staff", person =>
+                {
+                    JsonPatch.AddIfMissing(person, "isFounder", JsonValue.Of(0L));
+                    JsonPatch.AddIfMissing(person, "seatRoomId", JsonValue.Of(-1L));
+                    JsonPatch.AddIfMissing(person, "seatDeskLocalX", JsonValue.Of(-1L));
+                    JsonPatch.AddIfMissing(person, "seatDeskLocalY", JsonValue.Of(-1L));
+                });
+            });
+        }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

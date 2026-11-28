@@ -55,6 +55,7 @@ namespace AiLabs.Rules.Systems
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != function) continue;
+                if (GarageDrawRoom.Active(c, lab) && !GarageDrawRoom.StaffSeatedForWork(c, lab, person)) continue;
                 if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person) || SupportDesk.Away(c, lab, person) || GovContracts.Away(c, lab, person) || Sabbatical.Away(c, lab, person)) continue;
                 n += Mentoring.Weight(c, lab, person);
             }
@@ -63,12 +64,16 @@ namespace AiLabs.Rules.Systems
 
         public static int TotalStaff(LabState lab) { return lab.Staff.Count; }
 
-        public static int SeatsInRoom(GameConfig c, RoomState room)
+        public static int SeatsInRoom(GameConfig c, RoomState room, LabState lab)
         {
+            if (GarageDrawRoom.Active(c, lab))
+                return GarageDrawRoom.SeatsInRoomDraw(c, lab, room);
             RoomTypeConfig type = c.RoomType(room.TypeId);
             if (type == null || string.IsNullOrEmpty(type.SeatsRole) || type.TilesPerSeat < 1) return 0;
             return room.Tiles / type.TilesPerSeat;
         }
+
+        public static int SeatsInRoom(GameConfig c, RoomState room) { return SeatsInRoom(c, room, null); }
 
         /// <summary>Desks for a role: every person needs a seat in a room built for their job.</summary>
         public static int Seats(GameConfig c, LabState lab, string roleId)
@@ -77,7 +82,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Rooms.Count; i++)
             {
                 RoomTypeConfig type = c.RoomType(lab.Rooms[i].TypeId);
-                if (type != null && type.SeatsRole == roleId) n += SeatsInRoom(c, lab.Rooms[i]);
+                if (type != null && type.SeatsRole == roleId) n += SeatsInRoom(c, lab.Rooms[i], lab);
             }
             return n;
         }

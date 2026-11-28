@@ -35,6 +35,7 @@ namespace AiLabs.Rules.Config
         public CalendarConfig Calendar;
         public List<EraConfig> Eras;
         public PlayerStartConfig PlayerStart;
+        public GarageDrawConfig GarageDraw = new GarageDrawConfig();
         public List<LotConfig> Lots;
         public List<RoleConfig> Roles;
         /// <summary>What roles do beyond their function (the recruiter's hiring discount and the rest).</summary>
@@ -240,6 +241,7 @@ namespace AiLabs.Rules.Config
             s.Obj("calendar", ref Calendar);
             s.ObjList("eras", ref Eras);
             s.Obj("playerStart", ref PlayerStart);
+            s.Obj("garageDraw", ref GarageDraw);
             s.ObjList("lots", ref Lots);
             s.ObjList("roles", ref Roles);
             s.ObjList("rolePerks", ref RolePerks);
@@ -678,6 +680,8 @@ namespace AiLabs.Rules.Config
         public long UpkeepPerTileWeek;
         /// <summary>A tech the lab must know before it may build this room, or empty.</summary>
         public string RequiresTech;
+        /// <summary>Desk family for player-placed workstations (GD-6 draw-room), or empty.</summary>
+        public string DeskFamily = "";
 
         public string Id { get { return IdValue; } }
 
@@ -687,6 +691,7 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Str("era", ref Era);
             s.Str("requiresTech", ref RequiresTech);
+            s.Str("deskFamily", ref DeskFamily);
             s.Enum("purpose", ref Purpose);
             s.Str("seatsRole", ref SeatsRole);
             s.Int("tilesPerSeat", ref TilesPerSeat);
