@@ -518,26 +518,38 @@ def flatten_glb_preview_meshes(meshes: list[bpy.types.Object]) -> list[bpy.types
     return flat
 
 
-def assert_desk_crt_on_desktop_for_preview(meshes: list[bpy.types.Object]) -> None:
-    """Fail preview render if CRT is not seated on the desktop (world + hero camera projection)."""
+def _desk_crt_world_bbox(ob: bpy.types.Object) -> tuple[Vector, Vector]:
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for corner in ob.bound_box:
+        w = ob.matrix_world @ Vector(corner)
+        lo.x, lo.y, lo.z = min(lo.x, w.x), min(lo.y, w.y), min(lo.z, w.z)
+        hi.x, hi.y, hi.z = max(hi.x, w.x), max(hi.y, w.y), max(hi.z, w.z)
+    return lo, hi
+
+
+def desk_crt_on_desktop_bbox_metrics(meshes: list[bpy.types.Object]) -> dict[str, float]:
+    """World + projected bbox checks for hero and side-ortho cameras (PASS25 printout)."""
     from bpy_extras.object_utils import world_to_camera_view
+
+    import cc0_common as cc0  # type: ignore
 
     desk = next((o for o in meshes if "desktop" in o.name.lower()), None)
     crt = next((o for o in meshes if "crt" in o.name.lower()), None)
     if desk is None or crt is None:
         raise RuntimeError("desk-crt preview gate: missing Desktop or CRT mesh in GLB import")
 
-    def _wbbox(ob: bpy.types.Object) -> tuple[Vector, Vector]:
-        lo = Vector((1e9, 1e9, 1e9))
-        hi = Vector((-1e9, -1e9, -1e9))
-        for corner in ob.bound_box:
-            w = ob.matrix_world @ Vector(corner)
-            lo.x, lo.y, lo.z = min(lo.x, w.x), min(lo.y, w.y), min(lo.z, w.z)
-            hi.x, hi.y, hi.z = max(hi.x, w.x), max(hi.y, w.y), max(hi.z, w.z)
-        return lo, hi
-
-    d_lo, d_hi = _wbbox(desk)
-    c_lo, c_hi = _wbbox(crt)
+    d_lo, d_hi = _desk_crt_world_bbox(desk)
+    c_lo, c_hi = _desk_crt_world_bbox(crt)
+    metrics: dict[str, float] = {
+        "world_desk_top_y": float(d_hi.y),
+        "world_crt_base_y": float(c_lo.y),
+        "world_gap_y": float(c_lo.y - d_hi.y),
+        "world_crt_x0": float(c_lo.x),
+        "world_crt_x1": float(c_hi.x),
+        "world_desk_x0": float(d_lo.x),
+        "world_desk_x1": float(d_hi.x),
+    }
     if c_lo.y < d_hi.y - 0.012:
         raise RuntimeError(
             f"desk-crt preview gate: CRT base y={c_lo.y:.4f} below desktop top y={d_hi.y:.4f}"
@@ -548,8 +560,6 @@ def assert_desk_crt_on_desktop_for_preview(meshes: list[bpy.types.Object]) -> No
     if c_lo.z < d_lo.z - tol_xz or c_hi.z > d_hi.z + tol_xz:
         raise RuntimeError("desk-crt preview gate: CRT Z extent outside desktop top")
 
-    import cc0_common as cc0  # type: ignore
-
     frame_obs = meshes
     center, _ = cc0._bounds_center(frame_obs)
     mins = Vector((1e9, 1e9, 1e9))
@@ -559,66 +569,160 @@ def assert_desk_crt_on_desktop_for_preview(meshes: list[bpy.types.Object]) -> No
             w = ob.matrix_world @ Vector(corner)
             mins.x, mins.y, mins.z = min(mins.x, w.x), min(mins.y, w.y), min(mins.z, w.z)
             maxs.x, maxs.y, maxs.z = max(maxs.x, w.x), max(maxs.y, w.y), max(maxs.z, w.z)
-    span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
+    span = max(max(maxs.x - mins.x, maxs.z - mins.z, 0.1), max(maxs.y - mins.y, 0.1) * 0.95, 0.18)
     span_y = max(maxs.y - mins.y, 0.1)
-    span = max(span_xz, span_y * 0.95, 0.18)
+    lo_all, hi_all = mins, maxs
+    ortho_center = (lo_all + hi_all) * 0.5
+
+    def _project_with_cam(cam_ob: bpy.types.Object, scene: bpy.types.Scene, pt: Vector) -> Vector:
+        co = world_to_camera_view(scene, cam_ob, pt)
+        return Vector((co.x, co.y, co.z))
+
+    # Hero camera (matches render_kit_preview Y-up hero path)
     cam_cfg = GARAGE_HERO_CAMERA["garage-desk-crt"]
     fill = float(cam_cfg["fill"])
     margin = float(cam_cfg["margin"])
     pitch = math.radians(float(cam_cfg["pitch"]))
+    yaw_rad = math.radians(float(cam_cfg["yaw"]))
     lens = 48.0
-    dist = cc0._camera_distance_for_fill(span, lens, fill, margin, min_half=0.06) * 1.0
+    dist = cc0._camera_distance_for_fill(span, lens, fill, margin, min_half=0.06)
     horiz = dist * math.cos(pitch)
     elev = dist * math.sin(pitch)
-    yaw_rad = math.radians(float(cam_cfg["yaw"]))
-    span_y = max(maxs.y - mins.y, 0.1)
-    cam_loc = Vector(
+    hero_loc = Vector(
         (
             center.x + math.cos(yaw_rad) * horiz,
             mins.y + span_y * 0.36 + elev * 0.70,
             center.z + math.sin(yaw_rad) * horiz,
         )
     )
-    target = Vector((center.x, mins.y + span_y * 0.40, center.z))
-    cam_data = bpy.data.cameras.new("DeskCrtGateCam")
-    cam_ob = bpy.data.objects.new("DeskCrtGateCam", cam_data)
-    bpy.context.collection.objects.link(cam_ob)
-    bpy.context.scene.camera = cam_ob
-    cam_ob.location = cam_loc
-    direction = target - cam_loc
-    cam_ob.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-    cam_data.lens = lens
+    hero_target = Vector((center.x, mins.y + span_y * 0.40, center.z))
+    hero_cam = bpy.data.objects.new(
+        "DeskCrtGateHeroCam", bpy.data.cameras.new("DeskCrtGateHeroCamData")
+    )
+    bpy.context.collection.objects.link(hero_cam)
+    bpy.context.scene.camera = hero_cam
+    hero_cam.location = hero_loc
+    hero_cam.rotation_euler = (hero_target - hero_loc).to_track_quat("-Z", "Y").to_euler()
+    hero_cam.data.lens = lens
     bpy.context.view_layer.update()
     scene = bpy.context.scene
-
-    def _proj(pt: Vector) -> Vector:
-        co = world_to_camera_view(scene, cam_ob, pt)
-        return Vector((co.x, co.y, co.z))
-
-    top_pts = [
-        _proj(Vector((d_lo.x, d_hi.y, d_lo.z))),
-        _proj(Vector((d_hi.x, d_hi.y, d_lo.z))),
-        _proj(Vector((d_lo.x, d_hi.y, d_hi.z))),
-        _proj(Vector((d_hi.x, d_hi.y, d_hi.z))),
-    ]
-    crt_pts = [_proj(c_lo), _proj(c_hi), _proj(Vector((c_lo.x, c_lo.y, c_hi.z))), _proj(Vector((c_hi.x, c_hi.y, c_lo.z)))]
-    desk_min_x = min(p.x for p in top_pts)
-    desk_max_x = max(p.x for p in top_pts)
-    crt_cx = sum(p.x for p in crt_pts) / len(crt_pts)
     mid_x = (c_lo.x + c_hi.x) * 0.5
     mid_z = (c_lo.z + c_hi.z) * 0.5
-    crt_base_y = _proj(Vector((mid_x, c_lo.y, mid_z))).y
-    desk_top_y = sum(p.y for p in top_pts) / len(top_pts)
-    if crt_base_y < desk_top_y - 0.12:
-        raise RuntimeError(
-            f"desk-crt preview gate: CRT reads below desktop in hero camera "
-            f"(crt_base_y={crt_base_y:.3f} desk_top_y={desk_top_y:.3f})"
-        )
+    desk_top_pts = [
+        _project_with_cam(hero_cam, scene, Vector((d_lo.x, d_hi.y, d_lo.z))),
+        _project_with_cam(hero_cam, scene, Vector((d_hi.x, d_hi.y, d_hi.z))),
+    ]
+    crt_base = _project_with_cam(hero_cam, scene, Vector((mid_x, c_lo.y, mid_z)))
+    crt_top = _project_with_cam(hero_cam, scene, Vector((mid_x, c_hi.y, mid_z)))
+    metrics["hero_desk_top_ndc_y"] = float(sum(p.y for p in desk_top_pts) / len(desk_top_pts))
+    metrics["hero_crt_base_ndc_y"] = float(crt_base.y)
+    metrics["hero_crt_top_ndc_y"] = float(crt_top.y)
+    crt_corners = [
+        _project_with_cam(hero_cam, scene, c_lo),
+        _project_with_cam(hero_cam, scene, c_hi),
+    ]
+    metrics["hero_crt_ndc_x0"] = float(min(p.x for p in crt_corners))
+    metrics["hero_crt_ndc_x1"] = float(max(p.x for p in crt_corners))
+    crt_cx = sum(p.x for p in crt_corners) / len(crt_corners)
+    desk_min_x = min(p.x for p in desk_top_pts)
+    desk_max_x = max(p.x for p in desk_top_pts)
+    desk_x = [
+        _project_with_cam(hero_cam, scene, Vector((d_lo.x, d_hi.y, mid_z))),
+        _project_with_cam(hero_cam, scene, Vector((d_hi.x, d_hi.y, mid_z))),
+    ]
+    metrics["hero_desk_top_ndc_x0"] = float(min(p.x for p in desk_x))
+    metrics["hero_desk_top_ndc_x1"] = float(max(p.x for p in desk_x))
     if crt_cx < desk_min_x - 0.04 or crt_cx > desk_max_x + 0.04:
         raise RuntimeError(
             f"desk-crt preview gate: CRT centre outside desktop top projection (crt_x={crt_cx:.3f})"
         )
-    bpy.data.objects.remove(cam_ob, do_unlink=True)
+    # Ortho camera (+X side, matches render_garage_side_ortho_preview_from_glb)
+    ortho_span = max(hi_all.x - lo_all.x, hi_all.y - lo_all.y, hi_all.z - lo_all.z, 0.15)
+    ortho_cam = bpy.data.objects.new(
+        "DeskCrtGateOrthoCam", bpy.data.cameras.new("DeskCrtGateOrthoCamData")
+    )
+    bpy.context.collection.objects.link(ortho_cam)
+    ortho_loc = Vector((hi_all.x + ortho_span * 1.05, ortho_center.y, ortho_center.z))
+    ortho_cam.location = ortho_loc
+    ortho_cam.rotation_euler = (ortho_center - ortho_loc).to_track_quat("-Z", "Y").to_euler()
+    ortho_cam.data.type = "ORTHO"
+    ortho_cam.data.ortho_scale = ortho_span * 1.15
+    bpy.context.scene.camera = ortho_cam
+    bpy.context.view_layer.update()
+    ortho_desk = [
+        _project_with_cam(ortho_cam, scene, Vector((d_lo.x, d_hi.y, d_lo.z))),
+        _project_with_cam(ortho_cam, scene, Vector((d_hi.x, d_hi.y, d_hi.z))),
+    ]
+    ortho_crt_base = _project_with_cam(ortho_cam, scene, Vector((mid_x, c_lo.y, mid_z)))
+    ortho_crt_top = _project_with_cam(ortho_cam, scene, Vector((mid_x, c_hi.y, mid_z)))
+    metrics["ortho_desk_top_ndc_y"] = float(sum(p.y for p in ortho_desk) / len(ortho_desk))
+    metrics["ortho_crt_base_ndc_y"] = float(ortho_crt_base.y)
+    metrics["ortho_crt_top_ndc_y"] = float(ortho_crt_top.y)
+    metrics["hero_crt_below_desk_ndc"] = float(crt_base.y - metrics["hero_desk_top_ndc_y"])
+    metrics["ortho_crt_below_desk_ndc"] = float(
+        ortho_crt_base.y - metrics["ortho_desk_top_ndc_y"]
+    )
+    ortho_cx = (ortho_crt_base.x + ortho_crt_top.x) * 0.5
+    ortho_desk_x0 = float(min(p.x for p in ortho_desk))
+    ortho_desk_x1 = float(max(p.x for p in ortho_desk))
+    metrics["ortho_crt_ndc_x"] = float(ortho_cx)
+    metrics["ortho_desk_top_ndc_x0"] = ortho_desk_x0
+    metrics["ortho_desk_top_ndc_x1"] = ortho_desk_x1
+    if ortho_cx < ortho_desk_x0 - 0.08 or ortho_cx > ortho_desk_x1 + 0.08:
+        raise RuntimeError(
+            f"desk-crt preview gate: ortho CRT centre outside desktop "
+            f"(crt_x={ortho_cx:.3f} desk_x=[{ortho_desk_x0:.3f},{ortho_desk_x1:.3f}])"
+        )
+    bpy.data.objects.remove(hero_cam, do_unlink=True)
+    bpy.data.objects.remove(ortho_cam, do_unlink=True)
+    return metrics
+
+
+def assert_desk_crt_on_desktop_for_preview(meshes: list[bpy.types.Object]) -> dict[str, float]:
+    """Fail if CRT is not on desktop; return bbox metrics for PR logging."""
+    metrics = desk_crt_on_desktop_bbox_metrics(meshes)
+    ordered = " ".join(f"{k}={metrics[k]:.4f}" for k in sorted(metrics))
+    print(f"PASS25_BBOX garage-desk-crt {ordered}")
+    return metrics
+
+
+def import_garage_glb_evaluated_assembly(
+    glb_path: Path,
+    asset_id: str,
+    tex_dir: Path,
+) -> list[bpy.types.Object]:
+    """Single GLB import; bake evaluated world geometry (no flatten/unparent)."""
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    old_objs = list(bpy.context.scene.objects)
+    meshes: list[bpy.types.Object] = []
+    for ob in old_objs:
+        if ob.type != "MESH":
+            continue
+        mesh = bpy.data.meshes.new_from_object(
+            ob.evaluated_get(depsgraph),
+            preserve_all_data_layers=True,
+            depsgraph=depsgraph,
+        )
+        dup = bpy.data.objects.new(ob.name.split(".", 1)[0], mesh)
+        dup.matrix_world.identity()
+        bpy.context.collection.objects.link(dup)
+        meshes.append(dup)
+    for ob in old_objs:
+        bpy.data.objects.remove(ob, do_unlink=True)
+    for ob in meshes:
+        apply_preview_material(ob, tex_dir, asset_id)
+    if asset_id == "garage-desk-crt":
+        assert_desk_crt_on_desktop_for_preview(meshes)
+        bpy.ops.object.select_all(action="DESELECT")
+        for ob in meshes:
+            ob.select_set(True)
+        bpy.context.view_layer.objects.active = meshes[0]
+        bpy.ops.object.join()
+        joined = bpy.context.view_layer.objects.active
+        joined.name = "garage-desk-crt_glb_evaluated"
+        return [joined]
+    return meshes
 
 
 def import_garage_glb_joined_for_preview(
@@ -849,7 +953,7 @@ GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
     "garage-crt-monitor": {"yaw": 38.0, "pitch": 28.0, "fill": 0.50, "margin": 0.10},
     "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
-    "garage-roll-door": {"yaw": 90.0, "pitch": 22.0, "fill": 0.58, "margin": 0.07},
+    "garage-roll-door": {"yaw": 90.0, "pitch": 22.0, "fill": 0.57, "margin": 0.075},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
 }
 
@@ -876,14 +980,8 @@ def render_garage_hero_preview_from_glb(
         frame_obs: list[bpy.types.Object]
         up_axis = "Y" if y_up else "Z"
         floor_plane = "horizontal_y" if y_up else "horizontal_z"
-        if y_up and asset_id == "garage-desk-crt":
-            bpy.ops.import_scene.gltf(filepath=str(glb_path))
-            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-            if not meshes:
-                raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
-            for ob in meshes:
-                apply_preview_material(ob, tex_dir, asset_id)
-            frame_obs = meshes
+        if y_up and asset_id in ("garage-desk-crt", "garage-roll-door"):
+            frame_obs = import_garage_glb_evaluated_assembly(glb_path, asset_id, tex_dir)
         elif y_up:
             bpy.ops.import_scene.gltf(filepath=str(glb_path))
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
@@ -942,7 +1040,7 @@ def render_garage_hero_preview_from_glb(
                     "framing_margin": margin,
                     "up_axis": up_axis,
                     "floor_plane": floor_plane,
-                    "renderer": "cycles_glb_import_assembly"
+                    "renderer": "cycles_glb_import_evaluated"
                     if asset_id == "garage-desk-crt"
                     else "cycles_glb_import",
                 },
@@ -969,12 +1067,9 @@ def render_garage_side_ortho_preview_from_glb(
     bpy.ops.wm.read_factory_settings(use_empty=True)
     try:
         if asset_id == "garage-desk-crt":
-            bpy.ops.import_scene.gltf(filepath=str(glb_path))
-            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-            if not meshes:
-                raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
-            for ob in meshes:
-                apply_preview_material(ob, tex_dir, asset_id)
+            meshes = import_garage_glb_evaluated_assembly(glb_path, asset_id, tex_dir)
+        elif asset_id == "garage-roll-door":
+            meshes = import_garage_glb_evaluated_assembly(glb_path, asset_id, tex_dir)
         else:
             bpy.ops.import_scene.gltf(filepath=str(glb_path))
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]

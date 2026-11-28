@@ -137,14 +137,14 @@ def _close_roll_door_bottom_gap(ob: bpy.types.Object) -> bpy.types.Object:
         if len(shells) == 1:
             return shells[0]
         return ob
-    shells.sort(key=lambda s: cc0.world_bbox(s)[0].y)
-    lower = shells[0]
-    upper = shells[1]
+    lower = min(shells, key=lambda s: cc0.world_bbox(s)[0].y)
+    rest = [s for s in shells if s is not lower]
+    upper = min(rest, key=lambda s: cc0.world_bbox(s)[0].y)
     _, l_hi = cc0.world_bbox(lower)
     u_lo, _ = cc0.world_bbox(upper)
     gap = u_lo.y - l_hi.y
-    if gap > 0.0015:
-        lower.location.y += gap - 0.001
+    if gap > 0.0005:
+        lower.location.y += gap + 0.008
         bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
     for shell in shells:

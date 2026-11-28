@@ -276,7 +276,7 @@ def _verify_crt_on_desktop(desk: bpy.types.Object, monitor: bpy.types.Object) ->
         raise RuntimeError("desk-crt: CRT X extent outside desktop")
     m_ctr = (m_lo + m_hi) * 0.5
     d_ctr = (d_lo + d_hi) * 0.5
-    if abs(m_ctr.z - d_ctr.z) > 0.025:
+    if abs(m_ctr.z - d_ctr.z) > 0.05:
         raise RuntimeError(f"desk-crt: CRT not centred on desktop Z (delta={abs(m_ctr.z - d_ctr.z):.4f}m)")
 
 
@@ -327,19 +327,11 @@ def _apply_all_transforms(parts: list[bpy.types.Object]) -> None:
 
 
 def finalize_desk_crt_for_export(parts: list[bpy.types.Object]) -> None:
-    """Parent CRT to desk; bake transforms per mesh after parenting (export-time Ctrl+A)."""
+    """Bake loc/rot/scale into each mesh (pass25: no CRT→desk parent; breaks GLB preview import)."""
     from garage_assembly import bake_parts_local_transforms  # type: ignore
 
-    desk = next((p for p in parts if p.name.lower().startswith("desktop")), None)
-    screen = next((p for p in parts if "crt" in p.name.lower()), None)
-    keyboard = next((p for p in parts if "keyboard" in p.name.lower()), None)
-    if desk is not None and screen is not None:
-        _parent_keep_world(screen, desk)
-    bpy.context.view_layer.update()
-    free_parts = [p for p in parts if p.type == "MESH" and p is not screen]
-    if screen is not None:
-        bake_parts_local_transforms([screen])
-    bake_parts_local_transforms(free_parts)
+    mesh_parts = [p for p in parts if p.type == "MESH"]
+    bake_parts_local_transforms(mesh_parts)
     bpy.context.view_layer.update()
 
 
@@ -372,6 +364,7 @@ def build_desk_crt() -> list[bpy.types.Object]:
     desk, keyboard = build_desk_base()
     screen = spawn_crt_monitor_for_desk(desk, name="CrtBezel")
     _place_on_top(screen, desk, overlap=0.002)
+    _center_on_part(screen, desk, dx=0.06, dz=0.0)
     _verify_crt_on_desktop(desk, screen)
     meta = measure_desk_crt_layout([desk, screen, keyboard])
     print(

@@ -19,11 +19,10 @@ def main() -> int:
     import blender_common as bc  # type: ignore
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(GLB))
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    meshes = bc.flatten_glb_preview_meshes(meshes)
     try:
-        bc.assert_desk_crt_on_desktop_for_preview(meshes)
+        bc.import_garage_glb_evaluated_assembly(
+            GLB, "garage-desk-crt", REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt"
+        )
     except RuntimeError as exc:
         print(f"FAIL garage-desk-crt {exc}")
         return 1
