@@ -24,6 +24,40 @@ Target look: **Two Point Hospital / Kenney showcase** — readable silhouettes, 
 
 **Procedural primitive boxes are frozen** (`garage_kit_builders.py`); garage heroes use `tools/art/run_cc0_garage_hero.sh`.
 
+## Staff heroes (`cursor/art-staff-founder-researcher`, PR #95)
+
+Hero staff restyle Kenney packs in Blender (role colours, bevel, 1024 bakes, glTF +Y, URP). Previews use Poly Haven HDRI on a mid-grey ground plate.
+
+| Pack | URL | Use on this branch |
+| --- | --- | --- |
+| Kenney Animated Characters 3 (CC0-1.0) | https://kenney.nl/assets/animated-characters-3 | **`staff-founder-idle`** blocky baked hero (`characterMedium.fbx`, `License.txt` in incoming); pinned kit GLB sha **`b09c59ac`** |
+| Kenney stock rig (same kit) | https://kenney.nl/assets/animated-characters-3 | **`staff-researcher-idle`** — founder stock mesh + founder slot map (`kenney_researcher_from_founder.py`); coat skirt + hair cap |
+| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com/packs/ultimatemodularcharacters.html | Incoming reference (`character.glb`); modular experiments only |
+| Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`) |
+| Poly Haven `studio_small_08` | https://polyhaven.com/a/studio_small_08 | EEVEE preview HDRI |
+
+Incoming paths and SHA-256 pins: `tools/art/cc0/manifest.json`.
+
+Baked game outputs under `unity/Assets/Art/EarlyGame/staff-kit/` remain **CC0-1.0** (derivative bake). Blender tooling is GPL-3.0; pixels are in-repo CC0.
+
+Regenerate: `./tools/art/run_blender_cc0_staff_heroes.sh`
+
+## Compute hardware hero (`cursor/art-compute-hardware-cc0`, PR #94)
+
+Hero assets are **restyled derivatives** of the packs below.
+
+| Pack | Author | License | Page | Used for (compute hardware hero) |
+| --- | --- | --- | --- | --- |
+| Furniture Kit | Kenney | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://kenney.nl/assets/furniture-kit | Monitor set (`computerScreen`, keyboard, mouse) |
+| Factory Kit 3.0 | Kenney | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://kenney.nl/assets/factory-kit | Server rack shell (legacy path; heroes procedural) |
+| Modular Sci-Fi MegaKit | Quaternius | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://quaternius.com/packs/modularscifimegakit.html | PC tower reference |
+| studio_small_09 (1k HDRI) | Poly Haven | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://polyhaven.com/a/studio_small_09 | Preview lighting |
+| Metal048A | ambientCG | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://ambientcg.com/view?id=Metal048A | Rack metal roughness reference (bake palette) |
+
+Download manifests and archive checksums: `tools/art/cc0/packs.manifest.json`.
+
+Regenerate: `./tools/art/cc0/run_compute_heroes.sh`
+
 ## Vendored CC0 (garage hero, Poly Haven models)
 
 Incoming GLTF packs live under `third_party/cc0/polyhaven/{PolyHavenId}/`. Each game asset lists its source in `tools/art/cc0/garage_cc0_map.json` and in `unity/Assets/Art/EarlyGame/garage-manifest.json` (`source` + `sourceId` fields).
@@ -66,19 +100,9 @@ Recorded **2026-11-26** (Bangkok).
 | **Poly Haven Studio Small 08** | https://polyhaven.com/a/studio_small_08 | 2026-11-26 | CC0 1.0 (Poly Haven) |
 | **Quaternius Ultimate Platformer Pack** | https://quaternius.itch.io/ultimate-platformer-pack | *(itch bot gate; not required for garage hero)* | CC0 1.0 (Quaternius) |
 
-### Incoming layout (garage interior)
-
-| Path under `tools/art/cc0/incoming/` | Contents |
-|--------------------------------------|----------|
-| `kenney_building-kit/` | Building Kit GLBs (hero subset or full zip) |
-| `kenney_furniture-kit/` | Furniture Kit GLBs (desk, chair, screen, shelf, lamp, boxes) |
-| `ambientcg-Concrete015/` | Concrete albedo/normal/roughness (2K) |
-| `polyhaven/studio_small_08_1k.hdr` | HDRI for Blender previews |
-| `Concrete015_2K-JPG.zip` | ambientCG archive (retained) |
-
 Regenerate: `./tools/art/run_blender_cc0_garage_hero.sh`
 
-## Prop desk & server rack (main lane)
+## Prop desk / server rack heroes (main lane)
 
 Vendored subsets may also live under `docs/art/cc0/`.
 
@@ -87,10 +111,10 @@ Vendored subsets may also live under `docs/art/cc0/`.
 | Furniture Kit | [Kenney](https://www.kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://kenney.nl/assets/furniture-kit | `docs/art/cc0/kenney-furniture-kit/` |
 | Studio Small 09 (HDRI) | Poly Haven | [CC0 1.0](https://polyhaven.com/license) | https://polyhaven.com/a/studio_small_09 | `docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr` |
 | Wood092 (1K) | ambientCG | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://ambientcg.com/view?id=Wood092 | `docs/art/cc0/ambientcg/Wood092_1K-JPG/` |
-| Metal048A (1K) | ambientCG | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://ambientcg.com/view?id=Metal048A | `docs/art/cc0/ambientcg/Metal048A_1K-JPG/` (Color, NormalGL, Roughness only) |
-| Factory Kit | [Kenney](https://www.kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://kenney.nl/assets/factory-kit | `docs/art/cc0/kenney-factory-kit/` (local fetch via `tools/art/cc0/download_kenney_factory.sh`) |
+| Metal048A (1K) | ambientCG | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://ambientcg.com/view?id=Metal048A | `docs/art/cc0/ambientcg/Metal048A_1K-JPG/` |
+| Factory Kit | [Kenney](https://www.kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://kenney.nl/assets/factory-kit | `docs/art/cc0/kenney-factory-kit/` |
 
-**Hero `prop-desk` (PR #92):** assembled from Kenney `desk.glb`, `computerScreen.glb`, `computerKeyboard.glb`, `computerMouse.glb`; restyled palette, 1024 AO + albedo bake; preview uses Poly Haven HDRI + mid-grey ground plane.
+**Hero `prop-desk` (PR #92):** Kenney desk cluster; Poly Haven HDRI + mid-grey ground.
 
 **Hero `prop-server-rack` (PR #99):** procedural dark charcoal cabinet (bevelled bpy meshes, Metal048A tint); Kenney accent **`screen-panel-flat.glb`** only for door glass strip; preview backdrop exactly RGB 150.
 

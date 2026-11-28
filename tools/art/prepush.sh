@@ -10,20 +10,7 @@ for arg in "${@:-}"; do
       ;;
   esac
 done
-# shellcheck source=tools/art/check_push_fastforward.sh
-source "$ROOT/tools/art/check_push_fastforward.sh"
-PUSH_BRANCH="${ART_PREPUSH_PUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}"
-UPSTREAM_FF="${ART_PREPUSH_UPSTREAM:-}"
-if [[ -z "$UPSTREAM_FF" ]] && [[ -n "$PUSH_BRANCH" ]]; then
-  UPSTREAM_FF="origin/${PUSH_BRANCH}"
-fi
-if [[ -z "$UPSTREAM_FF" ]] && git rev-parse --verify '@{u}' >/dev/null 2>&1; then
-  UPSTREAM_FF=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
-fi
-if [[ -n "$UPSTREAM_FF" ]]; then
-  git fetch origin 2>/dev/null || true
-  check_push_fastforward "$UPSTREAM_FF"
-fi
+./tools/art/assert_fast_forward_push.sh
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
