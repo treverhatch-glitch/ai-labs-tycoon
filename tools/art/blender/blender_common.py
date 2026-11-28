@@ -522,6 +522,27 @@ def orient_build_z_to_gltf_y_up(ob: bpy.types.Object) -> None:
     ob.location = (0.0, 0.0, 0.0)
 
 
+def duplicate_garage_preview_hierarchy(parts: list[bpy.types.Object], asset_id: str) -> list[bpy.types.Object]:
+    """Duplicate kit parts under a preview root; layout preserved for studio render."""
+    export_parts = [ob for ob in parts if ob.name != "ConnectSpine"]
+    dupes: list[bpy.types.Object] = []
+    for ob in export_parts:
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        dup.matrix_world = ob.matrix_world.copy()
+        dupes.append(dup)
+    if not dupes:
+        return dupes
+    root = bpy.data.objects.new(f"{asset_id}_PreviewAsm", None)
+    bpy.context.collection.objects.link(root)
+    for dup in dupes:
+        dup.parent = root
+        dup.matrix_parent_inverse = root.matrix_world.inverted()
+    bpy.context.view_layer.update()
+    return dupes
+
+
 def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
     """Export multipart garage kit with part layout preserved (Z-up build → glTF Y-up)."""
     import blender_preview_rig as rig  # type: ignore
@@ -546,6 +567,28 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
     mins, _maxs = rig.mesh_bounds_world(dupes)
     root.location.y -= mins.y
     bpy.context.view_layer.update()
+    for dup in dupes:
+        dup.parent = None
+        dup.matrix_parent_inverse.identity()
+    bpy.context.view_layer.update()
+    for dup in dupes:
+        bpy.ops.object.select_all(action="DESELECT")
+        dup.select_set(True)
+        bpy.context.view_layer.objects.active = dup
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.view_layer.update()
+    mins, _maxs = rig.mesh_bounds_world(dupes)
+    ground_dy = mins.y
+    if abs(ground_dy) > 1e-5:
+        for dup in dupes:
+            dup.location.y -= ground_dy
+        bpy.context.view_layer.update()
+        for dup in dupes:
+            bpy.ops.object.select_all(action="DESELECT")
+            dup.select_set(True)
+            bpy.context.view_layer.objects.active = dup
+            bpy.ops.object.transform_apply(location=True)
+    bpy.data.objects.remove(root, do_unlink=True)
     bpy.ops.object.select_all(action="DESELECT")
     for dup in dupes:
         dup.select_set(True)
@@ -560,7 +603,6 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
     )
     for dup in dupes:
         bpy.data.objects.remove(dup, do_unlink=True)
-    bpy.data.objects.remove(root, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -591,7 +633,9 @@ def _finish_garage_kit_asset(
     """Multipart garage Z-up build: per-part GLB, vcol preview join (quality pass #88)."""
     out_dir = ART_ROOT / category
     tex_dir = out_dir / "textures" / asset_id
-    tint_garage_parts(mesh_obs, asset_id)
+    from garage_canonical_materials import assign_part_materials  # type: ignore
+
+    assign_part_materials(mesh_obs, asset_id)
     parts = list(mesh_obs)
     min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
     cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
@@ -623,8 +667,7 @@ def _finish_garage_kit_asset(
     export_garage_multipart_glbf(parts, glb_path)
 
     preview_join = duplicate_join_meshes(parts, f"{asset_id}_preview")
-    transfer_material_colors_to_vertex_layer(preview_join)
-    unify_vertex_color_material(preview_join, asset_id)
+    apply_preview_material(preview_join, tex_dir, asset_id)
     for ob in parts:
         ob.hide_render = True
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
@@ -1420,7 +1463,7 @@ def _boost_garage_part_preview_material(ob: bpy.types.Object) -> None:
         src_sock = link.from_socket
         links.remove(link)
         hue = nodes.new("ShaderNodeHueSaturation")
-        hue.inputs["Saturation"].default_value = 1.32
+        hue.inputs["Saturation"].default_value = 1.08
         hue.inputs["Value"].default_value = 1.10
         links.new(src_sock, hue.inputs["Color"])
         links.new(hue.outputs["Color"], base)
@@ -1440,7 +1483,8 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     rough = tex_dir / f"{asset_id}_roughness.png"
     if asset_id.startswith("garage-"):
         mat0 = ob.data.materials[0] if ob.data.materials else None
-        if mat0 and mat0.name.startswith("Garage_"):
+        use_baked = ob.name.endswith("_preview") or "_preview" in ob.name
+        if mat0 and mat0.name.startswith("Garage_") and not use_baked:
             _boost_garage_part_preview_material(ob)
             return
     force_albedo = asset_id.startswith("staff-")
@@ -1477,7 +1521,7 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
         tex.image.reload()
     hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id.startswith("garage-"):
-        hue.inputs["Saturation"].default_value = 1.48
+        hue.inputs["Saturation"].default_value = 1.22
     else:
         hue.inputs["Saturation"].default_value = 1.45
     hue.inputs["Value"].default_value = 1.06 if asset_id.startswith("garage-") else 1.05

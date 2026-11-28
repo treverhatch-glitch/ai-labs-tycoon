@@ -23,4 +23,6 @@ python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_garage_asset_complexity.py
 python3 tools/art/check_garage_baked_albedo.py
 python3 tools/art/check_garage_silhouette.py
+python3 tools/art/check_garage_part_bbox_gap.py
+python3 tools/art/check_garage_hero_palette.py
 echo "quality packet1 garage OK"

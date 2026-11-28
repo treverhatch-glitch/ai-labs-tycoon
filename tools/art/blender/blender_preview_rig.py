@@ -504,8 +504,8 @@ def render_preview_studio(
         axis = (up_axis or "Z").upper()
         framing_margin = float(os.environ.get("GARAGE_PREVIEW_MARGIN", "1.15"))
         lens_mm = float(os.environ.get("GARAGE_PREVIEW_LENS", str(DEFAULT_LENS_MM)))
-        azimuth_deg = float(os.environ.get("GARAGE_PREVIEW_AZIMUTH", str(DEFAULT_AZIMUTH_DEG)))
-        elevation_deg = float(os.environ.get("GARAGE_PREVIEW_ELEVATION", str(DEFAULT_ELEVATION_DEG)))
+        azimuth_deg = float(os.environ.get("GARAGE_PREVIEW_AZIMUTH", "32"))
+        elevation_deg = float(os.environ.get("GARAGE_PREVIEW_ELEVATION", "30"))
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:

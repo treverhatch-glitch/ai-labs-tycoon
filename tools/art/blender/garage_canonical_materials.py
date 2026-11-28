@@ -63,3 +63,91 @@ def get_canonical_material(slot: str) -> bpy.types.Material:
 def assign_slot(ob: bpy.types.Object, slot: str) -> None:
     ob.data.materials.clear()
     ob.data.materials.append(get_canonical_material(slot))
+
+
+def _slot_for_part(ob: bpy.types.Object, asset_id: str) -> str:
+    """Map kit part names to warm CC0 garage slots (no saturated primaries)."""
+    name = ob.name.lower().split(".")[0]
+    if "screen" in name or name == "chart":
+        return "glass_dark"
+    if "led" in name or "glass" in name or "pane" in name:
+        return "glass_dark"
+    if "cord" in name or "cable" in name:
+        return "cable_black"
+    if "keyboard" in name or "key" in name:
+        return "keyboard_grey"
+    if "stroke" in name or name.startswith("pad"):
+        if "red" in name:
+            return "marker_red"
+        if "blue" in name:
+            return "marker_blue"
+        return "marker_green"
+    if "letter" in name:
+        return "plastic_dark"
+    if "grass" in name or "tuft" in name:
+        return "grass"
+    if "curb" in name or "asphalt" in name or "gutter" in name:
+        return "curb_grey"
+    if "coil" in name or "cablestrand" in name:
+        return "coil_copper"
+    if "hub" in name or "flange" in name:
+        return "wood"
+    if "slat" in name or "curtain" in name or "corrugated" in name:
+        return "corrugated"
+    if asset_id == "garage-land-for-sale-sign" and "sign" in name:
+        return "sign_yellow"
+    if "whiteboard" in name or name == "surface":
+        return "whiteboard"
+    if "frame" in name or "trim" in name or "mullion" in name or "header" in name or "sill" in name:
+        return "frame_wood"
+    if "leg" in name or "brace" in name or "rail" in name or "post" in name and "collar" not in name:
+        return "steel"
+    if "bezel" in name or "crt" in name or "chassis" in name:
+        return "crt_bezel"
+    if "desktop" in name or "drawer" in name or "seat" in name or "backrest" in name:
+        return "desk_wood"
+    if "body" in name or "warmer" in name or "pot" in name or "carafe" in name or "spout" in name:
+        return "plastic_orange"
+    if asset_id == "garage-coffee-drip" and "base" in name:
+        return "plastic_dark"
+    if "shell" in name or "door" in name or "rack" in name or "closet" in name:
+        return "dark_metal"
+    if "slab" in name or "tile" in name or "wall" in name or "core" in name:
+        return "concrete"
+    if asset_id == "garage-floor-tile":
+        if "grout" in name:
+            return "plastic_dark"
+        if "accent" in name or "corner" in name:
+            return "plastic_orange"
+        if "pad" in name:
+            return "wood"
+    if "stripe" in name:
+        return "plastic_orange"
+    if "handle" in name:
+        return "plastic_orange"
+    return "plastic_beige"
+
+
+def _add_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float], strength: float) -> None:
+    mat = ob.data.materials[0] if ob.data.materials else None
+    if not mat or not mat.use_nodes:
+        return
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if not bsdf:
+        return
+    bsdf.inputs["Emission Color"].default_value = rgba
+    bsdf.inputs["Emission Strength"].default_value = strength
+
+
+def assign_part_materials(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
+    """Restyle multipart garage kit with canonical Garage_* slots before bake/export."""
+    for ob in mesh_obs:
+        if ob.name == "ConnectSpine":
+            continue
+        slot = _slot_for_part(ob, asset_id)
+        assign_slot(ob, slot)
+        lname = ob.name.lower()
+        if "screen" in lname:
+            _add_emission(ob, (0.10, 0.48, 0.32, 1.0), 2.2)
+        elif "led" in lname:
+            _add_emission(ob, (0.95, 0.35, 0.15, 1.0), 1.8)
