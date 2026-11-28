@@ -6,8 +6,8 @@
     150,
     150
   ],
-  "framing_fill": 0.72,
-  "framing_margin": 0.06,
+  "framing_fill": 0.54,
+  "framing_margin": 0.08,
   "up_axis": "Y",
   "floor_plane": "horizontal_y",
   "renderer": "cycles_glb_import"

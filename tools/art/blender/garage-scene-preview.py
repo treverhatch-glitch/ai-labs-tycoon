@@ -113,11 +113,13 @@ def main() -> None:
             out,
             resolution=768,
             mode="scene",
-            fill=0.72,
+            fill=0.70,
             margin=0.05,
             frame_objects=joins,
             up_axis="Y",
             mask_path=mask,
+            hero_yaw_deg=42.0,
+            hero_pitch_deg=34.0,
         )
         meta = PREVIEW / "garage-scene-kit.frame.json"
         meta.write_text(
@@ -126,7 +128,7 @@ def main() -> None:
                     "preview_kind": "garage",
                     "flat_backdrop": True,
                     "backdrop_rgb": [150, 150, 150],
-                    "framing_fill": 0.72,
+                    "framing_fill": 0.70,
                     "up_axis": "Y",
                     "floor_plane": "horizontal_y",
                     "props": len(joins),

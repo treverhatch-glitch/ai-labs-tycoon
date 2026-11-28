@@ -195,6 +195,11 @@ def _import_polyhaven(asset_id: str) -> list[bpy.types.Object]:
             bpy.context.view_layer.objects.active = ob
             bpy.ops.object.transform_apply(scale=True)
     bc.snap_parts_to_ground(mesh_obs)
+    if asset_id == "garage-roll-door":
+        for ob in mesh_obs:
+            _upright_tallest_y(ob)
+            _center_xz(ob)
+            _snap_floor(ob)
     return mesh_obs
 
 
@@ -296,6 +301,7 @@ def build_roll_door() -> list[bpy.types.Object]:
 
 def build_server_closet() -> list[bpy.types.Object]:
     ob = _import_kenney_furniture("bookcaseClosed.glb", "ServerCabinet")
+    _orient_kenney_y_up(ob)
     _scale_height(ob, 1.88)
     _center_xz(ob)
     _snap_floor(ob)

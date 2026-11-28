@@ -623,6 +623,14 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         bpy.data.objects.remove(ob, do_unlink=True)
 
 
+GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
+    "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
+    "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
+    "garage-roll-door": {"yaw": 45.0, "pitch": 35.0, "fill": 0.56, "margin": 0.08},
+    "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
+}
+
+
 def render_garage_hero_preview_from_glb(
     asset_id: str,
     glb_path: Path,
@@ -632,6 +640,8 @@ def render_garage_hero_preview_from_glb(
     *,
     fill: float,
     margin: float,
+    hero_yaw_deg: float | None = None,
+    hero_pitch_deg: float | None = None,
 ) -> None:
     """Hero preview from committed GLB: Y-up props use tint slots (no baked UV); Z-up cable-spool legacy."""
     import cc0_common as cc0  # type: ignore
@@ -680,6 +690,8 @@ def render_garage_hero_preview_from_glb(
             margin=margin,
             up_axis=up_axis,
             mask_path=mask_path,
+            hero_yaw_deg=hero_yaw_deg,
+            hero_pitch_deg=hero_pitch_deg,
         )
         if not y_up:
             bpy.data.objects.remove(frame_obs[0], do_unlink=True)
@@ -878,11 +890,25 @@ def _finish_garage_kit_asset(
         "garage-window-frame": (0.60, 0.075),
     }
     fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
+    cam = GARAGE_HERO_CAMERA.get(asset_id, {})
+    if cam:
+        fill = float(cam.get("fill", fill))
+        margin = float(cam.get("margin", margin))
+    yaw = cam.get("yaw")
+    pitch = cam.get("pitch")
 
     glb_path = out_dir / f"{asset_id}.glb"
     export_garage_multipart_glbf(parts, glb_path)
     render_garage_hero_preview_from_glb(
-        asset_id, glb_path, tex_dir, preview_path, mask_path, fill=fill, margin=margin
+        asset_id,
+        glb_path,
+        tex_dir,
+        preview_path,
+        mask_path,
+        fill=fill,
+        margin=margin,
+        hero_yaw_deg=yaw,
+        hero_pitch_deg=pitch,
     )
     render_garage_side_ortho_preview_from_glb(asset_id, glb_path, tex_dir, ortho_path)
 

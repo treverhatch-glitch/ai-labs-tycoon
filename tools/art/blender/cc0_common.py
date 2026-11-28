@@ -881,6 +881,8 @@ def render_kit_preview(
     frame_objects: list[bpy.types.Object] | None = None,
     up_axis: str = "Y",
     mask_path: Path | None = None,
+    hero_yaw_deg: float | None = None,
+    hero_pitch_deg: float | None = None,
 ) -> None:
     """Warm point + HDRI (hidden from camera); world corners RGB 150; ~70% fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
@@ -932,7 +934,9 @@ def render_kit_preview(
     room = span if span <= 5.5 else max(span, 4.0)
     floor_h = 0.05
     lens = 48.0
-    pitch = math.radians(32.0)
+    default_pitch = 35.0 if (mode == "hero" and up_axis == "Y") else (34.0 if mode == "scene" and up_axis == "Y" else 32.0)
+    pitch_deg = hero_pitch_deg if hero_pitch_deg is not None else default_pitch
+    pitch = math.radians(pitch_deg)
     hero_tight = mode == "hero"
     min_half = 0.06 if hero_tight else 0.75
     dist_scale = 1.0 if hero_tight else (0.88 if mode == "hero" else 0.62)
@@ -971,26 +975,69 @@ def render_kit_preview(
             )
         bpy.context.scene.cycles.use_shadow_catcher = False
     else:
-        if mode == "scene":
-            target = Vector((center.x, max(center.y, floor_h + 0.85), center.z))
-        else:
-            target = Vector((room * 0.48, floor_h + 1.05, room * 0.48))
-        lights = add_preview_warm_lights(target)
-        if mode == "scene":
+        span_y = max(maxs.y - mins.y, 0.1)
+        yaw_deg = hero_yaw_deg if hero_yaw_deg is not None else (42.0 if mode == "scene" else 45.0)
+        yaw_rad = math.radians(yaw_deg)
+        if mode == "hero":
+            target = Vector((center.x, mins.y + span_y * 0.40, center.z))
+            lights = add_preview_warm_lights(target)
+            cam_loc = Vector(
+                (
+                    center.x + math.cos(yaw_rad) * horiz,
+                    mins.y + span_y * 0.36 + elev * 0.70,
+                    center.z + math.sin(yaw_rad) * horiz,
+                )
+            )
+            bpy.context.scene.cycles.use_shadow_catcher = False
+        elif mode == "scene":
+            scene_pitch = math.radians(hero_pitch_deg if hero_pitch_deg is not None else 34.0)
+            sh = dist * math.cos(scene_pitch)
+            se = dist * math.sin(scene_pitch)
+            target = Vector((center.x, mins.y + span_y * 0.44, center.z))
+            lights = add_preview_warm_lights(target)
             for light in lights:
                 light.data.energy *= 1.28
-        cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))
-        bpy.ops.mesh.primitive_plane_add(size=room * 1.05, location=(room / 2, -0.002, room / 2))
-        shadow = bpy.context.active_object
-        shadow.name = "preview_shadow_catcher"
-        smat = bpy.data.materials.new("shadow_grey")
-        smat.use_nodes = True
-        sg = smat.node_tree.nodes.get("Principled BSDF")
-        sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-        sg.inputs["Roughness"].default_value = 0.96
-        shadow.data.materials.append(smat)
-        shadow.is_shadow_catcher = True
-        bpy.context.scene.cycles.use_shadow_catcher = True
+            cam_loc = Vector(
+                (
+                    center.x + math.cos(yaw_rad) * sh * 0.95,
+                    mins.y + span_y * 0.28 + se * 0.72,
+                    center.z + math.sin(yaw_rad) * sh * 0.95,
+                )
+            )
+        else:
+            target = Vector((center.x, max(center.y, floor_h + 0.85), center.z))
+            lights = add_preview_warm_lights(target)
+            cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))
+        if mode == "scene":
+            bpy.ops.mesh.primitive_plane_add(
+                size=max(span_xz, 1.2) * 1.08,
+                location=(center.x, mins.y - 0.002, center.z),
+            )
+            shadow = bpy.context.active_object
+            shadow.name = "preview_shadow_catcher"
+            smat = bpy.data.materials.new("shadow_grey")
+            smat.use_nodes = True
+            sg = smat.node_tree.nodes.get("Principled BSDF")
+            sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
+            sg.inputs["Roughness"].default_value = 0.96
+            shadow.data.materials.append(smat)
+            shadow.is_shadow_catcher = True
+            bpy.context.scene.cycles.use_shadow_catcher = True
+        elif mode != "hero":
+            bpy.ops.mesh.primitive_plane_add(size=room * 1.05, location=(room / 2, -0.002, room / 2))
+            shadow = bpy.context.active_object
+            shadow.name = "preview_shadow_catcher"
+            smat = bpy.data.materials.new("shadow_grey")
+            smat.use_nodes = True
+            sg = smat.node_tree.nodes.get("Principled BSDF")
+            sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
+            sg.inputs["Roughness"].default_value = 0.96
+            shadow.data.materials.append(smat)
+            shadow.is_shadow_catcher = True
+            bpy.context.scene.cycles.use_shadow_catcher = True
+        else:
+            shadow = None
+            bpy.context.scene.cycles.use_shadow_catcher = False
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.data.lens = lens
