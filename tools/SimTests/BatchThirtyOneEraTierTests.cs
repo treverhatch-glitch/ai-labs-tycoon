@@ -34,7 +34,7 @@ public class BatchThirtyOneEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_195round_trip()
+    public void Save_load_preserves_schema_195_round_trip()
     {
         Game g = Lab(c =>
         {
@@ -48,9 +48,9 @@ public class BatchThirtyOneEraTierTests
         g.Me.Bloc(g.Me.HomeBlocId).Attention = 900;
         g.Do(Command.Lobby(g.Id, g.Me.HomeBlocId, Lobbying.Quiet));
         string save = g.Sim.Save();
-        Assert.Equal(197, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(197, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.LobbyingCostEraRelieved);
     }
 }

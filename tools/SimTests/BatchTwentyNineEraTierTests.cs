@@ -34,7 +34,7 @@ public class BatchTwentyNineEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_189round_trip()
+    public void Save_load_preserves_schema_189_round_trip()
     {
         Game g = Lab(c =>
         {
@@ -45,9 +45,9 @@ public class BatchTwentyNineEraTierTests
         g.State.Tick = 48 * 12;
         OfficeEvents.OnHearing(g.C, g.State, g.Me, g.Me.HomeBlocId);
         string save = g.Sim.Save();
-        Assert.Equal(197, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(197, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.OfficeHearingEraGraced);
     }
 }

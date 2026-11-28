@@ -24,7 +24,7 @@ public class BatchTwentyEightEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_186round_trip()
+    public void Save_load_preserves_schema_186_round_trip()
     {
         Game g = Lab(c =>
         {
@@ -38,9 +38,9 @@ public class BatchTwentyEightEraTierTests
         g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
         g.Do(Command.PublishMetrics(g.Id, m.Id));
         string save = g.Sim.Save();
-        Assert.Equal(197, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(197, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.PublicMetricsEraDiscounted);
     }
 
