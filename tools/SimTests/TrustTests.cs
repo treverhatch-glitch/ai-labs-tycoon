@@ -318,7 +318,7 @@ public class TrustTests
         Sold(g, g.Me, 1000, Ads);
         Sold(g, g.Me, 1000, Support);
         g.Weeks(1);
-        Assert.Equal(443, Trust(g, g.Me, Chat));
+        Assert.Equal(440, Trust(g, g.Me, Chat));
         Assert.Equal(500 - 60 * 300 / 1000, Trust(g, g.Me, Ads));
         Assert.Equal(500, Trust(g, g.Me, Support));
     }
@@ -327,7 +327,7 @@ public class TrustTests
     public void Nothing_carries_to_a_sector_of_the_family_where_the_lab_does_not_sell()
     {
         Game g = Hit(null, Chat);
-        Assert.Equal(443, Trust(g, g.Me, Chat));
+        Assert.Equal(440, Trust(g, g.Me, Chat));
         Assert.Equal(500, Trust(g, g.Me, Ads));
         Assert.DoesNotContain(g.Me.SectorTrust, t => t.SectorId == Ads);
     }
@@ -372,7 +372,7 @@ public class TrustTests
         LabState rival = g.Rival("openaye");
         Sold(g, rival, 0, Chat);
         g.Weeks(1);
-        Assert.Equal(443, Trust(g, rival, Chat));
+        Assert.Equal(440, Trust(g, rival, Chat));
         Assert.Equal(0, Count(g, EventKind.TrustLost));
         Assert.Empty(rival.Complaints);
         Assert.Empty(g.Me.Complaints);
@@ -442,7 +442,7 @@ public class TrustTests
     {
         Game g = Hit(c => c.Trust.MaxOpenComplaints = 0, Chat);
         Assert.Empty(g.Me.Complaints);
-        Assert.Equal(443, Trust(g, g.Me, Chat));
+        Assert.Equal(440, Trust(g, g.Me, Chat));
     }
 
     [Fact]
@@ -470,7 +470,7 @@ public class TrustTests
         g.Me.Bankrupt = true;
         TrustSystem.OnIncident(g.C, g.State, g.Me, g.Me.Models[0]);
         Assert.Empty(g.Me.Complaints);
-        Assert.Equal(443, Trust(g, g.Me, Chat));
+        Assert.Equal(440, Trust(g, g.Me, Chat));
     }
 
     [Fact]

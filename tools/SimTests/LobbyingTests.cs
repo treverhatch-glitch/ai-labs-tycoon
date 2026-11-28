@@ -245,10 +245,11 @@ public class LobbyingTests
         Game g = Lab();
         Standing(g).Attention = 900;
         g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet));
-        Assert.Equal(g.State.Tick + g.C.Lobbying.CooldownWeeks, Standing(g).LobbyUntilTick);
+        int cd = LobbyingEraCooldown.EffectiveCooldownWeeks(g.C, g.State);
+        Assert.Equal(g.State.Tick + cd, Standing(g).LobbyUntilTick);
         g.Refused(Command.Lobby(g.Id, Home(g), Lobbying.Quiet), CommandError.LobbyCooling);
         g.Refused(Command.Lobby(g.Id, Home(g), Lobbying.Subsidy), CommandError.LobbyCooling);
-        g.Weeks(g.C.Lobbying.CooldownWeeks);
+        g.Weeks(cd);
         Standing(g).Attention = 900;
         Assert.True(g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet)).Ok);
     }

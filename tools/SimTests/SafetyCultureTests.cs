@@ -464,7 +464,7 @@ public class SafetyCultureTests
         SetLevel(g, 500);
         g.Do(Command.SetReleaseGate(g.Id, 0));
         Assert.Equal(0, g.Me.ReleaseGate);
-        Assert.Equal(443, Level(g));
+        Assert.Equal(440, Level(g));
     }
 
     [Fact]

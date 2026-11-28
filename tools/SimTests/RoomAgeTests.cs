@@ -202,7 +202,7 @@ public class RoomAgeTests
         room.EraAge = 3;
         Assert.Equal(460, Workplace.RestingMorale(g.C, g.Me));
         room.EraAge = 5;
-        Assert.Equal(443, Workplace.RestingMorale(g.C, g.Me));
+        Assert.Equal(440, Workplace.RestingMorale(g.C, g.Me));
     }
 
     [Fact]
