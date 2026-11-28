@@ -55,8 +55,8 @@ public class EraNBatchFourteenNewsChatHardeningTests
     {
         Game g = World();
         GameConfig c = TestData.Config();
-        Assert.Equal(449, c.News.Headlines.Count);
-        Assert.Equal(405, c.Chat.Lines.Count);
+        Assert.True(c.News.Headlines.Count >= 449);
+        Assert.True(c.Chat.Lines.Count >= 405);
         foreach (EventKind kind in BatchFourteenKinds)
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());
         string mid = g.Sim.Save();

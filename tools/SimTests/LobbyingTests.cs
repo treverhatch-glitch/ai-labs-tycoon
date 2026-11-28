@@ -189,7 +189,9 @@ public class LobbyingTests
         long cost = Lobbying.Cost(g.C, g.State, g.Me, Lobbying.Quiet);
         g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet));
         Assert.Equal(100 + g.C.Lobbying.BackfireAttention, Standing(g).Attention);
-        Assert.Equal(500 - PressSystem.Damp(g.C, g.Me, g.C.Lobbying.BackfireReputation), g.Me.Reputation);
+        int backfireRep = PressSystem.Damp(g.C, g.Me, g.C.Lobbying.BackfireReputation);
+        int repLoss = LobbyingBackfireEraRelief.ReputationLoss(g.C, g.State, backfireRep);
+        Assert.Equal(500 - repLoss, g.Me.Reputation);
         Assert.Equal(cash - cost, g.Me.Cash);
         GameEvent e = g.State.Events.Last(x => x.Kind == EventKind.Lobbied);
         Assert.EndsWith("backfired", e.Ref);
