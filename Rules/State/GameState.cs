@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 172;
+        public const int CurrentSchema = 201;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,6 +42,7 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        /// <summary>Whether the bubble has already crashed once this game.</summary>
         public bool BubbleHadCrash;
         public int RivalIntentLastTick = -1;
         public List<EndingRecord> Endings = new List<EndingRecord>();
@@ -626,6 +627,8 @@ namespace AiLabs.Rules.State
         public string BaggageId = "";
         public int BaggagePicked;
         public int MarginCallLeft;
+        /// <summary>The compute equipment tier index (Q506, schema 174).</summary>
+        public int ComputeEquipTier;
         public int RungSixArcUntil;
         public int RungSixCooldownUntil;
         public string ScenarioId = "";
@@ -1171,6 +1174,7 @@ namespace AiLabs.Rules.State
             s.Str("baggageId", ref BaggageId);
             s.Int("baggagePicked", ref BaggagePicked);
             s.Int("marginCallLeft", ref MarginCallLeft);
+            s.Int("computeEquipTier", ref ComputeEquipTier);
             s.Int("rungSixArcUntil", ref RungSixArcUntil);
             s.Int("rungSixCooldownUntil", ref RungSixCooldownUntil);
             s.Str("scenarioId", ref ScenarioId);

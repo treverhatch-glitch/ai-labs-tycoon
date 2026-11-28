@@ -709,11 +709,67 @@ namespace AiLabs.Rules.Sim
                 case EventKind.DataSourceAcquireEraDiscounted:
                     return who + " acquired data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
                 case EventKind.MarginSatisfyEraRelieved:
-                    return who + " paid a margin call with era relief " + e.SubjectId + " permille (saved $" + e.Amount + ").";
+                    return who + " satisfied a margin call with $" + e.Amount + " era relief on the payment.";
                 case EventKind.ScenarioGoalsEraSlacked:
-                    return who + " got +" + e.SubjectId + " weeks of slack before the scenario mid-check (mark week " + e.Amount + ").";
+                    return who + " got " + e.SubjectId + " extra weeks before scenario goal \"" + e.Ref + "\" is checked.";
                 case EventKind.TakeoffCrisisEraGraced:
-                    return who + " has until week " + e.SubjectId + " to answer takeoff crisis \"" + e.Ref + "\" (+" + e.Amount + " era grace weeks).";
+                    return who + " got " + e.SubjectId + " extra weeks to answer a takeoff crisis.";
+                case EventKind.ComputeEquipmentUpgraded:
+                    return who + " upgraded lab equipment to \"" + e.Ref + "\" for $" + e.Amount + " (tier " + e.SubjectId + ").";
+                case EventKind.ExitDebtEraHaircutted:
+                    return who + " shaved $" + e.Amount + " off debts counted against an exit offer.";
+                case EventKind.TakeoffAnswerEraCooldownShortened:
+                    return who + " answered a takeoff crisis with a shorter cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.ScenarioGoalEraTrusted:
+                    return who + " met scenario goal \"" + e.Ref + "\" and won +" + e.SubjectId + " trust in every sector.";
+                case EventKind.HearingShareEraDampened:
+                    return who + " took a softer bubble hit after a bad hearing answer (" + e.SubjectId + " permille saved, " + e.Amount + " cut).";
+                case EventKind.OfficeReleaseEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer release notes.";
+                case EventKind.DataSourceAcquireEraWeeksBonused:
+                    return who + " licensed \"" + e.Ref + "\" for +" + e.Amount + " bonus weeks.";
+                case EventKind.EscapeCrisisEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer an escape crisis.";
+                case EventKind.LawShapingEraAmplified:
+                    return who + " shaped law toward " + e.Ref + " with +" + e.SubjectId + " extra delta (" + e.Amount + " base).";
+                case EventKind.DataSourceRenewEraDiscounted:
+                    return who + " renewed data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
+                case EventKind.RungSixEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer a rung-six crisis.";
+                case EventKind.EvalHarnessEraRelieved:
+                    return who + " registered eval for \"" + e.Ref + "\" with $" + e.Amount + " era relief.";
+                case EventKind.PublicMetricsEraDiscounted:
+                    return who + " published metrics for \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
+                case EventKind.OfficeHearingEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer a hearing.";
+                case EventKind.OpenWeightsCopyEraRelieved:
+                    return who + " took a softer trust hit after open weights were copied on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.EvalFailEraRelieved:
+                    return who + " took a softer trust hit after a failed eval on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.LobbyingEraCooldownShortened:
+                    return who + " got a shorter lobby cooldown after a " + (e.Ref == Lobbying.Subsidy ? "subsidy" : "quiet") + " push (" + e.SubjectId + " weeks cut).";
+                case EventKind.PublicMetricsMissEraRelieved:
+                    return who + " took a softer trust hit after a metrics miss on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.OpenWeightsOpenEraBoosted:
+                    return who + " got extra trust opening weights on \"" + e.Ref + "\" (+" + e.Amount + " permille).";
+                case EventKind.LobbyingCostEraRelieved:
+                    return who + " paid less to lobby " + e.Ref.Split('|')[0] + " ($" + e.Amount + " saved).";
+                case EventKind.PublicMetricsConformityEraSlacked:
+                    return who + " got softer conformity pressure on \"" + e.Ref + "\" from published metrics (" + e.Amount + " weeks saved).";
+                case EventKind.SpecialistBranchEraBoosted:
+                    return who + " got extra trust branching a specialist on \"" + e.Ref + "\" (+" + e.Amount + " permille).";
+                case EventKind.LobbyingGoalEraAmplified:
+                    return who + " got a stronger lobby " + e.Ref.Split('|')[1] + " push on " + e.Ref.Split('|')[0] + " (+" + e.SubjectId + ").";
+                case EventKind.PublicMetricsBarEraSlacked:
+                    return who + " cleared a lower metrics bar on \"" + e.Ref + "\" (" + e.Amount + " permille slack).";
+                case EventKind.OpenWeightsCloseEraRelieved:
+                    return who + " took a softer trust hit closing weights on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.LobbyingBackfireEraRelieved:
+                    return who + " weathered a softer lobby backfire (" + e.Amount + " rep saved).";
+                case EventKind.PublicMetricsGainEraBoosted:
+                    return who + " earned extra trust on good metrics for \"" + e.Ref + "\" (+" + e.Amount + ").";
+                case EventKind.OpenWeightsCopyEraSlacked:
+                    return who + " took a lighter copy hit on \"" + e.Ref + "\" (" + e.Amount + " saved).";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

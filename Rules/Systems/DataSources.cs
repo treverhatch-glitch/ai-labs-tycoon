@@ -19,12 +19,15 @@ namespace AiLabs.Rules.Systems
         {
             int i = Index(c, sourceId);
             DataSourceItemConfig src = c.DataSources.Sources[i];
-            SetWeeks(lab, i, src.DurationWeeks);
+            int bonus = DataSourceAcquireEraWeeks.BonusWeeks(c, state);
+            int weeks = src.DurationWeeks + bonus;
+            SetWeeks(lab, i, weeks);
             long listCost = src.WeeklyCost;
             long paid = DataSourceAcquireEraDiscount.AcquireCost(c, state, listCost);
             Finance.Spend(lab, LedgerLine.Training, paid);
-            Events.Add(state, EventKind.DataSourceAcquired, lab.Id, i, src.DurationWeeks, sourceId);
+            Events.Add(state, EventKind.DataSourceAcquired, lab.Id, i, weeks, sourceId);
             DataSourceAcquireEraDiscount.OnAcquire(c, state, lab, i, sourceId, listCost, paid);
+            DataSourceAcquireEraWeeks.OnAcquire(c, state, lab, sourceId, bonus);
             DataSourceSpecialistPairing.OnAcquire(c, state, lab, sourceId);
         }
 
@@ -35,9 +38,12 @@ namespace AiLabs.Rules.Systems
             int bonus = DataSourceRenewEraBonus.BonusWeeks(c, state);
             int weeks = src.DurationWeeks + bonus;
             SetWeeks(lab, i, weeks);
-            Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
+            long listCost = src.WeeklyCost;
+            long paid = DataSourceRenewEraDiscount.RenewCost(c, state, listCost);
+            Finance.Spend(lab, LedgerLine.Training, paid);
             Events.Add(state, EventKind.DataSourceRenewed, lab.Id, i, weeks, sourceId);
             DataSourceRenewEraBonus.OnRenew(c, state, lab, sourceId, bonus);
+            DataSourceRenewEraDiscount.OnRenew(c, state, lab, i, sourceId, listCost, paid);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

@@ -206,6 +206,34 @@ namespace AiLabs.Rules.Config
             MarginSatisfyEraReliefProblems(p, c);
             ScenarioGoalsEraSlackProblems(p, c);
             TakeoffCrisisEraGraceProblems(p, c);
+            ComputeEquipmentProblems(p, c);
+            ExitDebtEraHaircutProblems(p, c);
+            TakeoffAnswerEraCooldownProblems(p, c);
+            ScenarioGoalEraTrustProblems(p, c);
+            HearingShareEraDampenProblems(p, c);
+            OfficeReleaseEraGraceProblems(p, c);
+            DataSourceAcquireEraWeeksProblems(p, c);
+            EscapeCrisisEraGraceProblems(p, c);
+            LawShapingEraAmplifyProblems(p, c);
+            DataSourceRenewEraDiscountProblems(p, c);
+            RungSixEraGraceProblems(p, c);
+            EvalHarnessEraReliefProblems(p, c);
+            PublicMetricsEraDiscountProblems(p, c);
+            OfficeHearingEraGraceProblems(p, c);
+            OpenWeightsCopyEraReliefProblems(p, c);
+            EvalFailEraReliefProblems(p, c);
+            LobbyingEraCooldownProblems(p, c);
+            PublicMetricsMissEraReliefProblems(p, c);
+            OpenWeightsOpenEraBoostProblems(p, c);
+            LobbyingCostEraReliefProblems(p, c);
+            PublicMetricsConformityEraSlackProblems(p, c);
+            SpecialistBranchEraBoostProblems(p, c);
+            LobbyingGoalEraAmplifyProblems(p, c);
+            PublicMetricsBarEraSlackProblems(p, c);
+            OpenWeightsCloseEraReliefProblems(p, c);
+            LobbyingBackfireEraReliefProblems(p, c);
+            PublicMetricsGainEraBoostProblems(p, c);
+            OpenWeightsCopyEraSlackProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2291,6 +2319,281 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffCrisisEraGrace.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("takeoffCrisisEraGrace.minEra must be a valid era index");
             if (k.GraceWeeks < 0) p.Add("takeoffCrisisEraGrace.graceWeeks must not be negative");
+        }
+
+        static void ComputeEquipmentProblems(List<string> p, GameConfig c)
+        {
+            ComputeEquipmentConfig k = c.ComputeEquipment;
+            if (k == null) { p.Add("computeEquipment is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("computeEquipment.enabled must be 0 or 1");
+            UniqueIds(p, "computeEquipment.tiers", k.Tiers);
+            for (int i = 0; i < k.Tiers.Count; i++)
+            {
+                ComputeEquipmentTierConfig t = k.Tiers[i];
+                if (t.MinEra < 0 || t.MinEra >= c.Eras.Count) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" minEra out of range");
+                if (t.UpgradeCost < 0) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" upgradeCost must not be negative");
+                if (i > 0 && t.UpgradeCost < 1) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" needs a positive upgradeCost");
+                if (t.VisualEra < 1) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" visualEra must be at least 1");
+            }
+            if (k.Enabled > 0 && k.Tiers.Count < 1) p.Add("computeEquipment needs at least one tier");
+        }
+
+        static void ExitDebtEraHaircutProblems(List<string> p, GameConfig c)
+        {
+            ExitDebtEraHaircutConfig k = c.ExitDebtEraHaircut;
+            if (k == null) { p.Add("exitDebtEraHaircut is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("exitDebtEraHaircut.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("exitDebtEraHaircut.minEra must be a valid era index");
+            if (k.HaircutPermille < 0 || k.HaircutPermille > MathI.Permille) p.Add("exitDebtEraHaircut.haircutPermille must be from 0 to 1000");
+        }
+
+        static void TakeoffAnswerEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            TakeoffAnswerEraCooldownConfig k = c.TakeoffAnswerEraCooldown;
+            if (k == null) { p.Add("takeoffAnswerEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffAnswerEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("takeoffAnswerEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("takeoffAnswerEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void ScenarioGoalEraTrustProblems(List<string> p, GameConfig c)
+        {
+            ScenarioGoalEraTrustConfig k = c.ScenarioGoalEraTrust;
+            if (k == null) { p.Add("scenarioGoalEraTrust is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoalEraTrust.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("scenarioGoalEraTrust.minEra must be a valid era index");
+            if (k.TrustPoints < 0) p.Add("scenarioGoalEraTrust.trustPoints must not be negative");
+        }
+
+        static void HearingShareEraDampenProblems(List<string> p, GameConfig c)
+        {
+            HearingShareEraDampenConfig k = c.HearingShareEraDampen;
+            if (k == null) { p.Add("hearingShareEraDampen is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingShareEraDampen.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("hearingShareEraDampen.minEra must be a valid era index");
+            if (k.DampenPermille < 0 || k.DampenPermille > MathI.Permille) p.Add("hearingShareEraDampen.dampenPermille must be 0–1000");
+        }
+
+        static void OfficeReleaseEraGraceProblems(List<string> p, GameConfig c)
+        {
+            OfficeReleaseEraGraceConfig k = c.OfficeReleaseEraGrace;
+            if (k == null) { p.Add("officeReleaseEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("officeReleaseEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("officeReleaseEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("officeReleaseEraGrace.graceWeeks must not be negative");
+        }
+
+        static void DataSourceAcquireEraWeeksProblems(List<string> p, GameConfig c)
+        {
+            DataSourceAcquireEraWeeksConfig k = c.DataSourceAcquireEraWeeks;
+            if (k == null) { p.Add("dataSourceAcquireEraWeeks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraWeeks.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraWeeks.minEra must be a valid era index");
+            if (k.BonusWeeks < 0) p.Add("dataSourceAcquireEraWeeks.bonusWeeks must not be negative");
+        }
+
+        static void EscapeCrisisEraGraceProblems(List<string> p, GameConfig c)
+        {
+            EscapeCrisisEraGraceConfig k = c.EscapeCrisisEraGrace;
+            if (k == null) { p.Add("escapeCrisisEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("escapeCrisisEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("escapeCrisisEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("escapeCrisisEraGrace.graceWeeks must not be negative");
+        }
+
+        static void LawShapingEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LawShapingEraAmplifyConfig k = c.LawShapingEraAmplify;
+            if (k == null) { p.Add("lawShapingEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShapingEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawShapingEraAmplify.minEra must be a valid era index");
+            if (k.AmplifyPermille < 0) p.Add("lawShapingEraAmplify.amplifyPermille must not be negative");
+        }
+
+        static void DataSourceRenewEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            DataSourceRenewEraDiscountConfig k = c.DataSourceRenewEraDiscount;
+            if (k == null) { p.Add("dataSourceRenewEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceRenewEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceRenewEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
+                p.Add("dataSourceRenewEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void RungSixEraGraceProblems(List<string> p, GameConfig c)
+        {
+            RungSixEraGraceConfig k = c.RungSixEraGrace;
+            if (k == null) { p.Add("rungSixEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("rungSixEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("rungSixEraGrace.graceWeeks must not be negative");
+        }
+
+        static void EvalHarnessEraReliefProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessEraReliefConfig k = c.EvalHarnessEraRelief;
+            if (k == null) { p.Add("evalHarnessEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarnessEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalHarnessEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("evalHarnessEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsEraDiscountConfig k = c.PublicMetricsEraDiscount;
+            if (k == null) { p.Add("publicMetricsEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
+                p.Add("publicMetricsEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OfficeHearingEraGraceProblems(List<string> p, GameConfig c)
+        {
+            OfficeHearingEraGraceConfig k = c.OfficeHearingEraGrace;
+            if (k == null) { p.Add("officeHearingEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("officeHearingEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("officeHearingEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("officeHearingEraGrace.graceWeeks must not be negative");
+        }
+
+        static void OpenWeightsCopyEraReliefProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCopyEraReliefConfig k = c.OpenWeightsCopyEraRelief;
+            if (k == null) { p.Add("openWeightsCopyEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCopyEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCopyEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("openWeightsCopyEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void EvalFailEraReliefProblems(List<string> p, GameConfig c)
+        {
+            EvalFailEraReliefConfig k = c.EvalFailEraRelief;
+            if (k == null) { p.Add("evalFailEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalFailEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalFailEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("evalFailEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            LobbyingEraCooldownConfig k = c.LobbyingEraCooldown;
+            if (k == null) { p.Add("lobbyingEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("lobbyingEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void PublicMetricsMissEraReliefProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsMissEraReliefConfig k = c.PublicMetricsMissEraRelief;
+            if (k == null) { p.Add("publicMetricsMissEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsMissEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsMissEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("publicMetricsMissEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OpenWeightsOpenEraBoostProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsOpenEraBoostConfig k = c.OpenWeightsOpenEraBoost;
+            if (k == null) { p.Add("openWeightsOpenEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsOpenEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsOpenEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
+                p.Add("openWeightsOpenEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingCostEraReliefProblems(List<string> p, GameConfig c)
+        {
+            LobbyingCostEraReliefConfig k = c.LobbyingCostEraRelief;
+            if (k == null) { p.Add("lobbyingCostEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingCostEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingCostEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("lobbyingCostEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsConformityEraSlackProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsConformityEraSlackConfig k = c.PublicMetricsConformityEraSlack;
+            if (k == null) { p.Add("publicMetricsConformityEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsConformityEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsConformityEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("publicMetricsConformityEraSlack.slackPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void SpecialistBranchEraBoostProblems(List<string> p, GameConfig c)
+        {
+            SpecialistBranchEraBoostConfig k = c.SpecialistBranchEraBoost;
+            if (k == null) { p.Add("specialistBranchEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistBranchEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
+                p.Add("specialistBranchEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingGoalEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LobbyingGoalEraAmplifyConfig k = c.LobbyingGoalEraAmplify;
+            if (k == null) { p.Add("lobbyingGoalEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingGoalEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingGoalEraAmplify.minEra must be a valid era index");
+            if (k.AmplifyPermille < 0 || k.AmplifyPermille > MathI.Permille)
+                p.Add("lobbyingGoalEraAmplify.amplifyPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsBarEraSlackProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsBarEraSlackConfig k = c.PublicMetricsBarEraSlack;
+            if (k == null) { p.Add("publicMetricsBarEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsBarEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsBarEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("publicMetricsBarEraSlack.slackPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OpenWeightsCloseEraReliefProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCloseEraReliefConfig k = c.OpenWeightsCloseEraRelief;
+            if (k == null) { p.Add("openWeightsCloseEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCloseEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCloseEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("openWeightsCloseEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingBackfireEraReliefProblems(List<string> p, GameConfig c)
+        {
+            LobbyingBackfireEraReliefConfig k = c.LobbyingBackfireEraRelief;
+            if (k == null) { p.Add("lobbyingBackfireEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingBackfireEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingBackfireEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("lobbyingBackfireEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsGainEraBoostProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsGainEraBoostConfig k = c.PublicMetricsGainEraBoost;
+            if (k == null) { p.Add("publicMetricsGainEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsGainEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsGainEraBoost.minEra must be a valid era index");
+            if (k.BoostPermille < 0) p.Add("publicMetricsGainEraBoost.boostPermille must not be negative");
+        }
+
+        static void OpenWeightsCopyEraSlackProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCopyEraSlackConfig k = c.OpenWeightsCopyEraSlack;
+            if (k == null) { p.Add("openWeightsCopyEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCopyEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCopyEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("openWeightsCopyEraSlack.slackPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

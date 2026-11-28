@@ -64,21 +64,32 @@ namespace AiLabs.Rules.Systems
         public static string Run(GameConfig c, GameState state, LabState lab, BlocStanding standing, string goal)
         {
             LobbyConfig l = c.Lobbying;
-            standing.LobbyUntilTick = state.Tick + l.CooldownWeeks;
+            int cd = LobbyingEraCooldown.EffectiveCooldownWeeks(c, state);
+            int cut = l.CooldownWeeks - cd;
+            standing.LobbyUntilTick = state.Tick + cd;
+            LobbyingEraCooldown.OnLobbied(c, state, lab, goal, cd, cut);
             if ((int)(Mix(state, lab, standing, 1) % MathI.Permille) < BackfireChancePermille(c, lab))
             {
                 standing.Attention = (int)MathI.Clamp((long)standing.Attention + l.BackfireAttention, 0, MathI.Permille);
-                int loss = PressSystem.Damp(c, lab, l.BackfireReputation);
-                lab.Reputation = (int)MathI.Clamp((long)lab.Reputation - loss, 0, MathI.Permille);
+                int listLoss = PressSystem.Damp(c, lab, l.BackfireReputation);
+                int applied = LobbyingBackfireEraRelief.ReputationLoss(c, state, listLoss);
+                lab.Reputation = (int)MathI.Clamp((long)lab.Reputation - applied, 0, MathI.Permille);
+                LobbyingBackfireEraRelief.OnBackfire(c, state, lab, goal, listLoss, applied);
                 return "backfired";
             }
             if (goal == Quiet)
             {
-                standing.Attention = (int)MathI.Clamp((long)standing.Attention - l.QuietAttention, 0, MathI.Permille);
+                int list = l.QuietAttention;
+                int applied = LobbyingGoalEraAmplify.Magnitude(c, state, list);
+                standing.Attention = (int)MathI.Clamp((long)standing.Attention - applied, 0, MathI.Permille);
+                LobbyingGoalEraAmplify.OnLanded(c, state, lab, goal, "quiet", list, applied);
                 return "landed";
             }
             if ((int)(Mix(state, lab, standing, 2) % MathI.Permille) >= SubsidyChancePermille(c, lab)) return "missed";
-            Finance.Earn(lab, LedgerLine.Grants, l.SubsidyReturnWeeks * WeekCost(c, state, lab));
+            int listWeeks = l.SubsidyReturnWeeks;
+            int weeks = LobbyingGoalEraAmplify.Magnitude(c, state, listWeeks);
+            Finance.Earn(lab, LedgerLine.Grants, weeks * WeekCost(c, state, lab));
+            LobbyingGoalEraAmplify.OnLanded(c, state, lab, goal, "subsidy", listWeeks, weeks);
             return "landed";
         }
     }

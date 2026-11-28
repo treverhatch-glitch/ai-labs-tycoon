@@ -187,6 +187,35 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 170) MigrateTo170(root);
             if (fromSchema < 171) MigrateTo171(root);
             if (fromSchema < 172) MigrateTo172(root);
+            if (fromSchema < 173) MigrateTo173(root);
+            if (fromSchema < 174) MigrateTo174(root);
+            if (fromSchema < 175) MigrateTo175(root);
+            if (fromSchema < 176) MigrateTo176(root);
+            if (fromSchema < 177) MigrateTo177(root);
+            if (fromSchema < 178) MigrateTo178(root);
+            if (fromSchema < 179) MigrateTo179(root);
+            if (fromSchema < 180) MigrateTo180(root);
+            if (fromSchema < 181) MigrateTo181(root);
+            if (fromSchema < 182) MigrateTo182(root);
+            if (fromSchema < 183) MigrateTo183(root);
+            if (fromSchema < 184) MigrateTo184(root);
+            if (fromSchema < 185) MigrateTo185(root);
+            if (fromSchema < 186) MigrateTo186(root);
+            if (fromSchema < 187) MigrateTo187(root);
+            if (fromSchema < 188) MigrateTo188(root);
+            if (fromSchema < 189) MigrateTo189(root);
+            if (fromSchema < 190) MigrateTo190(root);
+            if (fromSchema < 191) MigrateTo191(root);
+            if (fromSchema < 192) MigrateTo192(root);
+            if (fromSchema < 193) MigrateTo193(root);
+            if (fromSchema < 194) MigrateTo194(root);
+            if (fromSchema < 195) MigrateTo195(root);
+            if (fromSchema < 196) MigrateTo196(root);
+            if (fromSchema < 197) MigrateTo197(root);
+            if (fromSchema < 198) MigrateTo198(root);
+            if (fromSchema < 199) MigrateTo199(root);
+            if (fromSchema < 200) MigrateTo200(root);
+            if (fromSchema < 201) MigrateTo201(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -500,7 +529,7 @@ namespace AiLabs.Rules.Sim
             JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
         }
 
-        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save.</summary>
         static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
@@ -540,7 +569,7 @@ namespace AiLabs.Rules.Sim
                 });
         }
 
-        /// <summary>M&amp;A fleet resale lock (Q202) and safety culture / release gate (merged era schema 29).</summary>
+        /// <summary>M&amp;A fleet resale lock (Q202) and safety culture / release gate (schema 29).</summary>
         static void MigrateTo29(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
@@ -710,6 +739,69 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo171(JsonValue root) { }
 
         static void MigrateTo172(JsonValue root) { }
+
+        /// <summary>Schema 173: reserved for GD-6 garage (#107).</summary>
+        static void MigrateTo173(JsonValue root) { }
+
+        /// <summary>Schema 174: starter equipment tier.</summary>
+        static void MigrateTo174(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "computeEquipTier", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo175(JsonValue root) { }
+
+        static void MigrateTo176(JsonValue root) { }
+
+        static void MigrateTo177(JsonValue root) { }
+
+        static void MigrateTo178(JsonValue root) { }
+
+        static void MigrateTo179(JsonValue root) { }
+
+        static void MigrateTo180(JsonValue root) { }
+
+        static void MigrateTo181(JsonValue root) { }
+
+        static void MigrateTo182(JsonValue root) { }
+
+        static void MigrateTo183(JsonValue root) { }
+
+        static void MigrateTo184(JsonValue root) { }
+
+        static void MigrateTo185(JsonValue root) { }
+
+        static void MigrateTo186(JsonValue root) { }
+
+        static void MigrateTo187(JsonValue root) { }
+
+        static void MigrateTo188(JsonValue root) { }
+
+        static void MigrateTo189(JsonValue root) { }
+
+        static void MigrateTo190(JsonValue root) { }
+
+        static void MigrateTo191(JsonValue root) { }
+
+        static void MigrateTo192(JsonValue root) { }
+
+        static void MigrateTo193(JsonValue root) { }
+
+        static void MigrateTo194(JsonValue root) { }
+
+        static void MigrateTo195(JsonValue root) { }
+
+        static void MigrateTo196(JsonValue root) { }
+
+        static void MigrateTo197(JsonValue root) { }
+
+        static void MigrateTo198(JsonValue root) { }
+
+        static void MigrateTo199(JsonValue root) { }
+
+        static void MigrateTo200(JsonValue root) { }
+
+        static void MigrateTo201(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

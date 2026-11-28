@@ -117,21 +117,30 @@ namespace AiLabs.Rules.Systems
         public static void OnHearing(GameConfig c, GameState state, LabState lab, string blocId)
         {
             if (!Has(lab) || blocId != lab.HomeBlocId) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Hearing);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = OfficeHearingEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Hearing, expire);
+            OfficeHearingEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>One of the player's models tried to escape: the crisis takes the place of whatever was waiting. Does nothing for rivals or when the data has no escape events.</summary>
         public static void OnEscape(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Escape);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = EscapeCrisisEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Escape, expire);
+            EscapeCrisisEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>Released capability and corruption crossed the takeoff bar. Rivals have none.</summary>
         public static void OnTakeoff(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = TakeoffCrisisEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff, expire);
+            TakeoffCrisisEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         public static void OnRungSix(GameConfig c, GameState state, LabState lab)
@@ -143,19 +152,25 @@ namespace AiLabs.Rules.Systems
             OfficeEventConfig chosen = all[(int)(Mix(state, lab, 7) % all.Count)];
             if (IsPending(lab)) Lapse(c, state, lab);
             lab.OfficeEventId = chosen.IdValue;
-            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = RungSixEraGrace.AnswerWeeks(c, state);
+            lab.OfficeEventExpires = state.Tick + expire;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+            RungSixEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>
         public static void OnRelease(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab) || IsPending(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Release);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = OfficeReleaseEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Release, expire);
+            OfficeReleaseEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
-        static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger)
+        static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger, int expireWeeks = -1)
         {
             List<OfficeEventConfig> all = WithTrigger(c, trigger);
             if (all.Count == 0) return;
@@ -169,7 +184,8 @@ namespace AiLabs.Rules.Systems
             OfficeEventConfig chosen = fresh[(int)(Mix(state, lab, 3) % fresh.Count)];
             if (IsPending(lab)) Lapse(c, state, lab);
             lab.OfficeEventId = chosen.IdValue;
-            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            int weeks = expireWeeks >= 0 ? expireWeeks : c.Office.ExpireWeeks;
+            lab.OfficeEventExpires = state.Tick + weeks;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
             if (trigger == OfficeTrigger.Takeoff)

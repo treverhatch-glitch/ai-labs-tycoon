@@ -227,7 +227,8 @@ namespace AiLabs.Rules.Sim
         PickScenarioBaggage,
         SatisfyMarginCall,
         RespondRungSix,
-        SetLawTarget
+        SetLawTarget,
+        UpgradeComputeEquipment
     }
 
     /// <summary>
@@ -1969,6 +1970,8 @@ namespace AiLabs.Rules.Sim
             c.Id = goal;
             return c;
         }
+
+        public static Command UpgradeComputeEquipment(int labId) { return Make(CommandKind.UpgradeComputeEquipment, labId); }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
         public static Command PivotStyle(int labId, string styleId)

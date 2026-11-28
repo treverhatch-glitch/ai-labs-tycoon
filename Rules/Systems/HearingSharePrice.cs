@@ -24,10 +24,18 @@ namespace AiLabs.Rules.Systems
             int baseDelta = rep >= 0 ? cfg.UpPermille : cfg.DownPermille;
             if (baseDelta <= 0) return;
             int boost = HearingSharePriceEraBoost.BoostPermille(c, state, rep);
-            int delta = baseDelta + boost;
-            if (rep < 0) state.BubblePermille = (int)MathI.Max(0, state.BubblePermille - baseDelta);
+            int delta;
+            if (rep < 0)
+            {
+                int dampen = HearingShareEraDampen.DampenPermille(c, state, rep);
+                int applied = HearingShareEraDampen.AppliedCut(baseDelta, dampen);
+                state.BubblePermille = (int)MathI.Max(0, state.BubblePermille - applied);
+                delta = applied;
+                HearingShareEraDampen.OnAnswered(c, state, lab, baseDelta, applied);
+            }
             else
             {
+                delta = baseDelta + boost;
                 BubbleSystem.Boost(c, state, delta);
                 HearingSharePriceEraBoost.OnAnswered(c, state, lab, delta, boost);
             }

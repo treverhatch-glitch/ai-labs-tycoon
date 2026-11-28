@@ -18,10 +18,12 @@ namespace AiLabs.Rules.Sim
                 if (lab.MarginCallLeft > 0) return Fail(CommandError.InvalidArgument, "Collateral is still short after the sale.");
                 return CommandResult.Done(-1);
             }
-            long pay = MarginCall.CashDue(c, state, lab);
+            long listPay = MarginCall.CashDue(c, state, lab);
+            long pay = MarginSatisfyEraRelief.CashDue(c, state, listPay);
             if (pay < 1) pay = cmd.Permille > 0 ? cmd.Permille : Loans.Outstanding(lab);
             if (lab.Cash < pay) return NeedCash(lab, pay);
             MarginCall.SatisfyPay(c, state, lab, pay);
+            if (listPay > 0) MarginSatisfyEraRelief.OnSatisfy(c, state, lab, listPay, pay);
             if (lab.MarginCallLeft > 0 && MarginCall.InBreach(c, state, lab))
                 return Fail(CommandError.InvalidArgument, "Collateral is still short after the payment.");
             return CommandResult.Done(-1);

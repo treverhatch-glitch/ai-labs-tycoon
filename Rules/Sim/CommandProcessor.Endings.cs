@@ -27,6 +27,9 @@ namespace AiLabs.Rules.Sim
             if (lab.Bankrupt) return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
             string mode = cmd.Id ?? "";
             if (mode != "found-again" && mode != "spectate") return Fail(CommandError.InvalidArgument, "Sell as found-again or spectate.");
+            long rawDebt = ExitDebt.Total(c, lab);
+            long adjDebt = ExitDebtEraHaircut.AdjustDebt(c, state, rawDebt);
+            if (adjDebt < rawDebt) ExitDebtEraHaircut.OnExit(c, state, lab, rawDebt, adjDebt);
             long price = EndingSystem.SellPrice(c, state, lab);
             if (price <= lab.Cash) return Fail(CommandError.SellRefused, "Nothing to sell: the price is at most the cash already in the lab.");
 

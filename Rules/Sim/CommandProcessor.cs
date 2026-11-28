@@ -130,6 +130,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
                 case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
                 case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);
+                case CommandKind.UpgradeComputeEquipment: return UpgradeComputeEquipment(c, state, lab, cmd);
                 case CommandKind.RegisterEval: return RegisterEval(c, state, lab, cmd);
                 case CommandKind.StartDrill: return StartDrill(c, state, lab, cmd);
                 case CommandKind.HoldBoardMeetings: return HoldBoardMeetings(c, state, lab, cmd);

@@ -21,7 +21,9 @@ namespace AiLabs.Rules.Systems
 
         public static void Register(GameConfig c, GameState state, LabState lab, ModelState model, int suite)
         {
-            if (c.EvalHarness.Cost > 0) Finance.Spend(lab, LedgerLine.Training, c.EvalHarness.Cost);
+            long listCost = c.EvalHarness.Cost;
+            long paid = EvalHarnessEraRelief.RegisterCost(c, state, listCost);
+            if (paid > 0) Finance.Spend(lab, LedgerLine.Training, paid);
             lab.ResearchPoints -= c.EvalHarness.Points;
             model.EvalSuite = suite;
             model.EvalLeft = c.EvalHarness.Cadence;
@@ -30,6 +32,7 @@ namespace AiLabs.Rules.Systems
             GameEvent e = Events.Add(state, EventKind.EvalRegistered, lab.Id, model.Id, c.EvalHarness.Cadence, model.Name);
             e.Pick = suite;
             EvalHarnessEraBoost.OnRegister(c, state, lab, model);
+            EvalHarnessEraRelief.OnRegister(c, state, lab, model, listCost, paid);
         }
 
         public static void Publish(GameConfig c, GameState state, LabState lab, ModelState model)
@@ -46,7 +49,10 @@ namespace AiLabs.Rules.Systems
             else
             {
                 model.EvalStreak = 0;
-                for (int s = 0; s < model.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, model.Sectors[s], c.EvalHarness.TrustLoss, false);
+                int listLoss = c.EvalHarness.TrustLoss;
+                int applied = EvalFailEraRelief.TrustLoss(c, state, listLoss);
+                for (int s = 0; s < model.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, model.Sectors[s], applied, false);
+                EvalFailEraRelief.OnFailed(c, state, lab, model, listLoss, applied);
                 if (model.CertStage == Conformity.Review && model.CertLeft > 0) model.CertLeft += c.EvalHarness.ConformityPush;
                 if (c.EvalHarness.FailTension > 0) BoardMotions.AddTension(c, lab, c.EvalHarness.FailTension);
             }

@@ -24,6 +24,8 @@ public class LobbyingTests
             c.Office.ChancePermille = 0;
             c.Lobbying.BackfirePermille = 0;
             c.Lobbying.BackfireFloorPermille = 0;
+            c.LobbyingCostEraRelief.Enabled = 0;
+            c.LobbyingGoalEraAmplify.Enabled = 0;
             if (tweak != null) tweak(c);
         }), options));
         g.WithStarterLab();
@@ -187,7 +189,9 @@ public class LobbyingTests
         long cost = Lobbying.Cost(g.C, g.State, g.Me, Lobbying.Quiet);
         g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet));
         Assert.Equal(100 + g.C.Lobbying.BackfireAttention, Standing(g).Attention);
-        Assert.Equal(500 - PressSystem.Damp(g.C, g.Me, g.C.Lobbying.BackfireReputation), g.Me.Reputation);
+        int backfireRep = PressSystem.Damp(g.C, g.Me, g.C.Lobbying.BackfireReputation);
+        int repLoss = LobbyingBackfireEraRelief.ReputationLoss(g.C, g.State, backfireRep);
+        Assert.Equal(500 - repLoss, g.Me.Reputation);
         Assert.Equal(cash - cost, g.Me.Cash);
         GameEvent e = g.State.Events.Last(x => x.Kind == EventKind.Lobbied);
         Assert.EndsWith("backfired", e.Ref);
@@ -245,10 +249,11 @@ public class LobbyingTests
         Game g = Lab();
         Standing(g).Attention = 900;
         g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet));
-        Assert.Equal(g.State.Tick + g.C.Lobbying.CooldownWeeks, Standing(g).LobbyUntilTick);
+        int cd = LobbyingEraCooldown.EffectiveCooldownWeeks(g.C, g.State);
+        Assert.Equal(g.State.Tick + cd, Standing(g).LobbyUntilTick);
         g.Refused(Command.Lobby(g.Id, Home(g), Lobbying.Quiet), CommandError.LobbyCooling);
         g.Refused(Command.Lobby(g.Id, Home(g), Lobbying.Subsidy), CommandError.LobbyCooling);
-        g.Weeks(g.C.Lobbying.CooldownWeeks);
+        g.Weeks(cd);
         Standing(g).Attention = 900;
         Assert.True(g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet)).Ok);
     }

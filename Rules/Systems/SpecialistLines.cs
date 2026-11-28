@@ -40,6 +40,7 @@ namespace AiLabs.Rules.Systems
             model.SpecKind = (int)(c.SpecialistLines.Kinds.IndexOf(k) + 1);
             Events.Add(state, EventKind.SpecialistBranched, lab.Id, model.Id, model.SpecKind, model.Name);
             SpecialistBranchEraDiscount.OnBranch(c, state, lab, model, kindId, cost);
+            SpecialistBranchEraBoost.OnBranch(c, state, lab, model, kindId);
         }
     }
 }

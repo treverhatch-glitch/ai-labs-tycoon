@@ -8,17 +8,29 @@ namespace AiLabs.Rules.Systems
     {
         public static bool Enabled(GameConfig c) { return c.TakeoffCrisisEraGrace.Enabled > 0 && TakeoffCrisis.Enabled(c); }
 
+        public static int AnswerWeeks(GameConfig c, GameState state)
+        {
+            int weeks = c.Office.ExpireWeeks;
+            if (!Enabled(c) || state == null) return weeks;
+            int era = EraSystem.IndexAtYear(c, GameDate.Year(c.Calendar, state.Tick));
+            if (era < c.TakeoffCrisisEraGrace.MinEra) return weeks;
+            return weeks + c.TakeoffCrisisEraGrace.GraceWeeks;
+        }
+
         public static void OnPosed(GameConfig c, GameState state, LabState lab)
         {
-            if (!Enabled(c) || lab.Id != state.PlayerLabId || !OfficeEvents.IsPending(lab)) return;
-            OfficeEventConfig e = c.Office.Event(lab.OfficeEventId);
-            if (e == null || e.Trigger != OfficeTrigger.Takeoff) return;
+            if (!Enabled(c) || state == null || lab.Id != state.PlayerLabId) return;
             int era = EraSystem.IndexAtYear(c, GameDate.Year(c.Calendar, state.Tick));
             if (era < c.TakeoffCrisisEraGrace.MinEra) return;
             int grace = c.TakeoffCrisisEraGrace.GraceWeeks;
             if (grace <= 0) return;
-            lab.OfficeEventExpires += grace;
-            Events.Add(state, EventKind.TakeoffCrisisEraGraced, lab.Id, lab.OfficeEventExpires, grace, e.IdValue);
+            Events.Add(state, EventKind.TakeoffCrisisEraGraced, lab.Id, grace, 0, lab.OfficeEventId);
+        }
+
+        public static void OnPosed(GameConfig c, GameState state, LabState lab, int graceAdded)
+        {
+            if (!Enabled(c) || graceAdded <= 0) return;
+            Events.Add(state, EventKind.TakeoffCrisisEraGraced, lab.Id, graceAdded, 0, "");
         }
     }
 }

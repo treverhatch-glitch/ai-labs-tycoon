@@ -154,7 +154,8 @@ public class ReleaseNotesTests
         Game g = Lab();
         ModelState m = Trained(g);
         g.Do(Command.ReleaseModel(g.Id, m.Id, "game-ai"));
-        g.Weeks(g.C.Office.ExpireWeeks + 1);
+        int wait = (int)(g.Me.OfficeEventExpires - g.Tick + 1);
+        g.Weeks(wait);
         Assert.False(OfficeEvents.IsPending(g.Me));
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.OfficeEventLapsed);
     }

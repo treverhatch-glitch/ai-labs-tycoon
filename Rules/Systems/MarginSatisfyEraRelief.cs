@@ -30,5 +30,10 @@ namespace AiLabs.Rules.Systems
             if (saved <= 0) return;
             Events.Add(state, EventKind.MarginSatisfyEraRelieved, lab.Id, ReliefPermille(c, state), saved, "");
         }
+
+        public static long CashDue(GameConfig c, GameState state, long rawDue) => AdjustDue(c, state, rawDue);
+
+        public static void OnSatisfy(GameConfig c, GameState state, LabState lab, long listDue, long paid) =>
+            OnPaid(c, state, lab, listDue, paid);
     }
 }

@@ -12468,25 +12468,193 @@
         "id": "margin-satisfy-era-relief",
         "kind": "MarginSatisfyEraRelieved",
         "pick": -1,
-        "text": "{lab} paid a margin call with era relief on cash due"
+        "text": "{lab} satisfied a margin call with an era payment relief"
       },
       {
         "id": "scenario-goals-era-slack",
         "kind": "ScenarioGoalsEraSlacked",
         "pick": -1,
-        "text": "{lab} gets extra weeks before the scenario mid-check"
+        "text": "{lab} bought extra time on scenario goal {ref}"
       },
       {
         "id": "takeoff-crisis-era-grace",
         "kind": "TakeoffCrisisEraGraced",
         "pick": -1,
-        "text": "{lab} has longer to answer the takeoff crisis"
+        "text": "{lab} got extra weeks to answer a takeoff crisis"
+      },
+      {
+        "id": "compute-equipment-upgrade",
+        "kind": "ComputeEquipmentUpgraded",
+        "pick": -1,
+        "text": "{lab} upgraded the lab's compute kit"
+      },
+      {
+        "id": "exit-debt-era-haircut",
+        "kind": "ExitDebtEraHaircutted",
+        "pick": -1,
+        "text": "{lab} shaved debts off an exit offer"
+      },
+      {
+        "id": "takeoff-answer-era-cooldown",
+        "kind": "TakeoffAnswerEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} answered a takeoff crisis with a shorter cooldown"
+      },
+      {
+        "id": "scenario-goal-era-trust",
+        "kind": "ScenarioGoalEraTrusted",
+        "pick": -1,
+        "text": "{lab} met a campaign goal and won trust everywhere"
+      },
+      {
+        "id": "hearing-share-era-dampen",
+        "kind": "HearingShareEraDampened",
+        "pick": -1,
+        "text": "{lab} softened a hearing hit to the bubble"
+      },
+      {
+        "id": "office-release-era-grace",
+        "kind": "OfficeReleaseEraGraced",
+        "pick": -1,
+        "text": "{lab} got extra time on release notes"
+      },
+      {
+        "id": "data-source-acquire-era-weeks",
+        "kind": "DataSourceAcquireEraWeeksBonused",
+        "pick": -1,
+        "text": "{lab} licensed data for extra weeks"
+      },
+      {
+        "id": "escape-crisis-era-grace",
+        "kind": "EscapeCrisisEraGraced",
+        "pick": -1,
+        "text": "{lab} bought time on an escape crisis"
+      },
+      {
+        "id": "law-shaping-era-amplify",
+        "kind": "LawShapingEraAmplified",
+        "pick": -1,
+        "text": "{lab} pushed harder on law shaping"
+      },
+      {
+        "id": "data-source-renew-era-discount",
+        "kind": "DataSourceRenewEraDiscounted",
+        "pick": -1,
+        "text": "{lab} renewed data on era terms"
+      },
+      {
+        "id": "rung-six-era-grace",
+        "kind": "RungSixEraGraced",
+        "pick": -1,
+        "text": "{lab} got more time on a rung-six crisis"
+      },
+      {
+        "id": "eval-harness-era-relief",
+        "kind": "EvalHarnessEraRelieved",
+        "pick": -1,
+        "text": "{lab} registered eval on era relief"
+      },
+      {
+        "id": "public-metrics-era-discount",
+        "kind": "PublicMetricsEraDiscounted",
+        "pick": -1,
+        "text": "{lab} published metrics on era terms"
+      },
+      {
+        "id": "office-hearing-era-grace",
+        "kind": "OfficeHearingEraGraced",
+        "pick": -1,
+        "text": "{lab} got more time on a hearing"
+      },
+      {
+        "id": "open-weights-copy-era-relief",
+        "kind": "OpenWeightsCopyEraRelieved",
+        "pick": -1,
+        "text": "{lab} shrugged off a weights copy"
+      },
+      {
+        "id": "eval-fail-era-relief",
+        "kind": "EvalFailEraRelieved",
+        "pick": -1,
+        "text": "{lab} took a softer eval fail"
       },
       {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
         "text": "{lab} lobbies in the open, rivals read the tea leaves"
+      },
+      {
+        "id": "lobbying-era-cooldown",
+        "kind": "LobbyingEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} got a shorter lobby cooldown"
+      },
+      {
+        "id": "metrics-miss-era-relief",
+        "kind": "PublicMetricsMissEraRelieved",
+        "pick": -1,
+        "text": "{lab} shrugged off a metrics miss"
+      },
+      {
+        "id": "weights-open-era-boost",
+        "kind": "OpenWeightsOpenEraBoosted",
+        "pick": -1,
+        "text": "{lab} won extra trust opening weights"
+      },
+      {
+        "id": "lobby-cost-era-relief",
+        "kind": "LobbyingCostEraRelieved",
+        "pick": -1,
+        "text": "{lab} lobbied for less"
+      },
+      {
+        "id": "metrics-conformity-slack",
+        "kind": "PublicMetricsConformityEraSlacked",
+        "pick": -1,
+        "text": "{lab} eased conformity pressure"
+      },
+      {
+        "id": "specialist-branch-boost",
+        "kind": "SpecialistBranchEraBoosted",
+        "pick": -1,
+        "text": "{lab} branched with extra trust"
+      },
+      {
+        "id": "lobby-goal-amplify",
+        "kind": "LobbyingGoalEraAmplified",
+        "pick": -1,
+        "text": "{lab} lobbied harder"
+      },
+      {
+        "id": "metrics-bar-slack",
+        "kind": "PublicMetricsBarEraSlacked",
+        "pick": -1,
+        "text": "{lab} cleared a softer metrics bar"
+      },
+      {
+        "id": "weights-close-relief",
+        "kind": "OpenWeightsCloseEraRelieved",
+        "pick": -1,
+        "text": "{lab} closed weights gently"
+      },
+      {
+        "id": "lobby-backfire-relief",
+        "kind": "LobbyingBackfireEraRelieved",
+        "pick": -1,
+        "text": "{lab} softened a lobbying backfire"
+      },
+      {
+        "id": "metrics-gain-boost",
+        "kind": "PublicMetricsGainEraBoosted",
+        "pick": -1,
+        "text": "{lab} gained extra trust on metrics"
+      },
+      {
+        "id": "weights-copy-slack",
+        "kind": "OpenWeightsCopyEraSlacked",
+        "pick": -1,
+        "text": "{lab} shrugged off a weights copy"
       }
     ],
     "filler": [
@@ -16882,6 +17050,336 @@
         "toYear": 0
       },
       {
+        "id": "margin-satisfy-relief-chat",
+        "kind": "MarginSatisfyEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Treasury paid less than the margin call asked for.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-goals-slack-chat",
+        "kind": "ScenarioGoalsEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The campaign goal deadline slid a few weeks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "takeoff-grace-chat",
+        "kind": "TakeoffCrisisEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Everyone pretended the takeoff memo could wait.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "compute-equipment-chat",
+        "kind": "ComputeEquipmentUpgraded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The old beige towers finally got replaced.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "exit-debt-haircut-chat",
+        "kind": "ExitDebtEraHaircutted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Buyers ignored part of what the bank was owed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "takeoff-cooldown-chat",
+        "kind": "TakeoffAnswerEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The takeoff memo came back sooner than usual.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-trust-chat",
+        "kind": "ScenarioGoalEraTrusted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Meeting the goal made everyone easier to work with.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hearing-dampen-chat",
+        "kind": "HearingShareEraDampened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The bubble shrugged off part of the hearing slide.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "release-grace-chat",
+        "kind": "OfficeReleaseEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Release notes can wait a little longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-acquire-weeks-chat",
+        "kind": "DataSourceAcquireEraWeeksBonused",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The corpus deal runs longer than the sticker price suggested.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "escape-crisis-grace-chat",
+        "kind": "EscapeCrisisEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "An escape crisis can wait a bit longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-shaping-amplify-chat",
+        "kind": "LawShapingEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The era lets us swing the law harder.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-renew-discount-chat",
+        "kind": "DataSourceRenewEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Renewing the feed costs less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rung-six-grace-chat",
+        "kind": "RungSixEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Rung six can wait a bit longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-relief-chat",
+        "kind": "EvalHarnessEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Eval registration is cheaper this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-discount-chat",
+        "kind": "PublicMetricsEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Publishing uptime costs less now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hearing-grace-chat",
+        "kind": "OfficeHearingEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The committee can wait a little longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-copy-relief-chat",
+        "kind": "OpenWeightsCopyEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Copied weights hurt less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-fail-relief-chat",
+        "kind": "EvalFailEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A bad score stings less for now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rival-lobby-chat",
+        "kind": "RivalIntentSurfaced",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "subject",
+        "text": "A rival's lobbying line hit the news wire.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpu-queue-chat",
+        "kind": "GpuTierLocked",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The vendor queue bounced on tier unlock rules.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lobby-cooldown-chat",
+        "kind": "LobbyingEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Influence buys a quicker reset.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-miss-relief-chat",
+        "kind": "PublicMetricsMissEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The uptime slide matters less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-open-boost-chat",
+        "kind": "OpenWeightsOpenEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Opening the weights lands softer now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lobby-cost-relief-chat",
+        "kind": "LobbyingCostEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Influence costs less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "conformity-slack-chat",
+        "kind": "PublicMetricsConformityEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Bad uptime does not drag review out as far.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "branch-boost-chat",
+        "kind": "SpecialistBranchEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A specialist branch lands softer now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lobby-goal-chat",
+        "kind": "LobbyingGoalEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Lobbying bites harder when it works.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "bar-slack-chat",
+        "kind": "PublicMetricsBarEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The bar moves down a notch this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "close-relief-chat",
+        "kind": "OpenWeightsCloseEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Closing the weights stings less.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "margin-satisfy-era-relief-chat",
         "kind": "MarginSatisfyEraRelieved",
         "roles": [],
@@ -16915,24 +17413,35 @@
         "toYear": 0
       },
       {
-        "id": "rival-lobby-chat",
-        "kind": "RivalIntentSurfaced",
+        "id": "lobby-backfire-relief-chat",
+        "kind": "LobbyingBackfireEraRelieved",
         "roles": [],
         "trait": "",
-        "pick": 1,
-        "about": "subject",
-        "text": "A rival's lobbying line hit the news wire.",
+        "pick": -1,
+        "about": "lab",
+        "text": "Late-era lobbying scandals sting less.",
         "fromYear": 0,
         "toYear": 0
       },
       {
-        "id": "gpu-queue-chat",
-        "kind": "GpuTierLocked",
+        "id": "metrics-gain-boost-chat",
+        "kind": "PublicMetricsGainEraBoosted",
         "roles": [],
         "trait": "",
-        "pick": 1,
+        "pick": -1,
         "about": "lab",
-        "text": "The vendor queue bounced on tier unlock rules.",
+        "text": "Good uptime pays double in the metrics era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-copy-slack-chat",
+        "kind": "OpenWeightsCopyEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Open weights copies hurt less when rivals borrow.",
         "fromYear": 0,
         "toYear": 0
       }
@@ -19763,5 +20272,177 @@
     "enabled": 1,
     "minEra": 2,
     "graceWeeks": 2
+  },
+  "computeEquipment": {
+    "enabled": 1,
+    "tiers": [
+      {
+        "id": "garage-starter",
+        "minEra": 0,
+        "upgradeCost": 0,
+        "researchPermille": 0,
+        "trainingPermille": 0,
+        "visualEra": 1
+      },
+      {
+        "id": "dial-up-desk",
+        "minEra": 0,
+        "upgradeCost": 12000,
+        "researchPermille": 40,
+        "trainingPermille": 30,
+        "visualEra": 1
+      },
+      {
+        "id": "fiber-backbone",
+        "minEra": 2,
+        "upgradeCost": 45000,
+        "researchPermille": 80,
+        "trainingPermille": 60,
+        "visualEra": 1
+      },
+      {
+        "id": "colo-ready",
+        "minEra": 4,
+        "upgradeCost": 120000,
+        "researchPermille": 120,
+        "trainingPermille": 90,
+        "visualEra": 1
+      }
+    ]
+  },
+  "exitDebtEraHaircut": {
+    "enabled": 1,
+    "minEra": 2,
+    "haircutPermille": 150
+  },
+  "takeoffAnswerEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 12
+  },
+  "scenarioGoalEraTrust": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustPoints": 25
+  },
+  "hearingShareEraDampen": {
+    "enabled": 1,
+    "minEra": 2,
+    "dampenPermille": 120
+  },
+  "officeReleaseEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
+  },
+  "dataSourceAcquireEraWeeks": {
+    "enabled": 1,
+    "minEra": 2,
+    "bonusWeeks": 6
+  },
+  "escapeCrisisEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 4
+  },
+  "lawShapingEraAmplify": {
+    "enabled": 1,
+    "minEra": 2,
+    "amplifyPermille": 150
+  },
+  "dataSourceRenewEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
+  },
+  "rungSixEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 4
+  },
+  "evalHarnessEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "publicMetricsEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
+  },
+  "officeHearingEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
+  },
+  "openWeightsCopyEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 120
+  },
+  "evalFailEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "lobbyingEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 3
+  },
+  "publicMetricsMissEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
+  },
+  "openWeightsOpenEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 25
+  },
+  "lobbyingCostEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "publicMetricsConformityEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 300
+  },
+  "specialistBranchEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 20
+  },
+  "lobbyingGoalEraAmplify": {
+    "enabled": 1,
+    "minEra": 2,
+    "amplifyPermille": 150
+  },
+  "publicMetricsBarEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 100
+  },
+  "openWeightsCloseEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
+  },
+  "lobbyingBackfireEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
+  },
+  "publicMetricsGainEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "boostPermille": 150
+  },
+  "openWeightsCopyEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 200
   }
 }
