@@ -630,12 +630,6 @@ def export_garage_multipart_glbf(
                 snap_root_to_ground(d)
     if kenney_y:
         bake_parts_local_transforms(dupes)
-        if asset_id == "garage-desk-crt":
-            desk = next((d for d in dupes if "Desktop" in d.name), None)
-            screen = next((d for d in dupes if "CrtBezel" in d.name or "Crt" in d.name), None)
-            if desk and screen:
-                _parent_keep_world_export(screen, desk)
-                bake_parts_local_transforms([screen, desk])
     root = parent_under_assembly_root(dupes, asset_id or "garage-export", root_name="GarageKitRoot")
     if not kenney_y:
         root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
@@ -669,7 +663,7 @@ def export_garage_multipart_glbf(
 GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
     "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
-    "garage-roll-door": {"yaw": 45.0, "pitch": 35.0, "fill": 0.56, "margin": 0.08},
+    "garage-roll-door": {"yaw": 42.0, "pitch": 32.0, "fill": 0.60, "margin": 0.06},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
 }
 
@@ -802,8 +796,16 @@ def render_garage_side_ortho_preview_from_glb(
         bpy.context.scene.render.resolution_x = 512
         bpy.context.scene.render.resolution_y = 512
         bpy.context.scene.render.film_transparent = False
+        ortho_view = "side_positive_x"
         if y_up:
-            cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
+            if asset_id == "garage-roll-door":
+                cam_loc = Vector((center.x, center.y, hi.z + span * 1.05))
+                ortho_view = "front_positive_z"
+            elif asset_id == "garage-desk-crt":
+                cam_loc = Vector((center.x, hi.y + span * 1.05, center.z))
+                ortho_view = "front_positive_y"
+            else:
+                cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
             bpy.ops.object.camera_add(location=cam_loc)
             cam = bpy.context.active_object
             direction = center - cam_loc
@@ -829,7 +831,7 @@ def render_garage_side_ortho_preview_from_glb(
                     "up_axis": up_axis,
                     "floor_plane": floor_plane,
                     "camera_type": "orthographic",
-                    "view": "side_positive_x",
+                    "view": ortho_view,
                 },
                 indent=2,
             )
@@ -1556,7 +1558,7 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
         elif asset_id == "garage-desk-crt" and ("keyboard" in name or name.startswith("key")):
             assign_solid(ob, (0.78, 0.78, 0.80, 1.0), 0.35)
         elif asset_id == "garage-desk-crt" and "crt" in name:
-            assign_solid(ob, (0.72, 0.70, 0.62, 1.0), 0.42)
+            assign_crt_screen_material(ob, (0.10, 0.78, 0.52, 1.0))
         elif asset_id == "garage-crt-tower" and (
             "sidelabel" in name or "frontpanel" in name or "toptrim" in name
         ):
@@ -1578,6 +1580,57 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             spec = spec_for(asset_id)
             l = spec["light"]
             assign_solid(ob, (l[0], l[1], l[2], 1.0), float(spec["roughness"]))
+
+
+def assign_crt_screen_material(
+    ob: bpy.types.Object,
+    screen_rgba: tuple[float, float, float, float],
+    *,
+    bezel: tuple[float, float, float, float] = (0.22, 0.24, 0.28, 1.0),
+    emission_strength: float = 3.4,
+    screen_mix: float = 0.58,
+) -> None:
+    """Dark bezel + emissive screen tint for desk/crt-tower heroes (no baked UV preview)."""
+    mat = bpy.data.materials.new(ob.name + "_crt_hero")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf.inputs["Base Color"].default_value = bezel
+    bsdf.inputs["Roughness"].default_value = 0.38
+    emit = nodes.new("ShaderNodeEmission")
+    emit.inputs["Color"].default_value = screen_rgba
+    emit.inputs["Strength"].default_value = emission_strength
+    mix = nodes.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = screen_mix
+    links.new(bsdf.outputs["BSDF"], mix.inputs[1])
+    links.new(emit.outputs["Emission"], mix.inputs[2])
+    links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def apply_garage_hero_flat_tint(ob: bpy.types.Object, asset_id: str) -> None:
+    """Name-based hero/scene tints; avoids baked-albedo speckle on multipart GLB imports."""
+    lname = ob.name.lower()
+    if asset_id == "garage-desk-crt":
+        if "desktop" in lname:
+            assign_solid(ob, (0.62, 0.48, 0.32, 1.0), 0.52)
+        elif "keyboard" in lname or lname.startswith("key"):
+            assign_solid(ob, (0.78, 0.78, 0.80, 1.0), 0.35)
+        elif "crt" in lname:
+            assign_crt_screen_material(ob, (0.10, 0.78, 0.52, 1.0))
+        else:
+            assign_solid(ob, (0.48, 0.36, 0.24, 1.0), 0.55)
+        return
+    if asset_id == "garage-roll-door":
+        if "slat" in lname or "curtain" in lname:
+            assign_solid(ob, (0.58, 0.60, 0.64, 1.0), 0.34)
+        else:
+            assign_solid(ob, (0.25, 0.28, 0.32, 1.0), 0.36)
+        return
 
 
 def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float], strength: float = 2.0) -> None:
@@ -1782,6 +1835,9 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
     flat_slots = os.environ.get("GARAGE_HERO_FLAT_MATERIAL", "").strip() in ("1", "true", "yes")
+    if flat_slots and asset_id in ("garage-desk-crt", "garage-roll-door"):
+        apply_garage_hero_flat_tint(ob, asset_id)
+        return
     if asset_id.startswith("garage-"):
         mat0 = ob.data.materials[0] if ob.data.materials else None
         use_baked = ob.name.endswith("_preview") or "_preview" in ob.name

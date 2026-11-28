@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -33,12 +34,23 @@ def import_prop(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Obj
         return None
     import blender_common as common  # type: ignore
 
+    imported = [o for o in common.flatten_glb_preview_meshes(imported) if len(o.data.vertices) > 0]
+    if not imported:
+        return None
     joined = common.duplicate_join_meshes(imported, f"{asset_id}_scene_join")
+    if joined is None or joined.type != "MESH" or len(joined.data.vertices) < 4:
+        for ob in list(imported):
+            bpy.data.objects.remove(ob, do_unlink=True)
+        return None
     for ob in imported:
         try:
             bpy.data.objects.remove(ob, do_unlink=True)
         except ReferenceError:
             pass
+    for ob in [
+        o for o in bpy.context.scene.objects if o not in before and o is not joined and o.type == "MESH"
+    ]:
+        bpy.data.objects.remove(ob, do_unlink=True)
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures" / asset_id
     common.apply_preview_material(joined, tex_dir, asset_id)
     joined.scale = (PROP_SCALE, PROP_SCALE, PROP_SCALE)
@@ -77,6 +89,12 @@ def main() -> None:
         if not joins:
             raise RuntimeError("no scene props imported")
 
+        keep = set(joins)
+        for ob in list(bpy.context.scene.objects):
+            if ob.type == "MESH" and ob not in keep:
+                bpy.data.objects.remove(ob, do_unlink=True)
+        bpy.context.view_layer.update()
+
         lo = Vector((1e9, 1e9, 1e9))
         hi = Vector((-1e9, -1e9, -1e9))
         for ob in joins:
@@ -93,6 +111,19 @@ def main() -> None:
         for ob in joins:
             ob.location.y += FLOOR_Y - min_y
         bpy.context.view_layer.update()
+        cluster_r = 0.0
+        for ob in joins:
+            cluster_r = max(cluster_r, math.hypot(ob.location.x, ob.location.z))
+        cluster_r = max(cluster_r, 0.45)
+        pruned: list[bpy.types.Object] = []
+        for ob in joins:
+            xz = math.hypot(ob.location.x, ob.location.z)
+            span_y = max(v.co.y for v in ob.data.vertices) - min(v.co.y for v in ob.data.vertices)
+            if xz > cluster_r * 1.35 and span_y < 0.35 and len(ob.data.vertices) < 500:
+                bpy.data.objects.remove(ob, do_unlink=True)
+            else:
+                pruned.append(ob)
+        joins = pruned
         lo2 = Vector((1e9, 1e9, 1e9))
         hi2 = Vector((-1e9, -1e9, -1e9))
         for ob in joins:

@@ -175,7 +175,7 @@ def apply_kenney_garage_materials(mesh_obs: list[bpy.types.Object], asset_id: st
                 break
         cc0.apply_kenney_restyle(ob, roles)
         if asset_id == "garage-desk-crt" and "crt" in lname:
-            bc.assign_emission(ob, (0.12, 0.72, 0.45, 1.0), 2.2)
+            bc.assign_crt_screen_material(ob, (0.12, 0.76, 0.50, 1.0), bezel=(0.22, 0.24, 0.28, 1.0))
 
 
 def _poly_gltf(polyhaven_id: str) -> Path:
@@ -244,6 +244,28 @@ def build_folding_chair() -> list[bpy.types.Object]:
     return [chair]
 
 
+def _place_crt_on_desktop(screen: bpy.types.Object, desk: bpy.types.Object) -> None:
+    """CRT on desktop top at back edge, screen facing +Z (keyboard side)."""
+    import cc0_common as cc0  # type: ignore
+
+    bpy.context.view_layer.update()
+    d_lo, d_hi = cc0.world_bbox(desk)
+    desktop_top_y = d_hi.y
+    desktop_top_z = d_hi.z
+    screen.location = desk.location.copy()
+    _center_on_part(screen, desk, dx=0.0, dz=-0.11)
+    screen.rotation_euler.y = 0.0
+    bpy.context.view_layer.update()
+    _place_on_top(screen, desk, overlap=0.002)
+    bpy.context.view_layer.update()
+    s_lo, s_hi = cc0.world_bbox(screen)
+    if s_lo.y < desktop_top_y - 0.001:
+        screen.location.y += desktop_top_y - s_lo.y
+    if abs(s_lo.z - desktop_top_z) > 0.015:
+        screen.location.z += desktop_top_z - s_lo.z
+    bpy.context.view_layer.update()
+
+
 def _center_on_part(upper: bpy.types.Object, lower: bpy.types.Object, *, dx: float = 0.0, dz: float = 0.0) -> None:
     import cc0_common as cc0  # type: ignore
 
@@ -304,12 +326,11 @@ def build_desk_crt() -> list[bpy.types.Object]:
     _orient_kenney_y_up(screen)
     _scale_height(screen, 0.42)
     screen.location = desk.location.copy()
-    _center_on_part(screen, desk, dx=0.08, dz=-0.04)
-    _place_on_top(screen, desk, overlap=0.008)
+    _place_crt_on_desktop(screen, desk)
     keyboard = _import_kenney_furniture("computerKeyboard.glb", "KeyboardGrey")
     _scale_height(keyboard, 0.04)
     keyboard.location = desk.location.copy()
-    _center_on_part(keyboard, desk, dx=-0.08, dz=0.10)
+    _center_on_part(keyboard, desk, dx=-0.06, dz=0.14)
     _place_on_top(keyboard, desk, overlap=0.008)
     return [desk, screen, keyboard]
 
@@ -359,7 +380,7 @@ def _upright_tallest_y(ob: bpy.types.Object) -> None:
 
 
 def _roll_curtain_slats_y(frame_obs: list[bpy.types.Object]) -> list[bpy.types.Object]:
-    """Vertical slats between Poly Haven posts — one joined curtain mesh + pass16 frame."""
+    """Horizontal slats stacked vertically in Poly Haven frame opening (room-kit style, Y-up)."""
     import blender_common as bc  # type: ignore
     import cc0_common as cc0  # type: ignore
 
@@ -372,23 +393,22 @@ def _roll_curtain_slats_y(frame_obs: list[bpy.types.Object]) -> list[bpy.types.O
         mn, mx = cc0.world_bbox(ob)
         lo.x, lo.y, lo.z = min(lo.x, mn.x), min(lo.y, mn.y), min(lo.z, mn.z)
         hi.x, hi.y, hi.z = max(hi.x, mx.x), max(hi.y, mx.y), max(hi.z, mx.z)
-    width = max(hi.x - lo.x, 1.1)
     height = max(hi.y - lo.y, 1.4)
-    slat_depth = 0.05
-    cz = (lo.z + hi.z) * 0.5
-    cx = (lo.x + hi.x) * 0.5
     slat_count = 11
     curtain_h = height * 0.58
     slat_thick = curtain_h / slat_count
-    y0 = lo.y + height * 0.22
+    slat_depth = 0.06
     slat_w = (hi.x - lo.x) * 0.68
+    cx = (lo.x + hi.x) * 0.5
+    cz = hi.z - slat_depth * 0.5
+    y0 = lo.y + height * 0.22
     slats: list[bpy.types.Object] = []
     for i in range(slat_count):
         yc = y0 + slat_thick * (i + 0.5)
         slats.append(
             bc.add_cube(
                 f"RollSlat{i}",
-                (slat_w, slat_thick * 0.9, slat_depth),
+                (slat_w, slat_thick * 0.88, slat_depth),
                 (cx, yc, cz),
             )
         )
