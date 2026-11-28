@@ -14,8 +14,8 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 
 declare -A GOLDEN
 GOLDEN[195]=92c28613ebbb2ad720d9a3ead1bc8357463f600b679c0bcae46b17e168c29b03
-GOLDEN[196]=__PIN196__
-GOLDEN[197]=__PIN197__
+GOLDEN[196]=1313f31a68d9b88bab5e44db5a04850870ca2bb29ad663aeb8abf869e6c179f8
+GOLDEN[197]=9384e916163751cd041a89d74c6808528c82f1b5510aadca6d4039e4b54feb6e
 
 PREV=$((N - 1))
 BK="/tmp/b32-rev-bak-$N"
