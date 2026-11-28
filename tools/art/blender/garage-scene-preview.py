@@ -12,17 +12,16 @@ from mathutils import Vector
 
 REPO = Path(__file__).resolve().parents[3]
 KIT = REPO / "unity/Assets/Art/EarlyGame/garage-kit"
-TEX = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures"
 PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
 
 COLS = 4
 SPACING = 0.34
-PROP_SCALE = 1.12
+PROP_SCALE = 1.08
 FLOOR_Y = 0.0
 
 
-def import_asset(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Object | None:
+def import_prop(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Object | None:
     glb = KIT / f"{asset_id}.glb"
     if not glb.exists():
         print(f"WARN missing {glb}")
@@ -40,11 +39,11 @@ def import_asset(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Ob
             bpy.data.objects.remove(ob, do_unlink=True)
         except ReferenceError:
             pass
-    tex_dir = TEX / asset_id
+    tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures" / asset_id
     common.apply_preview_material(joined, tex_dir, asset_id)
     joined.scale = (PROP_SCALE, PROP_SCALE, PROP_SCALE)
-    bpy.context.view_layer.update()
     joined.location = Vector(loc)
+    bpy.context.view_layer.update()
     mins_y = min((joined.matrix_world @ v.co).y for v in joined.data.vertices)
     if abs(mins_y - FLOOR_Y) > 1e-4:
         joined.location.y += FLOOR_Y - mins_y
@@ -59,83 +58,88 @@ def layout_ids() -> list[str]:
 
 def main() -> None:
     os.environ["GARAGE_SCENE_PREVIEW"] = "1"
+    os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    joins: list[bpy.types.Object] = []
-    ids = layout_ids()
-    rows = (len(ids) + COLS - 1) // COLS
-    ox = -((COLS - 1) * SPACING) * 0.5
-    oz = -((rows - 1) * SPACING) * 0.5
-    for i, asset_id in enumerate(ids):
-        col = i % COLS
-        row = i // COLS
-        x = ox + col * SPACING
-        z = oz + row * SPACING
-        ob = import_asset(asset_id, (x, 0.0, z))
-        if ob:
-            joins.append(ob)
-    if not joins:
-        raise RuntimeError("no scene props imported")
+    try:
+        joins: list[bpy.types.Object] = []
+        ids = layout_ids()
+        rows = (len(ids) + COLS - 1) // COLS
+        ox = -((COLS - 1) * SPACING) * 0.5
+        oz = -((rows - 1) * SPACING) * 0.5
+        for i, asset_id in enumerate(ids):
+            col = i % COLS
+            row = i // COLS
+            x = ox + col * SPACING
+            z = oz + row * SPACING
+            ob = import_prop(asset_id, (x, 0.0, z))
+            if ob:
+                joins.append(ob)
+        if not joins:
+            raise RuntimeError("no scene props imported")
 
-    def boost_ob_saturation(ob: bpy.types.Object) -> None:
-        mat = ob.data.materials[0] if ob.data.materials else None
-        if not mat or not mat.use_nodes:
-            return
-        nodes = mat.node_tree.nodes
-        links = mat.node_tree.links
-        bsdf = nodes.get("Principled BSDF")
-        if not bsdf:
-            return
-        base = bsdf.inputs["Base Color"]
-        if base.is_linked:
-            src = base.links[0].from_socket
-            links.remove(base.links[0])
-        else:
-            src = None
-        hue = nodes.new("ShaderNodeHueSaturation")
-        hue.inputs["Saturation"].default_value = 1.80
-        hue.inputs["Value"].default_value = 1.12
-        if src:
-            links.new(src, hue.inputs["Color"])
-        else:
-            hue.inputs["Color"].default_value = base.default_value
-        links.new(hue.outputs["Color"], base)
+        def boost_ob_saturation(ob: bpy.types.Object) -> None:
+            mat = ob.data.materials[0] if ob.data.materials else None
+            if not mat or not mat.use_nodes:
+                return
+            nodes = mat.node_tree.nodes
+            links = mat.node_tree.links
+            bsdf = nodes.get("Principled BSDF")
+            if not bsdf:
+                return
+            base = bsdf.inputs["Base Color"]
+            if base.is_linked:
+                src = base.links[0].from_socket
+                links.remove(base.links[0])
+            else:
+                src = None
+            hue = nodes.new("ShaderNodeHueSaturation")
+            hue.inputs["Saturation"].default_value = 1.92
+            hue.inputs["Value"].default_value = 1.14
+            if src:
+                links.new(src, hue.inputs["Color"])
+            else:
+                hue.inputs["Color"].default_value = base.default_value
+            links.new(hue.outputs["Color"], base)
 
-    for ob in joins:
-        boost_ob_saturation(ob)
+        for ob in joins:
+            boost_ob_saturation(ob)
 
-    import cc0_common as cc0  # type: ignore
+        import cc0_common as cc0  # type: ignore
 
-    out = PREVIEW / "garage-scene-kit.png"
-    mask = PREVIEW / "garage-scene-kit.mask.png"
-    cc0.render_kit_preview(
-        joins,
-        out,
-        resolution=768,
-        mode="scene",
-        fill=0.82,
-        margin=0.03,
-        frame_objects=joins,
-        up_axis="Y",
-        mask_path=mask,
-    )
-    meta = PREVIEW / "garage-scene-kit.frame.json"
-    meta.write_text(
-        json.dumps(
-            {
-                "preview_kind": "garage",
-                "flat_backdrop": True,
-                "backdrop_rgb": [150, 150, 150],
-                "framing_fill": 0.82,
-                "up_axis": "Y",
-                "floor_plane": "horizontal_y",
-                "props": len(joins),
-            },
-            indent=2,
+        out = PREVIEW / "garage-scene-kit.png"
+        mask = PREVIEW / "garage-scene-kit.mask.png"
+        cc0.render_kit_preview(
+            joins,
+            out,
+            resolution=768,
+            mode="scene",
+            fill=0.72,
+            margin=0.05,
+            frame_objects=joins,
+            up_axis="Y",
+            mask_path=mask,
         )
-        + "\n",
-        encoding="utf-8",
-    )
-    print("OK garage-scene-kit", out, "props", len(joins))
+        meta = PREVIEW / "garage-scene-kit.frame.json"
+        meta.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "framing_fill": 0.72,
+                    "up_axis": "Y",
+                    "floor_plane": "horizontal_y",
+                    "props": len(joins),
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        print("OK garage-scene-kit", out, "props", len(joins))
+    finally:
+        os.environ.pop("GARAGE_SCENE_PREVIEW", None)
+        os.environ.pop("GARAGE_HERO_FLAT_MATERIAL", None)
 
 
 if __name__ == "__main__":

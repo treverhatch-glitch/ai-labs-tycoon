@@ -461,6 +461,26 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+def flatten_uv_for_flat_color_bake(ob: bpy.types.Object) -> None:
+    """Replace Kenney atlas UVs with few large islands for solid-color emit bake."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.smart_project(angle_limit=50, island_margin=0.004)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def garage_glb_y_up_preview(asset_id: str) -> bool:
+    """Y-up Kenney GLBs use Y-up hero; procedural cable-spool + thin slabs use legacy Z hero camera."""
+    return asset_id not in {
+        "garage-cable-spool",
+        "garage-lot-curb",
+        "garage-floor-tile",
+    }
+
+
 GARAGE_FURNITURE = frozenset(
     {
         "garage-desk-crt",
@@ -613,63 +633,76 @@ def render_garage_hero_preview_from_glb(
     fill: float,
     margin: float,
 ) -> None:
-    """Pass12: hero preview from committed multipart GLB (Y-up), not Z-up build scene."""
+    """Hero preview from committed GLB: Y-up props use tint slots (no baked UV); Z-up cable-spool legacy."""
     import cc0_common as cc0  # type: ignore
 
+    y_up = garage_glb_y_up_preview(asset_id)
+    os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(glb_path))
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if not meshes:
-        raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
-    root = bpy.data.objects.new("PreviewOrientRoot", None)
-    bpy.context.collection.objects.link(root)
-    for ob in meshes:
-        mw = ob.matrix_world.copy()
-        if ob.parent:
-            ob.parent = None
-        ob.parent = root
-        ob.matrix_world = mw
-    root.rotation_euler = (-math.pi / 2.0, 0.0, 0.0)
-    bpy.context.view_layer.update()
-    if not meshes:
-        raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
-    bpy.ops.object.select_all(action="DESELECT")
-    for ob in meshes:
-        ob.select_set(True)
-    bpy.context.view_layer.objects.active = meshes[0]
-    bpy.ops.object.join()
-    joined = bpy.context.view_layer.objects.active
-    joined.name = f"{asset_id}_glb_preview"
-    apply_preview_material(joined, tex_dir, asset_id)
-    cc0.render_kit_preview(
-        [joined],
-        preview_path,
-        resolution=512,
-        mode="hero",
-        fill=fill,
-        margin=margin,
-        up_axis="Z",
-        mask_path=mask_path,
-    )
-    meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
-    meta_path.write_text(
-        json.dumps(
-            {
-                "preview_kind": "garage",
-                "flat_backdrop": True,
-                "backdrop_rgb": [150, 150, 150],
-                "framing_fill": fill,
-                "framing_margin": margin,
-                "up_axis": "Z",
-                "floor_plane": "horizontal_z",
-                "renderer": "cycles_glb_import",
-            },
-            indent=2,
+    try:
+        bpy.ops.import_scene.gltf(filepath=str(glb_path))
+        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+        if not meshes:
+            raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
+        frame_obs: list[bpy.types.Object]
+        up_axis = "Y" if y_up else "Z"
+        floor_plane = "horizontal_y" if y_up else "horizontal_z"
+        if y_up:
+            for ob in meshes:
+                apply_preview_material(ob, tex_dir, asset_id)
+            frame_obs = meshes
+        else:
+            root = bpy.data.objects.new("PreviewOrientRoot", None)
+            bpy.context.collection.objects.link(root)
+            for ob in meshes:
+                mw = ob.matrix_world.copy()
+                if ob.parent:
+                    ob.parent = None
+                ob.parent = root
+                ob.matrix_world = mw
+            root.rotation_euler = (-math.pi / 2.0, 0.0, 0.0)
+            bpy.context.view_layer.update()
+            bpy.ops.object.select_all(action="DESELECT")
+            for ob in meshes:
+                ob.select_set(True)
+            bpy.context.view_layer.objects.active = meshes[0]
+            bpy.ops.object.join()
+            joined = bpy.context.view_layer.objects.active
+            joined.name = f"{asset_id}_glb_preview"
+            apply_preview_material(joined, tex_dir, asset_id)
+            frame_obs = [joined]
+        cc0.render_kit_preview(
+            frame_obs,
+            preview_path,
+            resolution=512,
+            mode="hero",
+            fill=fill,
+            margin=margin,
+            up_axis=up_axis,
+            mask_path=mask_path,
         )
-        + "\n",
-        encoding="utf-8",
-    )
-    bpy.data.objects.remove(joined, do_unlink=True)
+        if not y_up:
+            bpy.data.objects.remove(frame_obs[0], do_unlink=True)
+        meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
+        meta_path.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "framing_fill": fill,
+                    "framing_margin": margin,
+                    "up_axis": up_axis,
+                    "floor_plane": floor_plane,
+                    "renderer": "cycles_glb_import",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    finally:
+        os.environ.pop("GARAGE_HERO_FLAT_MATERIAL", None)
 
 
 def render_garage_side_ortho_preview_from_glb(
@@ -681,59 +714,73 @@ def render_garage_side_ortho_preview_from_glb(
     """Side orthographic preview from committed GLB (Y-up) to expose assembly gaps."""
     import cc0_common as cc0  # type: ignore
 
+    y_up = garage_glb_y_up_preview(asset_id)
+    os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(glb_path))
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if not meshes:
-        raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
-    for ob in meshes:
-        apply_preview_material(ob, tex_dir, asset_id)
-    bpy.context.view_layer.update()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for ob in meshes:
-        for corner in ob.bound_box:
-            w = ob.matrix_world @ Vector(corner)
-            lo.x = min(lo.x, w.x)
-            lo.y = min(lo.y, w.y)
-            lo.z = min(lo.z, w.z)
-            hi.x = max(hi.x, w.x)
-            hi.y = max(hi.y, w.y)
-            hi.z = max(hi.z, w.z)
-    center = (lo + hi) * 0.5
-    span = max(hi.x - lo.x, hi.y - lo.y, hi.z - lo.z, 0.15)
-    cc0.setup_preview_world_grey_hdri(hdri_strength=0.55)
-    bpy.context.scene.render.engine = "CYCLES"
-    bpy.context.scene.cycles.samples = 48
-    bpy.context.scene.cycles.use_denoising = False
-    bpy.context.scene.render.resolution_x = 512
-    bpy.context.scene.render.resolution_y = 512
-    bpy.context.scene.render.film_transparent = False
-    bpy.ops.object.camera_add(location=(center.x + span * 1.8, center.y, center.z))
-    cam = bpy.context.active_object
-    cam.data.type = "ORTHO"
-    cam.data.ortho_scale = span * 1.15
-    cam.rotation_euler = (math.pi / 2.0, 0.0, math.pi / 2.0)
-    bpy.context.scene.camera = cam
-    bpy.context.scene.render.filepath = str(ortho_path)
-    bpy.ops.render.render(write_still=True)
-    meta = ortho_path.with_name(ortho_path.stem + ".frame.json")
-    meta.write_text(
-        json.dumps(
-            {
-                "preview_kind": "garage_ortho",
-                "flat_backdrop": True,
-                "backdrop_rgb": [150, 150, 150],
-                "up_axis": "Y",
-                "floor_plane": "horizontal_y",
-                "camera_type": "orthographic",
-                "view": "side_positive_x",
-            },
-            indent=2,
+    try:
+        bpy.ops.import_scene.gltf(filepath=str(glb_path))
+        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+        if not meshes:
+            raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
+        for ob in meshes:
+            apply_preview_material(ob, tex_dir, asset_id)
+        bpy.context.view_layer.update()
+        lo = Vector((1e9, 1e9, 1e9))
+        hi = Vector((-1e9, -1e9, -1e9))
+        for ob in meshes:
+            for corner in ob.bound_box:
+                w = ob.matrix_world @ Vector(corner)
+                lo.x = min(lo.x, w.x)
+                lo.y = min(lo.y, w.y)
+                lo.z = min(lo.z, w.z)
+                hi.x = max(hi.x, w.x)
+                hi.y = max(hi.y, w.y)
+                hi.z = max(hi.z, w.z)
+        center = (lo + hi) * 0.5
+        span = max(hi.x - lo.x, hi.y - lo.y, hi.z - lo.z, 0.15)
+        cc0.setup_preview_world_grey_hdri(hdri_strength=0.55)
+        bpy.context.scene.render.engine = "CYCLES"
+        bpy.context.scene.cycles.samples = 48
+        bpy.context.scene.cycles.use_denoising = False
+        bpy.context.scene.render.resolution_x = 512
+        bpy.context.scene.render.resolution_y = 512
+        bpy.context.scene.render.film_transparent = False
+        if y_up:
+            cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
+            bpy.ops.object.camera_add(location=cam_loc)
+            cam = bpy.context.active_object
+            direction = center - cam_loc
+            cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+        else:
+            bpy.ops.object.camera_add(location=(center.x + span * 1.8, center.y, center.z))
+            cam = bpy.context.active_object
+            cam.rotation_euler = (math.pi / 2.0, 0.0, math.pi / 2.0)
+        cam.data.type = "ORTHO"
+        cam.data.ortho_scale = span * 1.15
+        bpy.context.scene.camera = cam
+        bpy.context.scene.render.filepath = str(ortho_path)
+        bpy.ops.render.render(write_still=True)
+        up_axis = "Y" if y_up else "Z"
+        floor_plane = "horizontal_y" if y_up else "horizontal_z"
+        meta = ortho_path.with_name(ortho_path.stem + ".frame.json")
+        meta.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage_ortho",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "up_axis": up_axis,
+                    "floor_plane": floor_plane,
+                    "camera_type": "orthographic",
+                    "view": "side_positive_x",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
         )
-        + "\n",
-        encoding="utf-8",
-    )
+    finally:
+        os.environ.pop("GARAGE_HERO_FLAT_MATERIAL", None)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -789,7 +836,10 @@ def _finish_garage_kit_asset(
         raise RuntimeError(f"{asset_id}: assembly not grounded (min_y={assembly_min_y:.4f})")
 
     bake_root = duplicate_join_meshes(parts, f"{asset_id}_bake")
-    uv_unwrap(bake_root)
+    if kenney_import or cc0_import:
+        flatten_uv_for_flat_color_bake(bake_root)
+    else:
+        uv_unwrap(bake_root)
     mat_snapshot = snapshot_poly_materials(bake_root)
     maps = bake_pbr_set(bake_root, tex_dir, asset_id, size=1024)
     restore_poly_materials(bake_root, mat_snapshot)
@@ -807,7 +857,7 @@ def _finish_garage_kit_asset(
     mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
     hero_framing: dict[str, tuple[float, float]] = {
         "garage-cable-spool": (0.56, 0.085),
-        "garage-coffee-drip": (0.62, 0.07),
+        "garage-coffee-drip": (0.78, 0.055),
         "garage-crt-tower": (0.60, 0.075),
         "garage-desk-crt": (0.62, 0.075),
         "garage-exterior-wall": (0.60, 0.075),
@@ -1602,6 +1652,24 @@ def smooth_shade(ob: bpy.types.Object) -> None:
     bpy.ops.object.shade_smooth()
 
 
+def _boost_garage_all_slot_materials(ob: bpy.types.Object) -> None:
+    """Boost every material slot on a mesh (Kenney tint GLBs)."""
+    if ob.type != "MESH":
+        return
+    saved = list(ob.data.materials)
+    for idx, mat in enumerate(saved):
+        if not mat:
+            continue
+        ob.data.materials.clear()
+        ob.data.materials.append(mat)
+        _boost_garage_part_preview_material(ob)
+        saved[idx] = ob.data.materials[0]
+    ob.data.materials.clear()
+    for mat in saved:
+        if mat:
+            ob.data.materials.append(mat)
+
+
 def _boost_garage_part_preview_material(ob: bpy.types.Object) -> None:
     """Multipart garage GLBs keep per-part Garage_* slots; baked albedo UVs are bake-mesh only."""
     if not ob.data.materials or not ob.data.materials[0]:
@@ -1638,9 +1706,38 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     """EEVEE preview uses baked albedo for staff; garage multipart keeps Garage_* slots."""
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
+    flat_slots = os.environ.get("GARAGE_HERO_FLAT_MATERIAL", "").strip() in ("1", "true", "yes")
     if asset_id.startswith("garage-"):
         mat0 = ob.data.materials[0] if ob.data.materials else None
         use_baked = ob.name.endswith("_preview") or "_preview" in ob.name
+        if flat_slots and mat0 and (mat0.name.startswith("Garage_") or mat0.name.startswith("m_")):
+            _boost_garage_all_slot_materials(ob)
+            if asset_id == "garage-cable-spool":
+                for mat in ob.data.materials:
+                    if not mat or not mat.use_nodes:
+                        continue
+                    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+                    if not bsdf:
+                        continue
+                    lname = mat.name.lower()
+                    nodes = mat.node_tree.nodes
+                    links = mat.node_tree.links
+                    base = bsdf.inputs["Base Color"]
+                    hue = nodes.new("ShaderNodeHueSaturation")
+                    hue.inputs["Saturation"].default_value = 2.0
+                    hue.inputs["Value"].default_value = 1.18
+                    if base.is_linked:
+                        src = base.links[0].from_socket
+                        links.remove(base.links[0])
+                        links.new(src, hue.inputs["Color"])
+                    else:
+                        hue.inputs["Color"].default_value = base.default_value
+                    links.new(hue.outputs["Color"], base)
+                    if "coil" in lname or "copper" in lname:
+                        base.default_value = (0.78, 0.48, 0.26, 1.0)
+                    elif "cable" in lname:
+                        base.default_value = (0.12, 0.12, 0.14, 1.0)
+            return
         if mat0 and mat0.name.startswith("Garage_") and not use_baked:
             _boost_garage_part_preview_material(ob)
             return

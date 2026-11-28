@@ -6,8 +6,8 @@
     150,
     150
   ],
-  "up_axis": "Y",
-  "floor_plane": "horizontal_y",
+  "up_axis": "Z",
+  "floor_plane": "horizontal_z",
   "camera_type": "orthographic",
   "view": "side_positive_x"
 }

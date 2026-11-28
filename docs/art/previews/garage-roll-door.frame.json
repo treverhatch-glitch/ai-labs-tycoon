@@ -8,7 +8,7 @@
   ],
   "framing_fill": 0.62,
   "framing_margin": 0.065,
-  "up_axis": "Z",
-  "floor_plane": "horizontal_z",
+  "up_axis": "Y",
+  "floor_plane": "horizontal_y",
   "renderer": "cycles_glb_import"
 }

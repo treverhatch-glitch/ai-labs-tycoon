@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -14,8 +15,8 @@
       "vertexCount": 608,
       "triangleCount": 2304,
       "partCount": 5,
-      "generator": "tools/art/blender/garage-cable-spool.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-cable-spool.py"
     },
     {
       "id": "garage-coffee-drip",
