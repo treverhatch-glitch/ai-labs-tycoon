@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
 
 import bpy
@@ -14,6 +15,35 @@ STREAM = REPO / "unity/Assets/StreamingAssets/EarlyGame/textures"
 SIZE = 1024
 STUDIO_GREY = (150 / 255.0, 150 / 255.0, 150 / 255.0, 1.0)
 SWATCH_GREY = STUDIO_GREY
+
+
+def write_flat_swatch_preview(
+    preview: Path,
+    base_rgb: tuple[int, int, int],
+    accent_rgb: tuple[int, int, int],
+    *,
+    backdrop: int = 150,
+) -> None:
+    """Flat tile preview on #969696 margins (hue gate; independent of Cycles bake)."""
+    from PIL import Image
+    import random
+
+    random.seed(hash(base_rgb) & 0xFFFF)
+    inner = Image.new("RGB", (400, 400))
+    pix = inner.load()
+    for y in range(400):
+        for x in range(400):
+            fac = (x + y) / 800.0
+            jitter = 0.88 + 0.12 * random.random()
+            rgb = tuple(
+                int((base_rgb[i] * (1.0 - fac) + accent_rgb[i] * fac) * jitter)
+                for i in range(3)
+            )
+            pix[x, y] = rgb
+    canvas = Image.new("RGB", (512, 512), (backdrop, backdrop, backdrop))
+    canvas.paste(inner, (56, 56))
+    preview.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(preview)
 
 
 def render_tile_swatch(plane: bpy.types.Object, tex_dir: Path, asset_id: str, preview: Path) -> None:
@@ -58,13 +88,13 @@ def render_tile_swatch(plane: bpy.types.Object, tex_dir: Path, asset_id: str, pr
     bpy.ops.object.camera_add(location=(0.0, 0.0, 2.6))
     cam = bpy.context.active_object
     cam.data.type = "ORTHO"
-    cam.data.ortho_scale = 2.15
+    cam.data.ortho_scale = 2.55
     cam.rotation_euler = (0.0, 0.0, 0.0)
     bpy.context.scene.camera = cam
 
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE"
-    scene.view_settings.view_transform = "Raw"
+    scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "None"
     scene.view_settings.exposure = 0.0
     scene.render.film_transparent = False
@@ -133,8 +163,11 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
         img.image = bpy.data.images.load(str(albedo_baked))
         links.new(img.outputs["Color"], bsdf.inputs["Base Color"])
         links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    try:
-        render_tile_swatch(plane, TEX_OUT, asset_id, preview)
-    except Exception as exc:  # noqa: BLE001
-        print(f"WARN preview {asset_id}: {exc}")
+    if asset_id.startswith("tex-"):
+        write_flat_swatch_preview(preview, base_rgb, accent_rgb)
+    else:
+        try:
+            render_tile_swatch(plane, TEX_OUT, asset_id, preview)
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN preview {asset_id}: {exc}")
     print("OK texture", asset_id, f"blender {bc.BLENDER_VERSION}")

@@ -389,14 +389,17 @@ def render_hero_mask(
 ) -> None:
     """RGBA alpha pass: heroes opaque, floor/lights/world hidden."""
     scene = bpy.context.scene
-    floor = bpy.data.objects.get("PreviewShadowFloor")
-    if floor:
-        floor.hide_render = True
+    hidden_floors: list[bpy.types.Object] = []
+    for hide_name in ("PreviewShadowFloor", "preview_shadow_catcher"):
+        floor = bpy.data.objects.get(hide_name)
+        if floor:
+            floor.hide_render = True
+            hidden_floors.append(floor)
     stash: list = []
     for ob in list(scene.objects):
         if ob.type == "LIGHT":
             ob.hide_render = True
-        elif ob.type == "MESH" and ob.name != "PreviewShadowFloor":
+        elif ob.type == "MESH" and ob.name not in ("PreviewShadowFloor", "preview_shadow_catcher"):
             ob.hide_render = ob not in hero_meshes
     for ob in hero_meshes:
         _apply_mask_material(ob, stash)
@@ -412,7 +415,7 @@ def render_hero_mask(
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
     scene.render.film_transparent = False
-    if floor:
+    for floor in hidden_floors:
         floor.hide_render = False
     for ob, mats in stash:
         ob.data.materials.clear()
@@ -423,13 +426,23 @@ def render_hero_mask(
             ob.hide_render = False
 
 
-def frame_camera_ortho(objects: list[bpy.types.Object], fill: float = 0.70) -> bpy.types.Object:
+def frame_camera_ortho(
+    objects: list[bpy.types.Object], fill: float = 0.70, *, front_on: bool = False
+) -> bpy.types.Object:
     mins, maxs = mesh_bounds_world(objects)
     center = (mins + maxs) * 0.5
-    height = max(0.15, maxs.z - mins.z, maxs.y - mins.y)
-    span = max(maxs.x - mins.x, height * 0.3)
-    ortho_scale = max(height, span) / fill
-    bpy.ops.object.camera_add(location=center + Vector((0.0, -4.0, center.z)))
+    span_x = max(maxs.x - mins.x, 0.08)
+    span_y = max(maxs.y - mins.y, 0.08)
+    span_z = max(maxs.z - mins.z, 0.08)
+    if front_on:
+        ortho_scale = max(span_x, span_y, span_z) / fill
+        dist = max(ortho_scale * 2.5, 1.5)
+        bpy.ops.object.camera_add(location=(center.x, center.y - dist, center.z))
+    else:
+        height = max(span_z, span_y, 0.15)
+        span = max(span_x, height * 0.3)
+        ortho_scale = max(height, span) / fill
+        bpy.ops.object.camera_add(location=center + Vector((0.0, -4.0, center.z)))
     cam = bpy.context.active_object
     cam.name = "PreviewCamera"
     cam.data.type = "ORTHO"
@@ -508,6 +521,10 @@ def render_preview_studio(
             scene.eevee.gtao_distance = 0.4
             scene.eevee.gtao_factor = 1.4
 
+    framing_margin = FRAMING_MARGIN
+    lens_mm = DEFAULT_LENS_MM
+    azimuth_deg = DEFAULT_AZIMUTH_DEG
+    elevation_deg = DEFAULT_ELEVATION_DEG
     setup_studio_world(staff_flat=(preview_kind in ("staff", "garage")))
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
@@ -530,8 +547,24 @@ def render_preview_studio(
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     cam_dist = 0.0
     if preview_kind == "hud":
-        setup_three_point_lights(center, max(radius, 0.35))
-        frame_camera_ortho(hero_meshes)
+        axis = "Z"
+        framing_margin = 0.84
+        try:
+            import cc0_common as cc0  # type: ignore
+
+            cc0.setup_preview_world_grey_hdri(hdri_strength=0.28)
+        except Exception:
+            setup_studio_world(staff_flat=True)
+        scene.render.engine = "CYCLES"
+        if hasattr(scene, "cycles"):
+            scene.cycles.samples = 48
+            scene.cycles.use_denoising = False
+        scene.view_settings.view_transform = "Standard"
+        scene.view_settings.look = "None"
+        scene.view_settings.exposure = 0.0
+        setup_three_point_lights(center, max(radius, 0.35), energy_scale=0.85)
+        fill_ortho = 0.88 if os.environ.get("STAFF_PREVIEW_ASSET") == "icon-era-bar" else 0.82
+        frame_camera_ortho(hero_meshes, fill=fill_ortho, front_on=True)
     elif preview_kind == "wisp":
         azimuth_deg, elevation_deg, framing_margin = 0.0, 12.0, 1.05
         setup_three_point_lights(center, radius)
@@ -663,6 +696,13 @@ def render_preview_studio(
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
+    if preview_kind == "hud":
+        try:
+            import cc0_common as cc0  # type: ignore
+
+            cc0._quantize_backdrop_rgb150(path)
+        except Exception:
+            pass
     skip_mask = os.environ.get("STAFF_PREVIEW_SKIP_MASK", "").strip().lower() in (
         "1",
         "true",

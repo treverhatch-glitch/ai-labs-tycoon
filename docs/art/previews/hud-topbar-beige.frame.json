@@ -3,7 +3,17 @@
   "bbox_radius": 0.612955200142243,
   "framing_margin": 1.15,
   "lens_mm": 50.0,
-  "azimuth_deg": 45.0,
+  "azimuth_deg": 32.0,
   "elevation_deg": 30.0,
-  "up_axis": "Z"
+  "up_axis": "Z",
+  "preview_kind": "garage",
+  "flat_backdrop": true,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "floor_plane": "horizontal_z",
+  "staff_yaw_deg": 30.0,
+  "staff_elev_deg": 10.0
 }

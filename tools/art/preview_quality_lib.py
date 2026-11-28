@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 MIN_SAT = 0.15
-MIN_SILHOUETTE_HEIGHT = 0.35
+MIN_SILHOUETTE_HEIGHT = 0.40
 MAX_SILHOUETTE_HEIGHT = 0.75
 MIN_LUMA_VAR = 0.0005
 EDGE_EPSILON = 0.008  # normalized; alpha bbox must not touch frame edge

@@ -666,8 +666,47 @@ def _finish_garage_kit_asset(
     for ob in parts:
         ob.hide_render = True
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
+    hero_framing: dict[str, tuple[float, float]] = {
+        "garage-cable-spool": (0.54, 0.08),
+        "garage-exterior-wall": (0.54, 0.08),
+        "garage-land-for-sale-sign": (0.56, 0.075),
+        "garage-server-closet": (0.54, 0.08),
+        "garage-folding-chair": (0.52, 0.09),
+        "garage-window-frame": (0.56, 0.08),
+    }
+    fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
     try:
-        render_preview(preview_join, preview_path, asset_id=asset_id, mask_meshes=preview_join)
+        import cc0_common as cc0  # type: ignore
+
+        cc0.render_kit_preview(
+            [preview_join],
+            preview_path,
+            resolution=512,
+            mode="hero",
+            fill=fill,
+            margin=margin,
+            up_axis="Z",
+            mask_path=mask_path,
+        )
+        meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
+        meta_path.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "framing_fill": fill,
+                    "framing_margin": margin,
+                    "up_axis": "Z",
+                    "floor_plane": "horizontal_z",
+                    "renderer": "cycles_tpH",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     except Exception as exc:  # noqa: BLE001
         print(f"WARN preview {asset_id}: {exc}")
     for ob in parts:
@@ -1516,10 +1555,10 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
         tex.image.reload()
     hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id.startswith("garage-"):
-        hue.inputs["Saturation"].default_value = 1.08
+        hue.inputs["Saturation"].default_value = 1.0
     else:
         hue.inputs["Saturation"].default_value = 1.45
-    hue.inputs["Value"].default_value = 1.06 if asset_id.startswith("garage-") else 1.05
+    hue.inputs["Value"].default_value = 1.0 if asset_id.startswith("garage-") else 1.05
     links.new(tex.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     surf_out = bsdf.outputs["BSDF"]
@@ -1855,9 +1894,9 @@ def render_preview(
                     prev_kind = "staff"
                 elif asset_id.startswith("wisp-"):
                     prev_kind = "wisp"
-                elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
+                elif asset_id.startswith(("hud-", "icon-", "panel-")) or asset_id.startswith("tex-hud-"):
                     prev_kind = "hud"
-                if asset_id.startswith("staff-"):
+                if asset_id.startswith(("staff-", "icon-", "hud-", "panel-")):
                     os.environ["STAFF_PREVIEW_ASSET"] = asset_id
                 else:
                     os.environ.pop("STAFF_PREVIEW_ASSET", None)

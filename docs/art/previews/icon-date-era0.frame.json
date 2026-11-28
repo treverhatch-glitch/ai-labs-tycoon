@@ -1,9 +1,19 @@
 {
-  "camera_dist": 1.1169472295862681,
+  "camera_dist": 0.0,
   "bbox_radius": 0.2331020305223516,
-  "framing_margin": 1.15,
+  "framing_margin": 0.84,
   "lens_mm": 50.0,
   "azimuth_deg": 45.0,
-  "elevation_deg": 30.0,
-  "up_axis": "Z"
+  "elevation_deg": 32.0,
+  "up_axis": "Z",
+  "preview_kind": "hud",
+  "flat_backdrop": false,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "floor_plane": "horizontal_z",
+  "staff_yaw_deg": 30.0,
+  "staff_elev_deg": 10.0
 }

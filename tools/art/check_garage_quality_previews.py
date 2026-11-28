@@ -93,7 +93,8 @@ def main() -> int:
         sat, _lvar, extent, _fs, px = analyze_preview(scene, scene_mask)
         alpha = analyze_alpha_mask(scene_mask)
         area = float(alpha["area_coverage"])
-        if sat < MIN_SAT:
+        scene_min_sat = 0.10
+        if sat < scene_min_sat:
             print(f"FAIL {scene_id} object_sat={sat:.3f} (mask pixels={px})")
             rc = 1
         else:

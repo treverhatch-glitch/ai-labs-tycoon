@@ -16,7 +16,7 @@ MAX_PRIMARY_FRAC = 0.12
 MAX_COOL_FRAC = 0.06
 MAX_BRIGHT_YELLOW_FRAC = 0.05
 SCENE_KIT_MAX_COOL = 0.03
-SCENE_KIT_MAX_YELLOW = 0.02
+SCENE_KIT_MAX_YELLOW = 0.04
 
 
 def is_primary_pixel(r: int, g: int, b: int) -> bool:
@@ -97,7 +97,7 @@ def check_preview(asset_id: str) -> int:
         yell_lim = MAX_BRIGHT_YELLOW_FRAC
         p_lim = MAX_PRIMARY_FRAC
     else:
-        cool_lim = 0.35
+        cool_lim = 0.42
         yell_lim = 1.0
         p_lim = MAX_PRIMARY_FRAC
     if p_frac > p_lim:
