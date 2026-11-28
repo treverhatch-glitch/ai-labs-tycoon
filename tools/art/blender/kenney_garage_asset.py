@@ -33,6 +33,28 @@ def _import_kenney_building(glb: str, part_name: str) -> bpy.types.Object:
     return cc0.merge_mesh_objects(meshes, part_name)
 
 
+def _parent_keep_world(child: bpy.types.Object, parent: bpy.types.Object) -> None:
+    mw = child.matrix_world.copy()
+    child.parent = parent
+    child.matrix_world = mw
+
+
+def _scale_extent_y(ob: bpy.types.Object, target_y: float) -> None:
+    """Scale uniformly so world Y extent matches target (CRT height on desk)."""
+    import cc0_common as cc0  # type: ignore
+
+    bpy.context.view_layer.update()
+    lo, hi = cc0.world_bbox(ob)
+    h = max(hi.y - lo.y, 1e-6)
+    factor = target_y / h
+    ob.scale = (ob.scale.x * factor, ob.scale.y * factor, ob.scale.z * factor)
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(scale=True)
+    bpy.context.view_layer.update()
+
+
 def _scale_height(ob: bpy.types.Object, target_h: float) -> None:
     import cc0_common as cc0  # type: ignore
 
@@ -172,7 +194,9 @@ def _import_polyhaven(asset_id: str) -> list[bpy.types.Object]:
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: poly import empty")
-    if asset_id == "garage-roll-door" or len(mesh_obs) > 12:
+    if asset_id == "garage-roll-door":
+        pass
+    elif len(mesh_obs) > 12:
         import cc0_common as cc0  # type: ignore
 
         mesh_obs = [cc0.merge_mesh_objects(mesh_obs, f"{asset_id}_mesh")]
@@ -229,27 +253,33 @@ def _center_on_part(upper: bpy.types.Object, lower: bpy.types.Object, *, dx: flo
 
 
 def build_desk_crt() -> list[bpy.types.Object]:
-    desk = _import_kenney_furniture("desk.glb", "Desktop")
-    _orient_kenney_y_up(desk)
-    _scale_height(desk, 0.76)
-    _center_xz(desk)
-    _snap_floor(desk)
-    screen = _import_kenney_furniture("computerScreen.glb", "CrtBezel")
-    _orient_kenney_y_up(screen)
-    _scale_height(screen, 0.52)
-    screen.location = desk.location.copy()
-    _center_on_part(screen, desk, dx=0.06, dz=-0.05)
-    _place_on_top(screen, desk, overlap=0.008)
-    # Face 3/4 hero (~45° yaw) so the CRT bezel reads in hero + side ortho.
-    screen.rotation_euler.y += math.radians(38.0)
-    screen.rotation_euler.x += math.radians(-6.0)
-    bpy.context.view_layer.update()
-    keyboard = _import_kenney_furniture("computerKeyboard.glb", "KeyboardGrey")
-    _scale_height(keyboard, 0.04)
-    keyboard.location = desk.location.copy()
-    _center_on_part(keyboard, desk, dx=-0.08, dz=0.10)
-    _place_on_top(keyboard, desk, overlap=0.008)
-    return [desk, screen, keyboard]
+    """Procedural Y-up desk + CRT (Kenney GLB pair was collapsing on multipart export)."""
+    import blender_common as bc  # type: ignore
+    import cc0_common as cc0  # type: ignore
+
+    parts: list[bpy.types.Object] = []
+
+    def cb(name: str, sx: float, sy: float, sz: float, x: float, y: float, z: float) -> bpy.types.Object:
+        ob = bc.add_cube(name, (sx, sy, sz), (x, y, z))
+        parts.append(ob)
+        return ob
+
+    top_y = 0.52
+    cb("Desktop", 0.72, 0.06, 0.46, 0.0, top_y - 0.03, 0.0)
+    cb("Drawer", 0.34, 0.16, 0.38, -0.28, top_y - 0.12, 0.0)
+    leg_h = 0.46
+    for i, (x, z) in enumerate(((-0.32, -0.20), (-0.32, 0.20), (0.32, -0.20), (0.32, 0.20))):
+        cb(f"Leg{i}", 0.08, leg_h, 0.08, x, leg_h * 0.5, z)
+    crt_z = -0.08
+    # Wide face ±X so Y-up hero (camera from +X) sees the CRT screen, not the thin edge.
+    cb("CrtBezel", 0.12, 0.32, 0.38, 0.04, top_y + 0.19, crt_z)
+    screen = cb("CrtScreen", 0.06, 0.26, 0.34, 0.04, top_y + 0.19, crt_z)
+    cc0.apply_kenney_restyle(screen, ["prop", "screen", "prop"])
+    bc.assign_emission(screen, (0.12, 0.72, 0.45, 1.0), 2.4)
+    cb("KeyboardGrey", 0.40, 0.025, 0.14, -0.08, top_y + 0.02, 0.06)
+    merged = cc0.merge_mesh_objects(parts, "DeskCrtAssembly")
+    bc.snap_parts_to_ground([merged])
+    return [merged]
 
 
 def build_coffee_drip() -> list[bpy.types.Object]:
@@ -297,49 +327,40 @@ def _upright_tallest_y(ob: bpy.types.Object) -> None:
         bpy.ops.object.transform_apply(rotation=True)
 
 
-def _roll_curtain_slats_y(frame_obs: list[bpy.types.Object]) -> list[bpy.types.Object]:
-    """Corrugated slats between Poly Haven frame posts (Y-up garage kit)."""
+def build_roll_door() -> list[bpy.types.Object]:
+    """Y-up procedural roll door (full-width slats + posts) for hero readability."""
     import blender_common as bc  # type: ignore
     import cc0_common as cc0  # type: ignore
 
-    if not frame_obs:
-        return frame_obs
-    bpy.context.view_layer.update()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for ob in frame_obs:
-        mn, mx = cc0.world_bbox(ob)
-        lo.x = min(lo.x, mn.x)
-        lo.y = min(lo.y, mn.y)
-        lo.z = min(lo.z, mn.z)
-        hi.x = max(hi.x, mx.x)
-        hi.y = max(hi.y, mx.y)
-        hi.z = max(hi.z, mx.z)
-    width = max(hi.x - lo.x, 1.1)
-    height = max(hi.y - lo.y, 1.4)
-    cz = (lo.z + hi.z) * 0.5
-    slat_depth = max(hi.z - lo.z, 0.055)
-    cx = (lo.x + hi.x) * 0.5
-    slat_count = 11
-    curtain_h = height * 0.66
-    slat_thick = curtain_h / slat_count
-    y0 = lo.y + height * 0.10
-    slats: list[bpy.types.Object] = []
+    door_w = 2.05
+    door_h = 2.12
+    hx = door_w * 0.5 + 0.07
+    parts: list[bpy.types.Object] = []
+    frame_l = bc.add_cube("FrameL", (0.20, door_h, 0.16), (-hx, door_h * 0.5, 0.0))
+    frame_r = bc.add_cube("FrameR", (0.20, door_h, 0.16), (hx, door_h * 0.5, 0.0))
+    header = bc.add_cube("Header", (door_w + 0.22, 0.16, 0.18), (0.0, door_h + 0.06, 0.0))
+    cc0.apply_palette_material(frame_l, "metal")
+    cc0.apply_palette_material(frame_r, "metal")
+    cc0.apply_palette_material(header, "metal")
+    parts.extend([frame_l, frame_r, header])
+    slat_count = 13
+    y0 = 0.06
+    y_top = door_h - 0.02
+    slat_h = (y_top - y0) / slat_count
     for i in range(slat_count):
-        yc = y0 + slat_thick * (i + 0.5)
-        slats.append(
-            bc.add_cube(
-                f"RollSlat{i}",
-                (width * 0.76, slat_thick * 0.9, slat_depth),
-                (cx, yc, cz),
-            )
+        yc = y0 + slat_h * (i + 0.5)
+        slat = bc.add_cube(
+            f"RollSlat{i}",
+            (door_w * 0.96, slat_h * 0.88, 0.11),
+            (0.0, yc, 0.03),
         )
-    return frame_obs + slats
+        cc0.apply_palette_material(slat, "roll_door")
+        parts.append(slat)
+    merged = cc0.merge_mesh_objects(parts, "RollDoorMesh")
+    import blender_common as bc_touch  # type: ignore
 
-
-def build_roll_door() -> list[bpy.types.Object]:
-    """Poly Haven frame + in-repo slats (reads as roll-up curtain in 3/4)."""
-    return _roll_curtain_slats_y(_import_polyhaven("garage-roll-door"))
+    bc_touch.snap_parts_to_ground([merged])
+    return [merged]
 
 
 def build_server_closet() -> list[bpy.types.Object]:

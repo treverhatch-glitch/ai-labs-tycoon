@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contact sheet: garage props assembled on studio grey (TPH-style framing)."""
+"""Contact sheet: garage props assembled on studio grey (room-kit-style framing)."""
 from __future__ import annotations
 
 import json
@@ -16,8 +16,8 @@ PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
 
 COLS = 4
-SPACING = 0.44
-PROP_SCALE = 1.0
+SPACING = 0.40
+PROP_SCALE = 0.92
 FLOOR_Y = 0.0
 
 
@@ -35,6 +35,10 @@ def import_prop_meshes(asset_id: str, loc: tuple[float, float, float]) -> list[b
 
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures" / asset_id
     for ob in imported:
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = ob
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         common.apply_preview_material(ob, tex_dir, asset_id)
         ob.scale = (PROP_SCALE, PROP_SCALE, PROP_SCALE)
     bpy.context.view_layer.update()
@@ -73,6 +77,32 @@ def main() -> None:
         if not scene_meshes:
             raise RuntimeError("no scene props imported")
 
+        lo = Vector((1e9, 1e9, 1e9))
+        hi = Vector((-1e9, -1e9, -1e9))
+        for ob in scene_meshes:
+            for corner in ob.bound_box:
+                w = ob.matrix_world @ Vector(corner)
+                lo.x, lo.y, lo.z = min(lo.x, w.x), min(lo.y, w.y), min(lo.z, w.z)
+                hi.x, hi.y, hi.z = max(hi.x, w.x), max(hi.y, w.y), max(hi.z, w.z)
+        ctr = (lo + hi) * 0.5
+        for ob in scene_meshes:
+            ob.location.x -= ctr.x
+            ob.location.z -= ctr.z
+        bpy.context.view_layer.update()
+        min_y = min((ob.matrix_world @ v.co).y for ob in scene_meshes for v in ob.data.vertices)
+        for ob in scene_meshes:
+            ob.location.y += FLOOR_Y - min_y
+        bpy.context.view_layer.update()
+        lo2 = Vector((1e9, 1e9, 1e9))
+        hi2 = Vector((-1e9, -1e9, -1e9))
+        for ob in scene_meshes:
+            for corner in ob.bound_box:
+                w = ob.matrix_world @ Vector(corner)
+                lo2.x, lo2.y, lo2.z = min(lo2.x, w.x), min(lo2.y, w.y), min(lo2.z, w.z)
+                hi2.x, hi2.y, hi2.z = max(hi2.x, w.x), max(hi2.y, w.y), max(hi2.z, w.z)
+        # Footprint span only (tall wall panels should not shrink the hero fill).
+        frame_span = max(hi2.x - lo2.x, hi2.z - lo2.z, 0.65) * 0.90
+
         def boost_ob_saturation(ob: bpy.types.Object) -> None:
             mat = ob.data.materials[0] if ob.data.materials else None
             if not mat or not mat.use_nodes:
@@ -109,9 +139,10 @@ def main() -> None:
             out,
             resolution=768,
             mode="scene",
-            fill=0.68,
-            margin=0.09,
+            fill=0.80,
+            margin=0.04,
             frame_objects=scene_meshes,
+            frame_span=frame_span,
             up_axis="Y",
             mask_path=mask,
             hero_yaw_deg=42.0,
@@ -124,8 +155,9 @@ def main() -> None:
                     "preview_kind": "garage",
                     "flat_backdrop": True,
                     "backdrop_rgb": [150, 150, 150],
-                    "framing_fill": 0.68,
-                    "framing_margin": 0.09,
+                    "framing_fill": 0.80,
+                    "framing_margin": 0.04,
+                    "frame_span": frame_span,
                     "up_axis": "Y",
                     "floor_plane": "horizontal_y",
                     "props": len(ids),

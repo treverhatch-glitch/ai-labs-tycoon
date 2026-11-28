@@ -624,7 +624,7 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
 
 
 GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
-    "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
+    "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.42, "margin": 0.13},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
     "garage-roll-door": {"yaw": 45.0, "pitch": 35.0, "fill": 0.56, "margin": 0.08},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
