@@ -197,7 +197,6 @@ def _import_polyhaven(asset_id: str) -> list[bpy.types.Object]:
     bc.snap_parts_to_ground(mesh_obs)
     if asset_id == "garage-roll-door":
         for ob in mesh_obs:
-            _upright_tallest_y(ob)
             _center_xz(ob)
             _snap_floor(ob)
     return mesh_obs
@@ -237,10 +236,14 @@ def build_desk_crt() -> list[bpy.types.Object]:
     _snap_floor(desk)
     screen = _import_kenney_furniture("computerScreen.glb", "CrtBezel")
     _orient_kenney_y_up(screen)
-    _scale_height(screen, 0.42)
+    _scale_height(screen, 0.52)
     screen.location = desk.location.copy()
-    _center_on_part(screen, desk, dx=0.08, dz=-0.04)
+    _center_on_part(screen, desk, dx=0.06, dz=-0.05)
     _place_on_top(screen, desk, overlap=0.008)
+    # Face 3/4 hero (~45° yaw) so the CRT bezel reads in hero + side ortho.
+    screen.rotation_euler.y += math.radians(38.0)
+    screen.rotation_euler.x += math.radians(-6.0)
+    bpy.context.view_layer.update()
     keyboard = _import_kenney_furniture("computerKeyboard.glb", "KeyboardGrey")
     _scale_height(keyboard, 0.04)
     keyboard.location = desk.location.copy()
@@ -294,9 +297,49 @@ def _upright_tallest_y(ob: bpy.types.Object) -> None:
         bpy.ops.object.transform_apply(rotation=True)
 
 
+def _roll_curtain_slats_y(frame_obs: list[bpy.types.Object]) -> list[bpy.types.Object]:
+    """Corrugated slats between Poly Haven frame posts (Y-up garage kit)."""
+    import blender_common as bc  # type: ignore
+    import cc0_common as cc0  # type: ignore
+
+    if not frame_obs:
+        return frame_obs
+    bpy.context.view_layer.update()
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for ob in frame_obs:
+        mn, mx = cc0.world_bbox(ob)
+        lo.x = min(lo.x, mn.x)
+        lo.y = min(lo.y, mn.y)
+        lo.z = min(lo.z, mn.z)
+        hi.x = max(hi.x, mx.x)
+        hi.y = max(hi.y, mx.y)
+        hi.z = max(hi.z, mx.z)
+    width = max(hi.x - lo.x, 1.1)
+    height = max(hi.y - lo.y, 1.4)
+    cz = (lo.z + hi.z) * 0.5
+    slat_depth = max(hi.z - lo.z, 0.055)
+    cx = (lo.x + hi.x) * 0.5
+    slat_count = 11
+    curtain_h = height * 0.66
+    slat_thick = curtain_h / slat_count
+    y0 = lo.y + height * 0.10
+    slats: list[bpy.types.Object] = []
+    for i in range(slat_count):
+        yc = y0 + slat_thick * (i + 0.5)
+        slats.append(
+            bc.add_cube(
+                f"RollSlat{i}",
+                (width * 0.76, slat_thick * 0.9, slat_depth),
+                (cx, yc, cz),
+            )
+        )
+    return frame_obs + slats
+
+
 def build_roll_door() -> list[bpy.types.Object]:
-    """Poly Haven rollershutter — Kenney door+header multipart kept failing 3 mm contact after export."""
-    return _import_polyhaven("garage-roll-door")
+    """Poly Haven frame + in-repo slats (reads as roll-up curtain in 3/4)."""
+    return _roll_curtain_slats_y(_import_polyhaven("garage-roll-door"))
 
 
 def build_server_closet() -> list[bpy.types.Object]:

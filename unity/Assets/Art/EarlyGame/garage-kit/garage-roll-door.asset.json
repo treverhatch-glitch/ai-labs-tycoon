@@ -8,9 +8,9 @@
   },
   "preview": "docs/art/previews/garage-roll-door.png",
   "license": "CC0-1.0 (Poly Haven rollershutter_door, restyled in-repo)",
-  "vertexCount": 1340,
-  "triangleCount": 3312,
-  "partCount": 1,
+  "vertexCount": 2396,
+  "triangleCount": 7536,
+  "partCount": 12,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-roll-door.py"
 }

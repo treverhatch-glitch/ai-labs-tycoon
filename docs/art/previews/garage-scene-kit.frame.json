@@ -6,8 +6,10 @@
     150,
     150
   ],
-  "framing_fill": 0.7,
+  "framing_fill": 0.68,
+  "framing_margin": 0.09,
   "up_axis": "Y",
   "floor_plane": "horizontal_y",
-  "props": 15
+  "props": 15,
+  "meshes": 40
 }

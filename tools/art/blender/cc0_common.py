@@ -939,7 +939,10 @@ def render_kit_preview(
     pitch = math.radians(pitch_deg)
     hero_tight = mode == "hero"
     min_half = 0.06 if hero_tight else 0.75
-    dist_scale = 1.0 if hero_tight else (0.88 if mode == "hero" else 0.62)
+    if mode == "scene" and up_axis == "Y":
+        dist_scale = 0.90
+    else:
+        dist_scale = 1.0 if hero_tight else (0.88 if mode == "hero" else 0.62)
     subject_span = span if hero_tight else room + 0.55
     dist = _camera_distance_for_fill(
         subject_span, lens, fill, margin, min_half=min_half
