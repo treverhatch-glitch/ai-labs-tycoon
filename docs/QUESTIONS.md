@@ -2414,6 +2414,8 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
 
+### Q551. Save schema 173 reserved for GD-6 garage (#107)? DECIDED: PR #103 era content renumbered **174–201** on `cursor/era-systems-x-af2f`; `MigrateTo173` stub until #107 merges; #103 merges after #107.
+
 ### Q506. Equipment tier simulation (ALT-527)? DECIDED (schema 174): `computeEquipment` tiers unlock by era and cash; `UpgradeComputeEquipment` upgrades stats and `visualEra` art ids (era 1 art only for now). Player only; rivals deferred.
 
 ### Q507. Era haircut on exit debt counted against sell price? DECIDED (schema 175): `exitDebtEraHaircut`; `ExitDebtEraHaircutted` on `SellLab`.
