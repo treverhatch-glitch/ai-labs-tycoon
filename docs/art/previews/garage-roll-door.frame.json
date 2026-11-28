@@ -10,5 +10,5 @@
   "framing_margin": 0.065,
   "up_axis": "Z",
   "floor_plane": "horizontal_z",
-  "renderer": "cycles_tpH"
+  "renderer": "cycles_glb_import"
 }

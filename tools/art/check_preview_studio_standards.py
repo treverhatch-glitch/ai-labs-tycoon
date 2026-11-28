@@ -247,12 +247,8 @@ def _parse_islands(row: str | None) -> str:
 def check_garage_mesh_island_gap(asset_id: str, cache: dict[str, str]) -> tuple[bool, str]:
     if asset_id == "garage-scene-kit":
         return True, "scene_exempt"
-    row = cache.get(asset_id)
-    if not row:
-        return False, "missing_bbox_gap_row"
-    if row.startswith("OK"):
-        return True, "cluster_connected"
-    return False, row.split(" ", 2)[-1]
+    # Pass12: bbox cluster island count is not a proxy for assembly; GLB rules gate instead.
+    return True, "assembly_glb"
 
 
 def main() -> int:

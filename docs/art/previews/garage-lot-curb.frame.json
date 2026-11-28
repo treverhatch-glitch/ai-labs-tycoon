@@ -6,9 +6,9 @@
     150,
     150
   ],
-  "framing_fill": 0.66,
-  "framing_margin": 0.06,
+  "framing_fill": 0.73,
+  "framing_margin": 0.05,
   "up_axis": "Z",
   "floor_plane": "horizontal_z",
-  "renderer": "cycles_tpH"
+  "renderer": "cycles_glb_import"
 }

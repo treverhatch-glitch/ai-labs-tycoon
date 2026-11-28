@@ -64,6 +64,7 @@ for ob in bpy.data.objects:
         "min_y": float(min(ys)),
         "max_y": float(max(ys)),
         "cx": float(sum(xs) / len(xs)),
+        "cy": float(sum(ys) / len(ys)),
         "cz": float(sum(zs) / len(zs)),
     }})
 print("PARTLAYOUT", rows)
@@ -121,6 +122,31 @@ def check_glb_grounded(asset_id: str) -> int:
         print(f"FAIL {asset_id} exploded_part {bad['name']} off_layout xz=({bad['cx']:.2f},{bad['cz']:.2f})")
         return 1
     print(f"OK {asset_id} grounded assembly_min_y={assembly_min_y:.3f} parts={len(parts)}")
+    rc = check_glb_assembly_rules(asset_id, parts)
+    return rc
+
+
+def check_glb_assembly_rules(asset_id: str, parts: list[dict]) -> int:
+    """Real assembly: distinct leg corners, not bogus cluster graph."""
+    legs = sorted([p for p in parts if "Leg" in p["name"] or p["name"].startswith("Leg")], key=lambda p: p["name"])
+    if asset_id == "garage-folding-chair" and len(legs) >= 4:
+        pts = [(l["cx"], l["cy"]) for l in legs[:4]]
+        for i in range(4):
+            for j in range(i + 1, 4):
+                d = ((pts[i][0] - pts[j][0]) ** 2 + (pts[i][1] - pts[j][1]) ** 2) ** 0.5
+                if d < 0.10:
+                    print(f"FAIL {asset_id} legs_overlap {legs[i]['name']} vs {legs[j]['name']} d={d:.3f}")
+                    return 1
+        print(f"OK {asset_id} four_distinct_leg_corners")
+    if asset_id == "garage-desk-crt" and len(legs) >= 4:
+        pts = [(l["cx"], l["cy"]) for l in legs[:4]]
+        for i in range(4):
+            for j in range(i + 1, 4):
+                d = ((pts[i][0] - pts[j][0]) ** 2 + (pts[i][1] - pts[j][1]) ** 2) ** 0.5
+                if d < 0.12:
+                    print(f"FAIL {asset_id} legs_overlap {legs[i]['name']} vs {legs[j]['name']} d={d:.3f}")
+                    return 1
+        print(f"OK {asset_id} desk_legs_under_top")
     return 0
 
 

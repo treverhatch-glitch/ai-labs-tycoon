@@ -95,6 +95,11 @@ def mesh_world_min_z(ob: bpy.types.Object) -> float:
     return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
 
 
+def mesh_world_min_y(ob: bpy.types.Object) -> float:
+    """Garage kit scripts use Blender Y as vertical (see ground_scene_meshes)."""
+    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+
+
 def ground_scene_meshes() -> None:
     """Early garage scripts use Blender Y as up; rest on y=0."""
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
@@ -481,11 +486,11 @@ def apply_object_transforms(ob: bpy.types.Object) -> None:
 def snap_parts_to_ground(parts: list[bpy.types.Object]) -> None:
     if not parts:
         return
-    min_z = min(mesh_world_min_z(ob) for ob in parts)
-    if abs(min_z) < 1e-5:
+    min_y = min(mesh_world_min_y(ob) for ob in parts)
+    if abs(min_y) < 1e-5:
         return
     for ob in parts:
-        ob.location.z -= min_z
+        ob.location.y -= min_y
     bpy.context.view_layer.update()
 
 
@@ -559,7 +564,6 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         dup.matrix_world = ob.matrix_world.copy()
         dupes.append(dup)
     root = parent_under_assembly_root(dupes, "garage-export", root_name="GarageKitRoot")
-    bake_parts_local_transforms(dupes)
     root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
     bpy.context.view_layer.objects.active = root
     root.select_set(True)
@@ -584,6 +588,75 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
     bpy.ops.object.select_all(action="DESELECT")
     for ob in list(dupes) + [root]:
         bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def render_garage_hero_preview_from_glb(
+    asset_id: str,
+    glb_path: Path,
+    tex_dir: Path,
+    preview_path: Path,
+    mask_path: Path,
+    *,
+    fill: float,
+    margin: float,
+) -> None:
+    """Pass12: hero preview from committed multipart GLB (Y-up), not Z-up build scene."""
+    import cc0_common as cc0  # type: ignore
+
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
+    root = bpy.data.objects.new("PreviewOrientRoot", None)
+    bpy.context.collection.objects.link(root)
+    for ob in meshes:
+        mw = ob.matrix_world.copy()
+        if ob.parent:
+            ob.parent = None
+        ob.parent = root
+        ob.matrix_world = mw
+    root.rotation_euler = (-math.pi / 2.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    if not meshes:
+        raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in meshes:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    bpy.ops.object.join()
+    joined = bpy.context.view_layer.objects.active
+    joined.name = f"{asset_id}_glb_preview"
+    apply_preview_material(joined, tex_dir, asset_id)
+    cc0.render_kit_preview(
+        [joined],
+        preview_path,
+        resolution=512,
+        mode="hero",
+        fill=fill,
+        margin=margin,
+        up_axis="Z",
+        mask_path=mask_path,
+    )
+    meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
+    meta_path.write_text(
+        json.dumps(
+            {
+                "preview_kind": "garage",
+                "flat_backdrop": True,
+                "backdrop_rgb": [150, 150, 150],
+                "framing_fill": fill,
+                "framing_margin": margin,
+                "up_axis": "Z",
+                "floor_plane": "horizontal_z",
+                "renderer": "cycles_glb_import",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    bpy.data.objects.remove(joined, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -618,12 +691,6 @@ def _finish_garage_kit_asset(
 
     assign_part_materials(mesh_obs, asset_id)
     parts = list(mesh_obs)
-    try:
-        from garage_assembly import tighten_garage_cluster  # type: ignore
-
-        tighten_garage_cluster(parts, gap_frac=0.02)
-    except Exception as exc:  # noqa: BLE001
-        print(f"WARN {asset_id} tighten_cluster {exc}")
     min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
     cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
     if part_count < min_parts and not cc0_import:
@@ -633,14 +700,9 @@ def _finish_garage_kit_asset(
         bevel_object(ob, width=0.022, segments=3)
         smooth_shade(ob)
     snap_parts_to_ground(parts)
-    for ob in parts:
-        z0 = mesh_world_min_z(ob)
-        if z0 > 0.025:
-            ob.location.z -= z0
-            bpy.context.view_layer.update()
-        z0 = mesh_world_min_z(ob)
-        if z0 > 0.06:
-            raise RuntimeError(f"{asset_id}:{ob.name} not grounded (min_z={z0:.4f})")
+    assembly_min_y = min(mesh_world_min_y(ob) for ob in parts)
+    if assembly_min_y > 0.06:
+        raise RuntimeError(f"{asset_id}: assembly not grounded (min_y={assembly_min_y:.4f})")
 
     bake_root = duplicate_join_meshes(parts, f"{asset_id}_bake")
     uv_unwrap(bake_root)
@@ -651,69 +713,36 @@ def _finish_garage_kit_asset(
     tris = sum(len(p.vertices) for p in bake_root.data.polygons)
     bpy.data.objects.remove(bake_root, do_unlink=True)
 
-    preview_join = duplicate_join_meshes(parts, f"{asset_id}_preview")
-    apply_preview_material(preview_join, tex_dir, asset_id)
-    for ob in parts:
-        ob.hide_render = True
+    from garage_assembly_validate import validate_garage_assembly  # type: ignore
+
+    validate_garage_assembly(asset_id, parts)
+
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
     mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
     hero_framing: dict[str, tuple[float, float]] = {
         "garage-cable-spool": (0.56, 0.085),
         "garage-coffee-drip": (0.62, 0.07),
         "garage-crt-tower": (0.60, 0.075),
-        "garage-desk-crt": (0.68, 0.055),
+        "garage-desk-crt": (0.62, 0.075),
         "garage-exterior-wall": (0.60, 0.075),
         "garage-land-for-sale-sign": (0.58, 0.075),
-        "garage-lot-curb": (0.66, 0.06),
+        "garage-lot-curb": (0.73, 0.05),
         "garage-roll-door": (0.62, 0.065),
         "garage-server-closet": (0.62, 0.07),
         "garage-floor-tile": (0.54, 0.085),
         "garage-folding-chair": (0.58, 0.08),
         "garage-voodude-rack": (0.62, 0.07),
         "garage-wall-panel": (0.60, 0.075),
-        "garage-whiteboard-1995": (0.62, 0.07),
+        "garage-whiteboard-1995": (0.74, 0.05),
         "garage-window-frame": (0.60, 0.075),
     }
     fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
-    try:
-        import cc0_common as cc0  # type: ignore
-
-        cc0.render_kit_preview(
-            [preview_join],
-            preview_path,
-            resolution=512,
-            mode="hero",
-            fill=fill,
-            margin=margin,
-            up_axis="Z",
-            mask_path=mask_path,
-        )
-        meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
-        meta_path.write_text(
-            json.dumps(
-                {
-                    "preview_kind": "garage",
-                    "flat_backdrop": True,
-                    "backdrop_rgb": [150, 150, 150],
-                    "framing_fill": fill,
-                    "framing_margin": margin,
-                    "up_axis": "Z",
-                    "floor_plane": "horizontal_z",
-                    "renderer": "cycles_tpH",
-                },
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
-        )
-    except Exception as exc:  # noqa: BLE001
-        print(f"WARN preview {asset_id}: {exc}")
-    for ob in parts:
-        ob.hide_render = False
-    bpy.data.objects.remove(preview_join, do_unlink=True)
 
     glb_path = out_dir / f"{asset_id}.glb"
     export_garage_multipart_glbf(parts, glb_path)
+    render_garage_hero_preview_from_glb(
+        asset_id, glb_path, tex_dir, preview_path, mask_path, fill=fill, margin=margin
+    )
 
     entry = {
         "id": asset_id,

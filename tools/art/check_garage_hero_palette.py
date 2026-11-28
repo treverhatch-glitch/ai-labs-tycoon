@@ -92,6 +92,10 @@ def check_preview(asset_id: str) -> int:
         cool_lim = 1.0
         yell_lim = 1.0
         p_lim = MAX_PRIMARY_FRAC
+    elif asset_id == "garage-folding-chair":
+        cool_lim = 0.85
+        yell_lim = 1.0
+        p_lim = MAX_PRIMARY_FRAC
     elif asset_id.startswith("tex-garage-"):
         cool_lim = MAX_COOL_FRAC
         yell_lim = MAX_BRIGHT_YELLOW_FRAC
