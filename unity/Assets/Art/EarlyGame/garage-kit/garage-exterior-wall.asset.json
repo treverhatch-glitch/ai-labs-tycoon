@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-exterior-wall/garage-exterior-wall_roughness.png"
   },
   "preview": "docs/art/previews/garage-exterior-wall.png",
-  "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 576,
-  "triangleCount": 2304,
-  "partCount": 6,
+  "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)",
+  "vertexCount": 136,
+  "triangleCount": 324,
+  "partCount": 2,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-exterior-wall.py"
 }

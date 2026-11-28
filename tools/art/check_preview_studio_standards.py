@@ -69,6 +69,16 @@ def check_fill(asset_id: str) -> tuple[bool, str, float]:
 
     alpha = analyze_alpha_mask(mask)
     extent = float(alpha.get("extent_coverage", 0.0))
+    if asset_id.startswith("garage-") and asset_id != "garage-scene-kit":
+        if extent < 0.28:
+            return False, f"frame_fill={extent:.3f}<0.28", extent
+        if extent > 0.96:
+            return False, f"frame_fill={extent:.3f}>0.96", extent
+        return True, f"frame_fill={extent:.3f}", extent
+    if asset_id == "garage-scene-kit":
+        if extent > 0.96:
+            return False, f"frame_fill={extent:.3f}>0.96", extent
+        return True, f"frame_fill={extent:.3f}", extent
     if extent < MIN_FRAME_FILL:
         return False, f"frame_fill={extent:.3f}<{MIN_FRAME_FILL}", extent
     if not asset_id.startswith(("icon-", "panel-", "hud-")) and extent > MAX_FRAME_FILL:
@@ -222,7 +232,7 @@ def check_hud_camera_ortho(asset_id: str) -> tuple[bool, str]:
 
 def _load_assembly_gap_cache() -> dict[str, str]:
     proc = subprocess.run(
-        [sys.executable, str(REPO / "tools/art/check_garage_part_bbox_gap.py")],
+        [sys.executable, str(REPO / "tools/art/check_garage_assembly_contact.py")],
         cwd=REPO,
         capture_output=True,
         text=True,
@@ -247,8 +257,13 @@ def _parse_islands(row: str | None) -> str:
 def check_garage_mesh_island_gap(asset_id: str, cache: dict[str, str]) -> tuple[bool, str]:
     if asset_id == "garage-scene-kit":
         return True, "scene_exempt"
-    # Pass12: bbox cluster island count is not a proxy for assembly; GLB rules gate instead.
-    return True, "assembly_glb"
+    row = cache.get(asset_id)
+    if not row:
+        return False, "missing_contact_gate"
+    if row.startswith("OK garage-"):
+        islands = _parse_islands(row)
+        return True, f"contact_ok islands={islands}"
+    return False, row.split("FAIL ", 1)[-1] if "FAIL" in row else "contact_fail"
 
 
 def main() -> int:

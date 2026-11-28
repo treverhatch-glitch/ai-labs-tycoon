@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
-# Quality pass packet 1: rebake + studio previews for 15 garage props.
+# Quality pass packet 1: Kenney CC0 garage heroes + cable-spool procedural + gates.
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
+export GARAGE_KENNEY_IMPORT=1
+export GARAGE_CC0_IMPORT=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
-mapfile -t SCRIPTS < <(find tools/art/blender -maxdepth 1 -name 'garage-*.py' ! -name 'garage-scene-preview.py' ! -name 'garage-interior-room-kit.py' | sort)
-for script in "${SCRIPTS[@]}"; do
-  echo "=== $script ==="
-  "$BLENDER" -b --python-exit-code 1 --python "$script" || { echo "FAIL $script" >&2; exit 1; }
-done
+
+python3 tools/art/cc0/fetch_polyhaven_garage.py
+
+echo "=== kenney garage heroes (14 props) ==="
+"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/kenney_garage_asset.py -- ALL
+
+echo "=== garage-cable-spool (procedural, KEEP) ==="
+"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/garage-cable-spool.py
+
 python3 tools/art/blender/merge_blender_manifests.py
 for tex in tools/art/blender/tex-garage-trim-orange.py tools/art/blender/tex-garage-wall-beige.py; do
   echo "=== $tex ==="
@@ -21,7 +27,9 @@ echo "=== compose HUD previews (SVG) ==="
 python3 tools/art/compose_hud_previews.py
 echo "=== tex-hud-paper-warm ==="
 "$BLENDER" -b --python-exit-code 1 --python tools/art/blender/tex-hud-paper-warm.py
+python3 tools/art/generate_wisp_mascot.py
 python3 tools/art/check_garage_quality_previews.py
+python3 tools/art/check_garage_assembly_contact.py
 python3 tools/art/check_garage_preview_assembly.py
 python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_garage_asset_complexity.py

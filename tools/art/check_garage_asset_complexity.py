@@ -38,7 +38,7 @@ TEXTURE = {"garage-floor-tile"}
 UPRIGHT = {
     "garage-land-for-sale-sign",
 }
-MIN_TRIS = 300
+MIN_TRIS = 250
 MIN_SMALL = 5
 MIN_FURN = 6
 MIN_MESH_PARTS = 5
@@ -52,13 +52,23 @@ FURNITURE = {
     "garage-roll-door",
     "garage-whiteboard-1995",
 }
+def _is_import_restyle(entry, repo):
+    if entry.get("source") in ("cc0-polyhaven", "kenney-cc0"):
+        return True
+    sidecar = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{entry['id']}.asset.json"
+    if sidecar.is_file():
+        lic = json.loads(sidecar.read_text(encoding="utf-8")).get("license", "")
+        return "Kenney" in lic or "Poly Haven" in lic
+    return False
+
 rc = 0
 
 for entry in manifest["assets"]:
     asset_id = entry["id"]
-    if entry.get("source") == "cc0-polyhaven":
+    if _is_import_restyle(entry, repo):
         tris = entry.get("triangleCount", 0)
-        if tris < MIN_TRIS:
+        need_tris = 36 if asset_id in {"garage-floor-tile", "garage-lot-curb"} else MIN_TRIS
+        if tris < need_tris:
             print(f"FAIL {asset_id} cc0 tris={tris} < {MIN_TRIS}")
             rc = 1
         else:

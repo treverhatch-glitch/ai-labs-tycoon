@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
   },
   "preview": "docs/art/previews/garage-land-for-sale-sign.png",
-  "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 480,
-  "triangleCount": 1920,
-  "partCount": 5,
+  "license": "CC0-1.0 (Kenney Furniture Kit: sideTable+cardboardBoxClosed; documented)",
+  "vertexCount": 286,
+  "triangleCount": 590,
+  "partCount": 2,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-land-for-sale-sign.py"
 }

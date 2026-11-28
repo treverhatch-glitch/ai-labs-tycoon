@@ -140,10 +140,21 @@ def main() -> int:
         return 1
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    kit = REPO / "unity/Assets/Art/EarlyGame/garage-kit"
+
+    def _import_restyle(entry: dict) -> bool:
+        if entry.get("source") in ("cc0-polyhaven", "kenney-cc0"):
+            return True
+        sidecar = kit / f"{entry['id']}.asset.json"
+        if sidecar.is_file():
+            lic = json.loads(sidecar.read_text(encoding="utf-8")).get("license", "")
+            return "Kenney" in lic or "Poly Haven" in lic
+        return False
+
     rc = 0
     for entry in manifest["assets"]:
         asset_id = entry["id"]
-        if entry.get("source") == "cc0-polyhaven":
+        if _import_restyle(entry):
             fail_h, clusters = check_albedo(asset_id)
             if fail_h:
                 print(f"FAIL {asset_id} hue_clusters={clusters} (max {MAX_HUE_CLUSTERS})")

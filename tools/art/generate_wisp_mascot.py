@@ -15,6 +15,7 @@ STREAM = REPO_ROOT / "unity/Assets/StreamingAssets/EarlyGame/wisp-moods"
 FRAME = 128
 FRAMES = 4
 SHEET_W = FRAME * FRAMES
+PREVIEW_CORNER_RGB = (150, 150, 150)
 
 
 MOODS = {
@@ -90,7 +91,14 @@ def render_sheet(mood_id: str, core: tuple[int, int, int], glow: tuple[int, int,
         shutil.copy2(single, STREAM / single.name)
         preview_dir = REPO_ROOT / "docs/art/previews"
         preview_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(single, preview_dir / f"{mood_id}.png")
+
+        def preview_pix(sx: int, sy: int, frame_i: int = fi) -> tuple[int, int, int, int]:
+            r, g, b, a = frame_pixel(frame_i, sx, sy)
+            if a == 0:
+                return PREVIEW_CORNER_RGB[0], PREVIEW_CORNER_RGB[1], PREVIEW_CORNER_RGB[2], 255
+            return r, g, b, a
+
+        write_rgba(preview_dir / f"{mood_id}.png", FRAME, FRAME, preview_pix)
 
 
 def main() -> None:

@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_roughness.png"
   },
   "preview": "docs/art/previews/garage-lot-curb.png",
-  "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 2112,
-  "triangleCount": 8448,
-  "partCount": 22,
+  "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)",
+  "vertexCount": 36,
+  "triangleCount": 60,
+  "partCount": 1,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-lot-curb.py"
 }

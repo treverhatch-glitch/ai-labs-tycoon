@@ -9,6 +9,10 @@ from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
+    import os
+
+    for key in ("GARAGE_KENNEY_IMPORT", "GARAGE_CC0_IMPORT"):
+        os.environ.pop(key, None)
     BUILDERS["garage-cable-spool"]()
     entry = bc.finish_asset("garage-cable-spool", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris", "parts")

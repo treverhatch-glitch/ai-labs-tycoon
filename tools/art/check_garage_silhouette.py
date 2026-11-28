@@ -70,7 +70,11 @@ for entry in manifest["assets"]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    cc0 = entry.get("source") == "cc0-polyhaven"
+    sidecar = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{asset_id}.asset.json"
+    lic = ""
+    if sidecar.is_file():
+        lic = json.loads(sidecar.read_text(encoding="utf-8")).get("license", "")
+    cc0 = entry.get("source") in ("cc0-polyhaven", "kenney-cc0") or "Kenney" in lic or "Poly Haven" in lic
     if not cc0 and len(meshes) < MIN_PARTS:
         print(f"FAIL {asset_id} mesh_parts={len(meshes)} (need >={MIN_PARTS})")
         rc = 1

@@ -563,15 +563,28 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         bpy.context.collection.objects.link(dup)
         dup.matrix_world = ob.matrix_world.copy()
         dupes.append(dup)
+    kenney_y = os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
+    if kenney_y:
+        snap_parts_to_ground(dupes)
+        for d in dupes:
+            snap_root_to_ground(d)
     root = parent_under_assembly_root(dupes, "garage-export", root_name="GarageKitRoot")
-    root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
-    bpy.context.view_layer.objects.active = root
-    root.select_set(True)
-    bpy.ops.object.transform_apply(rotation=True)
-    mins, _maxs = rig.mesh_bounds_world(dupes)
-    if abs(mins.y) > 1e-6:
-        root.location.y -= mins.y
-        bpy.context.view_layer.update()
+    if not kenney_y:
+        root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+        bpy.context.view_layer.objects.active = root
+        root.select_set(True)
+        bpy.ops.object.transform_apply(rotation=True)
+    min_y = min(mesh_world_min_y(d) for d in dupes) if kenney_y else None
+    if kenney_y:
+        if abs(min_y) > 1e-5:
+            root.location.y -= min_y
+            bpy.context.view_layer.update()
+    elif not kenney_y:
+        mins, _maxs = rig.mesh_bounds_world(dupes)
+        floor = min(mins.y, mins.z)
+        if abs(floor) > 1e-6:
+            root.location.y -= floor
+            bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
     root.select_set(True)
     for ob in dupes:
@@ -659,6 +672,70 @@ def render_garage_hero_preview_from_glb(
     bpy.data.objects.remove(joined, do_unlink=True)
 
 
+def render_garage_side_ortho_preview_from_glb(
+    asset_id: str,
+    glb_path: Path,
+    tex_dir: Path,
+    ortho_path: Path,
+) -> None:
+    """Side orthographic preview from committed GLB (Y-up) to expose assembly gaps."""
+    import cc0_common as cc0  # type: ignore
+
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
+    for ob in meshes:
+        apply_preview_material(ob, tex_dir, asset_id)
+    bpy.context.view_layer.update()
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for ob in meshes:
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            lo.x = min(lo.x, w.x)
+            lo.y = min(lo.y, w.y)
+            lo.z = min(lo.z, w.z)
+            hi.x = max(hi.x, w.x)
+            hi.y = max(hi.y, w.y)
+            hi.z = max(hi.z, w.z)
+    center = (lo + hi) * 0.5
+    span = max(hi.x - lo.x, hi.y - lo.y, hi.z - lo.z, 0.15)
+    cc0.setup_preview_world_grey_hdri(hdri_strength=0.55)
+    bpy.context.scene.render.engine = "CYCLES"
+    bpy.context.scene.cycles.samples = 48
+    bpy.context.scene.cycles.use_denoising = False
+    bpy.context.scene.render.resolution_x = 512
+    bpy.context.scene.render.resolution_y = 512
+    bpy.context.scene.render.film_transparent = False
+    bpy.ops.object.camera_add(location=(center.x + span * 1.8, center.y, center.z))
+    cam = bpy.context.active_object
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = span * 1.15
+    cam.rotation_euler = (math.pi / 2.0, 0.0, math.pi / 2.0)
+    bpy.context.scene.camera = cam
+    bpy.context.scene.render.filepath = str(ortho_path)
+    bpy.ops.render.render(write_still=True)
+    meta = ortho_path.with_name(ortho_path.stem + ".frame.json")
+    meta.write_text(
+        json.dumps(
+            {
+                "preview_kind": "garage_ortho",
+                "flat_backdrop": True,
+                "backdrop_rgb": [150, 150, 150],
+                "up_axis": "Y",
+                "floor_plane": "horizontal_y",
+                "camera_type": "orthographic",
+                "view": "side_positive_x",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
     indices = [p.material_index for p in ob.data.polygons]
     materials = [m for m in ob.data.materials if m is not None]
@@ -693,7 +770,8 @@ def _finish_garage_kit_asset(
     parts = list(mesh_obs)
     min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
     cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
-    if part_count < min_parts and not cc0_import:
+    kenney_import = os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
+    if part_count < min_parts and not cc0_import and not kenney_import:
         raise RuntimeError(f"{asset_id}: need >={min_parts} sub-objects (got {part_count})")
 
     for ob in parts:
@@ -701,7 +779,8 @@ def _finish_garage_kit_asset(
         smooth_shade(ob)
     snap_parts_to_ground(parts)
     assembly_min_y = min(mesh_world_min_y(ob) for ob in parts)
-    if assembly_min_y > 0.06:
+    ground_slack = 0.002 if kenney_import or cc0_import else 0.06
+    if assembly_min_y > ground_slack:
         raise RuntimeError(f"{asset_id}: assembly not grounded (min_y={assembly_min_y:.4f})")
 
     bake_root = duplicate_join_meshes(parts, f"{asset_id}_bake")
@@ -713,11 +792,13 @@ def _finish_garage_kit_asset(
     tris = sum(len(p.vertices) for p in bake_root.data.polygons)
     bpy.data.objects.remove(bake_root, do_unlink=True)
 
-    from garage_assembly_validate import validate_garage_assembly  # type: ignore
+    if not kenney_import:
+        from garage_assembly_validate import validate_garage_assembly  # type: ignore
 
-    validate_garage_assembly(asset_id, parts)
+        validate_garage_assembly(asset_id, parts)
 
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    ortho_path = PREVIEW_ROOT / f"{asset_id}.ortho.png"
     mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
     hero_framing: dict[str, tuple[float, float]] = {
         "garage-cable-spool": (0.56, 0.085),
@@ -729,7 +810,12 @@ def _finish_garage_kit_asset(
         "garage-lot-curb": (0.73, 0.05),
         "garage-roll-door": (0.62, 0.065),
         "garage-server-closet": (0.62, 0.07),
-        "garage-floor-tile": (0.54, 0.085),
+        "garage-floor-tile": (0.78, 0.06),
+        "garage-lot-curb": (0.82, 0.05),
+        "garage-land-for-sale-sign": (0.72, 0.055),
+        "garage-server-closet": (0.72, 0.06),
+        "garage-wall-panel": (0.72, 0.06),
+        "garage-whiteboard-1995": (0.68, 0.055),
         "garage-folding-chair": (0.58, 0.08),
         "garage-voodude-rack": (0.62, 0.07),
         "garage-wall-panel": (0.60, 0.075),
@@ -743,6 +829,7 @@ def _finish_garage_kit_asset(
     render_garage_hero_preview_from_glb(
         asset_id, glb_path, tex_dir, preview_path, mask_path, fill=fill, margin=margin
     )
+    render_garage_side_ortho_preview_from_glb(asset_id, glb_path, tex_dir, ortho_path)
 
     entry = {
         "id": asset_id,

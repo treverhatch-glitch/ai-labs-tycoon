@@ -49,9 +49,19 @@ def mesh_island_count(mesh) -> int:
     return islands
 
 
+def _is_import_restyle(entry, repo: Path) -> bool:
+    if entry.get("source") in ("cc0-polyhaven", "kenney-cc0"):
+        return True
+    sidecar = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{entry['id']}.asset.json"
+    if sidecar.is_file():
+        lic = json.loads(sidecar.read_text(encoding="utf-8")).get("license", "")
+        return "Kenney" in lic or "Poly Haven" in lic
+    return False
+
+
 for entry in manifest["assets"]:
     asset_id = entry["id"]
-    if entry.get("source") == "cc0-polyhaven":
+    if _is_import_restyle(entry, repo):
         glb = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{asset_id}.glb"
         if not glb.exists():
             print(f"FAIL missing glb {asset_id}")

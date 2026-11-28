@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-window-frame/garage-window-frame_roughness.png"
   },
   "preview": "docs/art/previews/garage-window-frame.png",
-  "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 672,
-  "triangleCount": 2688,
-  "partCount": 7,
+  "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)",
+  "vertexCount": 116,
+  "triangleCount": 294,
+  "partCount": 1,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-window-frame.py"
 }

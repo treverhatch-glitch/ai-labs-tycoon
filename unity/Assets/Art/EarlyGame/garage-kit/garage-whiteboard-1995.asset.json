@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_roughness.png"
   },
   "preview": "docs/art/previews/garage-whiteboard-1995.png",
-  "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 1344,
-  "triangleCount": 5376,
-  "partCount": 14,
+  "license": "CC0-1.0 (Poly Haven standing_chalkboard_01, restyled in-repo)",
+  "vertexCount": 3836,
+  "triangleCount": 11724,
+  "partCount": 1,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-whiteboard-1995.py"
 }

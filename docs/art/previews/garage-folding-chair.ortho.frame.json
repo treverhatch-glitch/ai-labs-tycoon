@@ -1,0 +1,13 @@
+{
+  "preview_kind": "garage_ortho",
+  "flat_backdrop": true,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "up_axis": "Y",
+  "floor_plane": "horizontal_y",
+  "camera_type": "orthographic",
+  "view": "side_positive_x"
+}
