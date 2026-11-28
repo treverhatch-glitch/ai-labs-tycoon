@@ -8,9 +8,9 @@
   },
   "preview": "docs/art/previews/garage-crt-tower.png",
   "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 768,
-  "triangleCount": 3072,
-  "partCount": 8,
+  "vertexCount": 672,
+  "triangleCount": 2688,
+  "partCount": 7,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-crt-tower.py"
 }

@@ -122,12 +122,31 @@ def tighten_garage_cluster(parts: list[bpy.types.Object], *, gap_frac: float = 0
     absorb_to_main_cluster(mesh_parts, max_gap=0.02)
 
 
-def parent_under_assembly_root(parts: list[bpy.types.Object], asset_id: str) -> bpy.types.Object:
-    root = bpy.data.objects.new(f"{asset_id}_AsmRoot", None)
+def parent_under_assembly_root(
+    parts: list[bpy.types.Object], asset_id: str, *, root_name: str = "GarageKitRoot"
+) -> bpy.types.Object:
+    mesh_parts = [p for p in parts if p.type == "MESH" and p.name != "ConnectSpine"]
+    root = bpy.data.objects.new(root_name, None)
     bpy.context.collection.objects.link(root)
-    frozen = [(ob, ob.matrix_world.copy()) for ob in parts if ob.type == "MESH"]
+    root.matrix_world.identity()
+    frozen = [(ob, ob.matrix_world.copy()) for ob in mesh_parts]
+    for ob in mesh_parts:
+        if ob.parent:
+            ob.parent = None
+    bpy.context.view_layer.update()
     for ob, mw in frozen:
         ob.parent = root
         ob.matrix_world = mw
     bpy.context.view_layer.update()
     return root
+
+
+def bake_parts_local_transforms(parts: list[bpy.types.Object]) -> None:
+    """Bake each part's loc/rot/scale into mesh data (pass10 float fix)."""
+    mesh_parts = [p for p in parts if p.type == "MESH" and p.name != "ConnectSpine"]
+    for ob in mesh_parts:
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = ob
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.view_layer.update()

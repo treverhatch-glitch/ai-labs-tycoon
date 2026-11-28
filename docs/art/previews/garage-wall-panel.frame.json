@@ -6,8 +6,8 @@
     150,
     150
   ],
-  "framing_fill": 0.68,
-  "framing_margin": 0.055,
+  "framing_fill": 0.6,
+  "framing_margin": 0.075,
   "up_axis": "Z",
   "floor_plane": "horizontal_z",
   "renderer": "cycles_tpH"

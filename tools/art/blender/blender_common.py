@@ -544,58 +544,32 @@ def duplicate_garage_preview_hierarchy(parts: list[bpy.types.Object], asset_id: 
 
 
 def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
-    """Export multipart garage kit with part layout preserved (Z-up build → glTF Y-up)."""
+    """Export hierarchy under GarageKitRoot (transforms pre-applied on parts)."""
     import blender_preview_rig as rig  # type: ignore
 
-    export_parts = [ob for ob in parts if ob.name != "ConnectSpine"]
+    export_parts = [ob for ob in parts if ob.type == "MESH" and ob.name != "ConnectSpine"]
     if not export_parts:
         raise RuntimeError("export_garage_multipart_glbf: no mesh parts")
-    dupes: list[bpy.types.Object] = []
-    for ob in export_parts:
-        dup = ob.copy()
-        dup.data = ob.data.copy()
-        bpy.context.collection.objects.link(dup)
-        dup.matrix_world = ob.matrix_world.copy()
-        dupes.append(dup)
-    mins, _maxs = rig.mesh_bounds_world(dupes)
-    shift = mins.z
-    if abs(shift) > 1e-6:
-        for dup in dupes:
-            dup.location.z -= shift
-        bpy.context.view_layer.update()
-    root = bpy.data.objects.new("GarageExportRoot", None)
-    bpy.context.collection.objects.link(root)
-    frozen: list[tuple[bpy.types.Object, Matrix]] = []
-    for dup in dupes:
-        frozen.append((dup, dup.matrix_world.copy()))
-    for dup, mw in frozen:
-        dup.parent = root
-        dup.matrix_world = mw
+    root = export_parts[0].parent
+    if root is None or root.type != "EMPTY":
+        from garage_assembly import parent_under_assembly_root  # type: ignore
+
+        root = parent_under_assembly_root(export_parts, "garage-export", root_name="GarageKitRoot")
+    else:
+        root.name = "GarageKitRoot"
     root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
-    bpy.context.view_layer.update()
-    baked = [(dup, dup.matrix_world.copy()) for dup in dupes]
-    for dup, mw in baked:
-        dup.parent = None
-        dup.matrix_world = mw
-    bpy.data.objects.remove(root, do_unlink=True)
-    bpy.context.view_layer.update()
-    export_root = bpy.data.objects.new("GarageKitRoot", None)
-    bpy.context.collection.objects.link(export_root)
-    for dup in dupes:
-        mw = dup.matrix_world.copy()
-        dup.parent = export_root
-        dup.matrix_world = mw
-    bpy.context.view_layer.update()
-    mins, _maxs = rig.mesh_bounds_world(dupes)
+    bpy.context.view_layer.objects.active = root
+    root.select_set(True)
+    bpy.ops.object.transform_apply(rotation=True)
+    mins, _maxs = rig.mesh_bounds_world(export_parts)
     if abs(mins.y) > 1e-6:
-        for dup in dupes:
-            dup.location.y -= mins.y
+        root.location.y -= mins.y
         bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
-    export_root.select_set(True)
-    for dup in dupes:
-        dup.select_set(True)
-    bpy.context.view_layer.objects.active = export_root
+    root.select_set(True)
+    for ob in export_parts:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = root
     bpy.ops.export_scene.gltf(
         filepath=str(glb_path),
         use_selection=True,
@@ -604,7 +578,6 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         export_image_format="AUTO",
         export_yup=True,
     )
-    bpy.data.objects.remove(export_root, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -671,6 +644,13 @@ def _finish_garage_kit_asset(
     verts = len(bake_root.data.vertices)
     tris = sum(len(p.vertices) for p in bake_root.data.polygons)
     bpy.data.objects.remove(bake_root, do_unlink=True)
+    try:
+        from garage_assembly import bake_parts_local_transforms, parent_under_assembly_root  # type: ignore
+
+        parent_under_assembly_root(parts, asset_id, root_name="GarageKitRoot")
+        bake_parts_local_transforms(parts)
+    except Exception as exc:  # noqa: BLE001
+        print(f"WARN {asset_id} export_hierarchy {exc}")
     glb_path = out_dir / f"{asset_id}.glb"
     export_garage_multipart_glbf(parts, glb_path)
 
@@ -681,9 +661,9 @@ def _finish_garage_kit_asset(
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
     mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
     hero_framing: dict[str, tuple[float, float]] = {
-        "garage-cable-spool": (0.54, 0.08),
-        "garage-coffee-drip": (0.66, 0.06),
-        "garage-crt-tower": (0.64, 0.065),
+        "garage-cable-spool": (0.56, 0.085),
+        "garage-coffee-drip": (0.62, 0.07),
+        "garage-crt-tower": (0.60, 0.075),
         "garage-desk-crt": (0.68, 0.055),
         "garage-exterior-wall": (0.60, 0.075),
         "garage-land-for-sale-sign": (0.58, 0.075),
@@ -693,9 +673,9 @@ def _finish_garage_kit_asset(
         "garage-floor-tile": (0.54, 0.085),
         "garage-folding-chair": (0.58, 0.08),
         "garage-voodude-rack": (0.62, 0.07),
-        "garage-wall-panel": (0.68, 0.055),
-        "garage-whiteboard-1995": (0.68, 0.055),
-        "garage-window-frame": (0.64, 0.065),
+        "garage-wall-panel": (0.60, 0.075),
+        "garage-whiteboard-1995": (0.62, 0.07),
+        "garage-window-frame": (0.60, 0.075),
     }
     fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
     try:

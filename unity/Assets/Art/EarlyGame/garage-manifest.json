@@ -44,9 +44,9 @@
       },
       "preview": "docs/art/previews/garage-crt-tower.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 768,
-      "triangleCount": 3072,
-      "partCount": 8,
+      "vertexCount": 672,
+      "triangleCount": 2688,
+      "partCount": 7,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-crt-tower.py"
     },
@@ -63,8 +63,8 @@
       "vertexCount": 1056,
       "triangleCount": 4224,
       "partCount": 11,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-desk-crt.py"
+      "generator": "tools/art/blender/garage-desk-crt.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-exterior-wall",
@@ -79,8 +79,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-exterior-wall.py"
+      "generator": "tools/art/blender/garage-exterior-wall.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-floor-tile",
@@ -95,8 +95,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-floor-tile.py"
+      "generator": "tools/art/blender/garage-floor-tile.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-folding-chair",
@@ -111,8 +111,8 @@
       "vertexCount": 768,
       "triangleCount": 3072,
       "partCount": 8,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-folding-chair.py"
+      "generator": "tools/art/blender/garage-folding-chair.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-land-for-sale-sign",
@@ -124,11 +124,11 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 576,
-      "triangleCount": 2304,
-      "partCount": 6,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-land-for-sale-sign.py"
+      "vertexCount": 480,
+      "triangleCount": 1920,
+      "partCount": 5,
+      "generator": "tools/art/blender/garage-land-for-sale-sign.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-lot-curb",
@@ -143,8 +143,8 @@
       "vertexCount": 2112,
       "triangleCount": 8448,
       "partCount": 22,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-lot-curb.py"
+      "generator": "tools/art/blender/garage-lot-curb.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-roll-door",
@@ -159,8 +159,8 @@
       "vertexCount": 1440,
       "triangleCount": 5760,
       "partCount": 15,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-roll-door.py"
+      "generator": "tools/art/blender/garage-roll-door.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-server-closet",
@@ -175,8 +175,8 @@
       "vertexCount": 864,
       "triangleCount": 3456,
       "partCount": 9,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-server-closet.py"
+      "generator": "tools/art/blender/garage-server-closet.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-voodude-rack",
@@ -191,8 +191,8 @@
       "vertexCount": 1152,
       "triangleCount": 4608,
       "partCount": 12,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-voodude-rack.py"
+      "generator": "tools/art/blender/garage-voodude-rack.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-wall-panel",

@@ -52,13 +52,13 @@ def compose_one(asset_id: str) -> None:
         raise FileNotFoundError(svg)
     if asset_id == "hud-topbar-beige":
         fg = rasterize_svg(svg, SIZE)
-        bar_h = max(72, int(SIZE * 72 / 256))
+        bar_h = int(SIZE * 0.24)
         fg = fg.resize((SIZE, bar_h), Image.Resampling.LANCZOS)
     else:
         target = int(SIZE * FILL)
         fg = rasterize_svg(svg, target)
     ox = (SIZE - fg.width) // 2
-    oy = (SIZE - fg.height) // 2
+    oy = (SIZE // 8) if asset_id == "hud-topbar-beige" else (SIZE - fg.height) // 2
     rgb = Image.new("RGB", (SIZE, SIZE), STUDIO_RGB)
     rgb.paste(fg.convert("RGB"), (ox, oy), fg.split()[3])
     preview = PREVIEW / f"{asset_id}.png"
