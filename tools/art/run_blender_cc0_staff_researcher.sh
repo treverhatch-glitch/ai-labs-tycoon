@@ -42,6 +42,18 @@ out=$("$BLENDER" -b --python "$script" 2>&1) || { echo "$out"; echo "FAIL $scrip
 echo "$out"
 echo "$out" | grep -qE '^OK staff-researcher-idle [0-9]+ ' || { echo "FAIL missing bake OK line: $script" >&2; exit 1; }
 
+echo "=== tools/art/blender/render_staff_researcher_idle_from_turnaround.py ==="
+idle_out=$("$BLENDER" -b --python tools/art/blender/render_staff_researcher_idle_from_turnaround.py 2>&1) || {
+  echo "$idle_out"
+  echo "FAIL idle hero from turnaround" >&2
+  exit 1
+}
+echo "$idle_out"
+echo "$idle_out" | grep -q '^OK idle_hero_from_turnaround' || {
+  echo "FAIL idle hero from turnaround OK line" >&2
+  exit 1
+}
+
 set +e
 out=$("$BLENDER" -b --python tools/art/blender/check_staff_gltf_blender.py -- "$ROOT" 2>&1)
 set -e
