@@ -1,7 +1,7 @@
 <!-- Generated from Rules/Data/default-config.json (rooms, roomPerks, staffPeople). The data file is the source of truth: edit it, then update this page. -->
 # The workplace
 
-Morale and poaching from placeable desks, water, and coffee in the [rooms rework design](../design/rooms-rework.md) extend the comfort-room rules below after step 2; steps 1–2 still use whole-room comfort perks only.
+[GD-6](../design/rooms-rework.md) adds bathroom needs, draw-room overcrowding and desk seating; comfort perks below stay in force until those rules ship in data.
 
 Morale was a number nobody could move. Now the rooms a lab builds change it, and it changes research.
 

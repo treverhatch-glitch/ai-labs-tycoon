@@ -61,8 +61,8 @@ Status: **DECIDED** = taken and built, **OPEN** = needs a human before it can be
 ### Q9. Rooms with no mechanical role (whiteboard, press room, device workshop)? DECIDED: placeables + typed rooms (GD-6)
 
 - Options: (a) add them as decor; (b) leave them out until the room that does something exists; (c) whiteboard / device-workshop fiction as **placeable items** with room rating; press stays `press-room` / `auditorium` (Q145).
-- Recommendation and choice: **(c)** per [design/rooms-rework.md](design/rooms-rework.md) §8.2–8.3.
-- Why: players should see desks and amenities, not empty room types; press rooms already have mechanical perks; device and whiteboard names map to placeables and existing engineering / hardware rooms.
+- Recommendation and choice: **(c)** per [design/rooms-rework.md](design/rooms-rework.md) §5 (families, packages).
+- Why: players attach work through rooms and packages, not orphan decor rooms; press rooms already have mechanical perks (Q145); device workshop maps to Device family rooms.
 
 ### Q10. How should the autopilot and rivals grow across 40 years? DECIDED: wealth in first-era dollars, and stop growing when overstretched
 
