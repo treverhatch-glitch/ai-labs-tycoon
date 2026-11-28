@@ -2,6 +2,8 @@
      A test (ContentDocsTests) fails when an id from the data is missing here. All names are parody names. -->
 # Rooms, roles and lots
 
+The [rooms rework design](../design/rooms-rework.md) (GD-6) keeps these tables as source of truth while adding desks, placeable amenities, and (in later steps) per-model room assignments without new orphan room ids.
+
 ## Lots
 
 | Id | Name | Size | Price |

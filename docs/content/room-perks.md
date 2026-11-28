@@ -1,5 +1,7 @@
 # Room perks
 
+Per-model assignment perks from the [rooms rework design](../design/rooms-rework.md) will stack on top of these lab-wide tile perks once step 3 ships; until then only the table below applies.
+
 A room is built for what it seats or holds, and a few of the later rooms do one more thing. Each tile of the room adds a small share, up to a cap, so a big room helps more than a closet but never without limit. Pull the room down and the perk goes the same week. Nothing is saved: the perk is worked out from the rooms the lab has.
 
 | Perk | Room | Kind | Per tile | Cap | What it does |
