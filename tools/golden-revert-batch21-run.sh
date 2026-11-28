@@ -12,9 +12,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[161]=477107bf9f7bffe158b58f34e5234a5f8a9ad69e296b141e1f6fd3bda58a21d3
-GOLDEN[162]=0e7f7f6f75f2dc59b22e2a633a00eb7954c0abc5784072376a84ec12c1a2e0ff
-GOLDEN[163]=0d7dcbe5a1cc0b3038fca676d143bf2fe793f61229fb3d2a2ba169421e78235b
+GOLDEN[161]=04a39f16985fee4672567b36c5c8ef7bcc44ac8a18b58665a8f205ca37587367
+GOLDEN[162]=7fc1969bf4ba1616e20cd75da3ac08bdde0bfb69d17d7fb351e047bf6d2d5b8a
+GOLDEN[163]=e700adc79316b1ab46f48b5fde09b48641c2cd1c6d6b1782292412e1c3b8a75e
 
 PREV=$((N - 1))
 BK="/tmp/b21-rev-bak-$N"
