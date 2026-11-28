@@ -8,9 +8,9 @@
   },
   "preview": "docs/art/previews/garage-coffee-drip.png",
   "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 672,
-  "triangleCount": 2688,
-  "partCount": 7,
+  "vertexCount": 576,
+  "triangleCount": 2304,
+  "partCount": 6,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-coffee-drip.py"
 }

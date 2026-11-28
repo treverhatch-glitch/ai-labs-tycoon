@@ -50,21 +50,24 @@ def compose_one(asset_id: str) -> None:
     svg = SVG_DIR / f"{asset_id}.svg"
     if not svg.is_file():
         raise FileNotFoundError(svg)
-    target = int(SIZE * FILL)
-    fg = rasterize_svg(svg, target)
-    canvas = Image.new("RGBA", (SIZE, SIZE), STUDIO_RGB + (255,))
+    if asset_id == "hud-topbar-beige":
+        fg = rasterize_svg(svg, SIZE)
+        bar_h = max(72, int(SIZE * 72 / 256))
+        fg = fg.resize((SIZE, bar_h), Image.Resampling.LANCZOS)
+    else:
+        target = int(SIZE * FILL)
+        fg = rasterize_svg(svg, target)
     ox = (SIZE - fg.width) // 2
     oy = (SIZE - fg.height) // 2
-    canvas.alpha_composite(fg, (ox, oy))
-    rgb = canvas.convert("RGB")
+    rgb = Image.new("RGB", (SIZE, SIZE), STUDIO_RGB)
+    rgb.paste(fg.convert("RGB"), (ox, oy), fg.split()[3])
     preview = PREVIEW / f"{asset_id}.png"
     mask = PREVIEW / f"{asset_id}.mask.png"
     preview.parent.mkdir(parents=True, exist_ok=True)
     rgb.save(preview)
 
-    alpha = canvas.split()[3]
     mask_im = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    mask_im.putalpha(alpha)
+    mask_im.paste(fg, (ox, oy), fg)
     mask_im.save(mask)
 
     meta = preview.with_name(preview.stem + ".frame.json")

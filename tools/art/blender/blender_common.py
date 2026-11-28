@@ -682,15 +682,20 @@ def _finish_garage_kit_asset(
     mask_path = PREVIEW_ROOT / f"{asset_id}.mask.png"
     hero_framing: dict[str, tuple[float, float]] = {
         "garage-cable-spool": (0.54, 0.08),
-        "garage-exterior-wall": (0.54, 0.08),
-        "garage-land-for-sale-sign": (0.58, 0.07),
-        "garage-lot-curb": (0.60, 0.065),
-        "garage-roll-door": (0.58, 0.07),
-        "garage-server-closet": (0.54, 0.08),
+        "garage-coffee-drip": (0.66, 0.06),
+        "garage-crt-tower": (0.64, 0.065),
+        "garage-desk-crt": (0.68, 0.055),
+        "garage-exterior-wall": (0.60, 0.075),
+        "garage-land-for-sale-sign": (0.58, 0.075),
+        "garage-lot-curb": (0.66, 0.06),
+        "garage-roll-door": (0.62, 0.065),
+        "garage-server-closet": (0.62, 0.07),
         "garage-floor-tile": (0.54, 0.085),
-        "garage-folding-chair": (0.52, 0.09),
-        "garage-whiteboard-1995": (0.62, 0.065),
-        "garage-window-frame": (0.58, 0.07),
+        "garage-folding-chair": (0.58, 0.08),
+        "garage-voodude-rack": (0.62, 0.07),
+        "garage-wall-panel": (0.68, 0.055),
+        "garage-whiteboard-1995": (0.68, 0.055),
+        "garage-window-frame": (0.64, 0.065),
     }
     fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
     try:

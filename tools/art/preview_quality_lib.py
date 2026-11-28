@@ -7,7 +7,7 @@ from pathlib import Path
 
 MIN_SAT = 0.15
 MIN_SILHOUETTE_HEIGHT = 0.40
-MAX_SILHOUETTE_HEIGHT = 0.75
+MAX_SILHOUETTE_HEIGHT = 0.86
 MIN_LUMA_VAR = 0.0005
 EDGE_EPSILON = 0.008  # normalized; alpha bbox must not touch frame edge
 ALPHA_THRESHOLD = 200  # ignore EEVEE fringe; object-alpha only
@@ -125,7 +125,7 @@ def mask_gate_errors(mask_path: Path, *, asset_id: str = "") -> list[str]:
     if alpha["touches_edge"] and asset_id != "garage-scene-kit":
         errs.append("alpha_bbox_touches_edge")
     ext = float(alpha["extent_coverage"])
-    lo = 0.38 if asset_id == "garage-scene-kit" else MIN_SILHOUETTE_HEIGHT
+    lo = 0.55 if asset_id == "garage-scene-kit" else MIN_SILHOUETTE_HEIGHT
     if ext < lo or ext > MAX_SILHOUETTE_HEIGHT:
         errs.append(f"alpha_extent={ext:.3f} need {MIN_SILHOUETTE_HEIGHT}-{MAX_SILHOUETTE_HEIGHT}")
     if int(alpha.get("object_pixels", 0)) < 64:

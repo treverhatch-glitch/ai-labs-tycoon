@@ -15,8 +15,9 @@ TEX = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures"
 PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
 
-COLS = 4
-SPACING = 0.38
+COLS = 3
+SPACING = 0.22
+PROP_SCALE = 1.52
 FLOOR_Y = 0.0  # Blender Y-up floor
 
 
@@ -40,6 +41,8 @@ def import_joined(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.O
             pass
     tex_dir = TEX / asset_id
     common.apply_preview_material(joined, tex_dir, asset_id)
+    joined.scale = (PROP_SCALE, PROP_SCALE, PROP_SCALE)
+    bpy.context.view_layer.update()
     joined.location = Vector(loc)
     mins_y = min((joined.matrix_world @ v.co).y for v in joined.data.vertices)
     if abs(mins_y - FLOOR_Y) > 1e-4:
@@ -105,8 +108,8 @@ def main() -> None:
         out,
         resolution=768,
         mode="scene",
-        fill=0.645,
-        margin=0.072,
+        fill=0.82,
+        margin=0.04,
         frame_objects=joins,
         up_axis="Y",
         mask_path=mask,
@@ -118,7 +121,7 @@ def main() -> None:
                 "preview_kind": "garage",
                 "flat_backdrop": True,
                 "backdrop_rgb": [150, 150, 150],
-                "framing_fill": 0.58,
+                "framing_fill": 0.68,
                 "up_axis": "Y",
                 "floor_plane": "horizontal_y",
                 "props": len(joins),

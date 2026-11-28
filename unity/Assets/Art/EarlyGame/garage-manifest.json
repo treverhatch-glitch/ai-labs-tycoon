@@ -15,8 +15,8 @@
       "vertexCount": 608,
       "triangleCount": 2304,
       "partCount": 5,
-      "generator": "tools/art/blender/garage-cable-spool.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-cable-spool.py"
     },
     {
       "id": "garage-coffee-drip",
@@ -28,11 +28,11 @@
       },
       "preview": "docs/art/previews/garage-coffee-drip.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 672,
-      "triangleCount": 2688,
-      "partCount": 7,
-      "generator": "tools/art/blender/garage-coffee-drip.py",
-      "blenderVersion": "4.0.2"
+      "vertexCount": 576,
+      "triangleCount": 2304,
+      "partCount": 6,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-coffee-drip.py"
     },
     {
       "id": "garage-crt-tower",
@@ -44,11 +44,11 @@
       },
       "preview": "docs/art/previews/garage-crt-tower.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 864,
-      "triangleCount": 3456,
-      "partCount": 9,
-      "generator": "tools/art/blender/garage-crt-tower.py",
-      "blenderVersion": "4.0.2"
+      "vertexCount": 768,
+      "triangleCount": 3072,
+      "partCount": 8,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-crt-tower.py"
     },
     {
       "id": "garage-desk-crt",
@@ -63,8 +63,8 @@
       "vertexCount": 1056,
       "triangleCount": 4224,
       "partCount": 11,
-      "generator": "tools/art/blender/garage-desk-crt.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-desk-crt.py"
     },
     {
       "id": "garage-exterior-wall",
@@ -79,8 +79,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "generator": "tools/art/blender/garage-exterior-wall.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-exterior-wall.py"
     },
     {
       "id": "garage-floor-tile",
@@ -111,8 +111,8 @@
       "vertexCount": 768,
       "triangleCount": 3072,
       "partCount": 8,
-      "generator": "tools/art/blender/garage-folding-chair.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-folding-chair.py"
     },
     {
       "id": "garage-land-for-sale-sign",
@@ -124,11 +124,11 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 768,
-      "triangleCount": 3072,
-      "partCount": 8,
-      "generator": "tools/art/blender/garage-land-for-sale-sign.py",
-      "blenderVersion": "4.0.2"
+      "vertexCount": 576,
+      "triangleCount": 2304,
+      "partCount": 6,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-land-for-sale-sign.py"
     },
     {
       "id": "garage-lot-curb",
@@ -143,8 +143,8 @@
       "vertexCount": 2112,
       "triangleCount": 8448,
       "partCount": 22,
-      "generator": "tools/art/blender/garage-lot-curb.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-lot-curb.py"
     },
     {
       "id": "garage-roll-door",
@@ -159,8 +159,8 @@
       "vertexCount": 1440,
       "triangleCount": 5760,
       "partCount": 15,
-      "generator": "tools/art/blender/garage-roll-door.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-roll-door.py"
     },
     {
       "id": "garage-server-closet",
@@ -191,8 +191,8 @@
       "vertexCount": 1152,
       "triangleCount": 4608,
       "partCount": 12,
-      "generator": "tools/art/blender/garage-voodude-rack.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-voodude-rack.py"
     },
     {
       "id": "garage-wall-panel",
@@ -207,8 +207,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "generator": "tools/art/blender/garage-wall-panel.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-wall-panel.py"
     },
     {
       "id": "garage-whiteboard-1995",
@@ -220,9 +220,9 @@
       },
       "preview": "docs/art/previews/garage-whiteboard-1995.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 1728,
-      "triangleCount": 6912,
-      "partCount": 18,
+      "vertexCount": 1344,
+      "triangleCount": 5376,
+      "partCount": 14,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-whiteboard-1995.py"
     },

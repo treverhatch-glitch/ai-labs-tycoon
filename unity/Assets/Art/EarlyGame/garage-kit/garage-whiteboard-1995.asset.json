@@ -8,9 +8,9 @@
   },
   "preview": "docs/art/previews/garage-whiteboard-1995.png",
   "license": "CC0-1.0 (Blender-baked, in-repo)",
-  "vertexCount": 1728,
-  "triangleCount": 6912,
-  "partCount": 18,
+  "vertexCount": 1344,
+  "triangleCount": 5376,
+  "partCount": 14,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-whiteboard-1995.py"
 }

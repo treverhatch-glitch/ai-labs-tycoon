@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="gpu">
-  <rect width="64" height="64" rx="6" fill="#14171D"/>
-  <rect x="18" y="18" width="28" height="32" rx="2" fill="#5A5A66"/>  <rect x="22" y="24" width="20" height="5" fill="#8C66F2"/>  <rect x="22" y="32" width="20" height="5" fill="#66BF73"/>
+  <rect width="64" height="64" rx="6" fill="#F0E4D4"/>
+  <rect x="18" y="18" width="28" height="32" rx="2" fill="#D8C8B4" stroke="#5C3A28" stroke-width="2"/>
+  <rect x="22" y="24" width="20" height="5" fill="#8C66F2" stroke="#4A3228" stroke-width="0.8"/>
+  <rect x="22" y="32" width="20" height="5" fill="#66BF73" stroke="#4A3228" stroke-width="0.8"/>
 </svg>

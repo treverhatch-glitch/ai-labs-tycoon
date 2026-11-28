@@ -40,13 +40,60 @@ def _volume(ob: bpy.types.Object) -> float:
     return d.x * d.y * d.z
 
 
+def _union(boxes: list[tuple[Vector, Vector]]) -> tuple[Vector, Vector]:
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for blo, bhi in boxes:
+        lo.x, lo.y, lo.z = min(lo.x, blo.x), min(lo.y, blo.y), min(lo.z, blo.z)
+        hi.x, hi.y, hi.z = max(hi.x, bhi.x), max(hi.y, bhi.y), max(hi.z, bhi.z)
+    return lo, hi
+
+
+def absorb_to_main_cluster(mesh_parts: list[bpy.types.Object], *, max_gap: float = 0.02) -> None:
+    """Grow cluster from largest part; pull strays until union gap <= max_gap."""
+    if len(mesh_parts) < 2:
+        return
+    boxes = [_world_aabb(p) for p in mesh_parts]
+    vols = [_volume(p) for p in mesh_parts]
+    seed = max(range(len(mesh_parts)), key=lambda i: vols[i])
+    cluster = {seed}
+    changed = True
+    while changed:
+        changed = False
+        ulo, uhi = _union([boxes[i] for i in cluster])
+        for j in range(len(mesh_parts)):
+            if j in cluster:
+                continue
+            if _gap(boxes[j], (ulo, uhi)) <= max_gap:
+                cluster.add(j)
+                changed = True
+    ulo, uhi = _union([_world_aabb(mesh_parts[i]) for i in cluster])
+    ctr = (ulo + uhi) * 0.5
+    for i, ob in enumerate(mesh_parts):
+        if i in cluster:
+            continue
+        for _ in range(80):
+            box = _world_aabb(ob)
+            gap = _gap(box, (ulo, uhi))
+            if gap <= max_gap:
+                break
+            ob_ctr = (box[0] + box[1]) * 0.5
+            delta = ctr - ob_ctr
+            if delta.length < 1e-6:
+                break
+            step = min(max(gap - max_gap * 0.1, 0.005), 0.15)
+            ob.location += delta.normalized() * step
+            bpy.context.view_layer.update()
+    bpy.context.view_layer.update()
+
+
 def tighten_garage_cluster(parts: list[bpy.types.Object], *, gap_frac: float = 0.02) -> None:
-    """Pull detached parts toward the main body if bbox gap exceeds gap_frac * span."""
+    """Pull detached parts toward the main body until bbox gap <= 2cm."""
     mesh_parts = [p for p in parts if p.type == "MESH" and p.name != "ConnectSpine"]
     if len(mesh_parts) < 2:
         return
     span = _diag(mesh_parts)
-    max_gap = max(span * gap_frac, 0.008)
+    max_gap = min(max(span * gap_frac, 0.008), 0.02)
     main = max(mesh_parts, key=_volume)
     main_box = _world_aabb(main)
     main_ctr = (main_box[0] + main_box[1]) * 0.5
@@ -59,7 +106,7 @@ def tighten_garage_cluster(parts: list[bpy.types.Object], *, gap_frac: float = 0
         )
         target_box = _world_aabb(target)
         target_ctr = (target_box[0] + target_box[1]) * 0.5
-        for _ in range(64):
+        for _ in range(96):
             gap = _gap(_world_aabb(ob), target_box)
             if gap <= max_gap:
                 break
@@ -67,11 +114,12 @@ def tighten_garage_cluster(parts: list[bpy.types.Object], *, gap_frac: float = 0
             delta = target_ctr - ob_ctr
             if delta.length < 1e-6:
                 break
-            step = min(max(gap - max_gap * 0.25, 0.002), 0.05)
+            step = min(max(gap - max_gap * 0.15, 0.004), 0.12)
             ob.location += delta.normalized() * step
             bpy.context.view_layer.update()
             target_box = _world_aabb(target)
     bpy.context.view_layer.update()
+    absorb_to_main_cluster(mesh_parts, max_gap=0.02)
 
 
 def parent_under_assembly_root(parts: list[bpy.types.Object], asset_id: str) -> bpy.types.Object:
