@@ -1,6 +1,5 @@
 {
   "fidelity": "blender-baked",
-  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -223,8 +222,8 @@
       "vertexCount": 1728,
       "triangleCount": 6912,
       "partCount": 18,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-whiteboard-1995.py"
+      "generator": "tools/art/blender/garage-whiteboard-1995.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-window-frame",

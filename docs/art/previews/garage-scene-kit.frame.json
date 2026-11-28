@@ -1,12 +1,19 @@
 {
-  "camera_dist": 13.913920652735857,
-  "bbox_radius": 3.903881144371326,
-  "framing_margin": 1.44,
+  "camera_dist": 19.285316091443345,
+  "bbox_radius": 4.024761619083829,
+  "framing_margin": 1.15,
   "lens_mm": 50.0,
-  "azimuth_deg": 30.0,
-  "elevation_deg": 10.0,
-  "up_axis": "Z",
-  "preview_kind": "staff",
+  "azimuth_deg": 45.0,
+  "elevation_deg": 32.0,
+  "up_axis": "Y",
+  "preview_kind": "garage",
+  "flat_backdrop": true,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "floor_plane": "horizontal_y",
   "staff_yaw_deg": 30.0,
   "staff_elev_deg": 10.0
 }

@@ -96,8 +96,11 @@ def main() -> None:
     for asset_id, loc, rot_y in layout_from_manifest():
         props.extend(import_prop(asset_id, loc, rot_y))
 
+    import os
+
     import blender_preview_rig as rig  # type: ignore
 
+    os.environ["EARLY_ART_PREVIEW_KIND"] = "garage"
     out = PREVIEW / "garage-scene-kit.png"
     PREVIEW.mkdir(parents=True, exist_ok=True)
     rig.render_preview_studio(

@@ -18,6 +18,7 @@ done
 echo "=== garage-scene-preview ==="
 "$BLENDER" -b --python-exit-code 1 --python tools/art/blender/garage-scene-preview.py
 python3 tools/art/check_garage_quality_previews.py
+python3 tools/art/check_garage_preview_assembly.py
 python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_garage_asset_complexity.py
 python3 tools/art/check_garage_baked_albedo.py

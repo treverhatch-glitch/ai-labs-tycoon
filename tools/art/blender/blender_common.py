@@ -523,15 +523,33 @@ def orient_build_z_to_gltf_y_up(ob: bpy.types.Object) -> None:
 
 
 def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
-    stash: list[tuple[bpy.types.Object, object]] = []
+    """Export multipart garage kit with part layout preserved (Z-up build → glTF Y-up)."""
+    import blender_preview_rig as rig  # type: ignore
+
     export_parts = [ob for ob in parts if ob.name != "ConnectSpine"]
+    if not export_parts:
+        raise RuntimeError("export_garage_multipart_glbf: no mesh parts")
+    dupes: list[bpy.types.Object] = []
     for ob in export_parts:
-        stash.append((ob, ob.matrix_world.copy()))
-        orient_build_z_to_gltf_y_up(ob)
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        dup.matrix_world = ob.matrix_world.copy()
+        dupes.append(dup)
+    root = bpy.data.objects.new("GarageExportRoot", None)
+    bpy.context.collection.objects.link(root)
+    for dup in dupes:
+        dup.parent = root
+        dup.matrix_parent_inverse = root.matrix_world.inverted()
+    root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    mins, _maxs = rig.mesh_bounds_world(dupes)
+    root.location.y -= mins.y
+    bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
-    for ob in export_parts:
-        ob.select_set(True)
-    bpy.context.view_layer.objects.active = export_parts[0]
+    for dup in dupes:
+        dup.select_set(True)
+    bpy.context.view_layer.objects.active = dupes[0]
     bpy.ops.export_scene.gltf(
         filepath=str(glb_path),
         use_selection=True,
@@ -540,8 +558,9 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         export_image_format="AUTO",
         export_yup=True,
     )
-    for ob, matrix in stash:
-        ob.matrix_world = matrix
+    for dup in dupes:
+        bpy.data.objects.remove(dup, do_unlink=True)
+    bpy.data.objects.remove(root, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -1808,7 +1827,7 @@ def render_preview(
             os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
             rig_kw: dict = {}
             if asset_id and asset_id.startswith("garage-"):
-                rig_kw["up_axis"] = "Y"
+                rig_kw["up_axis"] = "Z"
             rig.render_preview_studio(ob, path, mask_meshes=mask_meshes, **rig_kw)
             return
         except Exception as exc:  # noqa: BLE001

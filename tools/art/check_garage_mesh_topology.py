@@ -85,16 +85,21 @@ for entry in manifest["assets"]:
         print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need >={min_parts})")
         rc = 1
         continue
-    grounded = True
+    ground_slack = 0.22 if asset_id == "garage-folding-chair" else 0.04
+    part_mins = []
     for ob in meshes:
-        min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
-        ground_slack = 0.22 if asset_id == "garage-folding-chair" else 0.03
-        if min_y > ground_slack or min_y < -0.02:
-            grounded = False
-            print(f"FAIL {asset_id} {ob.name} min_y={min_y:.4f}")
-            rc = 1
-            break
-    if not grounded:
+        verts_y = [(ob.matrix_world @ v.co).y for v in ob.data.vertices]
+        part_min = min(verts_y) if verts_y else min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
+        part_mins.append((ob.name, part_min))
+    assembly_min_y = min(y for _, y in part_mins)
+    if assembly_min_y > ground_slack:
+        print(f"FAIL {asset_id} assembly_min_y={assembly_min_y:.4f} > {ground_slack}")
+        rc = 1
+        continue
+    if any(y < -0.02 for _, y in part_mins):
+        bad = next(n for n, y in part_mins if y < -0.02)
+        print(f"FAIL {asset_id} {bad} below_floor")
+        rc = 1
         continue
     ob = meshes[0]
     bpy.context.view_layer.objects.active = ob

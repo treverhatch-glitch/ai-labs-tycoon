@@ -492,7 +492,7 @@ def render_preview_studio(
             scene.eevee.gtao_distance = 0.4
             scene.eevee.gtao_factor = 1.4
 
-    setup_studio_world(staff_flat=(preview_kind == "staff"))
+    setup_studio_world(staff_flat=(preview_kind in ("staff", "garage")))
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
@@ -500,6 +500,12 @@ def render_preview_studio(
         lens_mm = 50.0
         azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
+    elif preview_kind == "garage":
+        axis = (up_axis or "Z").upper()
+        framing_margin = float(os.environ.get("GARAGE_PREVIEW_MARGIN", "1.15"))
+        lens_mm = float(os.environ.get("GARAGE_PREVIEW_LENS", str(DEFAULT_LENS_MM)))
+        azimuth_deg = float(os.environ.get("GARAGE_PREVIEW_AZIMUTH", str(DEFAULT_AZIMUTH_DEG)))
+        elevation_deg = float(os.environ.get("GARAGE_PREVIEW_ELEVATION", str(DEFAULT_ELEVATION_DEG)))
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
@@ -535,6 +541,14 @@ def render_preview_studio(
                 bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
                 if bsdf:
                     bsdf.inputs["Base Color"].default_value = FLOOR_GREY
+        elif preview_kind == "garage":
+            if axis == "Y":
+                add_shadow_floor_y(mins, maxs)
+            else:
+                add_shadow_floor_z(mins, maxs)
+            scene.view_settings.view_transform = "Standard"
+            scene.view_settings.exposure = -0.958
+            scene.view_settings.gamma = 1.0
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
@@ -609,6 +623,9 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
+                "flat_backdrop": preview_kind in ("staff", "garage"),
+                "backdrop_rgb": [150, 150, 150],
+                "floor_plane": "horizontal_y" if axis == "Y" else "horizontal_z",
                 "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30")),
                 "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
