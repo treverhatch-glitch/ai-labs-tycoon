@@ -37,7 +37,10 @@ def import_prop(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Obj
     imported = [o for o in common.flatten_glb_preview_meshes(imported) if len(o.data.vertices) > 0]
     if not imported:
         return None
+    imported = [common.prune_to_dominant_loose_shell(o) for o in imported]
     joined = common.duplicate_join_meshes(imported, f"{asset_id}_scene_join")
+    joined = common.prune_to_dominant_loose_shell(joined)
+    common.delete_loose_mesh_elements(joined)
     if joined is None or joined.type != "MESH" or len(joined.data.vertices) < 4:
         for ob in list(imported):
             bpy.data.objects.remove(ob, do_unlink=True)
@@ -119,7 +122,10 @@ def main() -> None:
         for ob in joins:
             xz = math.hypot(ob.location.x, ob.location.z)
             span_y = max(v.co.y for v in ob.data.vertices) - min(v.co.y for v in ob.data.vertices)
+            min_y = min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
             if xz > cluster_r * 1.35 and span_y < 0.35 and len(ob.data.vertices) < 500:
+                bpy.data.objects.remove(ob, do_unlink=True)
+            elif min_y > 0.14 and span_y < 0.22 and len(ob.data.vertices) < 320:
                 bpy.data.objects.remove(ob, do_unlink=True)
             else:
                 pruned.append(ob)

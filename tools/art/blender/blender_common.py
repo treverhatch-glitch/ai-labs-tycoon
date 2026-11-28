@@ -564,6 +564,55 @@ def duplicate_join_meshes(objects: list[bpy.types.Object], name: str) -> bpy.typ
     return joined
 
 
+def prune_to_dominant_loose_shell(ob: bpy.types.Object) -> bpy.types.Object:
+    """Drop stray mesh islands after GLB join (scene-kit floater cull)."""
+    import cc0_common as cc0  # type: ignore
+
+    if ob.type != "MESH" or len(ob.data.vertices) < 8:
+        return ob
+    saved_name = ob.name
+
+    def _score(shell: bpy.types.Object) -> float:
+        lo, hi = cc0.world_bbox(shell)
+        vol = (hi.x - lo.x) * (hi.y - lo.y) * (hi.z - lo.z)
+        return len(shell.data.vertices) * max(vol, 1e-6)
+
+    work = ob
+    for _ in range(6):
+        bpy.ops.object.select_all(action="DESELECT")
+        work.select_set(True)
+        bpy.context.view_layer.objects.active = work
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.separate(type="LOOSE")
+        bpy.ops.object.mode_set(mode="OBJECT")
+        shells = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+        if len(shells) <= 1:
+            work = shells[0] if shells else work
+            break
+        work = max(shells, key=_score)
+        for shell in shells:
+            if shell is not work:
+                bpy.data.objects.remove(shell, do_unlink=True)
+        bpy.context.view_layer.update()
+    work.name = saved_name
+    bpy.context.view_layer.update()
+    return work
+
+
+def delete_loose_mesh_elements(ob: bpy.types.Object) -> None:
+    """Remove stray verts/edges not part of a face (scene-kit floater cleanup)."""
+    if ob.type != "MESH":
+        return
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
 def orient_build_z_to_gltf_y_up(ob: bpy.types.Object) -> None:
     """Blender Z-up kit → glTF +Y-up with base on Y=0."""
     snap_root_to_ground(ob)
@@ -663,7 +712,7 @@ def export_garage_multipart_glbf(
 GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
     "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
-    "garage-roll-door": {"yaw": 42.0, "pitch": 32.0, "fill": 0.60, "margin": 0.06},
+    "garage-roll-door": {"yaw": 90.0, "pitch": 0.0, "fill": 0.50, "margin": 0.10},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
 }
 
@@ -698,6 +747,12 @@ def render_garage_hero_preview_from_glb(
             meshes = flatten_glb_preview_meshes(meshes)
             for ob in meshes:
                 apply_preview_material(ob, tex_dir, asset_id)
+            if asset_id == "garage-desk-crt" and meshes:
+                joined = duplicate_join_meshes(meshes, f"{asset_id}_hero_join")
+                for ob in meshes:
+                    if ob is not joined:
+                        bpy.data.objects.remove(ob, do_unlink=True)
+                meshes = [joined]
             frame_obs = meshes
         else:
             root = bpy.data.objects.new("PreviewOrientRoot", None)
@@ -775,6 +830,12 @@ def render_garage_side_ortho_preview_from_glb(
         meshes = flatten_glb_preview_meshes(meshes)
         for ob in meshes:
             apply_preview_material(ob, tex_dir, asset_id)
+        if asset_id == "garage-desk-crt" and meshes:
+            joined = duplicate_join_meshes(meshes, f"{asset_id}_ortho_join")
+            for ob in meshes:
+                if ob is not joined:
+                    bpy.data.objects.remove(ob, do_unlink=True)
+            meshes = [joined]
         bpy.context.view_layer.update()
         lo = Vector((1e9, 1e9, 1e9))
         hi = Vector((-1e9, -1e9, -1e9))
@@ -802,8 +863,8 @@ def render_garage_side_ortho_preview_from_glb(
                 cam_loc = Vector((center.x, center.y, hi.z + span * 1.05))
                 ortho_view = "front_positive_z"
             elif asset_id == "garage-desk-crt":
-                cam_loc = Vector((center.x, hi.y + span * 1.05, center.z))
-                ortho_view = "front_positive_y"
+                cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
+                ortho_view = "side_positive_x"
             else:
                 cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
             bpy.ops.object.camera_add(location=cam_loc)
@@ -1621,7 +1682,9 @@ def apply_garage_hero_flat_tint(ob: bpy.types.Object, asset_id: str) -> None:
         elif "keyboard" in lname or lname.startswith("key"):
             assign_solid(ob, (0.78, 0.78, 0.80, 1.0), 0.35)
         elif "crt" in lname:
-            assign_crt_screen_material(ob, (0.10, 0.78, 0.52, 1.0))
+            assign_crt_screen_material(
+                ob, (0.10, 0.78, 0.52, 1.0), bezel=(0.18, 0.20, 0.24, 1.0), screen_mix=0.42
+            )
         else:
             assign_solid(ob, (0.48, 0.36, 0.24, 1.0), 0.55)
         return
