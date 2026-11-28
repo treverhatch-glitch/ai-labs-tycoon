@@ -49,7 +49,10 @@ namespace AiLabs.Rules.Systems
             else
             {
                 model.EvalStreak = 0;
-                for (int s = 0; s < model.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, model.Sectors[s], c.EvalHarness.TrustLoss, false);
+                int listLoss = c.EvalHarness.TrustLoss;
+                int applied = EvalFailEraRelief.TrustLoss(c, state, listLoss);
+                for (int s = 0; s < model.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, model.Sectors[s], applied, false);
+                EvalFailEraRelief.OnFailed(c, state, lab, model, listLoss, applied);
                 if (model.CertStage == Conformity.Review && model.CertLeft > 0) model.CertLeft += c.EvalHarness.ConformityPush;
                 if (c.EvalHarness.FailTension > 0) BoardMotions.AddTension(c, lab, c.EvalHarness.FailTension);
             }

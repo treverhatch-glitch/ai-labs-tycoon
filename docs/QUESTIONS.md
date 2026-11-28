@@ -2447,3 +2447,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q521. Discount on public metrics publish in late era? DECIDED (schema 185): `publicMetricsEraDiscount`; `PublicMetricsEraDiscounted` on `PublicMetrics.Publish`.
 
 ### Q522. Batch twenty-eight news, chat and combos. DECIDED: three headlines, three chat lines (437/390); `BatchTwentyEightNewsChatTests`, `BatchTwentyEightTogetherTests`.
+
+### Q523. Extra weeks to answer hearing questions in late era? DECIDED (schema 186): `officeHearingEraGrace`; `OfficeHearingEraGraced` on `OfficeEvents.OnHearing`.
+
+### Q524. Softer trust hit when open weights are copied in late era? DECIDED (schema 187): `openWeightsCopyEraRelief`; `OpenWeightsCopyEraRelieved` on `OpenWeights.RunWeek`.
+
+### Q525. Softer trust loss on failed eval publish in late era? DECIDED (schema 188): `evalFailEraRelief`; `EvalFailEraRelieved` on `EvalHarness.Publish` fail path.
+
+### Q526. Batch twenty-nine news, chat and combos. DECIDED: three headlines, three chat lines (440/393); `BatchTwentyNineNewsChatTests`, `BatchTwentyNineTogetherTests`.

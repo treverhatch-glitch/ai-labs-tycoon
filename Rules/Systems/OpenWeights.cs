@@ -40,10 +40,13 @@ namespace AiLabs.Rules.Systems
                 if (model.WgtOpen != Open || model.Status != ModelStatus.Released) continue;
                 int chance = OpenWeightsEraThrottle.EffectiveCopyChancePermille(c, state);
                 if ((int)(state.Rng.World.NextU64() % MathI.Permille) >= chance) continue;
+                int listLoss = c.OpenWeights.CopyTrustLoss;
+                int applied = OpenWeightsCopyEraRelief.CopyTrustLoss(c, state, listLoss);
                 for (int i = 0; i < model.Sectors.Count; i++)
-                    TrustSystem.Shift(c, state, lab, model.Sectors[i], -c.OpenWeights.CopyTrustLoss, false);
-                Events.Add(state, EventKind.WeightsCopied, lab.Id, model.Id, c.OpenWeights.CopyTrustLoss, model.Name);
+                    TrustSystem.Shift(c, state, lab, model.Sectors[i], -applied, false);
+                Events.Add(state, EventKind.WeightsCopied, lab.Id, model.Id, applied, model.Name);
                 OpenWeightsEraThrottle.OnCopied(c, state, lab, model);
+                OpenWeightsCopyEraRelief.OnCopied(c, state, lab, model, listLoss, applied);
             }
         }
     }

@@ -665,7 +665,10 @@ namespace AiLabs.Rules.State
         DataSourceRenewEraDiscounted,
         RungSixEraGraced,
         EvalHarnessEraRelieved,
-        PublicMetricsEraDiscounted
+        PublicMetricsEraDiscounted,
+        OfficeHearingEraGraced,
+        OpenWeightsCopyEraRelieved,
+        EvalFailEraRelieved
     }
 
     /// <summary>

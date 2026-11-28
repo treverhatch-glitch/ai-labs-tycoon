@@ -12561,6 +12561,24 @@
         "text": "{lab} published metrics on era terms"
       },
       {
+        "id": "office-hearing-era-grace",
+        "kind": "OfficeHearingEraGraced",
+        "pick": -1,
+        "text": "{lab} got more time on a hearing"
+      },
+      {
+        "id": "open-weights-copy-era-relief",
+        "kind": "OpenWeightsCopyEraRelieved",
+        "pick": -1,
+        "text": "{lab} shrugged off a weights copy"
+      },
+      {
+        "id": "eval-fail-era-relief",
+        "kind": "EvalFailEraRelieved",
+        "pick": -1,
+        "text": "{lab} took a softer eval fail"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -17136,6 +17154,39 @@
         "toYear": 0
       },
       {
+        "id": "hearing-grace-chat",
+        "kind": "OfficeHearingEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The committee can wait a little longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-copy-relief-chat",
+        "kind": "OpenWeightsCopyEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Copied weights hurt less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-fail-relief-chat",
+        "kind": "EvalFailEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A bad score stings less for now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -20056,5 +20107,20 @@
     "enabled": 1,
     "minEra": 2,
     "discountPermille": 200
+  },
+  "officeHearingEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
+  },
+  "openWeightsCopyEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 120
+  },
+  "evalFailEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
   }
 }

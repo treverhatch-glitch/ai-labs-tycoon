@@ -117,7 +117,10 @@ namespace AiLabs.Rules.Systems
         public static void OnHearing(GameConfig c, GameState state, LabState lab, string blocId)
         {
             if (!Has(lab) || blocId != lab.HomeBlocId) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Hearing);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = OfficeHearingEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Hearing, expire);
+            OfficeHearingEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>One of the player's models tried to escape: the crisis takes the place of whatever was waiting. Does nothing for rivals or when the data has no escape events.</summary>

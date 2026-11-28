@@ -219,6 +219,9 @@ namespace AiLabs.Rules.Config
             RungSixEraGraceProblems(p, c);
             EvalHarnessEraReliefProblems(p, c);
             PublicMetricsEraDiscountProblems(p, c);
+            OfficeHearingEraGraceProblems(p, c);
+            OpenWeightsCopyEraReliefProblems(p, c);
+            EvalFailEraReliefProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2432,6 +2435,35 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraDiscount.minEra must be a valid era index");
             if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
                 p.Add("publicMetricsEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OfficeHearingEraGraceProblems(List<string> p, GameConfig c)
+        {
+            OfficeHearingEraGraceConfig k = c.OfficeHearingEraGrace;
+            if (k == null) { p.Add("officeHearingEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("officeHearingEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("officeHearingEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("officeHearingEraGrace.graceWeeks must not be negative");
+        }
+
+        static void OpenWeightsCopyEraReliefProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCopyEraReliefConfig k = c.OpenWeightsCopyEraRelief;
+            if (k == null) { p.Add("openWeightsCopyEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCopyEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCopyEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("openWeightsCopyEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void EvalFailEraReliefProblems(List<string> p, GameConfig c)
+        {
+            EvalFailEraReliefConfig k = c.EvalFailEraRelief;
+            if (k == null) { p.Add("evalFailEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalFailEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalFailEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("evalFailEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

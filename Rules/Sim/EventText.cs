@@ -740,6 +740,12 @@ namespace AiLabs.Rules.Sim
                     return who + " registered eval for \"" + e.Ref + "\" with $" + e.Amount + " era relief.";
                 case EventKind.PublicMetricsEraDiscounted:
                     return who + " published metrics for \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
+                case EventKind.OfficeHearingEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer a hearing.";
+                case EventKind.OpenWeightsCopyEraRelieved:
+                    return who + " took a softer trust hit after open weights were copied on \"" + e.Ref + "\" (" + e.Amount + " saved).";
+                case EventKind.EvalFailEraRelieved:
+                    return who + " took a softer trust hit after a failed eval on \"" + e.Ref + "\" (" + e.Amount + " saved).";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
