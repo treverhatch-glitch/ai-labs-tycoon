@@ -13,9 +13,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[178]=855e2049051810ed8b1fa3b53ef0b879b3081f915c23eff2656c9b95f21bdcb8
-GOLDEN[179]=3433c4815b86ce58ddd7ec3098837e4eeba7a93f935a066bbef85591cb01365b
-GOLDEN[180]=c2d050bc0efe8ab96d31f18b6c50a8ff3c73d56fc4c1972ad15fbbe4aa555368
+GOLDEN[178]=3433c4815b86ce58ddd7ec3098837e4eeba7a93f935a066bbef85591cb01365b
+GOLDEN[179]=c2d050bc0efe8ab96d31f18b6c50a8ff3c73d56fc4c1972ad15fbbe4aa555368
+GOLDEN[180]=321349c568f900acf184b5512eac54f7fbce2e992e8ec7aaa98f96a1fcda27df
 
 PREV=$((N - 1))
 BK="/tmp/b26-rev-bak-$N"
