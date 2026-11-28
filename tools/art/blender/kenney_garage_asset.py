@@ -260,11 +260,16 @@ def _verify_crt_on_desktop(desk: bpy.types.Object, monitor: bpy.types.Object) ->
     d_lo, d_hi = cc0.world_bbox(desk)
     m_lo, m_hi = cc0.world_bbox(monitor)
     gap_y = abs(m_lo.y - d_hi.y)
+    desk_w = d_hi.x - d_lo.x
+    crt_w = m_hi.x - m_lo.x
     print(
-        f"PASS22_VERIFY desk_top_y={d_hi.y:.4f} crt_base_y={m_lo.y:.4f} gap_y={gap_y:.4f} "
+        f"PASS23_VERIFY desk_top_y={d_hi.y:.4f} crt_base_y={m_lo.y:.4f} gap_y={gap_y:.4f} "
         f"desk_x=[{d_lo.x:.4f},{d_hi.x:.4f}] crt_x=[{m_lo.x:.4f},{m_hi.x:.4f}] "
-        f"desk_z=[{d_lo.z:.4f},{d_hi.z:.4f}] crt_z=[{m_lo.z:.4f},{m_hi.z:.4f}]"
+        f"desk_z=[{d_lo.z:.4f},{d_hi.z:.4f}] crt_z=[{m_lo.z:.4f},{m_hi.z:.4f}] "
+        f"desk_top_w={desk_w:.4f} crt_w={crt_w:.4f}"
     )
+    if crt_w > desk_w * 0.95:
+        raise RuntimeError(f"desk-crt: CRT wider than desk top ({crt_w:.4f} > {desk_w * 0.95:.4f})")
     if gap_y > 0.010:
         raise RuntimeError(f"desk-crt: CRT base not on desk top (gap_y={gap_y:.4f}m)")
     if m_lo.x < d_lo.x - 0.001 or m_hi.x > d_hi.x + 0.001:
@@ -275,29 +280,11 @@ def _verify_crt_on_desktop(desk: bpy.types.Object, monitor: bpy.types.Object) ->
         raise RuntimeError(f"desk-crt: CRT not centred on desktop Z (delta={abs(m_ctr.z - d_ctr.z):.4f}m)")
 
 
-def _procedural_box(
-    name: str, size: tuple[float, float, float], location: tuple[float, float, float]
-) -> bpy.types.Object:
-    """Metre-sized box (add_cube scale is half-extent; pass 2x size for target dims)."""
-    import blender_common as bc  # type: ignore
-
-    return bc.add_cube(name, (size[0] * 2.0, size[1] * 2.0, size[2] * 2.0), location)
-
-
 def build_crt_monitor() -> list[bpy.types.Object]:
-    """Boxy CRT (depth > width), teal screen, origin at base centre (Y=0)."""
-    import blender_common as bc  # type: ignore
+    """Room-kit prop_screen extraction (Kenney computerScreen, room-kit scale)."""
+    from room_kit_extract import extract_crt_monitor_y_up  # type: ignore
 
-    width = 0.36
-    height = 0.40
-    depth = 0.52
-    monitor = _procedural_box("CrtMonitor", (width, height, depth), (0.0, height * 0.5, depth * 0.5))
-    _center_xz(monitor)
-    _snap_floor(monitor)
-    bc.assign_crt_screen_material(
-        monitor, (0.12, 0.78, 0.52, 1.0), bezel=(0.18, 0.20, 0.24, 1.0), screen_mix=0.62, emission_strength=6.5
-    )
-    return [monitor]
+    return extract_crt_monitor_y_up(desk_target_h=0.76)
 
 
 def _place_crt_on_desktop(screen: bpy.types.Object, desk: bpy.types.Object) -> None:
@@ -380,14 +367,18 @@ def build_desk_base() -> list[bpy.types.Object]:
 
 
 def build_desk_crt() -> list[bpy.types.Object]:
-    import cc0_common as cc0  # type: ignore
+    from room_kit_extract import measure_desk_crt_layout, spawn_crt_monitor_for_desk  # type: ignore
 
     desk, keyboard = build_desk_base()
-    monitor = cc0.merge_mesh_objects(build_crt_monitor(), "CrtMonitor")
-    monitor.location = desk.location.copy()
-    _place_crt_on_desktop(monitor, desk)
-    _verify_crt_on_desktop(desk, monitor)
-    return [desk, monitor, keyboard]
+    screen = spawn_crt_monitor_for_desk(desk, name="CrtBezel")
+    _place_on_top(screen, desk, overlap=0.002)
+    _verify_crt_on_desktop(desk, screen)
+    meta = measure_desk_crt_layout([desk, screen, keyboard])
+    print(
+        "PASS23_LAYOUT "
+        + " ".join(f"{k}={v:.4f}" for k, v in meta.items() if isinstance(v, float))
+    )
+    return [desk, screen, keyboard]
 
 
 def build_coffee_drip() -> list[bpy.types.Object]:
@@ -438,46 +429,10 @@ def _roll_stand_wall_object(ob: bpy.types.Object) -> None:
 
 
 def build_roll_door() -> list[bpy.types.Object]:
-    """Room-kit style roll door: side posts, top housing, solid horizontal-slat curtain (Y-up wall)."""
-    import blender_common as bc  # type: ignore
-    import cc0_common as cc0  # type: ignore
+    """Merged Kenney slats from garage-interior-room-kit build_roll_door."""
+    from room_kit_extract import extract_roll_door_y_up  # type: ignore
 
-    width = 1.02
-    height = 2.35
-    depth = 0.12
-    post_w = 0.10
-    gap_in = width - post_w * 2.0
-    cz = depth * 0.55
-    parts: list[bpy.types.Object] = []
-    for tag, x in (("L", -width * 0.5 + post_w * 0.5), ("R", width * 0.5 - post_w * 0.5)):
-        parts.append(_procedural_box(f"RollPost{tag}", (post_w, height, depth), (x, height * 0.5, cz)))
-    parts.append(_procedural_box("RollHousing", (width, 0.16, depth * 1.05), (0.0, height - 0.08, cz)))
-    curtain_h = height * 0.66
-    curtain_base = 0.10
-    curtain_w = gap_in + post_w * 0.35
-    parts.append(
-        _procedural_box(
-            "RollCurtain",
-            (curtain_w, curtain_h, depth * 0.95),
-            (0.0, curtain_base + curtain_h * 0.5, cz),
-        )
-    )
-    bc.snap_parts_to_ground(parts)
-    bpy.context.view_layer.update()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    import cc0_common as cc0  # type: ignore
-
-    for ob in parts:
-        mn, mx = cc0.world_bbox(ob)
-        lo.x, lo.y, lo.z = min(lo.x, mn.x), min(lo.y, mn.y), min(lo.z, mn.z)
-        hi.x, hi.y, hi.z = max(hi.x, mx.x), max(hi.y, mx.y), max(hi.z, mx.z)
-    cx, cz = (lo.x + hi.x) * 0.5, (lo.z + hi.z) * 0.5
-    for ob in parts:
-        ob.location.x -= cx
-        ob.location.z -= cz
-    bc.snap_parts_to_ground(parts)
-    return parts
+    return extract_roll_door_y_up()
 
 
 def build_server_closet() -> list[bpy.types.Object]:

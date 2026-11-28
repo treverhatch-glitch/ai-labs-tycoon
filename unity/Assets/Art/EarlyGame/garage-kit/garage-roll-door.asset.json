@@ -7,10 +7,10 @@
     "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_roughness.png"
   },
   "preview": "docs/art/previews/garage-roll-door.png",
-  "license": "CC0-1.0 (Poly Haven rollershutter_door, restyled in-repo)",
-  "vertexCount": 384,
-  "triangleCount": 1536,
-  "partCount": 4,
+  "license": "CC0-1.0 (Kenney plating slats via garage-interior-room-kit extract)",
+  "vertexCount": 2808,
+  "triangleCount": 5460,
+  "partCount": 1,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-roll-door.py"
 }

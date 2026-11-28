@@ -17,7 +17,7 @@
     },
     {
       "id": "garage-crt-monitor",
-      "license": "CC0-1.0 (Procedural CRT housing, Blender-baked in-repo)"
+      "license": "CC0-1.0 (Kenney computerScreen via garage-interior-room-kit extract)"
     },
     {
       "id": "garage-coffee-drip",
@@ -30,9 +30,8 @@
     },
     {
       "id": "garage-roll-door",
-      "license": "CC0-1.0 (Poly Haven rollershutter_door, restyled in-repo)",
-      "polyhavenId": "rollershutter_door",
-      "exception": "Kenney door+header multipart lost contact graph after Y-up GLB export"
+      "license": "CC0-1.0 (Kenney plating slats via garage-interior-room-kit extract)",
+      "exception": "Hero re-export from kit_roll_door mesh; not procedural cubes or Poly Haven"
     },
     {
       "id": "garage-server-closet",

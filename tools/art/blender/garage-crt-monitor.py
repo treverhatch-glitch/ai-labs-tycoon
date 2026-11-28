@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""garage-crt-monitor — boxy CRT hero prop (separate from desk base)."""
+"""garage-crt-monitor — room-kit prop_screen extract (separate from desk base)."""
 import sys
 from pathlib import Path
 

@@ -1668,9 +1668,7 @@ def apply_garage_hero_flat_tint(ob: bpy.types.Object, asset_id: str) -> None:
     """Name-based hero/scene tints; avoids baked-albedo speckle on multipart GLB imports."""
     lname = ob.name.lower()
     if asset_id == "garage-crt-monitor":
-        assign_crt_screen_material(
-            ob, (0.08, 0.82, 0.55, 1.0), bezel=(0.18, 0.20, 0.24, 1.0), screen_mix=0.68, emission_strength=7.5
-        )
+        assign_solid(ob, (0.48, 0.50, 0.54, 1.0), 0.42)
         return
     if asset_id == "garage-desk-crt":
         if "desktop" in lname:

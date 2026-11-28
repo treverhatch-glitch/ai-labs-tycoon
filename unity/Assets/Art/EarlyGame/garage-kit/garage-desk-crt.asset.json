@@ -8,8 +8,8 @@
   },
   "preview": "docs/art/previews/garage-desk-crt.png",
   "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)",
-  "vertexCount": 491,
-  "triangleCount": 1230,
+  "vertexCount": 509,
+  "triangleCount": 1062,
   "partCount": 3,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/garage-desk-crt.py"

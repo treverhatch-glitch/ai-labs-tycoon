@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contact sheet: garage props assembled on studio grey (pass16 framing)."""
+"""Contact sheet: garage props assembled on studio grey (TPH-style framing)."""
 from __future__ import annotations
 
 import json
@@ -19,16 +19,6 @@ COLS = 4
 SPACING = 0.34
 PROP_SCALE = 1.08
 FLOOR_Y = 0.0
-WALL_PANEL_ID = "garage-wall-panel"
-# Pass22: only these tiles may drop a secondary loose shell in the scene sheet (not global cull).
-SCENE_SECONDARY_SHELL_IDS = frozenset(
-    {
-        "garage-exterior-wall",
-        "garage-wall-panel",
-        "garage-window-frame",
-        "garage-floor-tile",
-    }
-)
 
 
 def import_prop(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Object | None:
@@ -43,23 +33,12 @@ def import_prop(asset_id: str, loc: tuple[float, float, float]) -> bpy.types.Obj
         return None
     import blender_common as common  # type: ignore
 
-    imported = [o for o in common.flatten_glb_preview_meshes(imported) if len(o.data.vertices) > 0]
-    if not imported:
-        return None
-    if asset_id in SCENE_SECONDARY_SHELL_IDS:
-        imported = [common.prune_to_dominant_loose_shell(o) for o in imported]
     joined = common.duplicate_join_meshes(imported, f"{asset_id}_scene_join")
-    if asset_id in SCENE_SECONDARY_SHELL_IDS:
-        joined = common.prune_to_dominant_loose_shell(joined)
     for ob in imported:
         try:
             bpy.data.objects.remove(ob, do_unlink=True)
         except ReferenceError:
             pass
-    for ob in [
-        o for o in bpy.context.scene.objects if o not in before and o is not joined and o.type == "MESH"
-    ]:
-        bpy.data.objects.remove(ob, do_unlink=True)
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures" / asset_id
     common.apply_preview_material(joined, tex_dir, asset_id)
     joined.scale = (PROP_SCALE, PROP_SCALE, PROP_SCALE)
@@ -150,7 +129,6 @@ def main() -> None:
                     "flat_backdrop": True,
                     "backdrop_rgb": [150, 150, 150],
                     "framing_fill": 0.70,
-                    "framing_margin": 0.05,
                     "up_axis": "Y",
                     "floor_plane": "horizontal_y",
                     "props": len(joins),
