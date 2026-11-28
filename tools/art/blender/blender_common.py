@@ -518,6 +518,141 @@ def flatten_glb_preview_meshes(meshes: list[bpy.types.Object]) -> list[bpy.types
     return flat
 
 
+def assert_desk_crt_on_desktop_for_preview(meshes: list[bpy.types.Object]) -> None:
+    """Fail preview render if CRT is not seated on the desktop (world + hero camera projection)."""
+    from bpy_extras.object_utils import world_to_camera_view
+
+    desk = next((o for o in meshes if "desktop" in o.name.lower()), None)
+    crt = next((o for o in meshes if "crt" in o.name.lower()), None)
+    if desk is None or crt is None:
+        raise RuntimeError("desk-crt preview gate: missing Desktop or CRT mesh in GLB import")
+
+    def _wbbox(ob: bpy.types.Object) -> tuple[Vector, Vector]:
+        lo = Vector((1e9, 1e9, 1e9))
+        hi = Vector((-1e9, -1e9, -1e9))
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            lo.x, lo.y, lo.z = min(lo.x, w.x), min(lo.y, w.y), min(lo.z, w.z)
+            hi.x, hi.y, hi.z = max(hi.x, w.x), max(hi.y, w.y), max(hi.z, w.z)
+        return lo, hi
+
+    d_lo, d_hi = _wbbox(desk)
+    c_lo, c_hi = _wbbox(crt)
+    if c_lo.y < d_hi.y - 0.012:
+        raise RuntimeError(
+            f"desk-crt preview gate: CRT base y={c_lo.y:.4f} below desktop top y={d_hi.y:.4f}"
+        )
+    tol_xz = 0.03
+    if c_lo.x < d_lo.x - tol_xz or c_hi.x > d_hi.x + tol_xz:
+        raise RuntimeError("desk-crt preview gate: CRT X extent outside desktop top")
+    if c_lo.z < d_lo.z - tol_xz or c_hi.z > d_hi.z + tol_xz:
+        raise RuntimeError("desk-crt preview gate: CRT Z extent outside desktop top")
+
+    import cc0_common as cc0  # type: ignore
+
+    frame_obs = meshes
+    center, _ = cc0._bounds_center(frame_obs)
+    mins = Vector((1e9, 1e9, 1e9))
+    maxs = Vector((-1e9, -1e9, -1e9))
+    for ob in frame_obs:
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            mins.x, mins.y, mins.z = min(mins.x, w.x), min(mins.y, w.y), min(mins.z, w.z)
+            maxs.x, maxs.y, maxs.z = max(maxs.x, w.x), max(maxs.y, w.y), max(maxs.z, w.z)
+    span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
+    span_y = max(maxs.y - mins.y, 0.1)
+    span = max(span_xz, span_y * 0.95, 0.18)
+    cam_cfg = GARAGE_HERO_CAMERA["garage-desk-crt"]
+    fill = float(cam_cfg["fill"])
+    margin = float(cam_cfg["margin"])
+    pitch = math.radians(float(cam_cfg["pitch"]))
+    lens = 48.0
+    dist = cc0._camera_distance_for_fill(span, lens, fill, margin, min_half=0.06) * 1.0
+    horiz = dist * math.cos(pitch)
+    elev = dist * math.sin(pitch)
+    yaw_rad = math.radians(float(cam_cfg["yaw"]))
+    span_y = max(maxs.y - mins.y, 0.1)
+    cam_loc = Vector(
+        (
+            center.x + math.cos(yaw_rad) * horiz,
+            mins.y + span_y * 0.36 + elev * 0.70,
+            center.z + math.sin(yaw_rad) * horiz,
+        )
+    )
+    target = Vector((center.x, mins.y + span_y * 0.40, center.z))
+    cam_data = bpy.data.cameras.new("DeskCrtGateCam")
+    cam_ob = bpy.data.objects.new("DeskCrtGateCam", cam_data)
+    bpy.context.collection.objects.link(cam_ob)
+    bpy.context.scene.camera = cam_ob
+    cam_ob.location = cam_loc
+    direction = target - cam_loc
+    cam_ob.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    cam_data.lens = lens
+    bpy.context.view_layer.update()
+    scene = bpy.context.scene
+
+    def _proj(pt: Vector) -> Vector:
+        co = world_to_camera_view(scene, cam_ob, pt)
+        return Vector((co.x, co.y, co.z))
+
+    top_pts = [
+        _proj(Vector((d_lo.x, d_hi.y, d_lo.z))),
+        _proj(Vector((d_hi.x, d_hi.y, d_lo.z))),
+        _proj(Vector((d_lo.x, d_hi.y, d_hi.z))),
+        _proj(Vector((d_hi.x, d_hi.y, d_hi.z))),
+    ]
+    crt_pts = [_proj(c_lo), _proj(c_hi), _proj(Vector((c_lo.x, c_lo.y, c_hi.z))), _proj(Vector((c_hi.x, c_hi.y, c_lo.z)))]
+    desk_min_x = min(p.x for p in top_pts)
+    desk_max_x = max(p.x for p in top_pts)
+    crt_cx = sum(p.x for p in crt_pts) / len(crt_pts)
+    mid_x = (c_lo.x + c_hi.x) * 0.5
+    mid_z = (c_lo.z + c_hi.z) * 0.5
+    crt_base_y = _proj(Vector((mid_x, c_lo.y, mid_z))).y
+    desk_top_y = sum(p.y for p in top_pts) / len(top_pts)
+    if crt_base_y < desk_top_y - 0.12:
+        raise RuntimeError(
+            f"desk-crt preview gate: CRT reads below desktop in hero camera "
+            f"(crt_base_y={crt_base_y:.3f} desk_top_y={desk_top_y:.3f})"
+        )
+    if crt_cx < desk_min_x - 0.04 or crt_cx > desk_max_x + 0.04:
+        raise RuntimeError(
+            f"desk-crt preview gate: CRT centre outside desktop top projection (crt_x={crt_cx:.3f})"
+        )
+    bpy.data.objects.remove(cam_ob, do_unlink=True)
+
+
+def import_garage_glb_joined_for_preview(
+    glb_path: Path,
+    asset_id: str,
+    tex_dir: Path,
+    *,
+    join_name: str | None = None,
+) -> list[bpy.types.Object]:
+    """Import committed GLB, apply preview mats, return one joined mesh (no per-part layout shift)."""
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
+    if asset_id == "garage-desk-crt":
+        gate_meshes = flatten_glb_preview_meshes([ob for ob in meshes])
+        assert_desk_crt_on_desktop_for_preview(gate_meshes)
+    else:
+        meshes = flatten_glb_preview_meshes(meshes)
+    if len(meshes) == 1:
+        apply_preview_material(meshes[0], tex_dir, asset_id)
+        return [meshes[0]]
+    for ob in meshes:
+        apply_preview_material(ob, tex_dir, asset_id)
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in meshes:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    bpy.ops.object.join()
+    joined = bpy.context.view_layer.objects.active
+    joined.name = join_name or f"{asset_id}_glb_preview_join"
+    return [joined]
+
+
 def _parent_keep_world_export(child: bpy.types.Object, parent: bpy.types.Object) -> None:
     mw = child.matrix_world.copy()
     child.parent = parent
@@ -738,19 +873,31 @@ def render_garage_hero_preview_from_glb(
     os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
     try:
-        bpy.ops.import_scene.gltf(filepath=str(glb_path))
-        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-        if not meshes:
-            raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
         frame_obs: list[bpy.types.Object]
         up_axis = "Y" if y_up else "Z"
         floor_plane = "horizontal_y" if y_up else "horizontal_z"
-        if y_up:
+        if y_up and asset_id == "garage-desk-crt":
+            bpy.ops.import_scene.gltf(filepath=str(glb_path))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            if not meshes:
+                raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
+            for ob in meshes:
+                apply_preview_material(ob, tex_dir, asset_id)
+            frame_obs = meshes
+        elif y_up:
+            bpy.ops.import_scene.gltf(filepath=str(glb_path))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            if not meshes:
+                raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
             meshes = flatten_glb_preview_meshes(meshes)
             for ob in meshes:
                 apply_preview_material(ob, tex_dir, asset_id)
             frame_obs = meshes
         else:
+            bpy.ops.import_scene.gltf(filepath=str(glb_path))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            if not meshes:
+                raise RuntimeError(f"{asset_id}: GLB import produced no meshes")
             root = bpy.data.objects.new("PreviewOrientRoot", None)
             bpy.context.collection.objects.link(root)
             for ob in meshes:
@@ -795,7 +942,9 @@ def render_garage_hero_preview_from_glb(
                     "framing_margin": margin,
                     "up_axis": up_axis,
                     "floor_plane": floor_plane,
-                    "renderer": "cycles_glb_import",
+                    "renderer": "cycles_glb_import_assembly"
+                    if asset_id == "garage-desk-crt"
+                    else "cycles_glb_import",
                 },
                 indent=2,
             )
@@ -819,13 +968,21 @@ def render_garage_side_ortho_preview_from_glb(
     os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
     bpy.ops.wm.read_factory_settings(use_empty=True)
     try:
-        bpy.ops.import_scene.gltf(filepath=str(glb_path))
-        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-        if not meshes:
-            raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
-        meshes = flatten_glb_preview_meshes(meshes)
-        for ob in meshes:
-            apply_preview_material(ob, tex_dir, asset_id)
+        if asset_id == "garage-desk-crt":
+            bpy.ops.import_scene.gltf(filepath=str(glb_path))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            if not meshes:
+                raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
+            for ob in meshes:
+                apply_preview_material(ob, tex_dir, asset_id)
+        else:
+            bpy.ops.import_scene.gltf(filepath=str(glb_path))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            if not meshes:
+                raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
+            meshes = flatten_glb_preview_meshes(meshes)
+            for ob in meshes:
+                apply_preview_material(ob, tex_dir, asset_id)
         bpy.context.view_layer.update()
         lo = Vector((1e9, 1e9, 1e9))
         hi = Vector((-1e9, -1e9, -1e9))

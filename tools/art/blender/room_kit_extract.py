@@ -122,6 +122,38 @@ def fit_screen_to_desk_y_up(
     _uniform_scale_parts([screen], factor)
 
 
+def _close_roll_door_bottom_gap(ob: bpy.types.Object) -> bpy.types.Object:
+    """Seal vertical gap between bottom bar and slat slab (pass24 hero tweak)."""
+    bpy.context.view_layer.update()
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.separate(type="LOOSE")
+    bpy.ops.object.mode_set(mode="OBJECT")
+    shells = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+    if len(shells) < 2:
+        if len(shells) == 1:
+            return shells[0]
+        return ob
+    shells.sort(key=lambda s: cc0.world_bbox(s)[0].y)
+    lower = shells[0]
+    upper = shells[1]
+    _, l_hi = cc0.world_bbox(lower)
+    u_lo, _ = cc0.world_bbox(upper)
+    gap = u_lo.y - l_hi.y
+    if gap > 0.0015:
+        lower.location.y += gap - 0.001
+        bpy.context.view_layer.update()
+    bpy.ops.object.select_all(action="DESELECT")
+    for shell in shells:
+        shell.select_set(True)
+    bpy.context.view_layer.objects.active = shells[0]
+    bpy.ops.object.join()
+    return bpy.context.view_layer.objects.active
+
+
 def extract_roll_door_y_up() -> list[bpy.types.Object]:
     """Merged Kenney slat roll door from room-kit build_roll_door (same mesh)."""
     door = room_kit.build_roll_door()
@@ -133,6 +165,8 @@ def extract_roll_door_y_up() -> list[bpy.types.Object]:
     cur_h = max(hi.y - lo.y, 0.01)
     factor = target_h / cur_h
     _uniform_scale_parts([door], factor)
+    door = _close_roll_door_bottom_gap(door)
+    door.name = "kit_roll_door"
     _center_xz_and_ground([door])
     return [door]
 

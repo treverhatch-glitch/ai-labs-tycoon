@@ -84,6 +84,27 @@ print("PARTLAYOUT", rows)
     return []
 
 
+def check_desk_crt_preview_placement() -> int:
+    script = REPO / "tools/art/blender/garage_desk_crt_preview_placement_gate.py"
+    proc = subprocess.run(
+        ["blender", "-b", "--python-exit-code", "1", "--python", str(script)],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        tail = (proc.stderr or proc.stdout or "").strip().splitlines()[-3:]
+        print(f"FAIL garage-desk-crt preview_placement gate rc={proc.returncode}")
+        for line in tail:
+            print(line)
+        return 1
+    for line in proc.stdout.splitlines():
+        if line.startswith("OK ") or line.startswith("FAIL "):
+            print(line)
+    return 0
+
+
 def check_glb_grounded(asset_id: str) -> int:
     glb = KIT / f"{asset_id}.glb"
     if not glb.is_file():
@@ -133,6 +154,8 @@ def main() -> int:
         aid = entry["id"]
         rc |= check_frame_meta(aid)
         rc |= check_glb_grounded(aid)
+        if aid == "garage-desk-crt":
+            rc |= check_desk_crt_preview_placement()
     rc |= check_frame_meta("garage-scene-kit")
     return rc
 
