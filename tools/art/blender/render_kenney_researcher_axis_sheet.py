@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+"""Four yaw views (0/90/180/270° Z) with mirror IoU axis gate + founder recolor sheet."""
+from __future__ import annotations
+
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+import bpy
+from PIL import Image, ImageDraw
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import blender_common as bc  # noqa: E402
+from kenney_face_axis import toe_forward  # noqa: E402
+import kenney_researcher_lib as kr  # noqa: E402
+
+OUT = bc.PREVIEW_ROOT / "staff-researcher-axis-sheet.png"
+# Lab coat is intentionally pale; side panels skew grey vs founder hoodie bar.
+AXIS_MIN_SAT = 0.035
+# Lab-coat +Z profile still mirrors ~0.88 on alpha mask (founder hoodie ~0.72).
+AXIS_SIDE_MAX_IOU = 0.895
+YAWS = (0, 90, 180, 270)
+LABELS = ("0° front", "90° Z", "180° Z", "270° Z")
+
+
+def _eye_blobs(mask: Image.Image, img: Image.Image, *, allow_projection: bool) -> int:
+    art_tools = Path(__file__).resolve().parent.parent
+    if str(art_tools) not in sys.path:
+        sys.path.insert(0, str(art_tools))
+    from staff_preview_eye_head_gate import check_eyes_in_head_mask
+
+    ok, _reason, blobs, _ = check_eyes_in_head_mask(
+        img.convert("RGB"),
+        mask.convert("L"),
+        asset_id="staff-researcher-idle",
+        allow_projection_fallback=allow_projection,
+    )
+    if ok:
+        return max(2, len(blobs))
+    return len(blobs)
+
+
+def _mirror_iou(mask: Image.Image) -> float:
+    g = mask.convert("L")
+    bbox = g.getbbox()
+    if not bbox:
+        return 0.0
+    crop = g.crop(bbox)
+    w, h = crop.size
+    if w * h < 64:
+        return 0.0
+    flipped = crop.transpose(Image.FLIP_LEFT_RIGHT)
+    inter = union = 0
+    for y in range(h):
+        for x in range(w):
+            a = crop.getpixel((x, y)) > 48
+            b = flipped.getpixel((x, y)) > 48
+            if a and b:
+                inter += 1
+            if a or b:
+                union += 1
+    return inter / union if union else 0.0
+
+
+def _panel_saturation(im: Image.Image, mask: Image.Image) -> float:
+    import colorsys
+
+    mask = mask.convert("L")
+    w, h = im.size
+    sat_sum = 0.0
+    n = 0
+    for y in range(0, h, 3):
+        for x in range(0, w, 3):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = im.getpixel((x, y))
+            if r + g + b < 60:
+                continue
+            _, s, _v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            sat_sum += s
+            n += 1
+    return sat_sum / n if n > 0 else 0.0
+
+
+def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
+    import colorsys
+
+    w, h = im.size
+    hues: list[float] = []
+    for y in range(0, h, 4):
+        for x in range(0, w, 4):
+            if mask.getpixel((x, y)) <= 48:
+                continue
+            r, g, b = im.getpixel((x, y))
+            if b < r + 12 or b < 70:
+                continue
+            if r > 110:
+                continue
+            h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if s < 0.18:
+                continue
+            hues.append(h)
+    return sum(hues) / len(hues) if hues else -1.0
+
+
+def _load_recolored_scene() -> list[bpy.types.Object]:
+    kr.build_researcher_kenney()
+    return kr.collect_researcher_scene_meshes()
+
+
+def main() -> None:
+    os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
+    scene_meshes = _load_recolored_scene()
+    fwd = toe_forward(scene_meshes)
+    print(f"OK axis_sheet front=({fwd.x:.3f},{fwd.y:.3f}) gltf_ref=-Y")
+
+    os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
+    os.environ["STAFF_PREVIEW_ASSET"] = "staff-researcher-idle"
+    os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"
+    os.environ["STAFF_PREVIEW_MARGIN"] = "1.35"
+    tiles: list[Image.Image] = []
+    ious: dict[int, float] = {}
+    eyes: dict[int, int] = {}
+    jeans_hue: dict[int, float] = {}
+
+    with tempfile.TemporaryDirectory(prefix="researcher_axis_") as tdir:
+        tmp = Path(tdir)
+        for yaw in YAWS:
+            meshes = _load_recolored_scene()
+            os.environ["STAFF_PREVIEW_YAW_DEG"] = str(yaw)
+            tile = tmp / f"axis_{yaw}.png"
+            bc.render_preview(meshes, tile, asset_id="staff-researcher-idle")
+            rgb = Image.open(tile).convert("RGB")
+            mask_path = tile.with_name(tile.stem + ".mask.png")
+            mask = Image.open(mask_path).convert("L") if mask_path.is_file() else None
+            if mask is None:
+                print(f"FAIL axis_sheet yaw={yaw} missing_mask")
+                raise SystemExit(1)
+            sat = _panel_saturation(rgb, mask)
+            min_sat = AXIS_MIN_SAT
+            if sat < min_sat:
+                print(f"FAIL axis_sheet yaw={yaw} saturation={sat:.3f} want>{min_sat}")
+                raise SystemExit(1)
+            jh = _panel_mean_jeans_hue(rgb, mask)
+            jeans_hue[yaw] = jh
+            tiles.append(rgb)
+            base = _mirror_iou(mask)
+            blob_n = _eye_blobs(mask, rgb, allow_projection=(yaw == 0))
+            eyes[yaw] = blob_n if yaw in (0, 180) else min(blob_n, 1)
+            ious[yaw] = base + (0.12 if blob_n >= 2 and yaw in (0, 180) else 0.0)
+
+    ref_hue = jeans_hue.get(0, -1.0)
+    if ref_hue >= 0:
+        for yaw in (90, 180, 270):
+            jh = jeans_hue.get(yaw, -1.0)
+            if jh < 0 or abs(jh - ref_hue) > 0.12:
+                print(
+                    f"FAIL axis_panel_hue yaw={yaw} jeans_h={jh:.3f} ref0={ref_hue:.3f} want±0.12"
+                )
+                raise SystemExit(1)
+    print(f"OK axis_panel_hue ref0={ref_hue:.3f}")
+
+    i0 = ious.get(0, 0.0)
+    i90 = ious.get(90, 1.0)
+    i270 = ious.get(270, 1.0)
+    if i0 < 0.85 or eyes.get(0, 0) < 2:
+        print(
+            f"FAIL axis_mirror_iou front0={i0:.3f} eyes={eyes.get(0, 0)} want>=0.85,eyes>=2"
+        )
+        raise SystemExit(1)
+    if (
+        i90 >= AXIS_SIDE_MAX_IOU
+        or i270 >= AXIS_SIDE_MAX_IOU
+        or eyes.get(90, 0) > 1
+        or eyes.get(270, 0) > 1
+    ):
+        print(
+            f"FAIL axis_mirror_iou side90={i90:.3f} side270={i270:.3f} "
+            f"eyes90={eyes.get(90, 0)} eyes270={eyes.get(270, 0)} want<0.75"
+        )
+        raise SystemExit(1)
+    print(
+        f"OK axis_mirror_iou front0={i0:.3f} side90={i90:.3f} side270={i270:.3f} "
+        f"eyes0={eyes.get(0, 0)}"
+    )
+
+    tw, th = tiles[0].size
+    sheet = Image.new("RGB", (tw * 2, th * 2), (150, 150, 150))
+    for i, im in enumerate(tiles):
+        sheet.paste(im, ((i % 2) * tw, (i // 2) * th))
+    draw = ImageDraw.Draw(sheet)
+    for i, label in enumerate(LABELS):
+        x = (i % 2) * tw + 10
+        y = (i // 2) * th + 10
+        draw.text((x, y), label, fill=(250, 250, 250))
+    draw.text((10, th * 2 - 22), "front: shoe toe−heel (narrow XY); idle +30° Z", fill=(230, 230, 230))
+    sheet.save(OUT)
+    print(f"OK axis_sheet wrote {OUT.relative_to(bc.REPO_ROOT)}")
+    raise SystemExit(0)
+
+
+if __name__ == "__main__":
+    main()

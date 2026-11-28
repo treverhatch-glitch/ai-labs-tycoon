@@ -7,13 +7,13 @@ LOCK="${TMPDIR:-/tmp}/b18-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+DOTNET="${DOTNET:-$(command -v dotnet)}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[154]=a43322c15bc05528c0359d17ecffaa194bfc3fc4cefc46e19c7c778383ab43bd
-GOLDEN[155]=98e9a857b589269524ea6f95b85cb875debbaba92833421577da2f933072ef15
+GOLDEN[154]=90a01e4fa183b12d3e88ae50be91a27abde163a753c3075cf7b2158637f7188e
+GOLDEN[155]=dc1d5b5b6efec3a5761833fe0e38d4c09f9d68cf283980452b5d78d9a76681d5
 
 PREV=$((N - 1))
 BK="/tmp/b18-rev-bak-$N"

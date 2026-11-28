@@ -2478,4 +2478,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q537. Softer trust hit closing open weights in late era? DECIDED (schema 197): `openWeightsCloseEraRelief`; `OpenWeightsCloseEraRelieved` on `OpenWeights.SetPolicy` close.
 
-### Q538. Batch thirty-two news, chat and combos. DECIDED: three headlines, three chat lines (449/402); `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests`.
+### Q538. Batch thirty-two news, chat and combos. DECIDED: three headlines, three chat lines (449/405 merged tip); `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests`.
+
+### Q501a. Era N–P hardening tests after batch 23. DECIDED: intentional drift on `main` at `0bbbae03` (batch 23 / Q501 → 421/374); landed `6fbea2b2`; gate repins tip golden `9f9b1a4a…`, batch-18 reverts `90a01e4f…` / `dc1d5b5b…`, and batch-19–23 helper digests for schemas 156–169 (news/chat revert chain through Q501); graphics 289–326 have no `Rules/` delta vs merge base.
+
+### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.
+
+### Q15536–Q16095. Batches 358–365 + host 358/362? DECIDED: packet **2** (refold on **`origin/main`** post-#84).
+
+### Q16096–Q16375. Batches 366–368 (NEXT #9–#11)? DECIDED: LOCAL hatch **27–29** + `HostExplainNext366LaterTests` (**HOLD push** until PR #87 lands).
+
+### Q16376–Q16585. Batches 369–371 (NEXT #12–#14 chat/glow, room age, chips+rivals)? DECIDED: LOCAL hatch **30–32** + `HostExplainNext370LaterTests`.
+
+### Q16586–Q16865. Batches 372–375 (NEXT #15–#18 control/leads/repair + rival log+balance)? DECIDED: LOCAL hatch **33–36** + `HostExplainNext375LaterTests` (**HOLD push** until #87 + refold + GO).
+
+### Q16866–Q17005. Batches 376–379 (NEXT #19–#22 objectives/successor/rush/ticker)? DECIDED: hatch **37–40** + `HostExplainNext379LaterTests`.
+
+### Q17006+. Next rivals slice after packet 6? *Planned:* coordinator GO after rules green on packet 6 + era batch 24 PR head.
+
+### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.

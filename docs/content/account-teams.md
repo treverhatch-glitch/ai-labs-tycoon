@@ -1,6 +1,6 @@
 # Sector account teams
 
-The player assigns salespeople to a sector where a model of theirs is on sale; the team builds familiarity and lifts that sector's appeal (`accounts.*` in the data; Q360). A saved list on the lab (`accountTeams`: sector, people, weeks; schema 74); older saves have no teams.
+The player assigns salespeople to a sector where a model of theirs is on sale; the team builds familiarity and lifts that sector's appeal (`accounts.*` in the data; Q360). A saved list on the lab (`accountTeams`: sector, people, weeks; schema 75); older saves have no teams.
 
 ## `AssignAccountTeam`
 

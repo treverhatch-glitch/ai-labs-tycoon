@@ -1,0 +1,11 @@
+{
+  "note": "Abstract map colours for blocs (presentation only). Real country names in UI.",
+  "blocs": {
+    "us": "#5A8CF2",
+    "eu": "#66BF73",
+    "china": "#F2808C",
+    "gulf": "#F2BF5A",
+    "singapore": "#8C66F2",
+    "thailand": "#BF8CD9"
+  }
+}

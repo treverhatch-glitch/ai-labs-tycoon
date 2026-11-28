@@ -7,14 +7,14 @@ LOCK="${TMPDIR:-/tmp}/b21-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+DOTNET="${DOTNET:-$(command -v dotnet)}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[161]=29522a9ee191f78afda21d1270f33fffbf773b52fcbc6656bf3af806873d17d7
-GOLDEN[162]=565b2dcf9b9681767474a3a407e74cde6d75f0fda399ef429b6598e52c7f2827
-GOLDEN[163]=1bd331ed1023f8b57fb89355658602c0a69eac7fd3824a2b1e599263efb4bc9a
+GOLDEN[161]=477107bf9f7bffe158b58f34e5234a5f8a9ad69e296b141e1f6fd3bda58a21d3
+GOLDEN[162]=0e7f7f6f75f2dc59b22e2a633a00eb7954c0abc5784072376a84ec12c1a2e0ff
+GOLDEN[163]=0d7dcbe5a1cc0b3038fca676d143bf2fe793f61229fb3d2a2ba169421e78235b
 
 PREV=$((N - 1))
 BK="/tmp/b21-rev-bak-$N"

@@ -35,6 +35,16 @@ Known limits of the slice, so nobody is surprised:
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
   the player's side.
 
+## Rivals stack2 lane
+
+| Lane | Tips |
+| --- | --- |
+| `cursor/later-rules-stack2-main-39c0` → `main` **`b673e025`** | **[PR #87](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/87)** **`6cbd4312`** (358–365); LOCAL **366–371** (2 commits ahead of `6cbd4312`); **`stack2-75cd`** **`b9d0cf36`** — **no push** |
+
+**LOCAL rivals queue:** **366–375** (packets 3–5; **3 commits** ahead of `6cbd4312`). **#9–#11** sector/safety/naming; **#12–#14** chat/glow, room age, rival+chips; **#15–#18** control stale, research leads, model repair, rival log+balance (rules items 26–28 + rival log tail). Spot **366–371:** **426/426**; spot **372–375:** **284/284** GREEN. **NO PUSH** until **#87** merges → refold `main` → full prepass → coordinator **GO** → grouped squash (packets 3–5).
+
+**Next LOCAL refill (queue):** rules **#19+** — training objectives (30), successor design (31), rushed launch (32), news ticker (33); bible tails as hatch **37+** after packet 5 lands.
+
 ## Who works where
 
 Agents work in parallel. Stay in your area and the merges stay boring.
@@ -443,7 +453,7 @@ and says why in the commit message.
 
 244. **Batch twenty-three news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests` (Q501).
 
-### Era batch 24 (LOCAL prep on `x-af2f`, HOLD push)
+### Era batch 24 (`main` #97 packet6 + schemas 170–172)
 
 245. **Margin satisfy era relief.** ~~Done (local)~~: `MarginSatisfyEraRelief`, schema 170 (Q502).
 
@@ -533,7 +543,7 @@ and says why in the commit message.
 
 280. **Open weights close era relief.** ~~Done (local)~~: `OpenWeightsCloseEraRelief`, schema **197** (Q537).
 
-281. **Batch thirty-two news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests` (Q538); target 449/402.
+281. **Batch thirty-two news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests` (Q538); target 449/405 at merged tip (packet6 chat + batches 25–32).
 
 ## Rules: later
 
@@ -566,6 +576,18 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
 4. The model mascots and their three states; the glow.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
+
+## Merge train (dependency order)
+
+Agents land **one gate at a time**; **`rules` must be success on the exact PR head** before `commit-tree` to `main` (~3m between `main` moves; noreply, no `Co-authored-by`, no force-push).
+
+1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
+2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
+3. ~~**Graphics pipeline follow-on**~~ — PR **#85** merged (`main` **`b673e025`**, rules **133** @ `08cf6d47`).
+4. **Stack2 packet 2** — **[PR #87](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/87)** batches **358–365** @ **`6cbd4312`** (merge train).
+5. **Stack2 packets 3+4** — batches **366–371** LOCAL (grouped push after #87 + prepass on post-merge `main`).
+6. **Stack2 packet 5** — batches **372–375** LOCAL (**#15–#18**; build-only until #87 merge + GO).
+7. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 
 ## Studio and CI
 

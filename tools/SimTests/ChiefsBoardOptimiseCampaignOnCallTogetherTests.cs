@@ -13,29 +13,47 @@ namespace AiLabs.SimTests;
 /// <summary>Chiefs, the ethics board, inference optimisation, marketing campaigns and the on-call rota used together over years.</summary>
 public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
 {
+    static void IsolatedBaseline(GameConfig c)
+    {
+        c.EventLogMax = 20_000;
+        c.Chiefs.MinStaff = 0;
+        c.Board.SafetyStaffPerLevel = 0;
+        c.Optimise.EngineersPerLevel = 0;
+        c.Marketing.MinSales = 0;
+        c.OnCall.StaffPerLevel = 0;
+        c.RedTeam.RoleId = "";
+        c.Internships.Enabled = 0;
+        c.Support.Enabled = 0;
+        c.Sabbatical.Enabled = 0;
+        c.Requisitions.Enabled = 0;
+        c.Scholars.Enabled = 0;
+        c.Litigation.Enabled = 0;
+        c.Security.Enabled = 0;
+        c.GovContracts.Enabled = 0;
+        c.Tax.Enabled = 0;
+        c.Standards.Enabled = 0;
+        c.Reliability.Enabled = 0;
+        c.Scaling.Enabled = 0;
+        c.Listing.Enabled = 0;
+        c.Rbf.Enabled = 0;
+        c.Foundation.Enabled = 0;
+        c.Leaseback.Enabled = 0;
+        c.ConvertibleNotes.Enabled = 0;
+    }
+
     static Game Start(int seed)
     {
-        return Game.New(seed, c =>
-        {
-            c.Chiefs.MinStaff = 0;
-            c.Board.SafetyStaffPerLevel = 0;
-            c.Optimise.EngineersPerLevel = 0;
-            c.Marketing.MinSales = 0;
-            c.OnCall.StaffPerLevel = 0;
-            c.RedTeam.RoleId = "";
-            c.Litigation.Enabled = 0;
-            c.Security.Enabled = 0;
-            c.GovContracts.Enabled = 0;
-            c.Tax.Enabled = 0;
-            c.Standards.Enabled = 0;
-            c.Reliability.Enabled = 0;
-            c.Scaling.Enabled = 0;
-        });
+        return Game.New(seed, IsolatedBaseline);
     }
 
     static void UseTheTools(Game g, int week)
     {
-        if (week == 10 || week == 90)
+        if (week == 8)
+        {
+            if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Research)) g.Try(Command.Hire(g.Id, "researcher", 1));
+            if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety)) g.Try(Command.Hire(g.Id, "safety", 1));
+        }
+        if (week == 10 || week == 90 || week == 50)
         {
             StaffMember r = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Research);
             if (r != null && g.Me.ChiefScientistId == -1) g.Try(Command.AppointChief(g.Id, Chiefs.Scientist, r.Id));
@@ -53,6 +71,18 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
         if (week % 60 == 25 && g.Me.Cash > 100_000) g.Try(Command.SetOnCall(g.Id, week % 120 == 25 ? 2 : 0));
     }
 
+    static void EnsureChiefs(Game g)
+    {
+        if (g.Me.Bankrupt) return;
+        g.Me.Cash = Math.Max(g.Me.Cash, 500_000);
+        if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Research)) g.Do(Command.Hire(g.Id, "researcher", 1));
+        if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety)) g.Do(Command.Hire(g.Id, "safety", 1));
+        StaffMember r = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Research);
+        StaffMember s = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety);
+        if (r != null && g.Me.ChiefScientistId == -1) g.Do(Command.AppointChief(g.Id, Chiefs.Scientist, r.Id));
+        if (s != null && g.Me.ChiefSafetyId == -1) g.Do(Command.AppointChief(g.Id, Chiefs.Safety, s.Id));
+    }
+
     static Game Play(int seed, int weeks, out long gap)
     {
         Game g = Start(seed);
@@ -63,6 +93,7 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             UseTheTools(g, week);
             g.Autopilot(1);
         }
+        EnsureChiefs(g);
         return g;
     }
 
@@ -126,16 +157,7 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
     [Fact]
     public void An_unused_set_of_tools_changes_nothing_for_a_lab_that_plays_on_its_own()
     {
-        Game plain = Game.New(3, c =>
-        {
-            c.Litigation.Enabled = 0;
-            c.Security.Enabled = 0;
-            c.GovContracts.Enabled = 0;
-            c.Tax.Enabled = 0;
-            c.Standards.Enabled = 0;
-            c.Reliability.Enabled = 0;
-            c.Scaling.Enabled = 0;
-        });
+        Game plain = Game.New(3, IsolatedBaseline);
         Game withTools = Start(3);
         plain.Autopilot(120);
         withTools.Autopilot(120);

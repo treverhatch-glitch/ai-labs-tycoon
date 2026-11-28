@@ -33,34 +33,58 @@ dotnet run --project tools/SimCli -- run --years 8
 
 ## 2. The Unity project
 
-`unity/` is a placeholder. Create the project in it:
+`unity/` is a hand-scaffolded Unity **6000.3** project (URP in `Packages/manifest.json`, rules as a local package).
+You do not need to create it from a template unless the folder is missing.
 
-1. Unity Hub > New project > Unity 6000.3 > a 3D (URP) template > location: this repo, project name `unity`, so
-   that `unity/ProjectSettings/ProjectVersion.txt` exists.
-2. Add the rules as a local package. In `unity/Packages/manifest.json`, under `dependencies`:
+### Open in Unity Hub
 
-   ```json
-   "com.hatchtag.ailabs.rules": "file:../../Rules"
-   ```
+1. **Add** the repo folder `ai-labs-tycoon/unity` (not the repo root) as a project.
+2. Confirm **Unity 6000.3.x** opens it and `ProjectSettings/ProjectVersion.txt` shows `6000.3`.
+3. Let the first import finish (URP + `com.hatchtag.ailabs.rules` from `file:../../Rules`).
 
-   Unity compiles the same sources the tests do, as the assembly `AiLabs.Rules` (`Rules/AiLabs.Rules.asmdef`; it has
-   `noEngineReferences` on, so a Unity type in the rules is a compile error in Unity too).
-3. Unity writes a `.meta` file beside each rules file on the first import. Commit them: they hold the IDs Unity
-   uses, and they must be the same on every machine.
-4. `Rules/Data/default-config.json` is the game's data. Load it as text (a `TextAsset` from the package) and hand
-   it to `GameConfig.FromJson`. Do not copy the numbers into a scene or a ScriptableObject.
-5. The first script is small: `Simulation.NewGame(config, seed)`, a button that calls `Step()`, and labels that
-   read `sim.State`. Unity sends `Command`s and draws state; it holds no rules.
+### What to verify in the Editor
+
+| Check | Expected |
+| --- | --- |
+| Console on import | No compile errors in `AiLabs.Rules` or `AiLabs.Unity` |
+| Packages window | `com.hatchtag.ailabs.rules` resolves to `Rules/` |
+| Play (any empty scene) | `GameBootstrap` auto-starts: **14×10 garage grid**, HUD with cash, date, era name, **Advance week** |
+| Build panel (left) | Lists era-open room types; **drag on the lot** (not over UI) places a room via `BuildRoom` |
+| Staff/GPU panel (right) | Hire/fire roles and rent/buy GPUs; refusals show in the panel status line |
+| Training bar (bottom) | Start Mini/Mid/Flagship runs; progress shown in permille while training |
+| Gauntlet overlay | Pops when a new `GauntletRecord` appears (advance weeks through a year-end) |
+| Mascots (above lot) | Spheres per model; colour/scale from `ModelMood`; room blocks glow via spread map |
+| Era evolution | Advance into a new era: floor/accent skin changes; older room types grow taller and pick up era accent (`EraRoomEvolution`) |
+| Advance week | Date/tick move; cash changes when the sim bills the lab |
+| Test Runner > Edit Mode | All tests in `Assets/Editor/Tests` pass |
+
+The first scene is built in code (`Assets/Scripts/Bootstrap/GameBootstrap.cs`); there is no `.unity` scene file yet.
+Rooms appear as coloured blocks when you add `BuildRoom` commands in a later slice; the palette is keyed by room
+purpose and era skin (`HqVisualPalette`) so art can swap per era and drive glow through `RoomBlockView` later.
+
+After the first successful import, Unity writes `.meta` files beside rules sources and under `unity/Assets/`. **Commit
+those metas** so every machine shares the same GUIDs.
+
+### Rules wiring (already in the repo)
+
+- `unity/Packages/manifest.json` depends on `"com.hatchtag.ailabs.rules": "file:../../Rules"`.
+- Unity compiles the same sources as `dotnet test`, assembly `AiLabs.Rules` (`Rules/AiLabs.Rules.asmdef`,
+  `noEngineReferences`).
+- Config loads from `Rules/Data/default-config.json` via `RulesConfigLoader` (package `TextAsset` in-editor, repo
+  path fallback). Do not copy tunables into scenes.
+
+Unity sends `Command`s and draws `GameState` only; game rules stay in `Rules/`.
 
 The root `.gitignore` already ignores `unity/Library/`, `unity/Temp/`, `unity/Logs/`, `unity/UserSettings/` and
 builds.
 
 ### The Unity workflow on GitHub
 
-`.github/workflows/unity.yml` runs GameCI (Edit Mode and Play Mode tests, and a Windows build when asked). It is
-manual: Actions > unity > Run workflow, on `main`. It uses the repository secrets `UNITY_LICENSE`, `UNITY_EMAIL` and
-`UNITY_PASSWORD`, which are already set. While `unity/` holds no project it prints a notice and passes without
-starting Unity.
+`.github/workflows/unity.yml` runs GameCI **Edit Mode** tests for `unity/`. It triggers on **pull requests** that touch
+`unity/**` or the workflow file, and on **workflow_dispatch** (Actions > unity > Run workflow). It does not run on
+`push` or a schedule. Concurrency cancels an in-flight run when a newer one starts. Secrets `UNITY_LICENSE`,
+`UNITY_EMAIL` and `UNITY_PASSWORD` are passed only to the `game-ci/unity-test-runner` step. If
+`ProjectSettings/ProjectVersion.txt` is missing it logs a notice and skips Unity without failing.
 
 ## 3. The studio
 

@@ -36,6 +36,8 @@ other labs. Numbers are read from `Rules/Data/default-config.json` (`chips`, `ve
 | `n5` | TSMSea 5 | 2022 | 5 | 1,800 | 3 | $45k | $30M | 25% | 30% / 92% | 16 weeks | 15,000 |
 | `n3` | TSMSea 3 | 2025 | 6 | 5,000 | 4 | $70k | $80M | 25% | 30% / 93% | 18 weeks | 20,000 |
 
+The 3 nm process also needs the `chip-codesign` tech before a lab may start a design on it (calendar year alone is not enough).
+
 Half the foundry's capacity goes to the vendor's own customers; the other half is the "room" shared by every lab. The tier is the
 export tier: the export rules of [world.md](world.md) apply to a chip as to a GPU of that tier, to the buyer's home and the
 designer's home both.
@@ -48,6 +50,7 @@ designer's home both.
 | Die | `medium` | - | 100% | 100% | 100% | 100% | 0 |
 | Die | `large` | - | 170% | 200% | 160% | 150% | -15 pts |
 | Die | `reticle` | `reticle-dies` | 250% | 350% | 230% | 220% | -25 pts |
+| Die | `chiplet-mcm` | `chiplet-packaging` | 220% | 280% | 200% | 210% | -20 pts |
 | Format | `fp16` | `chip-team` | 100% | 100% | 100% | 100% | 0 |
 | Format | `fp8` | `training-silicon` | 160% | 100% | 100% | 130% | 0 |
 | Format | `fp4` | `low-precision` | 240% | 100% | 100% | 160% | 0 |
@@ -56,6 +59,7 @@ designer's home both.
 | Memory | `hbm-stacked` | `stacked-hbm` | 130% | 130% | 110% | 120% | -5 pts |
 | Cooling | `air` | - | 100% | 100% | 100% | 100% | 0 |
 | Cooling | `liquid` | `liquid-cooling` | 110% | 110% | 80% | 110% | 0 |
+| Cooling | `optical` | `optical-interconnect` | 118% | 115% | 75% | 115% | -5 pts |
 
 Worked examples (pinned by tests): an inference chip on `n28` with a small die, 16-bit numbers, plain memory and air has compute 99,
 1 kW, 1,260 design points and wafers of $3,600. A training chip on `n5` with a medium die, 8-bit numbers, towers of memory and

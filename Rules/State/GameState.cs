@@ -42,6 +42,8 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        /// <summary>Whether the bubble has already crashed once this game.</summary>
+        public bool BubbleHadCrash;
         public int RivalIntentLastTick = -1;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
@@ -95,6 +97,7 @@ namespace AiLabs.Rules.State
             s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
             s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
             s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
+            s.Bool("bubbleHadCrash", ref BubbleHadCrash);
             s.Int("rivalIntentLastTick", ref RivalIntentLastTick);
             s.ObjList("endings", ref Endings);
         }

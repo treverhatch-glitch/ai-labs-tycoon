@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "urp": {
+    "shader": "Universal Render Pipeline/Lit",
+    "defaultSmoothness": 0.2,
+    "floorSmoothness": 0.15,
+    "emissionHDR": 1.8
+  },
+  "colors": {
+    "ui-ink": "#1A1D24",
+    "ui-paper": "#F4F0E8",
+    "ui-slate": "#14171D",
+    "ui-danger": "#E85D4A",
+    "purpose-research": "#5A8CF2",
+    "purpose-engineering": "#66BF73",
+    "purpose-safety": "#F2BF5A",
+    "purpose-sales": "#F2808C",
+    "purpose-compute": "#8C66F2",
+    "purpose-infrastructure": "#9999A6",
+    "purpose-policy": "#BF8CD9"
+  }
+}

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
+using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -102,6 +103,110 @@ namespace AiLabs.Rules.Systems
         {
             public string SectorId;
             public long Amount;
+        }
+
+        public struct GpuRentBreakdown
+        {
+            public long SpotRentedGpus;
+            public long ReservedDiscounted;
+            public long CloudChips;
+
+            public long Total { get { return SpotRentedGpus + ReservedDiscounted + CloudChips; } }
+        }
+
+        public struct ReservedComputeBreakdown
+        {
+            public int ReservedGpus;
+            public int ActiveContracts;
+            public long WeeklySpotEquivalent;
+            public long WeeklyDiscounted;
+            public int VendorQueuedGpus;
+
+            public long WeeklySavings { get { return WeeklySpotEquivalent - WeeklyDiscounted; } }
+        }
+
+        public struct RivalDecisionSlice
+        {
+            public DecisionAction Action;
+            public string Ref;
+            public long Amount;
+            public ReasonCode PrimaryReason;
+            public bool HasReason;
+        }
+
+        public struct SignReservedQuote
+        {
+            public int GpuCount;
+            public long Deposit;
+            public long WeeklyRentAfterSign;
+        }
+
+        public struct VendorQueueBreakdown
+        {
+            public int Standing;
+            public int AllocationThisMonth;
+            public int BoughtThisMonth;
+            public int AllocationLeft;
+            public int QueuedGpus;
+            public int QueueHoldingId;
+            public int PricePermille;
+            public long UnitPrice;
+        }
+
+        public struct FundingRoundQuote
+        {
+            public string RoundId;
+            public long Cash;
+            public int DilutionPermille;
+            public int FounderShareAfterPermille;
+            public bool DownRound;
+        }
+
+        public struct HardwareFleetBreakdown
+        {
+            public string CurrentGenId;
+            public int OwnedHqGpus;
+            public int OwnedOffsiteGpus;
+            public int RentedGpus;
+            public int ReservedGpus;
+
+            public int TotalUnits { get { return OwnedHqGpus + OwnedOffsiteGpus + RentedGpus + ReservedGpus; } }
+        }
+
+        public struct FundingLadderStep
+        {
+            public string RoundId;
+            public bool Completed;
+            public bool Unlocked;
+        }
+
+        public struct RivalRelationSlice
+        {
+            public string RivalId;
+            public string Name;
+            public int FeelingToPlayer;
+            public int LogLineCount;
+        }
+
+        public struct AlignmentGapBreakdown
+        {
+            public int EffectiveAlignment;
+            public int DisplayedAlignment;
+            public int GapPermille;
+            public long SandbagBoost;
+        }
+
+        public struct StaffRosterBreakdown
+        {
+            public int Headcount;
+            public int AverageMoralePermille;
+            public long WeeklySalaries;
+        }
+
+        public struct BalanceSoakHostPreview
+        {
+            public int PresetCount;
+            public int DefaultGamesPerPreset;
         }
 
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
@@ -223,10 +328,12 @@ namespace AiLabs.Rules.Systems
             p.GraceMonths = state.BubbleGraceMonths;
             p.CrashMonthsRemaining = state.BubbleCrashMonthsRemaining;
             p.CapitalRaised = state.BubbleCapitalRaised;
-            p.MarketRevenueLastMonth = BubbleSystem.MarketRevenueThisMonth(state);
+            p.MarketRevenueLastMonth = BubbleSystem.MarketRevenueLastClosedMonth(state);
             p.GraceMonthsNeeded = b == null ? 0 : b.GraceMonthsBeforeCrash;
+            int popWarn = b == null ? 50 : b.PopWarningMarginPermille;
+            if (popWarn < 1) popWarn = 50;
             if (BubbleSystem.InCrash(state)) p.WarningLevel = 3;
-            else if (b != null && state.BubblePermille >= b.PopAtPermille - 50) p.WarningLevel = 2;
+            else if (b != null && state.BubblePermille >= b.PopAtPermille - popWarn) p.WarningLevel = 2;
             else if (b != null && state.BubblePermille >= b.HotPermille) p.WarningLevel = 1;
             return p;
         }
@@ -293,6 +400,224 @@ namespace AiLabs.Rules.Systems
                 }
             }
             return b;
+        }
+
+        public static GpuRentBreakdown GpuRentParts(GameConfig c, GameState state, LabState lab)
+        {
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            var b = new GpuRentBreakdown();
+            b.SpotRentedGpus = gen.RentPerGpuWeek * lab.RentedGpus;
+            b.ReservedDiscounted = ComputeContractSystem.WeeklyReservedRent(c, state, lab);
+            b.CloudChips = ChipQueries.WeeklyCloudChipRent(c, state, lab);
+            return b;
+        }
+
+        public static ReservedComputeBreakdown ReservedComputeParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new ReservedComputeBreakdown();
+            if (lab == null) return b;
+            b.ReservedGpus = ComputeContractSystem.ReservedGpus(lab);
+            b.ActiveContracts = lab.ReservedContracts.Count;
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.WeeklySpotEquivalent = gen.RentPerGpuWeek * b.ReservedGpus;
+            b.WeeklyDiscounted = ComputeContractSystem.WeeklyReservedRent(c, state, lab);
+            VendorStanding standing = state.Vendor.Standing(lab.Id);
+            b.VendorQueuedGpus = standing == null ? 0 : standing.QueuedGpus;
+            return b;
+        }
+
+        public static bool TrySignReservedQuote(GameConfig c, GameState state, LabState lab, int gpuCount, out SignReservedQuote quote)
+        {
+            quote = new SignReservedQuote();
+            if (lab == null || gpuCount < 1) return false;
+            quote.GpuCount = gpuCount;
+            quote.Deposit = ComputeContractSystem.Deposit(c, state, lab, gpuCount);
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            quote.WeeklyRentAfterSign = MathI.MulPermille(gpuCount * gen.RentPerGpuWeek, c.Compute.ReservedRentPermille);
+            return true;
+        }
+
+        public static HardwareFleetBreakdown HardwareFleetParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new HardwareFleetBreakdown();
+            if (lab == null) return b;
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.CurrentGenId = gen == null ? "" : gen.Id;
+            b.OwnedHqGpus = LabQueries.OwnedGpuUnits(lab, HardwareBatch.Hq);
+            int owned = 0;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+                if (lab.Fleet[i].ChipDesignId < 0) owned += lab.Fleet[i].Count;
+            b.OwnedOffsiteGpus = owned - b.OwnedHqGpus;
+            if (b.OwnedOffsiteGpus < 0) b.OwnedOffsiteGpus = 0;
+            b.RentedGpus = lab.RentedGpus;
+            b.ReservedGpus = ComputeContractSystem.ReservedGpus(lab);
+            return b;
+        }
+
+        public static List<FundingLadderStep> FundingLadderParts(GameConfig c, GameState state, LabState lab)
+        {
+            var steps = new List<FundingLadderStep>();
+            if (lab == null) return steps;
+            int year = GameDate.Year(c.Calendar, state.Tick);
+            bool frozen = WorldQueries.IsFrozen(lab, lab.HomeBlocId);
+            for (int i = 0; i < c.Funding.Rounds.Count; i++)
+            {
+                FundingRoundConfig round = c.Funding.Rounds[i];
+                var step = new FundingLadderStep();
+                step.RoundId = round.Id;
+                step.Completed = FundingSystem.HasRound(lab, round.Id);
+                step.Unlocked = !step.Completed && !frozen && year >= round.OpensYear
+                    && lab.Reputation >= round.MinReputation && FundingSystem.PriorRoundsDone(c, lab, round);
+                steps.Add(step);
+            }
+            return steps;
+        }
+
+        public static AlignmentGapBreakdown AlignmentGapParts(GameConfig c, ModelState model, int tick)
+        {
+            var b = new AlignmentGapBreakdown();
+            if (model == null) return b;
+            b.EffectiveAlignment = SafetySystem.EffectiveAlignment(c, model);
+            b.DisplayedAlignment = SafetySystem.DisplayedAlignment(model);
+            b.GapPermille = (int)MathI.Max(0, b.DisplayedAlignment - model.Alignment);
+            SectorConfig sector = c.Market.Sectors.Count > 0 ? c.Market.Sectors[0] : null;
+            if (sector != null)
+            {
+                QualityBreakdown q = QualityParts(c, sector, model, tick);
+                b.SandbagBoost = q.SandbagBoost;
+            }
+            return b;
+        }
+
+        public static StaffRosterBreakdown StaffRosterParts(GameConfig c, LabState lab)
+        {
+            var b = new StaffRosterBreakdown();
+            if (lab == null) return b;
+            b.Headcount = lab.Staff.Count;
+            if (b.Headcount > 0)
+            {
+                long morale = 0;
+                for (int i = 0; i < lab.Staff.Count; i++) morale += lab.Staff[i].Morale;
+                b.AverageMoralePermille = (int)(morale / b.Headcount);
+            }
+            b.WeeklySalaries = LabQueries.WeeklySalaries(c, lab);
+            return b;
+        }
+
+        public static BalanceSoakHostPreview BalanceSoakPreview(GameConfig c)
+        {
+            var b = new BalanceSoakHostPreview();
+            BalanceSoak.Preset[] presets = BalanceSoak.DefaultPresets(c);
+            b.PresetCount = presets == null ? 0 : presets.Length;
+            b.DefaultGamesPerPreset = 24;
+            return b;
+        }
+
+        public static List<RivalRelationSlice> RivalRelationSlices(GameConfig c, GameState state, int maxRivals)
+        {
+            var slices = new List<RivalRelationSlice>();
+            if (state == null || maxRivals < 1) return slices;
+            int added = 0;
+            for (int i = 0; i < state.Labs.Count && added < maxRivals; i++)
+            {
+                LabState lab = state.Labs[i];
+                if (lab.Id == state.PlayerLabId) continue;
+                if (lab.Controller != LabController.Plan) continue;
+                var slice = new RivalRelationSlice();
+                slice.RivalId = lab.RivalId;
+                slice.Name = lab.Name;
+                slice.FeelingToPlayer = lab.FeelingToPlayer;
+                slice.LogLineCount = lab.Log.Count;
+                slices.Add(slice);
+                added++;
+            }
+            return slices;
+        }
+
+        public static VendorQueueBreakdown VendorQueueParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new VendorQueueBreakdown();
+            if (lab == null) return b;
+            VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
+            b.Standing = standing.Standing;
+            b.AllocationThisMonth = standing.AllocationThisMonth;
+            b.BoughtThisMonth = standing.BoughtThisMonth;
+            b.AllocationLeft = VendorSystem.AllocationLeft(state, lab);
+            b.QueuedGpus = standing.QueuedGpus;
+            b.QueueHoldingId = standing.QueueHoldingId;
+            b.PricePermille = VendorSystem.PricePermille(c, state, lab);
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.UnitPrice = VendorSystem.PricePerGpu(c, state, lab, gen);
+            return b;
+        }
+
+        /// <summary>Recent Envydia decision lines (allocation shifts, courting). Same templates as rivals.</summary>
+        public static List<string> VendorLogLines(GameConfig c, GameState state, int maxLines)
+        {
+            var lines = new List<string>();
+            if (state?.Vendor == null || maxLines < 1) return lines;
+            List<DecisionEntry> log = state.Vendor.Log;
+            int start = log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < log.Count; i++)
+                lines.Add(DecisionText.Line(c, state, null, log[i]));
+            return lines;
+        }
+
+        public static bool TryNextFundingQuote(GameConfig c, GameState state, LabState lab, out FundingRoundQuote quote)
+        {
+            quote = new FundingRoundQuote();
+            if (lab == null || lab.Id != state.PlayerLabId) return false;
+            for (int i = 0; i < c.Funding.Rounds.Count; i++)
+            {
+                FundingRoundConfig round = c.Funding.Rounds[i];
+                if (FundingSystem.HasRound(lab, round.Id)) continue;
+                if (!FundingSystem.PriorRoundsDone(c, lab, round)) continue;
+                int year = GameDate.Year(c.Calendar, state.Tick);
+                if (year < round.OpensYear) continue;
+                if (lab.Reputation < round.MinReputation) continue;
+                if (WorldQueries.IsFrozen(lab, lab.HomeBlocId)) continue;
+                quote.RoundId = round.Id;
+                quote.Cash = FundingSystem.EffectiveCash(c, state, round);
+                quote.DilutionPermille = FundingSystem.EffectiveDilution(c, state, round);
+                quote.DownRound = FundingSystem.IsDownRound(c, state);
+                quote.FounderShareAfterPermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - quote.DilutionPermille);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>Recent rival decision lines for the host UI. Empty for the player's lab or bots.</summary>
+        public static List<string> RivalLogLines(GameConfig c, GameState state, LabState lab, int maxLines)
+        {
+            var lines = new List<string>();
+            if (lab == null || lab.Controller != LabController.Plan || maxLines < 1) return lines;
+            int start = lab.Log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < lab.Log.Count; i++)
+                lines.Add(DecisionText.Line(c, state, lab, lab.Log[i]));
+            return lines;
+        }
+
+        /// <summary>Structured tail of a plan-run lab's decision log. Empty for the player or bots.</summary>
+        public static List<RivalDecisionSlice> RivalDecisionSlices(GameConfig c, GameState state, LabState lab, int maxLines)
+        {
+            var slices = new List<RivalDecisionSlice>();
+            if (lab == null || lab.Controller != LabController.Plan || maxLines < 1) return slices;
+            int start = lab.Log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < lab.Log.Count; i++)
+            {
+                DecisionEntry e = lab.Log[i];
+                var slice = new RivalDecisionSlice();
+                slice.Action = e.Action;
+                slice.Ref = e.Ref;
+                slice.Amount = e.Amount;
+                slice.HasReason = e.Reasons.Count > 0;
+                if (slice.HasReason) slice.PrimaryReason = e.Reasons[0].Code;
+                slices.Add(slice);
+            }
+            return slices;
         }
     }
 }

@@ -1,0 +1,20 @@
+{
+  "researchPanel": {
+    "treeWidthFraction": 0.62,
+    "detailWidthFraction": 0.38,
+    "leadStripHeight": 120
+  },
+  "trainingPanel": {
+    "queueWidthFraction": 0.6,
+    "splitWidthFraction": 0.4
+  },
+  "rivalsPanel": {
+    "listWidthFraction": 0.35,
+    "logWidthFraction": 0.65
+  },
+  "gauntletOverlay": {
+    "fadeSeconds": 0.6,
+    "mascotScale": 1.2,
+    "hideBuildPanel": true
+  }
+}

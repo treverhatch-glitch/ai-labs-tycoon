@@ -10,7 +10,8 @@ namespace AiLabs.Rules.State
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
         ChipSales, GreyRevenue, Laundered, CapitalIn,
-        Insurance, Sublet
+        Insurance, Sublet,
+        Acquisition, AssetSale
     }
 
     /// <summary>
@@ -46,6 +47,10 @@ namespace AiLabs.Rules.State
         public long Insurance;
         /// <summary>Income from letting compute to outside customers.</summary>
         public long Sublet;
+        /// <summary>Buying another lab (M&amp;A), including assumed debt booked on the buyer.</summary>
+        public long Acquisition;
+        /// <summary>Proceeds from selling a model line to another party.</summary>
+        public long AssetSale;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -53,8 +58,8 @@ namespace AiLabs.Rules.State
         {
             get
             {
-                return Revenue + Grants + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Insurance + Sublet;
+                return Revenue + Grants + AssetSale + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Insurance + Sublet + Acquisition;
             }
         }
 
@@ -80,9 +85,12 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: return ChipSales;
                 case LedgerLine.GreyRevenue: return GreyRevenue;
                 case LedgerLine.Laundered: return Laundered;
+                case LedgerLine.CapitalIn: return CapitalIn;
                 case LedgerLine.Insurance: return Insurance;
                 case LedgerLine.Sublet: return Sublet;
-                default: return CapitalIn;
+                case LedgerLine.Acquisition: return Acquisition;
+                case LedgerLine.AssetSale: return AssetSale;
+                default: return 0;
             }
         }
 
@@ -108,9 +116,11 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: ChipSales += amount; break;
                 case LedgerLine.GreyRevenue: GreyRevenue += amount; break;
                 case LedgerLine.Laundered: Laundered += amount; break;
+                case LedgerLine.CapitalIn: CapitalIn += amount; break;
                 case LedgerLine.Insurance: Insurance += amount; break;
                 case LedgerLine.Sublet: Sublet += amount; break;
-                default: CapitalIn += amount; break;
+                case LedgerLine.Acquisition: Acquisition += amount; break;
+                case LedgerLine.AssetSale: AssetSale += amount; break;
             }
         }
 
@@ -137,6 +147,8 @@ namespace AiLabs.Rules.State
             s.Long("capitalIn", ref CapitalIn);
             s.Long("insurance", ref Insurance);
             s.Long("sublet", ref Sublet);
+            s.Long("acquisition", ref Acquisition);
+            s.Long("assetSale", ref AssetSale);
         }
     }
 

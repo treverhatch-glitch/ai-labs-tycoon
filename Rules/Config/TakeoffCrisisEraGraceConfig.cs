@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra weeks to answer a takeoff crisis in a late era (Q504, schema 172).</summary>
+    /// <summary>Extra weeks to answer a takeoff office crisis in a late era (Q504, schema 172).</summary>
     public sealed class TakeoffCrisisEraGraceConfig : ISync
     {
         public int Enabled;

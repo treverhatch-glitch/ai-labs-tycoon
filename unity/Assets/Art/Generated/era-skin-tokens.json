@@ -1,0 +1,9 @@
+{
+  "transitionSeconds": 0.8,
+  "eras": {
+    "1995": { "floorHex": "#C8B8A0", "accentKey": "crtGreen" },
+    "2007": { "floorHex": "#A8B0B8", "accentKey": "socialBlue" },
+    "2017": { "floorHex": "#788898", "accentKey": "cloudWhite" },
+    "2035": { "floorHex": "#3A4550", "accentKey": "neonCyan" }
+  }
+}

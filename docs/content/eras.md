@@ -62,7 +62,7 @@ A model can: Rules engines, game bots and spam filters.
 
 Opens: Game AI and chess bots; Expert systems; Spam filtering and search; Translation and ad targeting; The dot-com bubble and crash.
 
-- Techs: `state-machines`, `regression-tests`, `pathfinding`, `minimax`, `rules-engines`, `expert-shells`, `playtest-telemetry`, `opening-books`, `decision-trees`, `beowulf-clusters`, `spam-filters`, `search-ranking`, `neural-nets`, `bayes-nets`, `svm`, `speech-hmm`, `recommenders`, `gpgpu`, `feature-engineering`, `ensemble-methods`, `mapreduce`, `crowd-labelling`, `kernel-tricks`, `boosted-trees`, `ocr-engines`, `topic-models`, `speech-dictation`, `web-scale-crawl`
+- Techs: `state-machines`, `regression-tests`, `pathfinding`, `minimax`, `go-fish-heuristic`, `rules-engines`, `expert-shells`, `playtest-telemetry`, `opening-books`, `decision-trees`, `beowulf-clusters`, `spam-filters`, `search-ranking`, `neural-nets`, `bayes-nets`, `svm`, `speech-hmm`, `recommenders`, `gpgpu`, `feature-engineering`, `ensemble-methods`, `mapreduce`, `crowd-labelling`, `kernel-tricks`, `boosted-trees`, `ocr-engines`, `topic-models`, `speech-dictation`, `web-scale-crawl`
 - Sectors: `game-ai`, `game-bots`, `expert-systems`, `spam-search`, `machine-translation`, `web-ads`
 - Rooms: `research-lab`, `engineering-bay`, `safety-lab`, `sales-office`, `server-closet`, `labelling-room`, `ops-centre`, `policy-office`, `coffee-corner`
 
@@ -134,9 +134,9 @@ A model can: Teams of agents running for days.
 
 Opens: Multi-agent orchestration; AI-assisted research and synthetic data; The harness control room and the AI factory hall; Selling work instead of software.
 
-- Techs: `multi-agent`, `ai-assisted-research`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
+- Techs: `multi-agent`, `ai-assisted-research`, `chiplet-packaging`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
 - Sectors: `agent-workforce`, `agri-logistics`, `devices`, `ai-research-services`
-- Rooms: `synthetic-data-lab`, `harness-control-room`, `ai-factory-hall`
+- Rooms: `synthetic-data-lab`, `device-workshop`, `harness-control-room`, `ai-factory-hall`
 
 ## Bodies (2029)
 

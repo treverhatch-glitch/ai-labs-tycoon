@@ -1,0 +1,162 @@
+{
+  "generator": "tools/art/generate_garage_kit.py",
+  "lot": "garage",
+  "gridTiles": {
+    "width": 14,
+    "height": 10
+  },
+  "tileSizeMeters": 0.45,
+  "fidelity": "packet-2",
+  "assets": [
+    {
+      "id": "garage-floor-tile",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "triangleCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-wall-panel",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 48,
+      "triangleCount": 24,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-exterior-wall",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 48,
+      "triangleCount": 24,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-roll-door",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 288,
+      "triangleCount": 144,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-server-closet",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 72,
+      "triangleCount": 36,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-land-for-sale-sign",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 114,
+      "triangleCount": 56,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-lot-curb",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 48,
+      "triangleCount": 24,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-window-frame",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 72,
+      "triangleCount": 36,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-desk-crt",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 1248,
+      "triangleCount": 620,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-crt-tower",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 96,
+      "triangleCount": 48,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-voodude-rack",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 1068,
+      "triangleCount": 528,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-whiteboard-1995",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 72,
+      "triangleCount": 36,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-coffee-drip",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 130,
+      "triangleCount": 64,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-folding-chair",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 324,
+      "triangleCount": 158,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-cable-spool",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.obj",
+      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.mtl",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 212,
+      "triangleCount": 104,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    }
+  ]
+}

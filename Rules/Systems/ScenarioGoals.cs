@@ -33,19 +33,18 @@ namespace AiLabs.Rules.Systems
                 long span = lab.CampaignDeadlineTick - lab.PlanStartTick;
                 if (span > 0)
                 {
-                    long baseMark = lab.PlanStartTick + span * sc.GoalDeadlinePermille / MathI.Permille;
+                    long mark = lab.PlanStartTick + span * sc.GoalDeadlinePermille / MathI.Permille;
                     int slack = ScenarioGoalsEraSlack.SlackWeeks(c, state);
-                    long mark = baseMark + slack;
-                    if (slack > 0 && state.Tick + 1 == baseMark)
-                        ScenarioGoalsEraSlack.OnSlackWeek(c, state, lab, slack, goal.IdValue);
+                    mark = ScenarioGoalsEraSlack.AdjustEarlyMark(c, state, mark);
                     if (state.Tick + 1 < mark) return;
+                    if (slack > 0 && state.Tick + 1 == mark)
+                        ScenarioGoalsEraSlack.OnEarlyCheck(c, state, lab, slack, mark);
                 }
             }
             if (Met(c, state, lab, goal))
             {
                 lab.ScenarioGoalResult = 1;
                 Events.Add(state, EventKind.ScenarioGoalMet, lab.Id, (int)goal.Metric, goal.Target, goal.IdValue);
-                ScenarioGoalEraTrust.OnMet(c, state, lab, goal.IdValue);
                 if (!string.IsNullOrEmpty(goal.WinEndingId)) EndingSystem.RecordScenario(c, state, lab, goal.WinEndingId);
                 return;
             }

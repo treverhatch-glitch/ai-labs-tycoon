@@ -1,6 +1,6 @@
 # The bug bounty
 
-A standing programme that pays outsiders to find faults in the released models before customers do. It takes a fee to raise, a bill every week for every model on sale, and takes a share off the weekly chance of an incident while it runs (`bugBounty.*` in the data; Q343). Changing the level locks it for some weeks. Schema 66 adds two numbers to each lab.
+A standing programme that pays outsiders to find faults in the released models before customers do. It takes a fee to raise, a bill every week for every model on sale, and takes a share off the weekly chance of an incident while it runs (`bugBounty.*` in the data; Q343). Changing the level locks it for some weeks. Schema 67 adds two numbers to each lab.
 
 ## `SetBugBounty`
 
@@ -20,4 +20,4 @@ Refused, with nothing changed, for a rival, a game with `maxLevel` 0, a level ou
 - The lock is what stops it being switched on for the weeks the risk is high and off again.
 - The incident breakdown has a `FromBounty` term (zero or negative).
 - Event `BountySet` (SubjectId the new level, Amount the fee, Pick 1 when raised).
-- Schema 66: `bountyLevel`, `bountyLockedUntil` on every lab (older saves: 0). The save check flags a level out of range, a negative lock and either on a rival.
+- Schema 67: `bountyLevel`, `bountyLockedUntil` on every lab (older saves: 0). The save check flags a level out of range, a negative lock and either on a rival.

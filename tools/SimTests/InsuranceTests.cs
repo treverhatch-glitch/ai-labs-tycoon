@@ -290,7 +290,7 @@ public class InsuranceTests
     }
 
     [Fact]
-    public void A_schema_43_save_loads_with_no_policy_and_a_zero_premium_line()
+    public void A_schema_44_save_loads_with_no_policy_and_a_zero_premium_line()
     {
         Game g = Lab();
         g.Weeks(6);

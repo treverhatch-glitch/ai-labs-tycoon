@@ -16,10 +16,17 @@ namespace AiLabs.Rules.Systems
             return c.ScenarioGoalsEraSlack.SlackWeeks;
         }
 
-        public static void OnSlackWeek(GameConfig c, GameState state, LabState lab, int slack, string goalId)
+        public static long AdjustEarlyMark(GameConfig c, GameState state, long mark)
         {
-            if (!Enabled(c) || slack <= 0) return;
-            Events.Add(state, EventKind.ScenarioGoalsEraSlacked, lab.Id, slack, 0, goalId ?? "");
+            int slack = SlackWeeks(c, state);
+            if (slack <= 0) return mark;
+            return mark + slack;
+        }
+
+        public static void OnEarlyCheck(GameConfig c, GameState state, LabState lab, int slack, long mark)
+        {
+            if (slack <= 0) return;
+            Events.Add(state, EventKind.ScenarioGoalsEraSlacked, lab.Id, slack, mark, lab.ScenarioId);
         }
     }
 }

@@ -165,7 +165,7 @@ public class InternshipsTests
         g.Me.InternCount = 99;
         Assert.Contains(SaveGame.Problems(g.C, g.State), p => p.Contains("interns"));
         Game fresh = Lab();
-        string old = SaveSchemaPretend.At(fresh.C, 76, fresh.Sim.Save());
+        string old = SaveSchemaPretend.At(fresh.C, 77, fresh.Sim.Save());
         Assert.DoesNotContain("internRole", old);
         Simulation back = Simulation.Load(fresh.C, old);
         Assert.Equal(0, back.State.Labs.First(l => l.Id == fresh.Id).InternCount);

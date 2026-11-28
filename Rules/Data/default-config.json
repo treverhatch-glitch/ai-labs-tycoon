@@ -17360,6 +17360,39 @@
         "text": "Closing the weights stings less.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "margin-satisfy-era-relief-chat",
+        "kind": "MarginSatisfyEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The margin call was lighter than the covenant feared.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-goals-era-slack-chat",
+        "kind": "ScenarioGoalsEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Campaign milestones slide a touch in this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "takeoff-crisis-era-grace-chat",
+        "kind": "TakeoffCrisisEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Takeoff board gave the lab more weeks to decide.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -17559,6 +17592,14 @@
       {
         "id": "PoachedStaff",
         "text": "{lab} poached a {ref} from the player's roster."
+      },
+      {
+        "id": "SoldModel",
+        "text": "{lab} fire-sold {ref} for ${amount}."
+      },
+      {
+        "id": "AcquiredLab",
+        "text": "{lab} acquired distressed rival {ref} for ${amount}."
       }
     ],
     "reasonTemplates": [
@@ -17681,6 +17722,10 @@
       {
         "id": "ChipsOwnedSharePermille",
         "text": "{pct}% of its compute is its own chips"
+      },
+      {
+        "id": "CrashDistress",
+        "text": "crash distress at {pct}%"
       }
     ]
   },
@@ -18000,7 +18045,8 @@
         "pointsPermille": 1100,
         "yieldAdjust": 0
       }
-    ]
+    ],
+    "distressListingPricePermille": 820
   },
   "endings": {
     "endings": [
@@ -18166,7 +18212,10 @@
     "museum": {
       "perLine": 6
     },
-    "exitCovenantCallPermille": 200
+    "exitCovenantCallPermille": 200,
+    "nationalisedHomeLevelMin": 4,
+    "treatyForeignLevelMin": 3,
+    "treatyForeignBlocCount": 2
   },
   "shady": {
     "cards": [
@@ -19834,7 +19883,9 @@
     "crashCustomerSpendPermille": 780,
     "crashFundingCashPermille": 620,
     "crashGpuPricePermille": 860,
-    "crashFloatCutPpm": 35000
+    "crashFloatCutPpm": 35000,
+    "popWarningMarginPermille": 50,
+    "resetCapitalRaisedAfterCrash": true
   },
   "acquisitions": {
     "capabilityValuePerPoint": 8000,
@@ -19845,13 +19896,20 @@
     "crashDistressPricePermille": 450,
     "minInstalledModels": 1,
     "regulatorDealRevenue": 5000000,
-    "regulatorAttention": 80
+    "regulatorAttention": 80,
+    "rivalRollupChancePermille": 600,
+    "plannerAcquireChancePermille": 35,
+    "fleetResaleLockWeeks": 52,
+    "readyChipBookPermille": 400,
+    "chipFleetBookPermille": 350
   },
   "modelSales": {
     "unprofitableSalePermille": 350,
     "earningsMultipleWeeks": 52,
     "sectorReputationHit": 25,
-    "minOffer": 1000
+    "minOffer": 1000,
+    "incomeSmoothingPermille": 500,
+    "crashDistressOfferPermille": 650
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,
@@ -20157,7 +20215,7 @@
   "scenarioGoalsEraSlack": {
     "enabled": 1,
     "minEra": 2,
-    "slackWeeks": 8
+    "slackWeeks": 2
   },
   "takeoffCrisisEraGrace": {
     "enabled": 1,

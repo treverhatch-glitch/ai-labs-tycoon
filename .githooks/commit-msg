@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# Strip forbidden Co-authored-by trailers (PR #98 hygiene).
+if [ -n "$1" ] && [ -f "$1" ]; then
+  tmp="${1}.strip"
+  grep -vi '^Co-authored-by:' "$1" >"$tmp" || true
+  mv "$tmp" "$1"
+fi
+exit 0

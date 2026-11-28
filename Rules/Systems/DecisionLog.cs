@@ -22,7 +22,7 @@ namespace AiLabs.Rules.Systems
         {
             if (lab.Controller != LabController.Plan) return;
             lab.Log.Add(Entry(tick, action, reference, amount, reasons));
-            if (state != null) RivalIntentNews.OnDecision(c, state, lab, tick, action, reference);
+            if (state != null && RivalIntentNews.Enabled(c)) RivalIntentNews.OnDecision(c, state, lab, tick, action, reference);
             int extra = lab.Log.Count - c.Rivalry.LogMax;
             if (extra > 0) lab.Log.RemoveRange(0, extra);
         }
@@ -133,6 +133,12 @@ namespace AiLabs.Rules.Systems
                 case DecisionAction.Lobbied:
                     { BlocConfig bloc = c.World.Bloc(r); return bloc == null ? r : bloc.Name; }
                 case DecisionAction.ShiftedAllocation:
+                case DecisionAction.AcquiredLab:
+                    {
+                        int id;
+                        if (int.TryParse(r, out id)) { LabState t = state.Lab(id); return t == null ? r : t.Name; }
+                        return r;
+                    }
                 case DecisionAction.Courted:
                     {
                         int id;

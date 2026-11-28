@@ -17,6 +17,16 @@ namespace AiLabs.Rules.Systems
             return weeks + c.TakeoffCrisisEraGrace.GraceWeeks;
         }
 
+        public static void OnPosed(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Enabled(c) || state == null) return;
+            int era = EraSystem.IndexAtYear(c, GameDate.Year(c.Calendar, state.Tick));
+            if (era < c.TakeoffCrisisEraGrace.MinEra) return;
+            int grace = c.TakeoffCrisisEraGrace.GraceWeeks;
+            if (grace <= 0) return;
+            Events.Add(state, EventKind.TakeoffCrisisEraGraced, lab.Id, grace, 0, lab.OfficeEventId);
+        }
+
         public static void OnPosed(GameConfig c, GameState state, LabState lab, int graceAdded)
         {
             if (!Enabled(c) || graceAdded <= 0) return;

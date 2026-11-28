@@ -8,14 +8,14 @@ exec 9>"$LOCK"
 flock -x -w 600 9
 exec 9>&-
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+DOTNET="${DOTNET:-$(command -v dotnet)}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[167]=17b6bcbd69ef7867adcdf9e90ba8e30dcb0f6ca58c6e592746ce875f5412d1f2
-GOLDEN[168]=24c74bcc752f5738decfc60f98acc1cc749f9c640c92a2b9588bdc2240794a0f
-GOLDEN[169]=ed94c9e28ab1757f8f93fdb848b8ee8fea01ba890afabe0dc2582ed08adc1035
+GOLDEN[167]=36a802ac41a31cc32731e695e9507051db4b0fae600664e35fbd6deda2254b81
+GOLDEN[168]=84ad12f924d7d4226499a94e3b2e2ab2c137dc64a4ca58d1294fd92fff507fc3
+GOLDEN[169]=0ab4ebd62c5634fa0ba8c2b090f516106e8c03dd1904d78e7f8d85b5cee5d585
 
 PREV=$((N - 1))
 BK="/tmp/b23-rev-bak-$N"

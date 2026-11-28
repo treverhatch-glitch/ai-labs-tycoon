@@ -1,13 +1,24 @@
 # unity/
 
-The Unity project lives here (Unity 6, scenes, the building, mascots and UI). It is a placeholder until the project
-is created on a machine with Unity: see [docs/SETUP-PC.md](../docs/SETUP-PC.md).
+Unity **6000.0.58f1** LTS (GameCI `ubuntu-6000.0.58f1-linux-il2cpp-3`) for AI Labs Tycoon. Game rules live in [`Rules/`](../Rules) as a local package; this
+folder only draws state and sends commands.
 
-The one rule: no game rules in this folder. Rules are plain C# in [`Rules/`](../Rules), which this project imports as
-a local package and only reads and draws:
+## Layout
 
-```json
-{ "dependencies": { "com.hatchtag.ailabs.rules": "file:../../Rules" } }
-```
+| Path | Purpose |
+| --- | --- |
+| `Packages/manifest.json` | `com.hatchtag.ailabs.rules` → `file:../../Rules` |
+| `Assets/Scripts/Bootstrap/GameBootstrap.cs` | Builds the first HQ view in code on Play |
+| `Assets/Scripts/Hq/` | Garage grid, room blocks, HUD, era/glow palette |
+| `Assets/Scripts/Sim/` | `SimulationHost`, config loader |
+| `Assets/Editor/Tests/` | Edit Mode smoke tests |
 
-(in `unity/Packages/manifest.json`; the path is relative to `unity/Packages/`).
+## HQ view (eras + glow)
+
+- **Era skins** (`HqVisualPalette.EraSkinFor`) tint the floor and accent column when `Simulation.Era` changes.
+- **Rooms** use purpose colours tinted by era; `GlowSpreadMap` drives `RoomBlockView` emission from compute/research seeds.
+- **Mascots** (`ModelMascotRow`) show each model's `ModelMood` via `ModelMascotPresentation`.
+
+Open and verify on the owner's PC: [docs/SETUP-PC.md](../docs/SETUP-PC.md) §2.
+
+Art specs and the campus OBJ kit: [docs/art/README.md](../docs/art/README.md).

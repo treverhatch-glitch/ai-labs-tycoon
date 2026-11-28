@@ -1,0 +1,3 @@
+# Chip design presentation (batch 655)
+
+Batch **655** · systems-design §4 successor to [CHIP-DESIGN-PRESENTATION-BATCH-638.md](CHIP-DESIGN-PRESENTATION-BATCH-638.md) and [CHIP-DESIGN-PRESENTATION-BATCH-520.md](CHIP-DESIGN-PRESENTATION-BATCH-520.md).

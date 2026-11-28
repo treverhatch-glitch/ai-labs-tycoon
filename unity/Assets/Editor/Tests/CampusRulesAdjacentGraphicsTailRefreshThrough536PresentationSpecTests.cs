@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusRulesAdjacentGraphicsTailRefreshThrough536PresentationSpecTests { [Test] public void B560() { Assert.AreEqual(536,CampusRulesAdjacentGraphicsTailRefreshThrough536PresentationSpec.TailRefreshThroughBatch); } } }

@@ -188,6 +188,8 @@ namespace AiLabs.Rules.Systems
             lab.OfficeEventExpires = state.Tick + weeks;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+            if (trigger == OfficeTrigger.Takeoff)
+                TakeoffCrisisEraGrace.OnPosed(c, state, lab);
         }
 
         static void Lapse(GameConfig c, GameState state, LabState lab)
