@@ -2480,6 +2480,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q538. Batch thirty-two news, chat and combos. DECIDED: three headlines, three chat lines (449/405 merged tip); `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests`.
 
+### Q539. Softer reputation hit on lobby backfire in late era? DECIDED (schema 198): `lobbyingBackfireEraRelief`; `LobbyingBackfireEraRelieved` on `Lobbying.Run` backfire.
+
+### Q540. Extra trust on good public metrics in late era? DECIDED (schema 199): `publicMetricsGainEraBoost`; `PublicMetricsGainEraBoosted` on `PublicMetrics` gain path.
+
+### Q541. Softer weekly open-weights copy hit in late era? DECIDED (schema 200): `openWeightsCopyEraSlack`; `OpenWeightsCopyEraSlacked` on `OpenWeights.RunWeek`.
+
+### Q542. Batch thirty-three news, chat and combos. DECIDED: three headlines, three chat lines (452/408); `BatchThirtyThreeNewsChatTests`, `BatchThirtyThreeTogetherTests`.
+
 ### Q501a. Era N–P hardening tests after batch 23. DECIDED: intentional drift on `main` at `0bbbae03` (batch 23 / Q501 → 421/374); landed `6fbea2b2`; gate repins tip golden `9f9b1a4a…`, batch-18 reverts `90a01e4f…` / `dc1d5b5b…`, and batch-19–23 helper digests for schemas 156–169 (news/chat revert chain through Q501); graphics 289–326 have no `Rules/` delta vs merge base.
 
 ### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.

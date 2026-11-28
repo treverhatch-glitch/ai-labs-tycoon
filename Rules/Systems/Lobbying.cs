@@ -71,8 +71,10 @@ namespace AiLabs.Rules.Systems
             if ((int)(Mix(state, lab, standing, 1) % MathI.Permille) < BackfireChancePermille(c, lab))
             {
                 standing.Attention = (int)MathI.Clamp((long)standing.Attention + l.BackfireAttention, 0, MathI.Permille);
-                int loss = PressSystem.Damp(c, lab, l.BackfireReputation);
-                lab.Reputation = (int)MathI.Clamp((long)lab.Reputation - loss, 0, MathI.Permille);
+                int listLoss = PressSystem.Damp(c, lab, l.BackfireReputation);
+                int applied = LobbyingBackfireEraRelief.ReputationLoss(c, state, listLoss);
+                lab.Reputation = (int)MathI.Clamp((long)lab.Reputation - applied, 0, MathI.Permille);
+                LobbyingBackfireEraRelief.OnBackfire(c, state, lab, goal, listLoss, applied);
                 return "backfired";
             }
             if (goal == Quiet)

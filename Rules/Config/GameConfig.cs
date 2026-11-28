@@ -226,6 +226,9 @@ namespace AiLabs.Rules.Config
         public LobbyingGoalEraAmplifyConfig LobbyingGoalEraAmplify = new LobbyingGoalEraAmplifyConfig();
         public PublicMetricsBarEraSlackConfig PublicMetricsBarEraSlack = new PublicMetricsBarEraSlackConfig();
         public OpenWeightsCloseEraReliefConfig OpenWeightsCloseEraRelief = new OpenWeightsCloseEraReliefConfig();
+        public LobbyingBackfireEraReliefConfig LobbyingBackfireEraRelief = new LobbyingBackfireEraReliefConfig();
+        public PublicMetricsGainEraBoostConfig PublicMetricsGainEraBoost = new PublicMetricsGainEraBoostConfig();
+        public OpenWeightsCopyEraSlackConfig OpenWeightsCopyEraSlack = new OpenWeightsCopyEraSlackConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -450,6 +453,9 @@ namespace AiLabs.Rules.Config
             s.Obj("lobbyingGoalEraAmplify", ref LobbyingGoalEraAmplify);
             s.Obj("publicMetricsBarEraSlack", ref PublicMetricsBarEraSlack);
             s.Obj("openWeightsCloseEraRelief", ref OpenWeightsCloseEraRelief);
+            s.Obj("lobbyingBackfireEraRelief", ref LobbyingBackfireEraRelief);
+            s.Obj("publicMetricsGainEraBoost", ref PublicMetricsGainEraBoost);
+            s.Obj("openWeightsCopyEraSlack", ref OpenWeightsCopyEraSlack);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

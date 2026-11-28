@@ -231,6 +231,9 @@ namespace AiLabs.Rules.Config
             LobbyingGoalEraAmplifyProblems(p, c);
             PublicMetricsBarEraSlackProblems(p, c);
             OpenWeightsCloseEraReliefProblems(p, c);
+            LobbyingBackfireEraReliefProblems(p, c);
+            PublicMetricsGainEraBoostProblems(p, c);
+            OpenWeightsCopyEraSlackProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2562,6 +2565,35 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCloseEraRelief.minEra must be a valid era index");
             if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
                 p.Add("openWeightsCloseEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingBackfireEraReliefProblems(List<string> p, GameConfig c)
+        {
+            LobbyingBackfireEraReliefConfig k = c.LobbyingBackfireEraRelief;
+            if (k == null) { p.Add("lobbyingBackfireEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingBackfireEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingBackfireEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("lobbyingBackfireEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsGainEraBoostProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsGainEraBoostConfig k = c.PublicMetricsGainEraBoost;
+            if (k == null) { p.Add("publicMetricsGainEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsGainEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsGainEraBoost.minEra must be a valid era index");
+            if (k.BoostPermille < 0) p.Add("publicMetricsGainEraBoost.boostPermille must not be negative");
+        }
+
+        static void OpenWeightsCopyEraSlackProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCopyEraSlackConfig k = c.OpenWeightsCopyEraSlack;
+            if (k == null) { p.Add("openWeightsCopyEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCopyEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCopyEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("openWeightsCopyEraSlack.slackPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

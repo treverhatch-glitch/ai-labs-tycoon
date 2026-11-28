@@ -12637,6 +12637,24 @@
         "kind": "OpenWeightsCloseEraRelieved",
         "pick": -1,
         "text": "{lab} closed weights gently"
+      },
+      {
+        "id": "lobby-backfire-relief",
+        "kind": "LobbyingBackfireEraRelieved",
+        "pick": -1,
+        "text": "{lab} softened a lobbying backfire"
+      },
+      {
+        "id": "metrics-gain-boost",
+        "kind": "PublicMetricsGainEraBoosted",
+        "pick": -1,
+        "text": "{lab} gained extra trust on metrics"
+      },
+      {
+        "id": "weights-copy-slack",
+        "kind": "OpenWeightsCopyEraSlacked",
+        "pick": -1,
+        "text": "{lab} shrugged off a weights copy"
       }
     ],
     "filler": [
@@ -17393,6 +17411,39 @@
         "text": "Takeoff board gave the lab more weeks to decide.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "lobby-backfire-relief-chat",
+        "kind": "LobbyingBackfireEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Late-era lobbying scandals sting less.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-gain-boost-chat",
+        "kind": "PublicMetricsGainEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Good uptime pays double in the metrics era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-copy-slack-chat",
+        "kind": "OpenWeightsCopyEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Open weights copies hurt less when rivals borrow.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -20378,5 +20429,20 @@
     "enabled": 1,
     "minEra": 2,
     "reliefPermille": 200
+  },
+  "lobbyingBackfireEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
+  },
+  "publicMetricsGainEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "boostPermille": 150
+  },
+  "openWeightsCopyEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 200
   }
 }

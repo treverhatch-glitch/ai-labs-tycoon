@@ -54,12 +54,14 @@ namespace AiLabs.Rules.Systems
                 int chance = OpenWeightsEraThrottle.EffectiveCopyChancePermille(c, state);
                 if ((int)(state.Rng.World.NextU64() % MathI.Permille) >= chance) continue;
                 int listLoss = c.OpenWeights.CopyTrustLoss;
-                int applied = OpenWeightsCopyEraRelief.CopyTrustLoss(c, state, listLoss);
+                int afterRelief = OpenWeightsCopyEraRelief.CopyTrustLoss(c, state, listLoss);
+                int applied = OpenWeightsCopyEraSlack.CopyTrustLoss(c, state, afterRelief);
                 for (int i = 0; i < model.Sectors.Count; i++)
                     TrustSystem.Shift(c, state, lab, model.Sectors[i], -applied, false);
                 Events.Add(state, EventKind.WeightsCopied, lab.Id, model.Id, applied, model.Name);
                 OpenWeightsEraThrottle.OnCopied(c, state, lab, model);
-                OpenWeightsCopyEraRelief.OnCopied(c, state, lab, model, listLoss, applied);
+                OpenWeightsCopyEraRelief.OnCopied(c, state, lab, model, listLoss, afterRelief);
+                OpenWeightsCopyEraSlack.OnCopied(c, state, lab, model, afterRelief, applied);
             }
         }
     }

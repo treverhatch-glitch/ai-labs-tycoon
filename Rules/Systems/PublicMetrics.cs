@@ -47,6 +47,15 @@ namespace AiLabs.Rules.Systems
             int bar = PublicMetricsBarEraSlack.EffectiveBar(c, state);
             int delta = score >= bar ? c.PublicMetrics.TrustGain : c.PublicMetrics.TrustLoss;
             if (delta == 0) return;
+            if (delta > 0)
+            {
+                int listGain = delta;
+                int applied = PublicMetricsGainEraBoost.TrustGain(c, state, listGain);
+                for (int s = 0; s < model.Sectors.Count; s++)
+                    TrustSystem.Shift(c, state, lab, model.Sectors[s], applied, false);
+                PublicMetricsGainEraBoost.OnGain(c, state, lab, model, listGain, applied);
+                return;
+            }
             for (int s = 0; s < model.Sectors.Count; s++)
                 TrustSystem.Shift(c, state, lab, model.Sectors[s], delta, false);
         }
