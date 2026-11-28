@@ -55,6 +55,11 @@ namespace AiLabs.Rules.Sim
             player.FounderSharePermille = c.Funding.FounderStartPermille;
             player.BoardInvestorSeats = 0;
             player.CrownRunnerUpStreak = 0;
+            if (GarageDrawRoom.ConfigOn(c))
+            {
+                player.GarageDrawActive = 1;
+                if (player.LotId == start.LotId) GarageDrawRoom.SpawnClutter(c, state, player);
+            }
             state.Labs.Add(player);
             state.PlayerLabId = player.Id;
             state.Endings = new List<EndingRecord>();
@@ -76,7 +81,12 @@ namespace AiLabs.Rules.Sim
                 for (int i = 0; i < options.RivalIds.Count; i++)
                     if (c.Rival(options.RivalIds[i]) == null) throw new ArgumentException("There is no rival \"" + options.RivalIds[i] + "\" in the config.");
 
-            if (founder != null) Founding.ApplyStart(c, state, player, founder);
+            if (founder != null)
+            {
+                Founding.ApplyStart(c, state, player, founder);
+                GarageDrawRoom.SpawnFounderStaff(c, state, player, founder);
+            }
+            else GarageDrawRoom.SpawnFounderStaffNoPicker(c, state, player);
 
             if (!string.IsNullOrEmpty(options.BaggageId)) ScenarioBaggage.ApplyNewGame(c, state, player, options.BaggageId);
             if (!string.IsNullOrEmpty(options.ScenarioId)) player.ScenarioId = options.ScenarioId;

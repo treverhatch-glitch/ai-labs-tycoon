@@ -2416,6 +2416,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
 
+### Q506. GD-6 step 1 day-one build menu size? DECIDED: six types on the menu
+
+- Options: (a) four starter types per `rooms-rework.md` §1.4; (b) six types per Hatch step-1 acceptance (Dev, Research, Lounge, Bathroom, Sales, Server Closet).
+- Choice: **(b)** `garageDraw.dayOneRoomTypeIds` in config lists `general-dev-room`, `research-lab`, `coffee-corner`, `bathroom`, `sales-office`, `server-closet`.
+- Why: step-1 acceptance names six day-one types; §1.4 “four starter rooms” stays the tutorial spine; Sales and Server Closet are buildable early without unlocking the full era room list.
+
 ### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.
 
 ### Q15536–Q16095. Batches 358–365 + host 358/362? DECIDED: packet **2** (refold on **`origin/main`** post-#84).

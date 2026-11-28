@@ -818,7 +818,7 @@
     "labName": "Fable Labs",
     "leader": "You",
     "familyName": "Fable",
-    "cash": 200000,
+    "cash": 60000,
     "lotId": "garage",
     "reputation": 500,
     "trainingSharePermille": 700,
@@ -1126,7 +1126,38 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 400,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": "research"
+    },
+    {
+      "id": "bathroom",
+      "era": "dial-up-days",
+      "requiresTech": "",
+      "name": "Bathroom",
+      "purpose": "Comfort",
+      "deskFamily": "",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 2,
+      "minHeight": 2,
+      "buildCostPerTile": 200,
+      "upkeepPerTileWeek": 4
+    },
+    {
+      "id": "general-dev-room",
+      "era": "dial-up-days",
+      "requiresTech": "",
+      "name": "General Dev Room",
+      "purpose": "Engineering",
+      "deskFamily": "dev",
+      "seatsRole": "engineer",
+      "tilesPerSeat": 4,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 3,
+      "minHeight": 3,
+      "buildCostPerTile": 350,
+      "upkeepPerTileWeek": 6
     },
     {
       "id": "engineering-bay",
@@ -1140,7 +1171,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 400,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": "dev"
     },
     {
       "id": "safety-lab",
@@ -1154,7 +1186,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 450,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": ""
     },
     {
       "id": "sales-office",
@@ -1168,7 +1201,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 350,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": ""
     },
     {
       "id": "support-desk",
@@ -1182,7 +1216,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 300,
-      "upkeepPerTileWeek": 6
+      "upkeepPerTileWeek": 6,
+      "deskFamily": ""
     },
     {
       "id": "server-closet",
@@ -1196,7 +1231,8 @@
       "minWidth": 2,
       "minHeight": 2,
       "buildCostPerTile": 900,
-      "upkeepPerTileWeek": 20
+      "upkeepPerTileWeek": 20,
+      "deskFamily": ""
     },
     {
       "id": "labelling-room",
@@ -1210,7 +1246,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 300,
-      "upkeepPerTileWeek": 7
+      "upkeepPerTileWeek": 7,
+      "deskFamily": ""
     },
     {
       "id": "ops-centre",
@@ -1224,7 +1261,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 400,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": ""
     },
     {
       "id": "policy-office",
@@ -1238,7 +1276,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 450,
-      "upkeepPerTileWeek": 8
+      "upkeepPerTileWeek": 8,
+      "deskFamily": ""
     },
     {
       "id": "coffee-corner",
@@ -1252,7 +1291,8 @@
       "minWidth": 2,
       "minHeight": 2,
       "buildCostPerTile": 250,
-      "upkeepPerTileWeek": 4
+      "upkeepPerTileWeek": 4,
+      "deskFamily": ""
     },
     {
       "id": "gpu-hall",
@@ -1266,7 +1306,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 1400,
-      "upkeepPerTileWeek": 36
+      "upkeepPerTileWeek": 36,
+      "deskFamily": ""
     },
     {
       "id": "data-team-room",
@@ -1280,7 +1321,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 700,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "press-room",
@@ -1294,7 +1336,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 600,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "research-floor",
@@ -1308,7 +1351,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 700,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "recruiting-office",
@@ -1322,7 +1366,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 800,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "kitchen",
@@ -1336,7 +1381,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 500,
-      "upkeepPerTileWeek": 9
+      "upkeepPerTileWeek": 9,
+      "deskFamily": ""
     },
     {
       "id": "sandbox-wing",
@@ -1350,7 +1396,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 900,
-      "upkeepPerTileWeek": 14
+      "upkeepPerTileWeek": 14,
+      "deskFamily": ""
     },
     {
       "id": "cluster-hall",
@@ -1364,7 +1411,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 2400,
-      "upkeepPerTileWeek": 60
+      "upkeepPerTileWeek": 60,
+      "deskFamily": ""
     },
     {
       "id": "product-studio",
@@ -1378,7 +1426,8 @@
       "minWidth": 4,
       "minHeight": 3,
       "buildCostPerTile": 1000,
-      "upkeepPerTileWeek": 16
+      "upkeepPerTileWeek": 16,
+      "deskFamily": ""
     },
     {
       "id": "auditorium",
@@ -1392,7 +1441,8 @@
       "minWidth": 5,
       "minHeight": 4,
       "buildCostPerTile": 1500,
-      "upkeepPerTileWeek": 30
+      "upkeepPerTileWeek": 30,
+      "deskFamily": ""
     },
     {
       "id": "liquid-cooling-pod",
@@ -1406,7 +1456,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 4200,
-      "upkeepPerTileWeek": 100
+      "upkeepPerTileWeek": 100,
+      "deskFamily": ""
     },
     {
       "id": "nap-pods",
@@ -1420,7 +1471,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 700,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "agent-ops-room",
@@ -1434,7 +1486,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 1200,
-      "upkeepPerTileWeek": 18
+      "upkeepPerTileWeek": 18,
+      "deskFamily": ""
     },
     {
       "id": "containment-wing",
@@ -1448,7 +1501,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 1500,
-      "upkeepPerTileWeek": 22
+      "upkeepPerTileWeek": 22,
+      "deskFamily": ""
     },
     {
       "id": "synthetic-data-lab",
@@ -1462,7 +1516,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 1400,
-      "upkeepPerTileWeek": 20
+      "upkeepPerTileWeek": 20,
+      "deskFamily": ""
     },
     {
       "id": "harness-control-room",
@@ -1476,7 +1531,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 1600,
-      "upkeepPerTileWeek": 24
+      "upkeepPerTileWeek": 24,
+      "deskFamily": ""
     },
     {
       "id": "ai-factory-hall",
@@ -1490,7 +1546,8 @@
       "minWidth": 6,
       "minHeight": 6,
       "buildCostPerTile": 8000,
-      "upkeepPerTileWeek": 180
+      "upkeepPerTileWeek": 180,
+      "deskFamily": ""
     },
     {
       "id": "robotics-arena",
@@ -1504,7 +1561,8 @@
       "minWidth": 6,
       "minHeight": 6,
       "buildCostPerTile": 2000,
-      "upkeepPerTileWeek": 30
+      "upkeepPerTileWeek": 30,
+      "deskFamily": ""
     },
     {
       "id": "launch-control",
@@ -1518,7 +1576,8 @@
       "minWidth": 4,
       "minHeight": 4,
       "buildCostPerTile": 2500,
-      "upkeepPerTileWeek": 36
+      "upkeepPerTileWeek": 36,
+      "deskFamily": ""
     },
     {
       "id": "orbital-uplink",
@@ -1532,7 +1591,8 @@
       "minWidth": 6,
       "minHeight": 6,
       "buildCostPerTile": 16000,
-      "upkeepPerTileWeek": 320
+      "upkeepPerTileWeek": 320,
+      "deskFamily": ""
     },
     {
       "id": "chip-design-lab",
@@ -1546,7 +1606,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 600,
-      "upkeepPerTileWeek": 12
+      "upkeepPerTileWeek": 12,
+      "deskFamily": ""
     },
     {
       "id": "hw-test-lab",
@@ -1560,7 +1621,8 @@
       "minWidth": 3,
       "minHeight": 3,
       "buildCostPerTile": 700,
-      "upkeepPerTileWeek": 14
+      "upkeepPerTileWeek": 14,
+      "deskFamily": ""
     }
   ],
   "roomPerks": [
@@ -1717,7 +1779,8 @@
       "appealPermille": -100,
       "hireFeePermille": 0,
       "enemyRivalId": "",
-      "enemyFeeling": 0
+      "enemyFeeling": 0,
+      "startRoleId": "researcher"
     },
     {
       "id": "dropout",
@@ -1730,7 +1793,8 @@
       "appealPermille": 50,
       "hireFeePermille": 0,
       "enemyRivalId": "",
-      "enemyFeeling": 0
+      "enemyFeeling": 0,
+      "startRoleId": "engineer"
     },
     {
       "id": "defector",
@@ -1743,7 +1807,8 @@
       "appealPermille": 0,
       "hireFeePermille": 0,
       "enemyRivalId": "openaye",
-      "enemyFeeling": -600
+      "enemyFeeling": -600,
+      "startRoleId": "engineer"
     },
     {
       "id": "heir",
@@ -1756,7 +1821,8 @@
       "appealPermille": 0,
       "hireFeePermille": 150,
       "enemyRivalId": "",
-      "enemyFeeling": 0
+      "enemyFeeling": 0,
+      "startRoleId": "engineer"
     }
   ],
   "styles": [
@@ -19763,5 +19829,63 @@
     "enabled": 1,
     "minEra": 2,
     "graceWeeks": 2
+  },
+  "garageDraw": {
+    "enabled": 1,
+    "doorCost": 200,
+    "demolishRefundPermille": 500,
+    "dayOneRoomTypeIds": [
+      "general-dev-room",
+      "research-lab",
+      "coffee-corner",
+      "bathroom",
+      "sales-office",
+      "server-closet"
+    ],
+    "clutter": [
+      {
+        "id": "founder-gaming-tower",
+        "x": 1,
+        "y": 1,
+        "width": 2,
+        "height": 2,
+        "sellCash": 9000,
+        "refuseMoralePermille": 0,
+        "refuseMoraleWeeks": 0,
+        "joke": "Runs everything from 1997. Including warm."
+      },
+      {
+        "id": "dotcom-mousepads",
+        "x": 4,
+        "y": 2,
+        "width": 1,
+        "height": 1,
+        "sellCash": 1500,
+        "refuseMoralePermille": 0,
+        "refuseMoraleWeeks": 0,
+        "joke": "Synergy, 400 units."
+      },
+      {
+        "id": "mums-exercise-bike",
+        "x": 11,
+        "y": 7,
+        "width": 2,
+        "height": 1,
+        "sellCash": 0,
+        "refuseMoralePermille": 50,
+        "refuseMoraleWeeks": 52,
+        "joke": "Mum says it's 'in use.' It is a coat rack."
+      }
+    ],
+    "deskLines": [
+      {
+        "id": "dev-desk-tier-1",
+        "family": "dev",
+        "seatsRole": "engineer",
+        "tier": 1,
+        "placeCost": 1200,
+        "name": "Startup Dev Desk"
+      }
+    ]
   }
 }

@@ -1,5 +1,6 @@
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
+using AiLabs.Rules.Systems;
 using AiLabs.Unity.Sim;
 using UnityEngine;
 
@@ -111,6 +112,11 @@ namespace AiLabs.Unity.Hq
                 x * HqGridLayout.TileSize + ww * 0.5f + 0.03f,
                 HqGridLayout.FloorY + 0.08f,
                 y * HqGridLayout.TileSize + dd * 0.5f + 0.03f);
+            int tiles = w * h;
+            long cost = type.BuildCostPerTile * tiles;
+            int seats = GarageDrawRoom.EstimateSeats(_host.Simulation.Config, type, w, h);
+            int overcrowd = GarageDrawRoom.OvercrowdSeats(_host.Simulation.Config, type, w, h);
+            _panel.SetDragCostReadout(tiles, cost, seats, overcrowd);
         }
 
         void EnsureGhost()

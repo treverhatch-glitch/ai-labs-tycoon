@@ -27,6 +27,8 @@ namespace AiLabs.Rules.Config
         /// <summary>A rival that starts out hating the player (empty for none). A rival that is not in the game is skipped.</summary>
         public string EnemyRivalId = "";
         public int EnemyFeeling;
+        /// <summary>Role id for the founder as staff #1 when draw-room start is active (GD-6).</summary>
+        public string StartRoleId = "engineer";
 
         public string Id { get { return IdValue; } }
 
@@ -35,6 +37,7 @@ namespace AiLabs.Rules.Config
             s.Str("id", ref IdValue);
             s.Str("name", ref Name);
             s.Str("blurb", ref Blurb);
+            s.Str("startRoleId", ref StartRoleId);
             s.Int("cashPermille", ref CashPermille);
             s.Int("reputationDelta", ref ReputationDelta);
             s.Int("grantPermille", ref GrantPermille);

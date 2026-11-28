@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 172;
+        public const int CurrentSchema = 173;
 
         public int Schema;
         public string ConfigVersion;
@@ -128,6 +128,10 @@ namespace AiLabs.Rules.State
         public string HomeBlocId;
         public string LotId;
         public List<RoomState> Rooms = new List<RoomState>();
+        /// <summary>1 when the lab uses GD-6 draw-room (player-placed desks, day-one menu).</summary>
+        public int GarageDrawActive;
+        public List<LotClutterState> Clutter = new List<LotClutterState>();
+        public List<RoomDeskState> Desks = new List<RoomDeskState>();
         public List<StaffMember> Staff = new List<StaffMember>();
 
         public int RentedGpus;
@@ -810,6 +814,9 @@ namespace AiLabs.Rules.State
             s.Str("homeBlocId", ref HomeBlocId);
             s.Str("lotId", ref LotId);
             s.ObjList("rooms", ref Rooms);
+            s.Int("garageDrawActive", ref GarageDrawActive);
+            s.ObjList("clutter", ref Clutter);
+            s.ObjList("desks", ref Desks);
             s.ObjList("staff", ref Staff);
             s.Int("rentedGpus", ref RentedGpus);
             s.ObjList("reservedContracts", ref ReservedContracts);
@@ -1257,8 +1264,18 @@ namespace AiLabs.Rules.State
         public int Height;
         /// <summary>How many eras have begun since the room was built or last refurbished. Only the player's rooms age.</summary>
         public int EraAge;
+        /// <summary>Door tile relative to room origin; -1 when the room still needs a door (GD-6 draw-room).</summary>
+        public int DoorLocalX = -1;
+        public int DoorLocalY = -1;
 
         public int Tiles { get { return Width * Height; } }
+
+        public bool ContainsTile(int lotX, int lotY)
+        {
+            return lotX >= X && lotY >= Y && lotX < X + Width && lotY < Y + Height;
+        }
+
+        public bool DoorPlaced { get { return DoorLocalX >= 0 && DoorLocalY >= 0; } }
 
         public void Sync(Syncer s)
         {
@@ -1269,6 +1286,50 @@ namespace AiLabs.Rules.State
             s.Int("width", ref Width);
             s.Int("height", ref Height);
             s.Int("eraAge", ref EraAge);
+            s.Int("doorLocalX", ref DoorLocalX);
+            s.Int("doorLocalY", ref DoorLocalY);
+        }
+    }
+
+    /// <summary>Clutter on the lot at new-game start; sold once for cash and cleared tiles (GD-6).</summary>
+    public sealed class LotClutterState : ISync
+    {
+        public int Id;
+        public string ClutterId = "";
+        public int X;
+        public int Y;
+        public int Width = 1;
+        public int Height = 1;
+        public int Sold;
+
+        public void Sync(Syncer s)
+        {
+            s.Int("id", ref Id);
+            s.Str("clutterId", ref ClutterId);
+            s.Int("x", ref X);
+            s.Int("y", ref Y);
+            s.Int("width", ref Width);
+            s.Int("height", ref Height);
+            s.Int("sold", ref Sold);
+        }
+    }
+
+    /// <summary>A player-placed desk on a room tile (GD-6 draw-room).</summary>
+    public sealed class RoomDeskState : ISync
+    {
+        public int Id;
+        public int RoomId;
+        public int LocalX;
+        public int LocalY;
+        public string DeskLineId = "";
+
+        public void Sync(Syncer s)
+        {
+            s.Int("id", ref Id);
+            s.Int("roomId", ref RoomId);
+            s.Int("localX", ref LocalX);
+            s.Int("localY", ref LocalY);
+            s.Str("deskLineId", ref DeskLineId);
         }
     }
 
@@ -1289,6 +1350,12 @@ namespace AiLabs.Rules.State
         public int LeaveDue;
         /// <summary>Their morale on the day they went.</summary>
         public int LeaveMorale;
+        /// <summary>Founder staff #1 in draw-room start (GD-6).</summary>
+        public int IsFounder;
+        /// <summary>Seated in a room at a desk, or -1 when not seated.</summary>
+        public int SeatRoomId = -1;
+        public int SeatDeskLocalX = -1;
+        public int SeatDeskLocalY = -1;
 
         public void Sync(Syncer s)
         {
@@ -1301,6 +1368,10 @@ namespace AiLabs.Rules.State
             s.Int("mentorWeeks", ref MentorWeeks);
             s.Int("leaveDue", ref LeaveDue);
             s.Int("leaveMorale", ref LeaveMorale);
+            s.Int("isFounder", ref IsFounder);
+            s.Int("seatRoomId", ref SeatRoomId);
+            s.Int("seatDeskLocalX", ref SeatDeskLocalX);
+            s.Int("seatDeskLocalY", ref SeatDeskLocalY);
         }
     }
 

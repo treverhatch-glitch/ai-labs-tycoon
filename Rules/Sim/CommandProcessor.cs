@@ -33,6 +33,12 @@ namespace AiLabs.Rules.Sim
             {
                 case CommandKind.BuildRoom: return BuildRoom(c, state, lab, cmd);
                 case CommandKind.DemolishRoom: return DemolishRoom(c, state, lab, cmd);
+                case CommandKind.SellGarageClutter: return SellGarageClutter(c, state, lab, cmd);
+                case CommandKind.PlaceRoomDoor: return PlaceRoomDoor(c, state, lab, cmd);
+                case CommandKind.PlaceDesk: return PlaceDesk(c, state, lab, cmd);
+                case CommandKind.RemoveDesk: return RemoveDesk(c, state, lab, cmd);
+                case CommandKind.SeatStaffAtDesk: return SeatStaffAtDesk(c, state, lab, cmd);
+                case CommandKind.PaintRoomTiles: return PaintRoomTiles(c, state, lab, cmd);
                 case CommandKind.BuyLot: return BuyLot(c, state, lab);
                 case CommandKind.Hire: return Hire(c, state, lab, cmd);
                 case CommandKind.Fire: return Fire(c, state, lab, cmd);
@@ -296,31 +302,20 @@ namespace AiLabs.Rules.Sim
         {
             RoomTypeConfig type = c.RoomType(cmd.Id);
             if (type == null) return Fail(CommandError.UnknownId, "There is no room type \"" + cmd.Id + "\".");
+            if (!GarageDrawRoom.BuildMenuOpen(c, lab, type))
+                return Fail(CommandError.DrawMenuLocked, type.Name + " is not on the build menu yet.");
             if (!EraSystem.RoomOpen(c, type, state.Tick))
                 return Fail(CommandError.EraLocked, type.Name + " is not around yet: it arrives with " + c.Era(type.Era).Name + " (" + c.Era(type.Era).StartYear + ").");
             if (!LabQueries.RoomUnlocked(lab, type))
                 return Fail(CommandError.MissingPrerequisite, type.Name + " needs " + c.Tech(type.RequiresTech).Name + " first.");
-            if (cmd.Width < type.MinWidth || cmd.Height < type.MinHeight)
+            if (GarageDrawRoom.Active(c, lab))
+            {
+                if (!GarageDrawRoom.MeetsDrawMinimum(type, cmd.Width, cmd.Height))
+                    return Fail(CommandError.TooSmall, "A " + type.Name + " must be at least " + type.MinWidth + " by " + type.MinHeight + " tiles, and staffed rooms need a 3 by 3 footprint.");
+            }
+            else if (cmd.Width < type.MinWidth || cmd.Height < type.MinHeight)
                 return Fail(CommandError.TooSmall, "A " + type.Name + " must be at least " + type.MinWidth + " by " + type.MinHeight + " tiles.");
-            LotConfig lot = c.Lot(lab.LotId);
-            if (!LotGrid.InBounds(lot, cmd.X, cmd.Y, cmd.Width, cmd.Height))
-                return Fail(CommandError.OutOfBounds, "That does not fit on the lot (" + lot.Width + " by " + lot.Height + " tiles).");
-            if (!LotGrid.IsFree(lab.Rooms, cmd.X, cmd.Y, cmd.Width, cmd.Height))
-                return Fail(CommandError.Overlap, "Another room is in the way.");
-            long cost = type.BuildCostPerTile * cmd.Width * cmd.Height;
-            if (lab.Cash < cost) return NeedCash(lab, cost);
-
-            var room = new RoomState();
-            room.Id = state.TakeId();
-            room.TypeId = type.Id;
-            room.X = cmd.X;
-            room.Y = cmd.Y;
-            room.Width = cmd.Width;
-            room.Height = cmd.Height;
-            lab.Rooms.Add(room);
-            Finance.Spend(lab, LedgerLine.Construction, cost);
-            Events.Add(state, EventKind.RoomBuilt, lab.Id, room.Id, cost, type.Id);
-            return CommandResult.Done(room.Id);
+            return BuildRoomRect(c, state, lab, type, cmd.X, cmd.Y, cmd.Width, cmd.Height, null);
         }
 
         static CommandResult DemolishRoom(GameConfig c, GameState state, LabState lab, Command cmd)
@@ -331,7 +326,7 @@ namespace AiLabs.Rules.Sim
 
             if (!string.IsNullOrEmpty(type.SeatsRole))
             {
-                int seatsLeft = LabQueries.Seats(c, lab, type.SeatsRole) - LabQueries.SeatsInRoom(c, room);
+                int seatsLeft = LabQueries.Seats(c, lab, type.SeatsRole) - LabQueries.SeatsInRoom(c, room, lab);
                 if (LabQueries.StaffCount(lab, type.SeatsRole) > seatsLeft)
                     return Fail(CommandError.StaffNeedSeats, "People still work in that room. Let them go or build them seats elsewhere first.");
             }
@@ -339,8 +334,15 @@ namespace AiLabs.Rules.Sim
             if (LabQueries.HqGpus(lab) > slotsLeft)
                 return Fail(CommandError.GpusNeedSlots, "The lab's own GPUs are racked in that room. Sell them or build racks elsewhere first.");
 
+            long refund = 0;
+            if (GarageDrawRoom.Active(c, lab))
+            {
+                refund = MathI.MulPermille(GarageDrawRoom.RoomBuildCostPaid(room, type), c.GarageDraw.DemolishRefundPermille);
+                if (refund > 0) Finance.Earn(lab, LedgerLine.Construction, refund);
+                GarageDrawRoom.RemoveDesksInRoom(lab, room.Id);
+            }
             lab.Rooms.Remove(room);
-            Events.Add(state, EventKind.RoomDemolished, lab.Id, room.Id, 0, type.Id);
+            Events.Add(state, EventKind.RoomDemolished, lab.Id, room.Id, refund, type.Id);
             return CommandResult.Done(-1);
         }
 

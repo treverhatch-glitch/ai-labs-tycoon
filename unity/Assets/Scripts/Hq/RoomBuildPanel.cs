@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.Systems;
+using System.Text;
 using AiLabs.Unity.Sim;
 using AiLabs.Unity.UI;
 using UnityEngine;
@@ -83,27 +84,47 @@ namespace AiLabs.Unity.Hq
         {
             if (_host?.Simulation == null || _typeListRoot == null) return;
             Simulation sim = _host.Simulation;
+            bool draw = GarageDrawRoom.Active(sim.Config, sim.Player);
             _openTypes.Clear();
+            for (int i = _typeListRoot.childCount - 1; i >= 0; i--)
+                Destroy(_typeListRoot.GetChild(i).gameObject);
             for (int i = 0; i < sim.Config.RoomTypes.Count; i++)
             {
                 RoomTypeConfig type = sim.Config.RoomTypes[i];
-                if (EraSystem.RoomOpen(sim.Config, type, sim.Tick))
-                    _openTypes.Add(type.Id);
-            }
-            for (int i = _typeListRoot.childCount - 1; i >= 0; i--)
-                Destroy(_typeListRoot.GetChild(i).gameObject);
-
-            for (int i = 0; i < _openTypes.Count; i++)
-            {
-                string id = _openTypes[i];
-                RoomTypeConfig type = sim.Config.RoomType(id);
-                HqUiFactory.SmallButton(_typeListRoot, type.Name, () => SelectType(id));
+                if (!EraSystem.RoomOpen(sim.Config, type, sim.Tick)) continue;
+                bool open = !draw || GarageDrawRoom.DayOneType(sim.Config, type.Id);
+                string id = type.Id;
+                string label = open ? type.Name : type.Name + " (locked)";
+                HqUiFactory.SmallButton(_typeListRoot, label, () => { if (open) SelectType(id); });
+                if (open) _openTypes.Add(id);
             }
 
             if (_openTypes.Count > 0 && !_openTypes.Contains(_selectedTypeId))
                 SelectType(_openTypes[0]);
             else
                 UpdateSelectionLabel();
+        }
+
+        public void SetDragCostReadout(int tiles, long cost, int seats, int overcrowd)
+        {
+            if (_selection == null) return;
+            RoomTypeConfig type = _host?.Simulation?.Config.RoomType(_selectedTypeId);
+            if (type == null) return;
+            var sb = new StringBuilder();
+            sb.Append(type.Name);
+            sb.Append(" · $");
+            sb.Append(cost);
+            sb.Append(" (");
+            sb.Append(tiles);
+            sb.Append(" tiles)");
+            if (seats > 0)
+            {
+                sb.Append(" · ~");
+                sb.Append(seats);
+                sb.Append(" desks");
+                if (overcrowd > seats) sb.Append(", crowded above ").Append(overcrowd - 1);
+            }
+            _selection.text = sb.ToString();
         }
 
         void SelectType(string id)

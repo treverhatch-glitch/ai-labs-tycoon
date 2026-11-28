@@ -12,7 +12,7 @@
 
 - New game on `garage`: **zero rooms**, **3 clutter placeables** (sell once for cash, free tiles).
 - **Draw-room tool:** rectangle + paint; 3×3 staffed / 2×2 comfort minimum; live cost, seat estimate, overcrowding line; resize / move / delete (50% refund) / copy.
-- Build menu: exactly **4** types — `general-dev-room`, `research-lab`, `coffee-corner`, `bathroom`; all others greyed with unlock text.
+- Build menu: **six** day-one types — `general-dev-room`, `research-lab`, `coffee-corner`, `bathroom`, `sales-office`, `server-closet`; all others greyed with unlock text (Hatch acceptance 28 Nov; design §1.4 still lists four starter rooms — logged in `docs/QUESTIONS.md`).
 - Player draws rooms, places **tier-1 Dev desks** in general room, **seats founder** by drag.
 - **No pre-spawned rooms.**
 

@@ -59,7 +59,12 @@ public sealed class Game
     /// <summary>A game against every rival in the config.</summary>
     public static Game New(long seed = 1, Action<GameConfig> tweak = null)
     {
-        return new Game(Simulation.NewGame(TestData.Config(tweak), seed));
+        return new Game(Simulation.NewGame(TestData.Config(c =>
+        {
+            c.GarageDraw.Enabled = 0;
+            c.PlayerStart.Cash = 200_000;
+            if (tweak != null) tweak(c);
+        }), new NewGameOptions { Seed = seed }));
     }
 
     /// <summary>
@@ -72,6 +77,8 @@ public sealed class Game
         GameConfig config = TestData.Config(c =>
         {
             c.World.Attention.DominanceFromPpm = MathI.Ppm;
+            c.GarageDraw.Enabled = 0;
+            c.PlayerStart.Cash = 200_000;
             if (tweak != null) tweak(c);
         });
         return new Game(Simulation.NewGame(config, options));
@@ -107,8 +114,21 @@ public sealed class Game
     /// <summary>Builds a room in the first free spot and returns its id.</summary>
     public int Build(string roomTypeId, int width, int height)
     {
-        Assert.True(LotGrid.FindFreeRect(C.Lot(Me.LotId), Me.Rooms, width, height, out int x, out int y),
-            "No free " + width + "x" + height + " spot on the lot");
+        LotConfig lot = C.Lot(Me.LotId);
+        bool found = false;
+        int x = -1, y = -1;
+        for (y = 0; y + height <= lot.Height; y++)
+        {
+            for (x = 0; x + width <= lot.Width; x++)
+            {
+                if (!LotGrid.IsFree(Me.Rooms, x, y, width, height)) continue;
+                if (GarageDrawRoom.Active(C, Me) && GarageDrawRoom.RectBlockedByClutter(Me, x, y, width, height)) continue;
+                found = true;
+                break;
+            }
+            if (found) break;
+        }
+        Assert.True(found, "No free " + width + "x" + height + " spot on the lot");
         return Do(Command.BuildRoom(Id, roomTypeId, x, y, width, height)).CreatedId;
     }
 
