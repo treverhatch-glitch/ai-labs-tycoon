@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Softer reputation hit on lobby backfire in late era (Q539, schema 198).</summary>
+    /// <summary>Softer reputation hit on lobby backfire in late era (Q539, schema 199).</summary>
     public sealed class LobbyingBackfireEraReliefConfig : ISync
     {
         public int Enabled;

@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Trust bump when a scenario goal is met in a late era (Q509, schema 176).</summary>
+    /// <summary>Trust bump when a scenario goal is met in a late era (Q509, schema 177).</summary>
     public sealed class ScenarioGoalEraTrustConfig : ISync
     {
         public int Enabled;

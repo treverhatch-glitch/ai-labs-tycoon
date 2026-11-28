@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Schema 180–182 edge paths (Q515–Q517).</summary>
+/// <summary>Schema 181–183 edge paths (Q515–Q517).</summary>
 public class BatchTwentySevenEraTierTests
 {
     static Game Lab(System.Action<GameConfig> tweak = null)

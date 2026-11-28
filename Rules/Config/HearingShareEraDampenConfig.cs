@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Smaller bubble hit from a bad hearing answer in a late era (Q511, schema 177).</summary>
+    /// <summary>Smaller bubble hit from a bad hearing answer in a late era (Q511, schema 178).</summary>
     public sealed class HearingShareEraDampenConfig : ISync
     {
         public int Enabled;

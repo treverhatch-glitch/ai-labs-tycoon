@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Softer trust hit when published metrics miss on incident in late era (Q528, schema 190).</summary>
+    /// <summary>Softer trust hit when published metrics miss on incident in late era (Q528, schema 191).</summary>
     public sealed class PublicMetricsMissEraReliefConfig : ISync
     {
         public int Enabled;

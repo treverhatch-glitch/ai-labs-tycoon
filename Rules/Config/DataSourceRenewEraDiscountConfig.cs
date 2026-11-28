@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Discount on data-source renew payment in late era (Q517, schema 182).</summary>
+    /// <summary>Discount on data-source renew payment in late era (Q517, schema 183).</summary>
     public sealed class DataSourceRenewEraDiscountConfig : ISync
     {
         public int Enabled;

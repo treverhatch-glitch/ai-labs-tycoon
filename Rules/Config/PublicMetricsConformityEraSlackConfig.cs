@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Soften conformity review push on bad public metrics in late era (Q532, schema 193).</summary>
+    /// <summary>Soften conformity review push on bad public metrics in late era (Q532, schema 194).</summary>
     public sealed class PublicMetricsConformityEraSlackConfig : ISync
     {
         public int Enabled;

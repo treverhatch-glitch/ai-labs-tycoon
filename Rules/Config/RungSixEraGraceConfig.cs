@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra weeks to answer rung-six crises in a late era (Q519, schema 183).</summary>
+    /// <summary>Extra weeks to answer rung-six crises in a late era (Q519, schema 184).</summary>
     public sealed class RungSixEraGraceConfig : ISync
     {
         public int Enabled;

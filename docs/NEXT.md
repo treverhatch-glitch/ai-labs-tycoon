@@ -465,93 +465,93 @@ and says why in the commit message.
 
 ### Equipment era tiers (LOCAL prep on `x-af2f`, HOLD push)
 
-249. **Compute equipment by era (ALT-527).** ~~Done (local)~~: `computeEquipment` data, `UpgradeComputeEquipment`, `DisplayQueries.ComputeEquipmentVisualsFor`, schema **173**, `ComputeEquipmentEraTierTests` (Q506).
+249. **Compute equipment by era (ALT-527).** ~~Done (local)~~: `computeEquipment` data, `UpgradeComputeEquipment`, `DisplayQueries.ComputeEquipmentVisualsFor`, schema **174**, `ComputeEquipmentEraTierTests` (Q506).
 
 ### Era batch 25 (LOCAL prep on `x-af2f`, HOLD push)
 
-250. **Exit debt era haircut.** ~~Done (local)~~: `ExitDebtEraHaircut`, schema **174** (Q507).
+250. **Exit debt era haircut.** ~~Done (local)~~: `ExitDebtEraHaircut`, schema **175** (Q507).
 
-251. **Takeoff answer era cooldown.** ~~Done (local)~~: `TakeoffAnswerEraCooldown`, schema **175** (Q508).
+251. **Takeoff answer era cooldown.** ~~Done (local)~~: `TakeoffAnswerEraCooldown`, schema **176** (Q508).
 
-252. **Scenario goal era trust.** ~~Done (local)~~: `ScenarioGoalEraTrust`, schema **176** (Q509).
+252. **Scenario goal era trust.** ~~Done (local)~~: `ScenarioGoalEraTrust`, schema **177** (Q509).
 
 253. **Batch twenty-five news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests` (Q510); target 428/381.
 
-254. **Hearing share era dampen (down path).** ~~Done (local)~~: `HearingShareEraDampen`, schema **177** (Q511).
+254. **Hearing share era dampen (down path).** ~~Done (local)~~: `HearingShareEraDampen`, schema **178** (Q511).
 
-255. **Office release era grace.** ~~Done (local)~~: `OfficeReleaseEraGrace`, schema **178** (Q512).
+255. **Office release era grace.** ~~Done (local)~~: `OfficeReleaseEraGrace`, schema **179** (Q512).
 
-256. **Data source acquire era weeks.** ~~Done (local)~~: `DataSourceAcquireEraWeeks`, schema **179** (Q513).
+256. **Data source acquire era weeks.** ~~Done (local)~~: `DataSourceAcquireEraWeeks`, schema **180** (Q513).
 
 257. **Batch twenty-six news, chat and combination rules.** ~~Done (local)~~: `BatchTwentySixNewsChatTests`, `BatchTwentySixTogetherTests` (Q514); target 431/384.
 
 ### Era batch 27 (LOCAL prep on `x-af2f`, HOLD push)
 
-258. **Escape crisis era grace.** ~~Done (local)~~: `EscapeCrisisEraGrace`, schema **180** (Q515).
+258. **Escape crisis era grace.** ~~Done (local)~~: `EscapeCrisisEraGrace`, schema **181** (Q515).
 
-259. **Law shaping era amplify.** ~~Done (local)~~: `LawShapingEraAmplify`, schema **181** (Q516).
+259. **Law shaping era amplify.** ~~Done (local)~~: `LawShapingEraAmplify`, schema **182** (Q516).
 
-260. **Data source renew era discount.** ~~Done (local)~~: `DataSourceRenewEraDiscount`, schema **182** (Q517).
+260. **Data source renew era discount.** ~~Done (local)~~: `DataSourceRenewEraDiscount`, schema **183** (Q517).
 
 261. **Batch twenty-seven news, chat and combination rules.** ~~Done (local)~~: `BatchTwentySevenNewsChatTests`, `BatchTwentySevenTogetherTests` (Q518); target 434/387.
 
 ### Era batch 28 (LOCAL prep on `x-af2f`, HOLD push)
 
-262. **Rung-six era grace.** ~~Done (local)~~: `RungSixEraGrace`, schema **183** (Q519).
+262. **Rung-six era grace.** ~~Done (local)~~: `RungSixEraGrace`, schema **184** (Q519).
 
-263. **Eval harness era relief.** ~~Done (local)~~: `EvalHarnessEraRelief`, schema **184** (Q520).
+263. **Eval harness era relief.** ~~Done (local)~~: `EvalHarnessEraRelief`, schema **185** (Q520).
 
-264. **Public metrics era discount.** ~~Done (local)~~: `PublicMetricsEraDiscount`, schema **185** (Q521).
+264. **Public metrics era discount.** ~~Done (local)~~: `PublicMetricsEraDiscount`, schema **186** (Q521).
 
 265. **Batch twenty-eight news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyEightNewsChatTests`, `BatchTwentyEightTogetherTests` (Q522); target 437/390.
 
 ### Era batch 29 (LOCAL prep on `x-af2f`, HOLD push)
 
-266. **Office hearing era grace.** ~~Done (local)~~: `OfficeHearingEraGrace`, schema **186** (Q523).
+266. **Office hearing era grace.** ~~Done (local)~~: `OfficeHearingEraGrace`, schema **187** (Q523).
 
-267. **Open weights copy era relief.** ~~Done (local)~~: `OpenWeightsCopyEraRelief`, schema **187** (Q524).
+267. **Open weights copy era relief.** ~~Done (local)~~: `OpenWeightsCopyEraRelief`, schema **188** (Q524).
 
-268. **Eval fail era relief.** ~~Done (local)~~: `EvalFailEraRelief`, schema **188** (Q525).
+268. **Eval fail era relief.** ~~Done (local)~~: `EvalFailEraRelief`, schema **189** (Q525).
 
 269. **Batch twenty-nine news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyNineNewsChatTests`, `BatchTwentyNineTogetherTests` (Q526); target 440/393.
 
 ### Era batch 30 (LOCAL prep on `x-af2f`, HOLD push)
 
-270. **Lobbying era cooldown.** ~~Done (local)~~: `LobbyingEraCooldown`, schema **189** (Q527).
+270. **Lobbying era cooldown.** ~~Done (local)~~: `LobbyingEraCooldown`, schema **190** (Q527).
 
-271. **Public metrics miss era relief.** ~~Done (local)~~: `PublicMetricsMissEraRelief`, schema **190** (Q528).
+271. **Public metrics miss era relief.** ~~Done (local)~~: `PublicMetricsMissEraRelief`, schema **191** (Q528).
 
-272. **Open weights open era boost.** ~~Done (local)~~: `OpenWeightsOpenEraBoost`, schema **191** (Q529).
+272. **Open weights open era boost.** ~~Done (local)~~: `OpenWeightsOpenEraBoost`, schema **192** (Q529).
 
 273. **Batch thirty news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyNewsChatTests`, `BatchThirtyTogetherTests` (Q530); target 443/396.
 
 ### Era batch 31 (LOCAL prep on `x-af2f`, HOLD push)
 
-274. **Lobbying cost era relief.** ~~Done (local)~~: `LobbyingCostEraRelief`, schema **192** (Q531).
+274. **Lobbying cost era relief.** ~~Done (local)~~: `LobbyingCostEraRelief`, schema **193** (Q531).
 
-275. **Public metrics conformity era slack.** ~~Done (local)~~: `PublicMetricsConformityEraSlack`, schema **193** (Q532).
+275. **Public metrics conformity era slack.** ~~Done (local)~~: `PublicMetricsConformityEraSlack`, schema **194** (Q532).
 
-276. **Specialist branch era boost.** ~~Done (local)~~: `SpecialistBranchEraBoost`, schema **194** (Q533).
+276. **Specialist branch era boost.** ~~Done (local)~~: `SpecialistBranchEraBoost`, schema **195** (Q533).
 
 277. **Batch thirty-one news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyOneNewsChatTests`, `BatchThirtyOneTogetherTests` (Q534); target 446/399.
 
 ### Era batch 32 (LOCAL prep on `x-af2f`, HOLD push)
 
-278. **Lobbying goal era amplify.** ~~Done (local)~~: `LobbyingGoalEraAmplify`, schema **195** (Q535).
+278. **Lobbying goal era amplify.** ~~Done (local)~~: `LobbyingGoalEraAmplify`, schema **196** (Q535).
 
-279. **Public metrics bar era slack.** ~~Done (local)~~: `PublicMetricsBarEraSlack`, schema **196** (Q536).
+279. **Public metrics bar era slack.** ~~Done (local)~~: `PublicMetricsBarEraSlack`, schema **197** (Q536).
 
-280. **Open weights close era relief.** ~~Done (local)~~: `OpenWeightsCloseEraRelief`, schema **197** (Q537).
+280. **Open weights close era relief.** ~~Done (local)~~: `OpenWeightsCloseEraRelief`, schema **198** (Q537).
 
 281. **Batch thirty-two news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests` (Q538); target 449/405 at merged tip (packet6 chat + batches 25–32).
 
 ### Era batch 33 (LOCAL prep on `x-af2f`, HOLD push)
 
-282. **Lobbying backfire era relief.** ~~Done (local)~~: `LobbyingBackfireEraRelief`, schema **198** (Q539).
+282. **Lobbying backfire era relief.** ~~Done (local)~~: `LobbyingBackfireEraRelief`, schema **199** (Q539).
 
-283. **Public metrics gain era boost.** ~~Done (local)~~: `PublicMetricsGainEraBoost`, schema **199** (Q540).
+283. **Public metrics gain era boost.** ~~Done (local)~~: `PublicMetricsGainEraBoost`, schema **200** (Q540).
 
-284. **Open weights copy era slack.** ~~Done (local)~~: `OpenWeightsCopyEraSlack`, schema **200** (Q541).
+284. **Open weights copy era slack.** ~~Done (local)~~: `OpenWeightsCopyEraSlack`, schema **201** (Q541).
 
 285. **Batch thirty-three news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyThreeNewsChatTests`, `BatchThirtyThreeTogetherTests` (Q542); target **452/408**.
 

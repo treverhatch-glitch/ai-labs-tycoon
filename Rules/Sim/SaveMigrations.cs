@@ -215,6 +215,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 198) MigrateTo198(root);
             if (fromSchema < 199) MigrateTo199(root);
             if (fromSchema < 200) MigrateTo200(root);
+            if (fromSchema < 201) MigrateTo201(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -739,13 +740,14 @@ namespace AiLabs.Rules.Sim
 
         static void MigrateTo172(JsonValue root) { }
 
-        /// <summary>Schema 173: starter equipment tier.</summary>
-        static void MigrateTo173(JsonValue root)
+        /// <summary>Schema 173: reserved for GD-6 garage (#107).</summary>
+        static void MigrateTo173(JsonValue root) { }
+
+        /// <summary>Schema 174: starter equipment tier.</summary>
+        static void MigrateTo174(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "computeEquipTier", JsonValue.Of(0L)));
         }
-
-        static void MigrateTo174(JsonValue root) { }
 
         static void MigrateTo175(JsonValue root) { }
 
@@ -798,6 +800,8 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo199(JsonValue root) { }
 
         static void MigrateTo200(JsonValue root) { }
+
+        static void MigrateTo201(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

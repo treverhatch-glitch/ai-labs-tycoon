@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Schema 177–179 edge paths (Q511–Q513).</summary>
+/// <summary>Schema 178–180 edge paths (Q511–Q513).</summary>
 public class BatchTwentySixEraTierTests
 {
     static Game Lab(System.Action<GameConfig> tweak = null)
@@ -92,7 +92,7 @@ public class BatchTwentySixEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_182_round_trip()
+    public void Save_load_preserves_schema_183round_trip()
     {
         Game g = Lab(c =>
         {
@@ -112,7 +112,7 @@ public class BatchTwentySixEraTierTests
     public void Save_pretend_176_migrates_to_current_schema()
     {
         Game g = Lab();
-        Simulation older = Simulation.Load(g.C, SaveSchemaPretend.At(g.C, 176, g.Sim.Save()));
+        Simulation older = Simulation.Load(g.C, SaveSchemaPretend.At(g.C, 177, g.Sim.Save()));
         Assert.Equal(GameState.CurrentSchema, older.State.Schema);
     }
 }

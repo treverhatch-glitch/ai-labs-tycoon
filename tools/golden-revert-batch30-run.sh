@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-N="${1:?schema step 189-191}"
+N="${1:?schema step 190-192}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b30-golden-revert.lock"
@@ -13,9 +13,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[189]=cb0eb8109cc68fc30bc86591cd71437899ccb3cc4acc2112591bfd8fb875c6ae
-GOLDEN[190]=e10b1cfdbe483a6e684deeb70e853a427dfbef75c4e7bdef39da5f97c765a3d5
-GOLDEN[191]=2292665f9f3b5a3f3d3fe7b8154c36471af19e8bceb8487a5d67753b746ed5de
+GOLDEN[190]=cb0eb8109cc68fc30bc86591cd71437899ccb3cc4acc2112591bfd8fb875c6ae
+GOLDEN[191]=e10b1cfdbe483a6e684deeb70e853a427dfbef75c4e7bdef39da5f97c765a3d5
+GOLDEN[192]=2292665f9f3b5a3f3d3fe7b8154c36471af19e8bceb8487a5d67753b746ed5de
 
 PREV=$((N - 1))
 BK="/tmp/b30-rev-bak-$N"
@@ -44,25 +44,25 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 191 ] && disable_cfg openWeightsOpenEraBoost
-[ "$N" -le 190 ] && disable_cfg publicMetricsMissEraRelief
-[ "$N" -le 189 ] && disable_cfg lobbyingEraCooldown
-[ "$N" -le 188 ] && disable_cfg evalFailEraRelief
-[ "$N" -le 187 ] && disable_cfg openWeightsCopyEraRelief
-[ "$N" -le 186 ] && disable_cfg officeHearingEraGrace
-[ "$N" -le 185 ] && disable_cfg publicMetricsEraDiscount
-[ "$N" -le 184 ] && disable_cfg evalHarnessEraRelief
-[ "$N" -le 183 ] && disable_cfg rungSixEraGrace
-[ "$N" -le 182 ] && disable_cfg dataSourceRenewEraDiscount
-[ "$N" -le 181 ] && disable_cfg lawShapingEraAmplify
-[ "$N" -le 180 ] && disable_cfg escapeCrisisEraGrace
-[ "$N" -le 179 ] && disable_cfg dataSourceAcquireEraWeeks
-[ "$N" -le 178 ] && disable_cfg officeReleaseEraGrace
-[ "$N" -le 177 ] && disable_cfg hearingShareEraDampen
-[ "$N" -le 176 ] && disable_cfg scenarioGoalEraTrust
-[ "$N" -le 175 ] && disable_cfg takeoffAnswerEraCooldown
-[ "$N" -le 174 ] && disable_cfg exitDebtEraHaircut
-[ "$N" -le 173 ] && disable_cfg computeEquipment
+[ "$N" -le 192 ] && disable_cfg openWeightsOpenEraBoost
+[ "$N" -le 191 ] && disable_cfg publicMetricsMissEraRelief
+[ "$N" -le 190 ] && disable_cfg lobbyingEraCooldown
+[ "$N" -le 189 ] && disable_cfg evalFailEraRelief
+[ "$N" -le 188 ] && disable_cfg openWeightsCopyEraRelief
+[ "$N" -le 187 ] && disable_cfg officeHearingEraGrace
+[ "$N" -le 186 ] && disable_cfg publicMetricsEraDiscount
+[ "$N" -le 185 ] && disable_cfg evalHarnessEraRelief
+[ "$N" -le 184 ] && disable_cfg rungSixEraGrace
+[ "$N" -le 183 ] && disable_cfg dataSourceRenewEraDiscount
+[ "$N" -le 182 ] && disable_cfg lawShapingEraAmplify
+[ "$N" -le 181 ] && disable_cfg escapeCrisisEraGrace
+[ "$N" -le 180 ] && disable_cfg dataSourceAcquireEraWeeks
+[ "$N" -le 179 ] && disable_cfg officeReleaseEraGrace
+[ "$N" -le 178 ] && disable_cfg hearingShareEraDampen
+[ "$N" -le 177 ] && disable_cfg scenarioGoalEraTrust
+[ "$N" -le 176 ] && disable_cfg takeoffAnswerEraCooldown
+[ "$N" -le 175 ] && disable_cfg exitDebtEraHaircut
+[ "$N" -le 174 ] && disable_cfg computeEquipment
 [ "$N" -le 172 ] && disable_cfg takeoffCrisisEraGrace
 [ "$N" -le 171 ] && disable_cfg scenarioGoalsEraSlack
 [ "$N" -le 170 ] && disable_cfg marginSatisfyEraRelief

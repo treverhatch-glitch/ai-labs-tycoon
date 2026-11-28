@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Shorten lobby cooldown after a push once era allows (Q527, schema 189).</summary>
+    /// <summary>Shorten lobby cooldown after a push once era allows (Q527, schema 190).</summary>
     public sealed class LobbyingEraCooldownConfig : ISync
     {
         public int Enabled;

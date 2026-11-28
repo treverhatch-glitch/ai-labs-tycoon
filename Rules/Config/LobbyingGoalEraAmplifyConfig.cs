@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Stronger quiet/subsidy lobby outcomes in late era (Q535, schema 195).</summary>
+    /// <summary>Stronger quiet/subsidy lobby outcomes in late era (Q535, schema 196).</summary>
     public sealed class LobbyingGoalEraAmplifyConfig : ISync
     {
         public int Enabled;

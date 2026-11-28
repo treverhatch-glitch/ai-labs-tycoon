@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 200;
+        public const int CurrentSchema = 201;
 
         public int Schema;
         public string ConfigVersion;
@@ -627,7 +627,7 @@ namespace AiLabs.Rules.State
         public string BaggageId = "";
         public int BaggagePicked;
         public int MarginCallLeft;
-        /// <summary>The compute equipment tier index (Q506, schema 173).</summary>
+        /// <summary>The compute equipment tier index (Q506, schema 174).</summary>
         public int ComputeEquipTier;
         public int RungSixArcUntil;
         public int RungSixCooldownUntil;

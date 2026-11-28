@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Publish discount on public metrics in late era (Q521, schema 185).</summary>
+    /// <summary>Publish discount on public metrics in late era (Q521, schema 186).</summary>
     public sealed class PublicMetricsEraDiscountConfig : ISync
     {
         public int Enabled;

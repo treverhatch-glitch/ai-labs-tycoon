@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-N="${1:?schema step 183-185}"
+N="${1:?schema step 184-186}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b28-golden-revert.lock"
@@ -13,9 +13,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[183]=48d6250cb348870cf15adb909653d706d315bfa1ba19a27f7ccbd935ca66c972
-GOLDEN[184]=e8c609671c939c368708cce68b047ece52aba48afda3740c55db3b7a769f4d6a
-GOLDEN[185]=cd6e98b9305ee41d8b838e055386f3d0a791476241f9fc44029f0a449657a8d9
+GOLDEN[184]=48d6250cb348870cf15adb909653d706d315bfa1ba19a27f7ccbd935ca66c972
+GOLDEN[185]=e8c609671c939c368708cce68b047ece52aba48afda3740c55db3b7a769f4d6a
+GOLDEN[186]=cd6e98b9305ee41d8b838e055386f3d0a791476241f9fc44029f0a449657a8d9
 
 PREV=$((N - 1))
 BK="/tmp/b28-rev-bak-$N"
@@ -44,19 +44,19 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 185 ] && disable_cfg publicMetricsEraDiscount
-[ "$N" -le 184 ] && disable_cfg evalHarnessEraRelief
-[ "$N" -le 183 ] && disable_cfg rungSixEraGrace
-[ "$N" -le 182 ] && disable_cfg dataSourceRenewEraDiscount
-[ "$N" -le 181 ] && disable_cfg lawShapingEraAmplify
-[ "$N" -le 180 ] && disable_cfg escapeCrisisEraGrace
-[ "$N" -le 179 ] && disable_cfg dataSourceAcquireEraWeeks
-[ "$N" -le 178 ] && disable_cfg officeReleaseEraGrace
-[ "$N" -le 177 ] && disable_cfg hearingShareEraDampen
-[ "$N" -le 176 ] && disable_cfg scenarioGoalEraTrust
-[ "$N" -le 175 ] && disable_cfg takeoffAnswerEraCooldown
-[ "$N" -le 174 ] && disable_cfg exitDebtEraHaircut
-[ "$N" -le 173 ] && disable_cfg computeEquipment
+[ "$N" -le 186 ] && disable_cfg publicMetricsEraDiscount
+[ "$N" -le 185 ] && disable_cfg evalHarnessEraRelief
+[ "$N" -le 184 ] && disable_cfg rungSixEraGrace
+[ "$N" -le 183 ] && disable_cfg dataSourceRenewEraDiscount
+[ "$N" -le 182 ] && disable_cfg lawShapingEraAmplify
+[ "$N" -le 181 ] && disable_cfg escapeCrisisEraGrace
+[ "$N" -le 180 ] && disable_cfg dataSourceAcquireEraWeeks
+[ "$N" -le 179 ] && disable_cfg officeReleaseEraGrace
+[ "$N" -le 178 ] && disable_cfg hearingShareEraDampen
+[ "$N" -le 177 ] && disable_cfg scenarioGoalEraTrust
+[ "$N" -le 176 ] && disable_cfg takeoffAnswerEraCooldown
+[ "$N" -le 175 ] && disable_cfg exitDebtEraHaircut
+[ "$N" -le 174 ] && disable_cfg computeEquipment
 [ "$N" -le 172 ] && disable_cfg takeoffCrisisEraGrace
 [ "$N" -le 171 ] && disable_cfg scenarioGoalsEraSlack
 [ "$N" -le 170 ] && disable_cfg marginSatisfyEraRelief

@@ -3,7 +3,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Era-gated workstation tiers: visual ids and small research/training bonuses (Q506, schema 173).</summary>
+    /// <summary>Era-gated workstation tiers: visual ids and small research/training bonuses (Q506, schema 174).</summary>
     public sealed class ComputeEquipmentConfig : ISync
     {
         public int Enabled;

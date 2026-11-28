@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Softer trust hit when closing open weights in late era (Q537, schema 197).</summary>
+    /// <summary>Softer trust hit when closing open weights in late era (Q537, schema 198).</summary>
     public sealed class OpenWeightsCloseEraReliefConfig : ISync
     {
         public int Enabled;

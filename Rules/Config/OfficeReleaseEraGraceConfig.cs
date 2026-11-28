@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra weeks to answer release notes in a late era (Q512, schema 178).</summary>
+    /// <summary>Extra weeks to answer release notes in a late era (Q512, schema 179).</summary>
     public sealed class OfficeReleaseEraGraceConfig : ISync
     {
         public int Enabled;

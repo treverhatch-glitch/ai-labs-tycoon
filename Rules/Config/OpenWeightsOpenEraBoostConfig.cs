@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra trust when opening weights in late era (Q529, schema 191).</summary>
+    /// <summary>Extra trust when opening weights in late era (Q529, schema 192).</summary>
     public sealed class OpenWeightsOpenEraBoostConfig : ISync
     {
         public int Enabled;

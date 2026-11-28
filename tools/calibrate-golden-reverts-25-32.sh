@@ -28,14 +28,14 @@ PY
   fi
 }
 
-for n in 173 174 175 176; do cal tools/golden-revert-batch25-run.sh "$n"; done
-for n in 177 178 179; do cal tools/golden-revert-batch26-run.sh "$n"; done
-for n in 180 181 182; do cal tools/golden-revert-batch27-run.sh "$n"; done
-for n in 183 184 185; do cal tools/golden-revert-batch28-run.sh "$n"; done
-for n in 186 187 188; do cal tools/golden-revert-batch29-run.sh "$n"; done
-for n in 189 190 191; do cal tools/golden-revert-batch30-run.sh "$n"; done
-for n in 192 193 194; do cal tools/golden-revert-batch31-run.sh "$n"; done
-for n in 195 196 197; do cal tools/golden-revert-batch32-run.sh "$n"; done
+for n in 174 175 176 177; do cal tools/golden-revert-batch25-run.sh "$n"; done
+for n in 178 179 180; do cal tools/golden-revert-batch26-run.sh "$n"; done
+for n in 181 182 183; do cal tools/golden-revert-batch27-run.sh "$n"; done
+for n in 184 185 186; do cal tools/golden-revert-batch28-run.sh "$n"; done
+for n in 187 188 189; do cal tools/golden-revert-batch29-run.sh "$n"; done
+for n in 190 191 192; do cal tools/golden-revert-batch30-run.sh "$n"; done
+for n in 193 194 195; do cal tools/golden-revert-batch31-run.sh "$n"; done
+for n in 196 197 198; do cal tools/golden-revert-batch32-run.sh "$n"; done
 
 echo "=== verify tip golden ==="
 rm -f .build/bin/SimTests/Debug/net8.0/Data/default-config.json

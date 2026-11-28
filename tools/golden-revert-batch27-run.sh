@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-N="${1:?schema step 180-182}"
+N="${1:?schema step 181-183}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b27-golden-revert.lock"
@@ -13,9 +13,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[180]=321349c568f900acf184b5512eac54f7fbce2e992e8ec7aaa98f96a1fcda27df
-GOLDEN[181]=be5cca12fb1d2346dc5a04bb374f725b48fc1ae188b104447c7804ba07769b29
-GOLDEN[182]=a2892c5372931aa6f44ae077dd2e99b7bf592edaf527820b94d012785ded9774
+GOLDEN[181]=321349c568f900acf184b5512eac54f7fbce2e992e8ec7aaa98f96a1fcda27df
+GOLDEN[182]=be5cca12fb1d2346dc5a04bb374f725b48fc1ae188b104447c7804ba07769b29
+GOLDEN[183]=a2892c5372931aa6f44ae077dd2e99b7bf592edaf527820b94d012785ded9774
 
 PREV=$((N - 1))
 BK="/tmp/b27-rev-bak-$N"
@@ -44,16 +44,16 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 182 ] && disable_cfg dataSourceRenewEraDiscount
-[ "$N" -le 181 ] && disable_cfg lawShapingEraAmplify
-[ "$N" -le 180 ] && disable_cfg escapeCrisisEraGrace
-[ "$N" -le 179 ] && disable_cfg dataSourceAcquireEraWeeks
-[ "$N" -le 178 ] && disable_cfg officeReleaseEraGrace
-[ "$N" -le 177 ] && disable_cfg hearingShareEraDampen
-[ "$N" -le 176 ] && disable_cfg scenarioGoalEraTrust
-[ "$N" -le 175 ] && disable_cfg takeoffAnswerEraCooldown
-[ "$N" -le 174 ] && disable_cfg exitDebtEraHaircut
-[ "$N" -le 173 ] && disable_cfg computeEquipment
+[ "$N" -le 183 ] && disable_cfg dataSourceRenewEraDiscount
+[ "$N" -le 182 ] && disable_cfg lawShapingEraAmplify
+[ "$N" -le 181 ] && disable_cfg escapeCrisisEraGrace
+[ "$N" -le 180 ] && disable_cfg dataSourceAcquireEraWeeks
+[ "$N" -le 179 ] && disable_cfg officeReleaseEraGrace
+[ "$N" -le 178 ] && disable_cfg hearingShareEraDampen
+[ "$N" -le 177 ] && disable_cfg scenarioGoalEraTrust
+[ "$N" -le 176 ] && disable_cfg takeoffAnswerEraCooldown
+[ "$N" -le 175 ] && disable_cfg exitDebtEraHaircut
+[ "$N" -le 174 ] && disable_cfg computeEquipment
 [ "$N" -le 172 ] && disable_cfg takeoffCrisisEraGrace
 [ "$N" -le 171 ] && disable_cfg scenarioGoalsEraSlack
 [ "$N" -le 170 ] && disable_cfg marginSatisfyEraRelief

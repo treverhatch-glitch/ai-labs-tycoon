@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Bonus duration weeks on first data-source acquire in a late era (Q513, schema 179).</summary>
+    /// <summary>Bonus duration weeks on first data-source acquire in a late era (Q513, schema 180).</summary>
     public sealed class DataSourceAcquireEraWeeksConfig : ISync
     {
         public int Enabled;

@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Stronger law-shape delta in late era (Q516, schema 181).</summary>
+    /// <summary>Stronger law-shape delta in late era (Q516, schema 182).</summary>
     public sealed class LawShapingEraAmplifyConfig : ISync
     {
         public int Enabled;

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-N="${1:?schema step 173-176}"
+N="${1:?schema step 174-177}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b25-golden-revert.lock"
@@ -13,10 +13,10 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[173]=e4bf451dabb873995876306f9f22a4729684203dd10919c45a7b2b9ad43cd643
-GOLDEN[174]=2c17547204e4791908ba03e8227c4affe34a765a455af4fd220ca5250ea01c27
-GOLDEN[175]=7f313e113f9bab8849ee6872067ced56e95f65d1e90f753c56830dff7b6da0b5
-GOLDEN[176]=7460f997d1987b9ffa3823299107245cf7332594f806e8de5d0fc116f06ff431
+GOLDEN[174]=e4bf451dabb873995876306f9f22a4729684203dd10919c45a7b2b9ad43cd643
+GOLDEN[175]=2c17547204e4791908ba03e8227c4affe34a765a455af4fd220ca5250ea01c27
+GOLDEN[176]=7f313e113f9bab8849ee6872067ced56e95f65d1e90f753c56830dff7b6da0b5
+GOLDEN[177]=7460f997d1987b9ffa3823299107245cf7332594f806e8de5d0fc116f06ff431
 
 PREV=$((N - 1))
 BK="/tmp/b25-rev-bak-$N"
@@ -45,10 +45,10 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 176 ] && disable_cfg scenarioGoalEraTrust
-[ "$N" -le 175 ] && disable_cfg takeoffAnswerEraCooldown
-[ "$N" -le 174 ] && disable_cfg exitDebtEraHaircut
-[ "$N" -le 173 ] && disable_cfg computeEquipment
+[ "$N" -le 177 ] && disable_cfg scenarioGoalEraTrust
+[ "$N" -le 176 ] && disable_cfg takeoffAnswerEraCooldown
+[ "$N" -le 175 ] && disable_cfg exitDebtEraHaircut
+[ "$N" -le 174 ] && disable_cfg computeEquipment
 [ "$N" -le 172 ] && disable_cfg takeoffCrisisEraGrace
 [ "$N" -le 171 ] && disable_cfg scenarioGoalsEraSlack
 [ "$N" -le 170 ] && disable_cfg marginSatisfyEraRelief

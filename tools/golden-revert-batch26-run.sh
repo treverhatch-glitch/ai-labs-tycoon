@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-N="${1:?schema step 177-179}"
+N="${1:?schema step 178-180}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b26-golden-revert.lock"
@@ -13,9 +13,9 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[177]=855e2049051810ed8b1fa3b53ef0b879b3081f915c23eff2656c9b95f21bdcb8
-GOLDEN[178]=3433c4815b86ce58ddd7ec3098837e4eeba7a93f935a066bbef85591cb01365b
-GOLDEN[179]=c2d050bc0efe8ab96d31f18b6c50a8ff3c73d56fc4c1972ad15fbbe4aa555368
+GOLDEN[178]=855e2049051810ed8b1fa3b53ef0b879b3081f915c23eff2656c9b95f21bdcb8
+GOLDEN[179]=3433c4815b86ce58ddd7ec3098837e4eeba7a93f935a066bbef85591cb01365b
+GOLDEN[180]=c2d050bc0efe8ab96d31f18b6c50a8ff3c73d56fc4c1972ad15fbbe4aa555368
 
 PREV=$((N - 1))
 BK="/tmp/b26-rev-bak-$N"
@@ -44,13 +44,13 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 179 ] && disable_cfg dataSourceAcquireEraWeeks
-[ "$N" -le 178 ] && disable_cfg officeReleaseEraGrace
-[ "$N" -le 177 ] && disable_cfg hearingShareEraDampen
-[ "$N" -le 176 ] && disable_cfg scenarioGoalEraTrust
-[ "$N" -le 175 ] && disable_cfg takeoffAnswerEraCooldown
-[ "$N" -le 174 ] && disable_cfg exitDebtEraHaircut
-[ "$N" -le 173 ] && disable_cfg computeEquipment
+[ "$N" -le 180 ] && disable_cfg dataSourceAcquireEraWeeks
+[ "$N" -le 179 ] && disable_cfg officeReleaseEraGrace
+[ "$N" -le 178 ] && disable_cfg hearingShareEraDampen
+[ "$N" -le 177 ] && disable_cfg scenarioGoalEraTrust
+[ "$N" -le 176 ] && disable_cfg takeoffAnswerEraCooldown
+[ "$N" -le 175 ] && disable_cfg exitDebtEraHaircut
+[ "$N" -le 174 ] && disable_cfg computeEquipment
 [ "$N" -le 172 ] && disable_cfg takeoffCrisisEraGrace
 [ "$N" -le 171 ] && disable_cfg scenarioGoalsEraSlack
 [ "$N" -le 170 ] && disable_cfg marginSatisfyEraRelief

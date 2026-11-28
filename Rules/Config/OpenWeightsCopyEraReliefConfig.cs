@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Softer trust hit when open weights are copied in late era (Q524, schema 187).</summary>
+    /// <summary>Softer trust hit when open weights are copied in late era (Q524, schema 188).</summary>
     public sealed class OpenWeightsCopyEraReliefConfig : ISync
     {
         public int Enabled;

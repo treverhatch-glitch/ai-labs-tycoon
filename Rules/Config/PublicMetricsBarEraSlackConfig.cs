@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Lower published-metrics bar in late era (Q536, schema 196).</summary>
+    /// <summary>Lower published-metrics bar in late era (Q536, schema 197).</summary>
     public sealed class PublicMetricsBarEraSlackConfig : ISync
     {
         public int Enabled;

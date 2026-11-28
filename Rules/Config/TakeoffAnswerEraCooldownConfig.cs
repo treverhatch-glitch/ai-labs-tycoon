@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Shorter takeoff cooldown after an answer in a late era (Q508, schema 175).</summary>
+    /// <summary>Shorter takeoff cooldown after an answer in a late era (Q508, schema 176).</summary>
     public sealed class TakeoffAnswerEraCooldownConfig : ISync
     {
         public int Enabled;

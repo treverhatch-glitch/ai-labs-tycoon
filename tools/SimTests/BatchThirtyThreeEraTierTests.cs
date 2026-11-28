@@ -34,7 +34,7 @@ public class BatchThirtyThreeEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_200_round_trip()
+    public void Save_load_preserves_schema_201_round_trip()
     {
         Game g = Lab(c =>
         {
@@ -44,8 +44,8 @@ public class BatchThirtyThreeEraTierTests
         });
         g.Me.Cash = 1_000_000_000_000;
         string save = g.Sim.Save();
-        Assert.Equal(200, g.State.Schema);
+        Assert.Equal(201, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(200, loaded.State.Schema);
+        Assert.Equal(201, loaded.State.Schema);
     }
 }

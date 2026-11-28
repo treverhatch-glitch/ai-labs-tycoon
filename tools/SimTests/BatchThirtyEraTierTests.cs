@@ -36,7 +36,7 @@ public class BatchThirtyEraTierTests
     }
 
     [Fact]
-    public void Save_load_preserves_schema_191_round_trip()
+    public void Save_load_preserves_schema_192round_trip()
     {
         Game g = Lab(c =>
         {

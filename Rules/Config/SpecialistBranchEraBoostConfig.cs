@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra trust when branching a specialist line in late era (Q533, schema 194).</summary>
+    /// <summary>Extra trust when branching a specialist line in late era (Q533, schema 195).</summary>
     public sealed class SpecialistBranchEraBoostConfig : ISync
     {
         public int Enabled;

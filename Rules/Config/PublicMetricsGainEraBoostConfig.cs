@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra trust on good public metrics in late era (Q540, schema 199).</summary>
+    /// <summary>Extra trust on good public metrics in late era (Q540, schema 200).</summary>
     public sealed class PublicMetricsGainEraBoostConfig : ISync
     {
         public int Enabled;

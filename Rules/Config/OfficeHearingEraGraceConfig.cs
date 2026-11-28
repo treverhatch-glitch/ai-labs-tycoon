@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Extra weeks to answer hearing questions in a late era (Q523, schema 186).</summary>
+    /// <summary>Extra weeks to answer hearing questions in a late era (Q523, schema 187).</summary>
     public sealed class OfficeHearingEraGraceConfig : ISync
     {
         public int Enabled;

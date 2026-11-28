@@ -2414,77 +2414,77 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
 
-### Q506. Equipment tier simulation (ALT-527)? DECIDED (schema 173): `computeEquipment` tiers unlock by era and cash; `UpgradeComputeEquipment` upgrades stats and `visualEra` art ids (era 1 art only for now). Player only; rivals deferred.
+### Q506. Equipment tier simulation (ALT-527)? DECIDED (schema 174): `computeEquipment` tiers unlock by era and cash; `UpgradeComputeEquipment` upgrades stats and `visualEra` art ids (era 1 art only for now). Player only; rivals deferred.
 
-### Q507. Era haircut on exit debt counted against sell price? DECIDED (schema 174): `exitDebtEraHaircut`; `ExitDebtEraHaircutted` on `SellLab`.
+### Q507. Era haircut on exit debt counted against sell price? DECIDED (schema 175): `exitDebtEraHaircut`; `ExitDebtEraHaircutted` on `SellLab`.
 
-### Q508. Shorter takeoff cooldown after an answer in late era? DECIDED (schema 175): `takeoffAnswerEraCooldown`; `TakeoffAnswerEraCooldownShortened`.
+### Q508. Shorter takeoff cooldown after an answer in late era? DECIDED (schema 176): `takeoffAnswerEraCooldown`; `TakeoffAnswerEraCooldownShortened`.
 
-### Q509. Extra trust everywhere when a scenario goal is met in late era? DECIDED (schema 176): `scenarioGoalEraTrust`; `ScenarioGoalEraTrusted`.
+### Q509. Extra trust everywhere when a scenario goal is met in late era? DECIDED (schema 177): `scenarioGoalEraTrust`; `ScenarioGoalEraTrusted`.
 
 ### Q510. Batch twenty-five news, chat and combos. DECIDED: four headlines, four chat lines (428/381); equipment plus three era tails; `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests`.
 
-### Q511. Softer bubble hit on bad hearing in late era? DECIDED (schema 177): `hearingShareEraDampen`; `HearingShareEraDampened` on hearing down answers.
+### Q511. Softer bubble hit on bad hearing in late era? DECIDED (schema 178): `hearingShareEraDampen`; `HearingShareEraDampened` on hearing down answers.
 
-### Q512. Extra weeks to answer release notes in late era? DECIDED (schema 178): `officeReleaseEraGrace`; `OfficeReleaseEraGraced` on `OfficeEvents.OnRelease`.
+### Q512. Extra weeks to answer release notes in late era? DECIDED (schema 179): `officeReleaseEraGrace`; `OfficeReleaseEraGraced` on `OfficeEvents.OnRelease`.
 
-### Q513. Bonus duration on data-source acquire in late era? DECIDED (schema 179): `dataSourceAcquireEraWeeks`; `DataSourceAcquireEraWeeksBonused` on `DataSources.Acquire`.
+### Q513. Bonus duration on data-source acquire in late era? DECIDED (schema 180): `dataSourceAcquireEraWeeks`; `DataSourceAcquireEraWeeksBonused` on `DataSources.Acquire`.
 
 ### Q514. Batch twenty-six news, chat and combos. DECIDED: three headlines, three chat lines (431/384); `BatchTwentySixNewsChatTests`, `BatchTwentySixTogetherTests`.
 
-### Q515. Extra weeks to answer escape crises in late era? DECIDED (schema 180): `escapeCrisisEraGrace`; `EscapeCrisisEraGraced` on `OfficeEvents.OnEscape`.
+### Q515. Extra weeks to answer escape crises in late era? DECIDED (schema 181): `escapeCrisisEraGrace`; `EscapeCrisisEraGraced` on `OfficeEvents.OnEscape`.
 
-### Q516. Stronger law-shape delta in late era? DECIDED (schema 181): `lawShapingEraAmplify`; `LawShapingEraAmplified` on `LawShaping.Apply`.
+### Q516. Stronger law-shape delta in late era? DECIDED (schema 182): `lawShapingEraAmplify`; `LawShapingEraAmplified` on `LawShaping.Apply`.
 
-### Q517. Discount on data-source renew in late era? DECIDED (schema 182): `dataSourceRenewEraDiscount`; `DataSourceRenewEraDiscounted` on `DataSources.Renew`.
+### Q517. Discount on data-source renew in late era? DECIDED (schema 183): `dataSourceRenewEraDiscount`; `DataSourceRenewEraDiscounted` on `DataSources.Renew`.
 
 ### Q518. Batch twenty-seven news, chat and combos. DECIDED: three headlines, three chat lines (434/387); `BatchTwentySevenNewsChatTests`, `BatchTwentySevenTogetherTests`.
 
-### Q519. Extra weeks to answer rung-six crises in late era? DECIDED (schema 183): `rungSixEraGrace`; `RungSixEraGraced` on `OfficeEvents.OnRungSix`.
+### Q519. Extra weeks to answer rung-six crises in late era? DECIDED (schema 184): `rungSixEraGrace`; `RungSixEraGraced` on `OfficeEvents.OnRungSix`.
 
-### Q520. Register-cost relief on eval harness in late era? DECIDED (schema 184): `evalHarnessEraRelief`; `EvalHarnessEraRelieved` on `EvalHarness.Register`.
+### Q520. Register-cost relief on eval harness in late era? DECIDED (schema 185): `evalHarnessEraRelief`; `EvalHarnessEraRelieved` on `EvalHarness.Register`.
 
-### Q521. Discount on public metrics publish in late era? DECIDED (schema 185): `publicMetricsEraDiscount`; `PublicMetricsEraDiscounted` on `PublicMetrics.Publish`.
+### Q521. Discount on public metrics publish in late era? DECIDED (schema 186): `publicMetricsEraDiscount`; `PublicMetricsEraDiscounted` on `PublicMetrics.Publish`.
 
 ### Q522. Batch twenty-eight news, chat and combos. DECIDED: three headlines, three chat lines (437/390); `BatchTwentyEightNewsChatTests`, `BatchTwentyEightTogetherTests`.
 
-### Q523. Extra weeks to answer hearing questions in late era? DECIDED (schema 186): `officeHearingEraGrace`; `OfficeHearingEraGraced` on `OfficeEvents.OnHearing`.
+### Q523. Extra weeks to answer hearing questions in late era? DECIDED (schema 187): `officeHearingEraGrace`; `OfficeHearingEraGraced` on `OfficeEvents.OnHearing`.
 
-### Q524. Softer trust hit when open weights are copied in late era? DECIDED (schema 187): `openWeightsCopyEraRelief`; `OpenWeightsCopyEraRelieved` on `OpenWeights.RunWeek`.
+### Q524. Softer trust hit when open weights are copied in late era? DECIDED (schema 188): `openWeightsCopyEraRelief`; `OpenWeightsCopyEraRelieved` on `OpenWeights.RunWeek`.
 
-### Q525. Softer trust loss on failed eval publish in late era? DECIDED (schema 188): `evalFailEraRelief`; `EvalFailEraRelieved` on `EvalHarness.Publish` fail path.
+### Q525. Softer trust loss on failed eval publish in late era? DECIDED (schema 189): `evalFailEraRelief`; `EvalFailEraRelieved` on `EvalHarness.Publish` fail path.
 
 ### Q526. Batch twenty-nine news, chat and combos. DECIDED: three headlines, three chat lines (440/393); `BatchTwentyNineNewsChatTests`, `BatchTwentyNineTogetherTests`.
 
-### Q527. Shorten lobby cooldown after a push in late era? DECIDED (schema 189): `lobbyingEraCooldown`; `LobbyingEraCooldownShortened` on `Lobbying.Run`.
+### Q527. Shorten lobby cooldown after a push in late era? DECIDED (schema 190): `lobbyingEraCooldown`; `LobbyingEraCooldownShortened` on `Lobbying.Run`.
 
-### Q528. Softer trust hit on public metrics incident miss in late era? DECIDED (schema 190): `publicMetricsMissEraRelief`; `PublicMetricsMissEraRelieved` on `PublicMetrics.OnIncident`.
+### Q528. Softer trust hit on public metrics incident miss in late era? DECIDED (schema 191): `publicMetricsMissEraRelief`; `PublicMetricsMissEraRelieved` on `PublicMetrics.OnIncident`.
 
-### Q529. Extra trust when opening weights in late era? DECIDED (schema 191): `openWeightsOpenEraBoost`; `OpenWeightsOpenEraBoosted` on `OpenWeights.SetPolicy`.
+### Q529. Extra trust when opening weights in late era? DECIDED (schema 192): `openWeightsOpenEraBoost`; `OpenWeightsOpenEraBoosted` on `OpenWeights.SetPolicy`.
 
 ### Q530. Batch thirty news, chat and combos. DECIDED: three headlines, three chat lines (443/396); `BatchThirtyNewsChatTests`, `BatchThirtyTogetherTests`.
 
-### Q531. Discount lobby push cost in late era? DECIDED (schema 192): `lobbyingCostEraRelief`; `LobbyingCostEraRelieved` on `Command.Lobby`.
+### Q531. Discount lobby push cost in late era? DECIDED (schema 193): `lobbyingCostEraRelief`; `LobbyingCostEraRelieved` on `Command.Lobby`.
 
-### Q532. Softer conformity push on bad published metrics in late era? DECIDED (schema 193): `publicMetricsConformityEraSlack`; `PublicMetricsConformityEraSlacked` on `PublicMetrics.RunWeek`.
+### Q532. Softer conformity push on bad published metrics in late era? DECIDED (schema 194): `publicMetricsConformityEraSlack`; `PublicMetricsConformityEraSlacked` on `PublicMetrics.RunWeek`.
 
-### Q533. Extra trust when branching specialist in late era? DECIDED (schema 194): `specialistBranchEraBoost`; `SpecialistBranchEraBoosted` on `SpecialistLines.Branch`.
+### Q533. Extra trust when branching specialist in late era? DECIDED (schema 195): `specialistBranchEraBoost`; `SpecialistBranchEraBoosted` on `SpecialistLines.Branch`.
 
 ### Q534. Batch thirty-one news, chat and combos. DECIDED: three headlines, three chat lines (446/399); `BatchThirtyOneNewsChatTests`, `BatchThirtyOneTogetherTests`.
 
-### Q535. Stronger lobby quiet/subsidy outcomes in late era? DECIDED (schema 195): `lobbyingGoalEraAmplify`; `LobbyingGoalEraAmplified` on `Lobbying.Run`.
+### Q535. Stronger lobby quiet/subsidy outcomes in late era? DECIDED (schema 196): `lobbyingGoalEraAmplify`; `LobbyingGoalEraAmplified` on `Lobbying.Run`.
 
-### Q536. Lower public metrics bar in late era? DECIDED (schema 196): `publicMetricsBarEraSlack`; `PublicMetricsBarEraSlacked` on `PublicMetrics.RunWeek`.
+### Q536. Lower public metrics bar in late era? DECIDED (schema 197): `publicMetricsBarEraSlack`; `PublicMetricsBarEraSlacked` on `PublicMetrics.RunWeek`.
 
-### Q537. Softer trust hit closing open weights in late era? DECIDED (schema 197): `openWeightsCloseEraRelief`; `OpenWeightsCloseEraRelieved` on `OpenWeights.SetPolicy` close.
+### Q537. Softer trust hit closing open weights in late era? DECIDED (schema 198): `openWeightsCloseEraRelief`; `OpenWeightsCloseEraRelieved` on `OpenWeights.SetPolicy` close.
 
 ### Q538. Batch thirty-two news, chat and combos. DECIDED: three headlines, three chat lines (449/405 merged tip); `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests`.
 
-### Q539. Softer reputation hit on lobby backfire in late era? DECIDED (schema 198): `lobbyingBackfireEraRelief`; `LobbyingBackfireEraRelieved` on `Lobbying.Run` backfire.
+### Q539. Softer reputation hit on lobby backfire in late era? DECIDED (schema 199): `lobbyingBackfireEraRelief`; `LobbyingBackfireEraRelieved` on `Lobbying.Run` backfire.
 
-### Q540. Extra trust on good public metrics in late era? DECIDED (schema 199): `publicMetricsGainEraBoost`; `PublicMetricsGainEraBoosted` on `PublicMetrics` gain path.
+### Q540. Extra trust on good public metrics in late era? DECIDED (schema 200): `publicMetricsGainEraBoost`; `PublicMetricsGainEraBoosted` on `PublicMetrics` gain path.
 
-### Q541. Softer weekly open-weights copy hit in late era? DECIDED (schema 200): `openWeightsCopyEraSlack`; `OpenWeightsCopyEraSlacked` on `OpenWeights.RunWeek`.
+### Q541. Softer weekly open-weights copy hit in late era? DECIDED (schema 201): `openWeightsCopyEraSlack`; `OpenWeightsCopyEraSlacked` on `OpenWeights.RunWeek`.
 
 ### Q542. Batch thirty-three news, chat and combos. DECIDED: three headlines, three chat lines (452/408); `BatchThirtyThreeNewsChatTests`, `BatchThirtyThreeTogetherTests`.
 

@@ -2,7 +2,7 @@ using AiLabs.Rules.Core;
 
 namespace AiLabs.Rules.Config
 {
-    /// <summary>Discount lobby push cost in late era (Q531, schema 192).</summary>
+    /// <summary>Discount lobby push cost in late era (Q531, schema 193).</summary>
     public sealed class LobbyingCostEraReliefConfig : ISync
     {
         public int Enabled;
