@@ -483,6 +483,7 @@ def garage_glb_y_up_preview(asset_id: str) -> bool:
 
 GARAGE_FURNITURE = frozenset(
     {
+        "garage-crt-monitor",
         "garage-desk-crt",
         "garage-folding-chair",
         "garage-server-closet",
@@ -710,9 +711,10 @@ def export_garage_multipart_glbf(
 
 
 GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
+    "garage-crt-monitor": {"yaw": 38.0, "pitch": 28.0, "fill": 0.50, "margin": 0.10},
     "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
-    "garage-roll-door": {"yaw": 90.0, "pitch": 0.0, "fill": 0.50, "margin": 0.10},
+    "garage-roll-door": {"yaw": 90.0, "pitch": 22.0, "fill": 0.58, "margin": 0.07},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
 }
 
@@ -747,12 +749,6 @@ def render_garage_hero_preview_from_glb(
             meshes = flatten_glb_preview_meshes(meshes)
             for ob in meshes:
                 apply_preview_material(ob, tex_dir, asset_id)
-            if asset_id == "garage-desk-crt" and meshes:
-                joined = duplicate_join_meshes(meshes, f"{asset_id}_hero_join")
-                for ob in meshes:
-                    if ob is not joined:
-                        bpy.data.objects.remove(ob, do_unlink=True)
-                meshes = [joined]
             frame_obs = meshes
         else:
             root = bpy.data.objects.new("PreviewOrientRoot", None)
@@ -830,12 +826,6 @@ def render_garage_side_ortho_preview_from_glb(
         meshes = flatten_glb_preview_meshes(meshes)
         for ob in meshes:
             apply_preview_material(ob, tex_dir, asset_id)
-        if asset_id == "garage-desk-crt" and meshes:
-            joined = duplicate_join_meshes(meshes, f"{asset_id}_ortho_join")
-            for ob in meshes:
-                if ob is not joined:
-                    bpy.data.objects.remove(ob, do_unlink=True)
-            meshes = [joined]
         bpy.context.view_layer.update()
         lo = Vector((1e9, 1e9, 1e9))
         hi = Vector((-1e9, -1e9, -1e9))
@@ -983,6 +973,7 @@ def _finish_garage_kit_asset(
         "garage-cable-spool": (0.56, 0.085),
         "garage-coffee-drip": (0.78, 0.055),
         "garage-crt-tower": (0.60, 0.075),
+        "garage-crt-monitor": (0.50, 0.10),
         "garage-desk-crt": (0.62, 0.075),
         "garage-exterior-wall": (0.60, 0.075),
         "garage-land-for-sale-sign": (0.58, 0.075),
@@ -1676,6 +1667,11 @@ def assign_crt_screen_material(
 def apply_garage_hero_flat_tint(ob: bpy.types.Object, asset_id: str) -> None:
     """Name-based hero/scene tints; avoids baked-albedo speckle on multipart GLB imports."""
     lname = ob.name.lower()
+    if asset_id == "garage-crt-monitor":
+        assign_crt_screen_material(
+            ob, (0.08, 0.82, 0.55, 1.0), bezel=(0.18, 0.20, 0.24, 1.0), screen_mix=0.68, emission_strength=7.5
+        )
+        return
     if asset_id == "garage-desk-crt":
         if "desktop" in lname:
             assign_solid(ob, (0.62, 0.48, 0.32, 1.0), 0.52)

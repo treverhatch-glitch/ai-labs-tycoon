@@ -21,6 +21,7 @@ HEIGHT_BOUNDS: dict[str, tuple[float, float]] = {
     "garage-desk-crt": (0.68, 0.88),
     "garage-coffee-drip": (0.55, 1.05),
     "garage-crt-tower": (0.95, 2.05),
+    "garage-crt-monitor": (0.34, 0.58),
     "garage-roll-door": (2.15, 3.05),
     "garage-server-closet": (1.55, 2.05),
     "garage-lot-curb": (0.12, 0.55),

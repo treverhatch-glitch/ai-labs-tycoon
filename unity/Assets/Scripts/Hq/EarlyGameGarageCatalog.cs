@@ -12,6 +12,7 @@ namespace AiLabs.Unity.Hq
         {
             "garage-cable-spool",
             "garage-coffee-drip",
+            "garage-crt-monitor",
             "garage-crt-tower",
             "garage-desk-crt",
             "garage-exterior-wall",

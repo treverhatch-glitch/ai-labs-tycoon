@@ -1,6 +1,5 @@
 {
   "fidelity": "blender-baked",
-  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -15,8 +14,8 @@
       "vertexCount": 608,
       "triangleCount": 2304,
       "partCount": 5,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-cable-spool.py"
+      "generator": "tools/art/blender/garage-cable-spool.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-coffee-drip",
@@ -32,6 +31,22 @@
       "triangleCount": 638,
       "partCount": 2,
       "generator": "tools/art/blender/garage-coffee-drip.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-crt-monitor",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-monitor.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-crt-monitor.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 288,
+      "triangleCount": 1152,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-crt-monitor.py",
       "blenderVersion": "4.0.2"
     },
     {
@@ -60,8 +75,8 @@
       },
       "preview": "docs/art/previews/garage-desk-crt.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 509,
-      "triangleCount": 1062,
+      "vertexCount": 683,
+      "triangleCount": 1998,
       "partCount": 3,
       "generator": "tools/art/blender/garage-desk-crt.py",
       "blenderVersion": "4.0.2"
@@ -156,9 +171,9 @@
       },
       "preview": "docs/art/previews/garage-roll-door.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 1340,
-      "triangleCount": 3312,
-      "partCount": 1,
+      "vertexCount": 384,
+      "triangleCount": 1536,
+      "partCount": 4,
       "generator": "tools/art/blender/garage-roll-door.py",
       "blenderVersion": "4.0.2"
     },

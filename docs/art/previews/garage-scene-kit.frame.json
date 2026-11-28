@@ -6,10 +6,9 @@
     150,
     150
   ],
-  "framing_fill": 0.8,
-  "framing_margin": 0.04,
-  "frame_span": 2.4103998947143555,
+  "framing_fill": 0.7,
+  "framing_margin": 0.05,
   "up_axis": "Y",
   "floor_plane": "horizontal_y",
-  "props": 15
+  "props": 16
 }

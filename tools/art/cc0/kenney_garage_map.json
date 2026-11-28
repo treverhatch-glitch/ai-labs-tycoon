@@ -16,6 +16,10 @@
       "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
     },
     {
+      "id": "garage-crt-monitor",
+      "license": "CC0-1.0 (Procedural CRT housing, Blender-baked in-repo)"
+    },
+    {
       "id": "garage-coffee-drip",
       "license": "CC0-1.0 (Kenney Furniture Kit: sideTable+lampRoundTable; no drip mesh in kit — documented)",
       "exception": "Kenney has no coffee machine; table+lamp hero stand-in"

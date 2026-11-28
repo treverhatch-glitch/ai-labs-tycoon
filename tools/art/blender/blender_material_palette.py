@@ -11,6 +11,7 @@ PALETTE: dict[str, dict] = {
     "garage-lot-curb": {"dark": (0.38, 0.36, 0.34), "light": (0.55, 0.52, 0.48), "roughness": 0.78, "noise": 16.0},
     "garage-window-frame": {"dark": (0.55, 0.28, 0.12), "light": (0.78, 0.42, 0.18), "roughness": 0.48, "noise": 8.0},
     "garage-desk-crt": {"dark": (0.35, 0.22, 0.12), "light": (0.62, 0.48, 0.32), "roughness": 0.48, "noise": 7.0},
+    "garage-crt-monitor": {"dark": (0.22, 0.24, 0.28), "light": (0.42, 0.44, 0.48), "roughness": 0.38, "noise": 6.0},
     "garage-crt-tower": {"dark": (0.55, 0.52, 0.48), "light": (0.82, 0.78, 0.72), "roughness": 0.38, "noise": 8.0},
     "garage-voodude-rack": {"dark": (0.05, 0.05, 0.07), "light": (0.18, 0.17, 0.20), "roughness": 0.42, "noise": 10.0},
     "garage-whiteboard-1995": {"dark": (0.72, 0.74, 0.70), "light": (0.92, 0.94, 0.88), "roughness": 0.35, "noise": 4.0},

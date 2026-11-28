@@ -1,0 +1,16 @@
+{
+  "id": "garage-crt-monitor",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-monitor.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-crt-monitor.png",
+  "license": "CC0-1.0 (Procedural CRT housing, Blender-baked in-repo)",
+  "vertexCount": 96,
+  "triangleCount": 384,
+  "partCount": 1,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-crt-monitor.py"
+}
