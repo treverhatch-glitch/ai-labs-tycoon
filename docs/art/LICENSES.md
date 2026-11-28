@@ -2,6 +2,24 @@
 
 Only **CC0 1.0** sources listed here may feed `tools/art/cc0/` and Blender hero exports.
 
+## Staff heroes (`cursor/art-staff-founder-researcher`, PR #95)
+
+Hero staff restyle Kenney packs in Blender (role colours, bevel, 1024 bakes, glTF +Y, URP). Previews use Poly Haven HDRI on a mid-grey ground plate.
+
+| Pack | URL | Use on this branch |
+| --- | --- | --- |
+| Kenney Animated Characters 3 (CC0-1.0) | https://kenney.nl/assets/animated-characters-3 | **`staff-founder-idle`** blocky baked hero (`characterMedium.fbx`, `License.txt` in incoming); pinned kit GLB sha **`b09c59ac`** |
+| Kenney stock rig (same kit) | https://kenney.nl/assets/animated-characters-3 | **`staff-researcher-idle`** — founder stock mesh + founder slot map (`kenney_researcher_from_founder.py`); coat skirt + hair cap |
+| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com/packs/ultimatemodularcharacters.html | Incoming reference (`character.glb`); modular experiments only |
+| Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`) |
+| Poly Haven `studio_small_08` | https://polyhaven.com/a/studio_small_08 | EEVEE preview HDRI |
+
+Incoming paths and SHA-256 pins: `tools/art/cc0/manifest.json`.
+
+Baked game outputs under `unity/Assets/Art/EarlyGame/staff-kit/` remain **CC0-1.0** (derivative bake). Blender tooling is GPL-3.0; pixels are in-repo CC0.
+
+Regenerate: `./tools/art/run_blender_cc0_staff_heroes.sh`
+
 ## Compute hardware hero (`cursor/art-compute-hardware-cc0`, PR #94)
 
 Hero assets are **restyled derivatives** of the packs below.
@@ -46,8 +64,4 @@ Vendored subsets may also live under `docs/art/cc0/`.
 
 **Hero `prop-desk` (PR #92):** Kenney desk cluster; Poly Haven HDRI + mid-grey ground.
 
-<<<<<<< HEAD
-**Hero `prop-server-rack` (PR #99):** procedural dark charcoal cabinet (bevelled bpy meshes, Metal048A tint); Kenney accent **`screen-panel-flat.glb`** only for door glass strip; preview backdrop exactly RGB 150.
-=======
 **Hero `prop-server-rack` (PR #99):** procedural rack + Kenney `screen-panel-flat.glb`; preview backdrop RGB 150.
->>>>>>> origin/cursor/art-compute-hardware-cc0

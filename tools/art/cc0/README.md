@@ -5,7 +5,9 @@
 3. **Export** — glTF **+Y up** (`export_scene.gltf`), URP-friendly albedo + AO textures.
 4. **Previews** — Poly Haven HDRI, 3/4 ortho camera, mid-grey **RGB 150** ground from committed GLB (`docs/art/previews/`).
 
-**Lanes:** `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`; garage interior → `tools/art/run_blender_cc0_garage_hero.sh`.
+**Lanes:** `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`; garage interior → `tools/art/run_blender_cc0_garage_hero.sh`; **staff heroes** → `./tools/art/run_blender_cc0_staff_heroes.sh` (founder + researcher from pinned founder stock blend).
+
+**Staff hero lane (PR #95):** `./tools/art/cc0/fetch_incoming.sh` then `python3 tools/art/cc0/write_manifest.py` for SHA pins. Researcher uses `kenney_researcher_from_founder.py` (founder mesh topology, no slot-patch pipeline). Torso render gates: `tools/art/researcher_gate_probe.py`.
 
 **Era-tiered compute heroes:** asset ids like `compute-pc-tower-era1`; previews `docs/art/previews/<id>.png`.
 
@@ -37,3 +39,5 @@ Optional: `GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=commit.template GIT_CONFIG_VALUE_
 **Do not commit** `__pycache__` or `.pyc` under `tools/art/`.
 
 **Push (forward-only):** force-push is banned. Before every push run `./tools/art/cc0/prepush.sh` (ancestor check). Plain `git push -u origin <branch>` only.
+
+See `docs/art/LICENSES.md` for pack URLs.

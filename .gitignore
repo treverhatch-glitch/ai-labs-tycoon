@@ -55,6 +55,7 @@ __pycache__/
 *.py[cod]
 tools/art/**/__pycache__/
 tools/art/**/*.pyc
+*.blend1
 
 # CC0 downloads / extracts (fetch via tools/art/cc0/*.sh)
 tools/art/cc0/incoming/archives/
@@ -64,3 +65,5 @@ tools/art/cc0/incoming/polyhaven/
 tools/art/cc0/incoming/ambientcg/
 /docs/art/cc0/kenney-factory-kit/
 /docs/art/cc0/.archives/
+tools/art/cc0/incoming/*
+!tools/art/cc0/incoming/.gitkeep
