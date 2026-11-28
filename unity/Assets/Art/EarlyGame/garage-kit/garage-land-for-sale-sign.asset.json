@@ -1,0 +1,16 @@
+{
+  "id": "garage-land-for-sale-sign",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-land-for-sale-sign.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 768,
+  "triangleCount": 3072,
+  "partCount": 8,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-land-for-sale-sign.py"
+}

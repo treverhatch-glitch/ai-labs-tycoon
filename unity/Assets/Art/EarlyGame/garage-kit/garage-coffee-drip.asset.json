@@ -1,0 +1,16 @@
+{
+  "id": "garage-coffee-drip",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-coffee-drip.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 672,
+  "triangleCount": 2688,
+  "partCount": 7,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-coffee-drip.py"
+}

@@ -456,6 +456,188 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+GARAGE_FURNITURE = frozenset(
+    {
+        "garage-desk-crt",
+        "garage-folding-chair",
+        "garage-server-closet",
+        "garage-voodude-rack",
+        "garage-coffee-drip",
+        "garage-crt-tower",
+        "garage-roll-door",
+    }
+)
+MIN_GARAGE_PARTS_SMALL = 5
+MIN_GARAGE_PARTS_FURNITURE = 6
+
+
+def apply_object_transforms(ob: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+
+def snap_parts_to_ground(parts: list[bpy.types.Object]) -> None:
+    if not parts:
+        return
+    min_z = min(mesh_world_min_z(ob) for ob in parts)
+    if abs(min_z) < 1e-5:
+        return
+    for ob in parts:
+        ob.location.z -= min_z
+    bpy.context.view_layer.update()
+
+
+def duplicate_join_meshes(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
+    dupes: list[bpy.types.Object] = []
+    for ob in objects:
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        dup.matrix_world = ob.matrix_world.copy()
+        dupes.append(dup)
+    bpy.ops.object.select_all(action="DESELECT")
+    for dup in dupes:
+        dup.select_set(True)
+    bpy.context.view_layer.objects.active = dupes[0]
+    bpy.ops.object.join()
+    joined = bpy.context.view_layer.objects.active
+    joined.name = name
+    return joined
+
+
+def orient_build_z_to_gltf_y_up(ob: bpy.types.Object) -> None:
+    """Blender Z-up kit → glTF +Y-up with base on Y=0."""
+    snap_root_to_ground(ob)
+    ob.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    bpy.ops.object.transform_apply(rotation=True)
+    min_y = min((v.co.y for v in ob.data.vertices), default=0.0)
+    if abs(min_y) > 1e-6:
+        for v in ob.data.vertices:
+            v.co.y -= min_y
+        ob.data.update()
+    ob.location = (0.0, 0.0, 0.0)
+
+
+def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
+    stash: list[tuple[bpy.types.Object, object]] = []
+    export_parts = [ob for ob in parts if ob.name != "ConnectSpine"]
+    for ob in export_parts:
+        stash.append((ob, ob.matrix_world.copy()))
+        orient_build_z_to_gltf_y_up(ob)
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in export_parts:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = export_parts[0]
+    bpy.ops.export_scene.gltf(
+        filepath=str(glb_path),
+        use_selection=True,
+        export_apply=False,
+        export_format="GLB",
+        export_image_format="AUTO",
+        export_yup=True,
+    )
+    for ob, matrix in stash:
+        ob.matrix_world = matrix
+
+
+def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
+    indices = [p.material_index for p in ob.data.polygons]
+    materials = [m for m in ob.data.materials if m is not None]
+    return indices, materials
+
+
+def restore_poly_materials(
+    ob: bpy.types.Object, snapshot: tuple[list[int], list[bpy.types.Material]]
+) -> None:
+    indices, materials = snapshot
+    ob.data.materials.clear()
+    for mat in materials:
+        ob.data.materials.append(mat)
+    for poly, idx in zip(ob.data.polygons, indices, strict=False):
+        if idx < len(ob.data.materials):
+            poly.material_index = idx
+
+
+def _finish_garage_kit_asset(
+    asset_id: str,
+    category: str,
+    license_note: str,
+    mesh_obs: list[bpy.types.Object],
+    part_count: int,
+) -> dict:
+    """Multipart garage Z-up build: per-part GLB, vcol preview join (quality pass #88)."""
+    out_dir = ART_ROOT / category
+    tex_dir = out_dir / "textures" / asset_id
+    tint_garage_parts(mesh_obs, asset_id)
+    parts = list(mesh_obs)
+    min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
+    cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
+    if part_count < min_parts and not cc0_import:
+        raise RuntimeError(f"{asset_id}: need >={min_parts} sub-objects (got {part_count})")
+
+    for ob in parts:
+        bevel_object(ob, width=0.022, segments=3)
+        smooth_shade(ob)
+    snap_parts_to_ground(parts)
+    for ob in parts:
+        z0 = mesh_world_min_z(ob)
+        if z0 > 0.025:
+            ob.location.z -= z0
+            bpy.context.view_layer.update()
+        z0 = mesh_world_min_z(ob)
+        if z0 > 0.06:
+            raise RuntimeError(f"{asset_id}:{ob.name} not grounded (min_z={z0:.4f})")
+
+    bake_root = duplicate_join_meshes(parts, f"{asset_id}_bake")
+    uv_unwrap(bake_root)
+    mat_snapshot = snapshot_poly_materials(bake_root)
+    maps = bake_pbr_set(bake_root, tex_dir, asset_id, size=1024)
+    restore_poly_materials(bake_root, mat_snapshot)
+    verts = len(bake_root.data.vertices)
+    tris = sum(len(p.vertices) for p in bake_root.data.polygons)
+    bpy.data.objects.remove(bake_root, do_unlink=True)
+    glb_path = out_dir / f"{asset_id}.glb"
+    export_garage_multipart_glbf(parts, glb_path)
+
+    preview_join = duplicate_join_meshes(parts, f"{asset_id}_preview")
+    transfer_material_colors_to_vertex_layer(preview_join)
+    unify_vertex_color_material(preview_join, asset_id)
+    for ob in parts:
+        ob.hide_render = True
+    preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    try:
+        render_preview(preview_join, preview_path, asset_id=asset_id, mask_meshes=preview_join)
+    except Exception as exc:  # noqa: BLE001
+        print(f"WARN preview {asset_id}: {exc}")
+    for ob in parts:
+        ob.hide_render = False
+    bpy.data.objects.remove(preview_join, do_unlink=True)
+
+    entry = {
+        "id": asset_id,
+        "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
+        "textures": {
+            k: f"Assets/Art/EarlyGame/{category}/textures/{asset_id}/{asset_id}_{k}.png" for k in maps
+        },
+        "preview": f"docs/art/previews/{asset_id}.png",
+        "license": license_note,
+        "vertexCount": verts,
+        "triangleCount": tris,
+        "partCount": part_count,
+        "blenderVersion": BLENDER_VERSION,
+        "generator": f"tools/art/blender/{asset_id}.py",
+    }
+    (out_dir / f"{asset_id}.asset.json").write_text(
+        json.dumps(entry, indent=2) + "\n", encoding="utf-8"
+    )
+    print(f"OK {asset_id} verts={verts} tris={tris} parts={part_count}")
+    return entry
+
+
 def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Blender-baked, in-repo)") -> dict:
     """UV, bake, export glTF, preview; return manifest entry."""
     out_dir = ART_ROOT / category
@@ -483,6 +665,8 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         else "KenneyFounderStock"
     )
     ground_scene_meshes()
+    if category == "garage-kit":
+        return _finish_garage_kit_asset(asset_id, category, license_note, mesh_obs, part_count)
     if not stock_recolor:
         tint_garage_parts(mesh_obs, asset_id)
     if category == "staff-kit" and part_count < 6 and not stock_recolor:
@@ -543,10 +727,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                     raise RuntimeError(f"FAIL {asset_id}: chunky_bake {msg_ck}")
                 print(f"OK {asset_id} chunky_bake {msg_ck}")
     staff_export_root: bpy.types.Object | None = None
-    if category == "garage-kit":
-        add_prejoin_spine(mesh_obs)
-        root = link_or_join(mesh_obs)
-    elif category == "staff-kit":
+    if category == "staff-kit":
         staff_export_root: bpy.types.Object | None = None
         if not stock_recolor:
             staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
@@ -850,7 +1031,21 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
                     continue
         name = ob.name.lower()
         base = name.split(".")[0]
-        if name.startswith("stroke"):
+        if asset_id == "garage-whiteboard-1995" and (
+            name.startswith("stroke") or "chart" in name or "pad" in name
+        ):
+            idx = 0
+            try:
+                idx = int("".join(c for c in name if c.isdigit()) or "0")
+            except ValueError:
+                idx = 0
+            wb_markers = (
+                (0.82, 0.18, 0.22, 1.0),
+                (0.12, 0.42, 0.88, 1.0),
+                (0.18, 0.72, 0.28, 1.0),
+            )
+            assign_solid(ob, wb_markers[idx % 3], 0.38)
+        elif name.startswith("stroke"):
             idx = 0
             try:
                 idx = int("".join(c for c in name if c.isdigit()) or "0")
@@ -1104,7 +1299,22 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     attr = nodes.new("ShaderNodeAttribute")
     attr.attribute_name = "BakeCol"
     color_out = attr.outputs["Color"]
-    if asset_id.startswith("staff-"):
+    if asset_id.startswith("garage-"):
+        glow_ids = {
+            "garage-land-for-sale-sign",
+            "garage-whiteboard-1995",
+            "garage-window-frame",
+            "garage-floor-tile",
+        }
+        dull_ids = {"garage-coffee-drip", "garage-roll-door", "garage-whiteboard-1995"}
+        hue = nodes.new("ShaderNodeHueSaturation")
+        hue.inputs["Value"].default_value = 1.10 if asset_id in dull_ids else 1.08
+        hue.inputs["Saturation"].default_value = (
+            4.85 if asset_id in dull_ids else (4.0 if asset_id in glow_ids else 3.65)
+        )
+        links.new(color_out, hue.inputs["Color"])
+        color_out = hue.outputs["Color"]
+    elif asset_id.startswith("staff-"):
         hsv = nodes.new("ShaderNodeHueSaturation")
         hsv.inputs["Saturation"].default_value = 1.95
         hsv.inputs["Value"].default_value = 1.12
@@ -1113,13 +1323,50 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     links.new(color_out, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     emit = nodes.new("ShaderNodeEmission")
-    emit.inputs["Strength"].default_value = 1.4 if "crt" in asset_id or "rack" in asset_id else 0.0
+    if asset_id.startswith("garage-"):
+        glow_ids = {
+            "garage-land-for-sale-sign",
+            "garage-whiteboard-1995",
+            "garage-window-frame",
+            "garage-floor-tile",
+        }
+        dull_ids = {"garage-coffee-drip", "garage-roll-door", "garage-whiteboard-1995"}
+        if "crt" in asset_id or "rack" in asset_id:
+            emit.inputs["Strength"].default_value = 1.4
+        elif asset_id == "garage-desk-crt":
+            emit.inputs["Strength"].default_value = 0.72
+        elif asset_id in glow_ids:
+            emit.inputs["Strength"].default_value = 0.85
+        elif asset_id in dull_ids:
+            emit.inputs["Strength"].default_value = 0.72
+        else:
+            emit.inputs["Strength"].default_value = 0.0
+    else:
+        emit.inputs["Strength"].default_value = 1.4 if "crt" in asset_id or "rack" in asset_id else 0.0
     if emit.inputs["Strength"].default_value > 0:
         vcol_emit = nodes.new("ShaderNodeAttribute")
         vcol_emit.attribute_name = "BakeCol"
         links.new(vcol_emit.outputs["Color"], emit.inputs["Color"])
         mix = nodes.new("ShaderNodeMixShader")
-        mix.inputs["Fac"].default_value = 0.45 if "crt" in asset_id else 0.30
+        if asset_id.startswith("garage-"):
+            glow_ids = {
+                "garage-land-for-sale-sign",
+                "garage-whiteboard-1995",
+                "garage-window-frame",
+                "garage-floor-tile",
+            }
+            dull_ids = {"garage-coffee-drip", "garage-roll-door", "garage-whiteboard-1995"}
+            mix.inputs["Fac"].default_value = (
+                0.45
+                if "crt" in asset_id
+                else (
+                    0.48
+                    if asset_id in glow_ids
+                    else (0.44 if asset_id in dull_ids else (0.35 if asset_id == "garage-desk-crt" else 0.30))
+                )
+            )
+        else:
+            mix.inputs["Fac"].default_value = 0.45 if "crt" in asset_id else 0.30
         links.new(bsdf.outputs["BSDF"], mix.inputs[1])
         links.new(emit.outputs["Emission"], mix.inputs[2])
         links.new(mix.outputs["Shader"], out.inputs["Surface"])
@@ -1136,10 +1383,47 @@ def smooth_shade(ob: bpy.types.Object) -> None:
     bpy.ops.object.shade_smooth()
 
 
+def _boost_garage_part_preview_material(ob: bpy.types.Object) -> None:
+    """Multipart garage GLBs keep per-part Garage_* slots; baked albedo UVs are bake-mesh only."""
+    if not ob.data.materials or not ob.data.materials[0]:
+        return
+    mat = ob.data.materials[0]
+    if not mat.use_nodes or mat.name.endswith("_preview"):
+        return
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if not bsdf:
+        return
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    base = bsdf.inputs["Base Color"]
+    if base.is_linked:
+        link = base.links[0]
+        src_sock = link.from_socket
+        links.remove(link)
+        hue = nodes.new("ShaderNodeHueSaturation")
+        hue.inputs["Saturation"].default_value = 1.32
+        hue.inputs["Value"].default_value = 1.10
+        links.new(src_sock, hue.inputs["Color"])
+        links.new(hue.outputs["Color"], base)
+    else:
+        base.default_value = _boost_saturation(tuple(base.default_value), scale=1.25)
+    lname = ob.name.lower()
+    if "screen" in lname or "led" in lname or "glass" in lname:
+        em = max(float(bsdf.inputs["Emission Strength"].default_value), 1.15)
+        bsdf.inputs["Emission Strength"].default_value = em
+        if float(bsdf.inputs["Emission Color"].default_value[0]) < 0.2:
+            bsdf.inputs["Emission Color"].default_value = (0.12, 0.72, 0.45, 1.0)
+
+
 def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -> None:
-    """EEVEE preview uses baked albedo for staff; vertex-color only when bake is flat."""
+    """EEVEE preview uses baked albedo for staff; garage multipart keeps Garage_* slots."""
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
+    if asset_id.startswith("garage-"):
+        mat0 = ob.data.materials[0] if ob.data.materials else None
+        if mat0 and mat0.name.startswith("Garage_"):
+            _boost_garage_part_preview_material(ob)
+            return
     force_albedo = asset_id.startswith("staff-")
     bake_col = getattr(ob.data, "color_attributes", None)
     has_bake_vcol = bake_col is not None and bake_col.get("BakeCol") is not None
@@ -1147,7 +1431,8 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
         mat = ob.data.materials[0]
         node_types = {n.type for n in mat.node_tree.nodes} if mat.use_nodes else set()
         if mat.name.endswith("_vcol") or "ShaderNodeAttribute" in node_types or "VERTEX_COLOR" in node_types:
-            return
+            if not asset_id.startswith("garage-"):
+                return
     if not albedo.exists():
         return
     try:
@@ -1168,19 +1453,42 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(albedo))
-    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    if tex.image:
+        tex.image.colorspace_settings.name = "sRGB"
+        tex.image.reload()
+    hue = nodes.new("ShaderNodeHueSaturation")
+    if asset_id.startswith("garage-"):
+        hue.inputs["Saturation"].default_value = 1.48
+    else:
+        hue.inputs["Saturation"].default_value = 1.45
+    hue.inputs["Value"].default_value = 1.06 if asset_id.startswith("garage-") else 1.05
+    links.new(tex.outputs["Color"], hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    surf_out = bsdf.outputs["BSDF"]
     if rough.exists():
         rtex = nodes.new("ShaderNodeTexImage")
         rtex.image = bpy.data.images.load(str(rough))
         links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
     emit_strength = 0.0
-    if "crt" in asset_id or "screen" in asset_id:
-        emit_strength = 1.2
+    emit_color = (0.15, 0.65, 0.38, 1.0)
+    if not asset_id.startswith("garage-"):
+        if "crt" in asset_id or "screen" in asset_id:
+            emit_strength = 1.2
+        elif asset_id in {
+            "garage-land-for-sale-sign",
+            "garage-whiteboard-1995",
+            "garage-window-frame",
+            "garage-floor-tile",
+        }:
+            emit_strength = 0.55
+            emit_color = (0.92, 0.62, 0.12, 1.0)
     bsdf.inputs["Emission Strength"].default_value = emit_strength
-    bsdf.inputs["Emission Color"].default_value = (0.15, 0.65, 0.38, 1.0)
-    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    bsdf.inputs["Emission Color"].default_value = emit_color
+    links.new(surf_out, out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
+    for poly in ob.data.polygons:
+        poly.material_index = 0
 
 
 def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int = 1024) -> list[str]:
@@ -1483,15 +1791,25 @@ def render_preview(
         try:
             import blender_preview_rig as rig  # type: ignore
 
-            prev_kind = "staff"
+            prev_kind = "garage"
             if asset_id:
-                if asset_id.startswith("wisp-"):
+                if asset_id.startswith("staff-"):
+                    prev_kind = "staff"
+                elif asset_id.startswith("wisp-"):
                     prev_kind = "wisp"
                 elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
                     prev_kind = "hud"
-                os.environ["STAFF_PREVIEW_ASSET"] = asset_id
+                if asset_id.startswith("staff-"):
+                    os.environ["STAFF_PREVIEW_ASSET"] = asset_id
+                else:
+                    os.environ.pop("STAFF_PREVIEW_ASSET", None)
+            else:
+                os.environ.pop("STAFF_PREVIEW_ASSET", None)
             os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
-            rig.render_preview_studio(ob, path, mask_meshes=mask_meshes)
+            rig_kw: dict = {}
+            if asset_id and asset_id.startswith("garage-"):
+                rig_kw["up_axis"] = "Y"
+            rig.render_preview_studio(ob, path, mask_meshes=mask_meshes, **rig_kw)
             return
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview rig, fallback legacy: {exc}")

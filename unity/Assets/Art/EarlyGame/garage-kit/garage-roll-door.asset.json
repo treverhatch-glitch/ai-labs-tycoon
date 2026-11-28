@@ -1,0 +1,16 @@
+{
+  "id": "garage-roll-door",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-roll-door.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 1440,
+  "triangleCount": 5760,
+  "partCount": 15,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-roll-door.py"
+}

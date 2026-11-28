@@ -1,0 +1,16 @@
+{
+  "id": "garage-whiteboard-1995",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-whiteboard-1995.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 1728,
+  "triangleCount": 6912,
+  "partCount": 18,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-whiteboard-1995.py"
+}

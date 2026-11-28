@@ -1,0 +1,16 @@
+{
+  "id": "garage-voodude-rack",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-voodude-rack.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 1152,
+  "triangleCount": 4608,
+  "partCount": 12,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-voodude-rack.py"
+}

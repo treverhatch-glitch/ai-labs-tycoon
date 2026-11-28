@@ -1,0 +1,16 @@
+{
+  "id": "garage-desk-crt",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-desk-crt.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 1056,
+  "triangleCount": 4224,
+  "partCount": 11,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-desk-crt.py"
+}

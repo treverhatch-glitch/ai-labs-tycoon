@@ -1,0 +1,16 @@
+{
+  "id": "garage-floor-tile",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-floor-tile.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 576,
+  "triangleCount": 2304,
+  "partCount": 6,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-floor-tile.py"
+}

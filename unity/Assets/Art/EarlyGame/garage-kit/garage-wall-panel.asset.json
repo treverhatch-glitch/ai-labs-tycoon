@@ -1,0 +1,16 @@
+{
+  "id": "garage-wall-panel",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-wall-panel.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 576,
+  "triangleCount": 2304,
+  "partCount": 6,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-wall-panel.py"
+}
