@@ -75,10 +75,10 @@ public class BatchTwentyFiveTogetherTests
             c.ScenarioGoalEraTrust.MinEra = 0;
             c.ScenarioGoalEraTrust.TrustPoints = 30;
             c.Scenarios.Scenarios[0].GoalDeadlinePermille = 0;
-            ScenarioGoalConfig goal = c.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
-            if (goal != null) goal.Target = 4;
         });
         g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = g.Me.Staff.Count;
         ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.ScenarioGoalEraTrusted);
     }

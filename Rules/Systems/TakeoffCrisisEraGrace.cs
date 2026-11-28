@@ -19,7 +19,7 @@ namespace AiLabs.Rules.Systems
 
         public static void OnPosed(GameConfig c, GameState state, LabState lab)
         {
-            if (!Enabled(c) || state == null) return;
+            if (!Enabled(c) || state == null || lab.Id != state.PlayerLabId) return;
             int era = EraSystem.IndexAtYear(c, GameDate.Year(c.Calendar, state.Tick));
             if (era < c.TakeoffCrisisEraGrace.MinEra) return;
             int grace = c.TakeoffCrisisEraGrace.GraceWeeks;
