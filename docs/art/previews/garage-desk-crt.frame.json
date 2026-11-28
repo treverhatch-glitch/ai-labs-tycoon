@@ -10,5 +10,5 @@
   "framing_margin": 0.11,
   "up_axis": "Y",
   "floor_plane": "horizontal_y",
-  "renderer": "cycles_glb_import_evaluated"
+  "renderer": "cycles_glb_import"
 }

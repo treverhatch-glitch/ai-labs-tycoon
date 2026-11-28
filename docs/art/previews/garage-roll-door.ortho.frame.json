@@ -9,5 +9,5 @@
   "up_axis": "Y",
   "floor_plane": "horizontal_y",
   "camera_type": "orthographic",
-  "view": "front_positive_z"
+  "view": "side_positive_x"
 }

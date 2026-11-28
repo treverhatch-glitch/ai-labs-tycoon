@@ -144,7 +144,7 @@ def _close_roll_door_bottom_gap(ob: bpy.types.Object) -> bpy.types.Object:
     u_lo, _ = cc0.world_bbox(upper)
     gap = u_lo.y - l_hi.y
     if gap > 0.0005:
-        lower.location.y += gap + 0.008
+        lower.location.y += gap + 0.024
         bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
     for shell in shells:

@@ -691,38 +691,39 @@ def import_garage_glb_evaluated_assembly(
     asset_id: str,
     tex_dir: Path,
 ) -> list[bpy.types.Object]:
-    """Single GLB import; bake evaluated world geometry (no flatten/unparent)."""
+    """Import committed GLB; flatten parent hierarchy to world matrices used at draw time."""
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     depsgraph = bpy.context.evaluated_depsgraph_get()
-    old_objs = list(bpy.context.scene.objects)
+    bpy.context.view_layer.update()
     meshes: list[bpy.types.Object] = []
-    for ob in old_objs:
+    for ob in list(bpy.context.scene.objects):
         if ob.type != "MESH":
             continue
-        mesh = bpy.data.meshes.new_from_object(
-            ob.evaluated_get(depsgraph),
-            preserve_all_data_layers=True,
-            depsgraph=depsgraph,
-        )
-        dup = bpy.data.objects.new(ob.name.split(".", 1)[0], mesh)
-        dup.matrix_world.identity()
-        bpy.context.collection.objects.link(dup)
-        meshes.append(dup)
-    for ob in old_objs:
-        bpy.data.objects.remove(ob, do_unlink=True)
+        eval_ob = ob.evaluated_get(depsgraph)
+        ob.matrix_world = eval_ob.matrix_world.copy()
+        meshes.append(ob)
+    meshes = flatten_glb_preview_meshes(meshes)
     for ob in meshes:
         apply_preview_material(ob, tex_dir, asset_id)
     if asset_id == "garage-desk-crt":
         assert_desk_crt_on_desktop_for_preview(meshes)
-        bpy.ops.object.select_all(action="DESELECT")
-        for ob in meshes:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = meshes[0]
-        bpy.ops.object.join()
-        joined = bpy.context.view_layer.objects.active
-        joined.name = "garage-desk-crt_glb_evaluated"
-        return [joined]
+        _log_pass26_desk_crt_render_transforms(meshes)
+        return meshes
     return meshes
+
+
+def _log_pass26_desk_crt_render_transforms(meshes: list[bpy.types.Object]) -> None:
+    """Pass26: log evaluated world matrices + bbox for objects actually drawn."""
+    bpy.context.view_layer.update()
+    bits: list[str] = []
+    for ob in meshes:
+        lo, hi = _desk_crt_world_bbox(ob)
+        loc = ob.matrix_world.translation
+        bits.append(
+            f"{ob.name}:loc=({loc.x:.4f},{loc.y:.4f},{loc.z:.4f}) "
+            f"world_y=[{lo.y:.4f},{hi.y:.4f}]"
+        )
+    print("PASS26_RENDER_WORLD " + " | ".join(bits))
 
 
 def import_garage_glb_joined_for_preview(
@@ -956,6 +957,171 @@ GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
     "garage-roll-door": {"yaw": 90.0, "pitch": 22.0, "fill": 0.57, "margin": 0.075},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
 }
+
+
+def _garage_preview_mesh_dupes(parts: list[bpy.types.Object]) -> list[bpy.types.Object]:
+    dupes: list[bpy.types.Object] = []
+    for ob in parts:
+        if ob.type != "MESH" or ob.name == "ConnectSpine":
+            continue
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        dup.matrix_world = ob.matrix_world.copy()
+        dupes.append(dup)
+    bpy.context.view_layer.update()
+    return dupes
+
+
+def _dispose_preview_dupes(dupes: list[bpy.types.Object]) -> None:
+    for ob in dupes:
+        bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def render_garage_hero_preview_from_live_parts(
+    asset_id: str,
+    parts: list[bpy.types.Object],
+    tex_dir: Path,
+    preview_path: Path,
+    mask_path: Path,
+    *,
+    fill: float,
+    margin: float,
+    hero_yaw_deg: float | None = None,
+    hero_pitch_deg: float | None = None,
+) -> None:
+    """Pass26: hero preview from build-scene meshes (same transforms as PASS23_VERIFY)."""
+    import cc0_common as cc0  # type: ignore
+
+    y_up = garage_glb_y_up_preview(asset_id)
+    os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
+    try:
+        dupes = _garage_preview_mesh_dupes(parts)
+        for ob in dupes:
+            apply_preview_material(ob, tex_dir, asset_id)
+        if asset_id == "garage-desk-crt":
+            assert_desk_crt_on_desktop_for_preview(dupes)
+            _log_pass26_desk_crt_render_transforms(dupes)
+        up_axis = "Y" if y_up else "Z"
+        floor_plane = "horizontal_y" if y_up else "horizontal_z"
+        cc0.render_kit_preview(
+            dupes,
+            preview_path,
+            resolution=512,
+            mode="hero",
+            fill=fill,
+            margin=margin,
+            up_axis=up_axis,
+            mask_path=mask_path,
+            hero_yaw_deg=hero_yaw_deg,
+            hero_pitch_deg=hero_pitch_deg,
+        )
+        meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
+        meta_path.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "framing_fill": fill,
+                    "framing_margin": margin,
+                    "up_axis": up_axis,
+                    "floor_plane": floor_plane,
+                    "renderer": "cycles_live_parts",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    finally:
+        os.environ.pop("GARAGE_HERO_FLAT_MATERIAL", None)
+        if "dupes" in locals():
+            _dispose_preview_dupes(dupes)
+
+
+def render_garage_side_ortho_preview_from_live_parts(
+    asset_id: str,
+    parts: list[bpy.types.Object],
+    tex_dir: Path,
+    ortho_path: Path,
+) -> None:
+    """Pass26: ortho preview from build-scene meshes."""
+    import cc0_common as cc0  # type: ignore
+
+    y_up = garage_glb_y_up_preview(asset_id)
+    os.environ["GARAGE_HERO_FLAT_MATERIAL"] = "1"
+    try:
+        dupes = _garage_preview_mesh_dupes(parts)
+        for ob in dupes:
+            apply_preview_material(ob, tex_dir, asset_id)
+        if asset_id == "garage-desk-crt":
+            _log_pass26_desk_crt_render_transforms(dupes)
+        bpy.context.view_layer.update()
+        lo = Vector((1e9, 1e9, 1e9))
+        hi = Vector((-1e9, -1e9, -1e9))
+        for ob in dupes:
+            for corner in ob.bound_box:
+                w = ob.matrix_world @ Vector(corner)
+                lo.x = min(lo.x, w.x)
+                lo.y = min(lo.y, w.y)
+                lo.z = min(lo.z, w.z)
+                hi.x = max(hi.x, w.x)
+                hi.y = max(hi.y, w.y)
+                hi.z = max(hi.z, w.z)
+        center = (lo + hi) * 0.5
+        span = max(hi.x - lo.x, hi.y - lo.y, hi.z - lo.z, 0.15)
+        cc0.setup_preview_world_grey_hdri(hdri_strength=0.55)
+        bpy.context.scene.render.engine = "CYCLES"
+        bpy.context.scene.cycles.samples = 48
+        bpy.context.scene.cycles.use_denoising = False
+        bpy.context.scene.render.resolution_x = 512
+        bpy.context.scene.render.resolution_y = 512
+        bpy.context.scene.render.film_transparent = False
+        ortho_view = "side_positive_x"
+        if y_up:
+            if asset_id == "garage-roll-door":
+                cam_loc = Vector((center.x, center.y, hi.z + span * 1.05))
+                ortho_view = "front_positive_z"
+            else:
+                cam_loc = Vector((hi.x + span * 1.05, center.y, center.z))
+            bpy.ops.object.camera_add(location=cam_loc)
+            cam = bpy.context.active_object
+            direction = center - cam_loc
+            cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+        else:
+            bpy.ops.object.camera_add(location=(center.x + span * 1.8, center.y, center.z))
+            cam = bpy.context.active_object
+            cam.rotation_euler = (math.pi / 2.0, 0.0, math.pi / 2.0)
+        cam.data.type = "ORTHO"
+        cam.data.ortho_scale = span * 1.15
+        bpy.context.scene.camera = cam
+        bpy.context.scene.render.filepath = str(ortho_path)
+        bpy.ops.render.render(write_still=True)
+        up_axis = "Y" if y_up else "Z"
+        floor_plane = "horizontal_y" if y_up else "horizontal_z"
+        meta = ortho_path.with_name(ortho_path.stem + ".frame.json")
+        meta.write_text(
+            json.dumps(
+                {
+                    "preview_kind": "garage_ortho",
+                    "flat_backdrop": True,
+                    "backdrop_rgb": [150, 150, 150],
+                    "ortho_view": ortho_view,
+                    "up_axis": up_axis,
+                    "floor_plane": floor_plane,
+                    "renderer": "cycles_live_parts",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        bpy.data.objects.remove(cam, do_unlink=True)
+    finally:
+        os.environ.pop("GARAGE_HERO_FLAT_MATERIAL", None)
+        if "dupes" in locals():
+            _dispose_preview_dupes(dupes)
 
 
 def render_garage_hero_preview_from_glb(
@@ -1254,18 +1420,35 @@ def _finish_garage_kit_asset(
 
     glb_path = out_dir / f"{asset_id}.glb"
     export_garage_multipart_glbf(parts, glb_path, asset_id=asset_id)
-    render_garage_hero_preview_from_glb(
-        asset_id,
-        glb_path,
-        tex_dir,
-        preview_path,
-        mask_path,
-        fill=fill,
-        margin=margin,
-        hero_yaw_deg=yaw,
-        hero_pitch_deg=pitch,
-    )
-    render_garage_side_ortho_preview_from_glb(asset_id, glb_path, tex_dir, ortho_path)
+    use_live_preview = kenney_import and asset_id in ("garage-desk-crt", "garage-roll-door")
+    if use_live_preview:
+        render_garage_hero_preview_from_live_parts(
+            asset_id,
+            parts,
+            tex_dir,
+            preview_path,
+            mask_path,
+            fill=fill,
+            margin=margin,
+            hero_yaw_deg=yaw,
+            hero_pitch_deg=pitch,
+        )
+        render_garage_side_ortho_preview_from_live_parts(
+            asset_id, parts, tex_dir, ortho_path
+        )
+    else:
+        render_garage_hero_preview_from_glb(
+            asset_id,
+            glb_path,
+            tex_dir,
+            preview_path,
+            mask_path,
+            fill=fill,
+            margin=margin,
+            hero_yaw_deg=yaw,
+            hero_pitch_deg=pitch,
+        )
+        render_garage_side_ortho_preview_from_glb(asset_id, glb_path, tex_dir, ortho_path)
 
     entry = {
         "id": asset_id,
