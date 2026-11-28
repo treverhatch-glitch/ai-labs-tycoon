@@ -2,6 +2,8 @@
      A test (ContentDocsTests) fails when an id from the data is missing here. All names are parody names. -->
 # Rooms, roles and lots
 
+Config tables here stay authoritative for **ids and era gates**; [rooms rework design (GD-6)](../design/rooms-rework.md) adds empty-garage start, draw-room, one-task-per-room, package linking and new types (`general-dev-room`, `bathroom`) without replacing this file's generated rows until data lands.
+
 ## Lots
 
 | Id | Name | Size | Price |

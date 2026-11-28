@@ -1,5 +1,7 @@
 # Room perks
 
+[GD-6](../design/rooms-rework.md) adds package and room-task effects per model; this page stays the source for **tile-scaled lab-wide perks** until config splits them.
+
 A room is built for what it seats or holds, and a few of the later rooms do one more thing. Each tile of the room adds a small share, up to a cap, so a big room helps more than a closet but never without limit. Pull the room down and the perk goes the same week. Nothing is saved: the perk is worked out from the rooms the lab has.
 
 | Perk | Room | Kind | Per tile | Cap | What it does |

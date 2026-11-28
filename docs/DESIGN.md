@@ -379,7 +379,7 @@ Parody labs, each built on an archetype with its own plan, strengths and blind s
 | Goggle DeepMined | Sunder Pitchai | The sleeping giant (joins 2010). Researcher-heavy, slow to ship, first to its own chips. | Gemeny |
 | DeepSneak | The Quiet Committee | The lean lab (joins 2023, home `china`). Engineer-heavy, short runs, lives under export rules. | Sneak |
 | Metta | Marka Zuckerg | The social graph (joins 2007). Rents, ships consumer-facing models fast. | Facehook |
-| Macrosoft | Taya Nadeva | The landlord (joins 2012). Owns halls, buys listings, enterprise sectors. | Copilot |
+| Macrosoft | Taya Nadeva | The landlord (joins 2012). Owns halls, buys listings, enterprise sectors. | DeskPilot |
 | Palantear | K. Palant | The gov-tech bench (joins 2017). High release gate, publishes safety research. | Gotham |
 | Envydia | Jensun Hwang | The chip baron in the leather jacket. A vendor, not a lab: it rations the GPUs by standing. | sells the GPUs |
 
