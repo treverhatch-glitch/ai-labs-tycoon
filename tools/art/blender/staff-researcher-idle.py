@@ -24,11 +24,18 @@ from kenney_researcher_stock_recolor import _vg_mean_on_face
 TROUSER_GREY_NAME = "trouser_grey"
 TROUSER_GREY_RGBA = (100 / 255, 100 / 255, 102 / 255, 1.0)
 
-LEG_VG = frozenset(
-    {"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg", "LeftFoot", "RightFoot"}
+THIGH_SHIN_VG = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+FOOT_VG = frozenset(
+    {"LeftFoot", "RightFoot", "LeftToes", "RightToes"}
 )
-HAND_VG = frozenset(
+ARM_VG = frozenset(
     {
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
         "LeftHand",
         "RightHand",
         "LeftHandIndex1",
@@ -114,20 +121,19 @@ def apply_trouser_grey_leg_faces() -> int:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if has_vg:
-            leg_w = _vg_mean_on_face(body, face, LEG_VG)
-            hand_w = _vg_mean_on_face(body, face, HAND_VG)
-            if hand_w > 0.55:
-                continue
-            in_leg_column = lat > thw * 0.48 or leg_w >= 0.05
-            if lat <= thw * 0.85 and leg_w < 0.08:
-                continue
-        else:
+        if not has_vg:
             if lat <= thw * 0.52:
                 continue
-            in_leg_column = lat > thw * 0.48
-        if not in_leg_column:
-            continue
+        else:
+            thigh_shin_w = _vg_mean_on_face(body, face, THIGH_SHIN_VG)
+            foot_w = _vg_mean_on_face(body, face, FOOT_VG)
+            arm_w = _vg_mean_on_face(body, face, ARM_VG)
+            if arm_w > 0.12:
+                continue
+            if thigh_shin_w < 0.38 and foot_w < 0.45:
+                continue
+            if lat <= thw * 0.52 and thigh_shin_w < 0.55:
+                continue
         face.material_index = slot_index
         changed += 1
     bm.to_mesh(body.data)
