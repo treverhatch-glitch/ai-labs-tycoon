@@ -25,6 +25,7 @@ public class LobbyingTests
             c.Lobbying.BackfirePermille = 0;
             c.Lobbying.BackfireFloorPermille = 0;
             c.LobbyingCostEraRelief.Enabled = 0;
+            c.LobbyingGoalEraAmplify.Enabled = 0;
             if (tweak != null) tweak(c);
         }), options));
         g.WithStarterLab();

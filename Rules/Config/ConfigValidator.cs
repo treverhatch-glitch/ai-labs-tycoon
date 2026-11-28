@@ -228,6 +228,9 @@ namespace AiLabs.Rules.Config
             LobbyingCostEraReliefProblems(p, c);
             PublicMetricsConformityEraSlackProblems(p, c);
             SpecialistBranchEraBoostProblems(p, c);
+            LobbyingGoalEraAmplifyProblems(p, c);
+            PublicMetricsBarEraSlackProblems(p, c);
+            OpenWeightsCloseEraReliefProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2529,6 +2532,36 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraBoost.minEra must be a valid era index");
             if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
                 p.Add("specialistBranchEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingGoalEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LobbyingGoalEraAmplifyConfig k = c.LobbyingGoalEraAmplify;
+            if (k == null) { p.Add("lobbyingGoalEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingGoalEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingGoalEraAmplify.minEra must be a valid era index");
+            if (k.AmplifyPermille < 0 || k.AmplifyPermille > MathI.Permille)
+                p.Add("lobbyingGoalEraAmplify.amplifyPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsBarEraSlackProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsBarEraSlackConfig k = c.PublicMetricsBarEraSlack;
+            if (k == null) { p.Add("publicMetricsBarEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsBarEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsBarEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("publicMetricsBarEraSlack.slackPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void OpenWeightsCloseEraReliefProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsCloseEraReliefConfig k = c.OpenWeightsCloseEraRelief;
+            if (k == null) { p.Add("openWeightsCloseEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsCloseEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsCloseEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("openWeightsCloseEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

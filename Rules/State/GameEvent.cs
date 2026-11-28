@@ -674,7 +674,10 @@ namespace AiLabs.Rules.State
         OpenWeightsOpenEraBoosted,
         LobbyingCostEraRelieved,
         PublicMetricsConformityEraSlacked,
-        SpecialistBranchEraBoosted
+        SpecialistBranchEraBoosted,
+        LobbyingGoalEraAmplified,
+        PublicMetricsBarEraSlacked,
+        OpenWeightsCloseEraRelieved
     }
 
     /// <summary>

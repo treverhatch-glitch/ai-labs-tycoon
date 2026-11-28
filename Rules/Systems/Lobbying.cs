@@ -77,11 +77,17 @@ namespace AiLabs.Rules.Systems
             }
             if (goal == Quiet)
             {
-                standing.Attention = (int)MathI.Clamp((long)standing.Attention - l.QuietAttention, 0, MathI.Permille);
+                int list = l.QuietAttention;
+                int applied = LobbyingGoalEraAmplify.Magnitude(c, state, list);
+                standing.Attention = (int)MathI.Clamp((long)standing.Attention - applied, 0, MathI.Permille);
+                LobbyingGoalEraAmplify.OnLanded(c, state, lab, goal, "quiet", list, applied);
                 return "landed";
             }
             if ((int)(Mix(state, lab, standing, 2) % MathI.Permille) >= SubsidyChancePermille(c, lab)) return "missed";
-            Finance.Earn(lab, LedgerLine.Grants, l.SubsidyReturnWeeks * WeekCost(c, state, lab));
+            int listWeeks = l.SubsidyReturnWeeks;
+            int weeks = LobbyingGoalEraAmplify.Magnitude(c, state, listWeeks);
+            Finance.Earn(lab, LedgerLine.Grants, weeks * WeekCost(c, state, lab));
+            LobbyingGoalEraAmplify.OnLanded(c, state, lab, goal, "subsidy", listWeeks, weeks);
             return "landed";
         }
     }

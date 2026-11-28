@@ -2471,3 +2471,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q533. Extra trust when branching specialist in late era? DECIDED (schema 194): `specialistBranchEraBoost`; `SpecialistBranchEraBoosted` on `SpecialistLines.Branch`.
 
 ### Q534. Batch thirty-one news, chat and combos. DECIDED: three headlines, three chat lines (446/399); `BatchThirtyOneNewsChatTests`, `BatchThirtyOneTogetherTests`.
+
+### Q535. Stronger lobby quiet/subsidy outcomes in late era? DECIDED (schema 195): `lobbyingGoalEraAmplify`; `LobbyingGoalEraAmplified` on `Lobbying.Run`.
+
+### Q536. Lower public metrics bar in late era? DECIDED (schema 196): `publicMetricsBarEraSlack`; `PublicMetricsBarEraSlacked` on `PublicMetrics.RunWeek`.
+
+### Q537. Softer trust hit closing open weights in late era? DECIDED (schema 197): `openWeightsCloseEraRelief`; `OpenWeightsCloseEraRelieved` on `OpenWeights.SetPolicy` close.
+
+### Q538. Batch thirty-two news, chat and combos. DECIDED: three headlines, three chat lines (449/402); `BatchThirtyTwoNewsChatTests`, `BatchThirtyTwoTogetherTests`.

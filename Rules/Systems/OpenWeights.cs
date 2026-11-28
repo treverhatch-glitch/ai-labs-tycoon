@@ -21,6 +21,7 @@ namespace AiLabs.Rules.Systems
 
         public static void SetPolicy(GameConfig c, GameState state, LabState lab, ModelState model, int policy)
         {
+            bool wasOpen = model.WgtOpen == Open;
             model.WgtOpen = policy > 0 ? Open : Closed;
             if (model.WgtOpen == Open)
             {
@@ -29,7 +30,18 @@ namespace AiLabs.Rules.Systems
                 Events.Add(state, EventKind.WeightsOpened, lab.Id, model.Id, c.OpenWeights.TrustGain, model.Name);
                 OpenWeightsOpenEraBoost.OnOpened(c, state, lab, model);
             }
-            else Events.Add(state, EventKind.WeightsClosed, lab.Id, model.Id, 0, model.Name);
+            else
+            {
+                if (wasOpen && c.OpenWeights.TrustGain > 0)
+                {
+                    int listLoss = -c.OpenWeights.TrustGain;
+                    int applied = OpenWeightsCloseEraRelief.TrustLoss(c, state, listLoss);
+                    for (int i = 0; i < model.Sectors.Count; i++)
+                        TrustSystem.Shift(c, state, lab, model.Sectors[i], applied, false);
+                    OpenWeightsCloseEraRelief.OnClosed(c, state, lab, model, listLoss, applied);
+                }
+                Events.Add(state, EventKind.WeightsClosed, lab.Id, model.Id, 0, model.Name);
+            }
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

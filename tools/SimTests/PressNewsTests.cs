@@ -71,6 +71,6 @@ public class PressNewsTests
     {
         GameConfig c = TestData.Config();
         Assert.Empty(ConfigValidator.Problems(c));
-        Assert.Equal(446, c.News.Headlines.Count);
+        Assert.Equal(449, c.News.Headlines.Count);
     }
 }

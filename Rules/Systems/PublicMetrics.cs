@@ -43,7 +43,9 @@ namespace AiLabs.Rules.Systems
 
         static void ShiftTrust(GameConfig c, GameState state, LabState lab, ModelState model, int score)
         {
-            int delta = score >= c.PublicMetrics.Bar ? c.PublicMetrics.TrustGain : c.PublicMetrics.TrustLoss;
+            int listBar = c.PublicMetrics.Bar;
+            int bar = PublicMetricsBarEraSlack.EffectiveBar(c, state);
+            int delta = score >= bar ? c.PublicMetrics.TrustGain : c.PublicMetrics.TrustLoss;
             if (delta == 0) return;
             for (int s = 0; s < model.Sectors.Count; s++)
                 TrustSystem.Shift(c, state, lab, model.Sectors[s], delta, false);
@@ -65,13 +67,16 @@ namespace AiLabs.Rules.Systems
                 int before = m.PubScore;
                 m.PubScore = served;
                 if (before != m.PubScore) ShiftTrust(c, state, lab, m, m.PubScore);
-                if (m.PubScore < c.PublicMetrics.Bar && m.CertStage == Conformity.Review && m.CertLeft > 0)
+                int listBar = c.PublicMetrics.Bar;
+                int bar = PublicMetricsBarEraSlack.EffectiveBar(c, state);
+                if (m.PubScore < bar && m.CertStage == Conformity.Review && m.CertLeft > 0)
                 {
                     int listPush = c.PublicMetrics.ConformityPush;
                     int applied = PublicMetricsConformityEraSlack.ConformityPush(c, state, listPush);
                     m.CertLeft += applied;
                     PublicMetricsConformityEraSlack.OnSlack(c, state, lab, m, listPush, applied);
                 }
+                PublicMetricsBarEraSlack.OnWeek(c, state, lab, m, listBar, bar);
             }
         }
     }

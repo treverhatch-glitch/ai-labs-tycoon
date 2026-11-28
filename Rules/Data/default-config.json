@@ -12619,6 +12619,24 @@
         "kind": "SpecialistBranchEraBoosted",
         "pick": -1,
         "text": "{lab} branched with extra trust"
+      },
+      {
+        "id": "lobby-goal-amplify",
+        "kind": "LobbyingGoalEraAmplified",
+        "pick": -1,
+        "text": "{lab} lobbied harder"
+      },
+      {
+        "id": "metrics-bar-slack",
+        "kind": "PublicMetricsBarEraSlacked",
+        "pick": -1,
+        "text": "{lab} cleared a softer metrics bar"
+      },
+      {
+        "id": "weights-close-relief",
+        "kind": "OpenWeightsCloseEraRelieved",
+        "pick": -1,
+        "text": "{lab} closed weights gently"
       }
     ],
     "filler": [
@@ -17309,6 +17327,39 @@
         "text": "A specialist branch lands softer now.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "lobby-goal-chat",
+        "kind": "LobbyingGoalEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Lobbying bites harder when it works.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "bar-slack-chat",
+        "kind": "PublicMetricsBarEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The bar moves down a notch this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "close-relief-chat",
+        "kind": "OpenWeightsCloseEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Closing the weights stings less.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -20254,5 +20305,20 @@
     "enabled": 1,
     "minEra": 2,
     "trustBoostPermille": 20
+  },
+  "lobbyingGoalEraAmplify": {
+    "enabled": 1,
+    "minEra": 2,
+    "amplifyPermille": 150
+  },
+  "publicMetricsBarEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 100
+  },
+  "openWeightsCloseEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 200
   }
 }

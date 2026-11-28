@@ -758,6 +758,12 @@ namespace AiLabs.Rules.Sim
                     return who + " got softer conformity pressure on \"" + e.Ref + "\" from published metrics (" + e.Amount + " weeks saved).";
                 case EventKind.SpecialistBranchEraBoosted:
                     return who + " got extra trust branching a specialist on \"" + e.Ref + "\" (+" + e.Amount + " permille).";
+                case EventKind.LobbyingGoalEraAmplified:
+                    return who + " got a stronger lobby " + e.Ref.Split('|')[1] + " push on " + e.Ref.Split('|')[0] + " (+" + e.SubjectId + ").";
+                case EventKind.PublicMetricsBarEraSlacked:
+                    return who + " cleared a lower metrics bar on \"" + e.Ref + "\" (" + e.Amount + " permille slack).";
+                case EventKind.OpenWeightsCloseEraRelieved:
+                    return who + " took a softer trust hit closing weights on \"" + e.Ref + "\" (" + e.Amount + " saved).";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
