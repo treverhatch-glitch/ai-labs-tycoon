@@ -555,6 +555,26 @@ and says why in the commit message.
 
 285. **Batch thirty-three news, chat and combination rules.** ~~Done (local)~~: `BatchThirtyThreeNewsChatTests`, `BatchThirtyThreeTogetherTests` (Q542); target **452/408**.
 
+### Era batch 34 (LOCAL on `era-local-b33-34-save` @ `2fe81f0d`, HOLD push)
+
+286. **Lobbying subsidy era boost.** *Queued:* `lobbyingSubsidyEraBoost`, schema **201** (Q543); bible tails / late-era lobby subsidy.
+
+287. **Public metrics loss era relief.** *Queued:* `publicMetricsLossEraRelief`, schema **202** (Q544); softer trust loss on bad metrics.
+
+288. **Data source acquire era slack.** *Queued:* `dataSourceAcquireEraSlack`, schema **203** (Q545); cheaper acquire after discount chain.
+
+289. **Batch thirty-four news, chat and combination rules.** *Queued:* `BatchThirtyFourNewsChatTests`, `BatchThirtyFourTogetherTests` (Q546); target **455/411**.
+
+### Era batch 35 (forward queue on `x-af2f` after batch 34)
+
+290. **Lobbying quiet era boost.** *Planned:* `lobbyingQuietEraBoost`, schema **204** (Q547); extra weeks when lobby goal is quiet.
+
+291. **Public metrics incident era relief.** *Planned:* `publicMetricsIncidentEraRelief`, schema **205** (Q548); softer hit on incident miss path.
+
+292. **Data source renew era slack.** *Planned:* `dataSourceRenewEraSlack`, schema **206** (Q549); renew discount after acquire slack.
+
+293. **Batch thirty-five news, chat and combination rules.** *Planned:* `BatchThirtyFiveNewsChatTests`, `BatchThirtyFiveTogetherTests` (Q550); target **458/413** (forward; adjust at ship).
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

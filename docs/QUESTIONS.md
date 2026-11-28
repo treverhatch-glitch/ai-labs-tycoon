@@ -2488,6 +2488,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q542. Batch thirty-three news, chat and combos. DECIDED: three headlines, three chat lines (452/408); `BatchThirtyThreeNewsChatTests`, `BatchThirtyThreeTogetherTests`.
 
+### Q543. Extra weeks on landed lobby subsidies in late era? *Queued (batch 34 LOCAL):* schema **201** `lobbyingSubsidyEraBoost`.
+
+### Q544. Softer trust loss on bad public metrics in late era? *Queued (batch 34 LOCAL):* schema **202** `publicMetricsLossEraRelief`.
+
+### Q545. Cheaper data-source acquire in late era? *Queued (batch 34 LOCAL):* schema **203** `dataSourceAcquireEraSlack`.
+
+### Q546. Batch thirty-four news, chat and combos. *Queued:* three headlines, three chat lines (**455/411**); `BatchThirtyFour*` on `era-local-b33-34-save`.
+
+### Q547. Extra weeks when lobby goal is quiet in late era? *Planned (batch 35):* schema **204** `lobbyingQuietEraBoost`.
+
+### Q548. Softer incident miss on public metrics in late era? *Planned (batch 35):* schema **205** `publicMetricsIncidentEraRelief`.
+
+### Q549. Cheaper data-source renew in late era? *Planned (batch 35):* schema **206** `dataSourceRenewEraSlack`.
+
+### Q550. Batch thirty-five news, chat and combos. *Planned:* three headlines, three chat lines (~**458/413**); `BatchThirtyFive*`.
+
 ### Q501a. Era N–P hardening tests after batch 23. DECIDED: intentional drift on `main` at `0bbbae03` (batch 23 / Q501 → 421/374); landed `6fbea2b2`; gate repins tip golden `9f9b1a4a…`, batch-18 reverts `90a01e4f…` / `dc1d5b5b…`, and batch-19–23 helper digests for schemas 156–169 (news/chat revert chain through Q501); graphics 289–326 have no `Rules/` delta vs merge base.
 
 ### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.
