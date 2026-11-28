@@ -503,6 +503,38 @@ def apply_object_transforms(ob: bpy.types.Object) -> None:
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
 
+def flatten_glb_preview_meshes(meshes: list[bpy.types.Object]) -> list[bpy.types.Object]:
+    """Bake GLB parent hierarchy to world matrices for hero/ortho preview renders."""
+    bpy.context.view_layer.update()
+    flat: list[bpy.types.Object] = []
+    for ob in meshes:
+        mw = ob.matrix_world.copy()
+        if ob.parent is not None:
+            ob.parent = None
+        ob.matrix_world = mw
+        flat.append(ob)
+    bpy.context.view_layer.update()
+    return flat
+
+
+def _parent_keep_world_export(child: bpy.types.Object, parent: bpy.types.Object) -> None:
+    mw = child.matrix_world.copy()
+    child.parent = parent
+    child.matrix_world = mw
+
+
+def flatten_assembly_parts(parts: list[bpy.types.Object]) -> None:
+    """Clear parent links before assembly ground snap (pass19 desk CRT floor bug)."""
+    mesh_parts = [p for p in parts if p.type == "MESH" and p.name != "ConnectSpine"]
+    for ob in mesh_parts:
+        if ob.parent is None:
+            continue
+        mw = ob.matrix_world.copy()
+        ob.parent = None
+        ob.matrix_world = mw
+    bpy.context.view_layer.update()
+
+
 def snap_parts_to_ground(parts: list[bpy.types.Object]) -> None:
     if not parts:
         return
@@ -568,7 +600,9 @@ def duplicate_garage_preview_hierarchy(parts: list[bpy.types.Object], asset_id: 
     return dupes
 
 
-def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
+def export_garage_multipart_glbf(
+    parts: list[bpy.types.Object], glb_path: Path, *, asset_id: str | None = None
+) -> None:
     """Export on isolated duplicates so Z-up build meshes stay intact for preview."""
     import blender_preview_rig as rig  # type: ignore
     from garage_assembly import bake_parts_local_transforms, parent_under_assembly_root  # type: ignore
@@ -583,23 +617,32 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         bpy.context.collection.objects.link(dup)
         dup.matrix_world = ob.matrix_world.copy()
         dupes.append(dup)
+    for d in dupes:
+        if d.parent is not None:
+            mw = d.matrix_world.copy()
+            d.parent = None
+            d.matrix_world = mw
     kenney_y = os.environ.get("GARAGE_KENNEY_IMPORT", "").strip() in ("1", "true", "yes")
     if kenney_y:
         snap_parts_to_ground(dupes)
-        for d in dupes:
-            snap_root_to_ground(d)
-    root = parent_under_assembly_root(dupes, "garage-export", root_name="GarageKitRoot")
+        if asset_id != "garage-desk-crt":
+            for d in dupes:
+                snap_root_to_ground(d)
+    if kenney_y:
+        bake_parts_local_transforms(dupes)
+        if asset_id == "garage-desk-crt":
+            desk = next((d for d in dupes if "Desktop" in d.name), None)
+            screen = next((d for d in dupes if "CrtBezel" in d.name or "Crt" in d.name), None)
+            if desk and screen:
+                _parent_keep_world_export(screen, desk)
+                bake_parts_local_transforms([screen, desk])
+    root = parent_under_assembly_root(dupes, asset_id or "garage-export", root_name="GarageKitRoot")
     if not kenney_y:
         root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
         bpy.context.view_layer.objects.active = root
         root.select_set(True)
         bpy.ops.object.transform_apply(rotation=True)
-    min_y = min(mesh_world_min_y(d) for d in dupes) if kenney_y else None
-    if kenney_y:
-        if abs(min_y) > 1e-5:
-            root.location.y -= min_y
-            bpy.context.view_layer.update()
-    elif not kenney_y:
+    if not kenney_y:
         mins, _maxs = rig.mesh_bounds_world(dupes)
         floor = min(mins.y, mins.z)
         if abs(floor) > 1e-6:
@@ -624,7 +667,7 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
 
 
 GARAGE_HERO_CAMERA: dict[str, dict[str, float]] = {
-    "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.42, "margin": 0.13},
+    "garage-desk-crt": {"yaw": 45.0, "pitch": 35.0, "fill": 0.48, "margin": 0.11},
     "garage-folding-chair": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.09},
     "garage-roll-door": {"yaw": 45.0, "pitch": 35.0, "fill": 0.56, "margin": 0.08},
     "garage-server-closet": {"yaw": 45.0, "pitch": 35.0, "fill": 0.54, "margin": 0.08},
@@ -658,6 +701,7 @@ def render_garage_hero_preview_from_glb(
         up_axis = "Y" if y_up else "Z"
         floor_plane = "horizontal_y" if y_up else "horizontal_z"
         if y_up:
+            meshes = flatten_glb_preview_meshes(meshes)
             for ob in meshes:
                 apply_preview_material(ob, tex_dir, asset_id)
             frame_obs = meshes
@@ -734,6 +778,7 @@ def render_garage_side_ortho_preview_from_glb(
         meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
         if not meshes:
             raise RuntimeError(f"{asset_id}: GLB import for ortho produced no meshes")
+        meshes = flatten_glb_preview_meshes(meshes)
         for ob in meshes:
             apply_preview_material(ob, tex_dir, asset_id)
         bpy.context.view_layer.update()
@@ -839,8 +884,12 @@ def _finish_garage_kit_asset(
         raise RuntimeError(f"{asset_id}: need >={min_parts} sub-objects (got {part_count})")
 
     for ob in parts:
+        if ob.name.startswith("RollSlat"):
+            smooth_shade(ob)
+            continue
         bevel_object(ob, width=0.022, segments=3)
         smooth_shade(ob)
+    flatten_assembly_parts(parts)
     snap_parts_to_ground(parts)
     assembly_min_y = min(mesh_world_min_y(ob) for ob in parts)
     ground_slack = 0.002 if kenney_import or cc0_import else 0.06
@@ -898,7 +947,7 @@ def _finish_garage_kit_asset(
     pitch = cam.get("pitch")
 
     glb_path = out_dir / f"{asset_id}.glb"
-    export_garage_multipart_glbf(parts, glb_path)
+    export_garage_multipart_glbf(parts, glb_path, asset_id=asset_id)
     render_garage_hero_preview_from_glb(
         asset_id,
         glb_path,

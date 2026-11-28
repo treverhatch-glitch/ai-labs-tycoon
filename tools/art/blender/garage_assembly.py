@@ -129,8 +129,11 @@ def parent_under_assembly_root(
     root = bpy.data.objects.new(root_name, None)
     bpy.context.collection.objects.link(root)
     root.matrix_world.identity()
-    frozen = [(ob, ob.matrix_world.copy()) for ob in mesh_parts]
+    roots = [p for p in mesh_parts if p.parent is None or p.parent not in mesh_parts]
+    frozen = [(ob, ob.matrix_world.copy()) for ob in roots]
     for ob in mesh_parts:
+        if ob.parent is not None and ob.parent in mesh_parts:
+            continue
         if ob.parent:
             ob.parent = None
     bpy.context.view_layer.update()
