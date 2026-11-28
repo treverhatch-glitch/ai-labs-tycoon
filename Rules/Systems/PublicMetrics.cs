@@ -66,7 +66,12 @@ namespace AiLabs.Rules.Systems
                 m.PubScore = served;
                 if (before != m.PubScore) ShiftTrust(c, state, lab, m, m.PubScore);
                 if (m.PubScore < c.PublicMetrics.Bar && m.CertStage == Conformity.Review && m.CertLeft > 0)
-                    m.CertLeft += c.PublicMetrics.ConformityPush;
+                {
+                    int listPush = c.PublicMetrics.ConformityPush;
+                    int applied = PublicMetricsConformityEraSlack.ConformityPush(c, state, listPush);
+                    m.CertLeft += applied;
+                    PublicMetricsConformityEraSlack.OnSlack(c, state, lab, m, listPush, applied);
+                }
             }
         }
     }

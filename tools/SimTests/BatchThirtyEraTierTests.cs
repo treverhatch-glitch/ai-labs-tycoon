@@ -48,9 +48,9 @@ public class BatchThirtyEraTierTests
         g.Me.Bloc(g.Me.HomeBlocId).Attention = 900;
         g.Do(Command.Lobby(g.Id, g.Me.HomeBlocId, Lobbying.Quiet));
         string save = g.Sim.Save();
-        Assert.Equal(191, g.State.Schema);
+        Assert.Equal(194, g.State.Schema);
         Simulation loaded = Simulation.Load(g.C, save);
-        Assert.Equal(191, loaded.State.Schema);
+        Assert.Equal(194, loaded.State.Schema);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.LobbyingEraCooldownShortened);
     }
 }

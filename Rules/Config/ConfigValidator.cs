@@ -225,6 +225,9 @@ namespace AiLabs.Rules.Config
             LobbyingEraCooldownProblems(p, c);
             PublicMetricsMissEraReliefProblems(p, c);
             OpenWeightsOpenEraBoostProblems(p, c);
+            LobbyingCostEraReliefProblems(p, c);
+            PublicMetricsConformityEraSlackProblems(p, c);
+            SpecialistBranchEraBoostProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2496,6 +2499,36 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsOpenEraBoost.minEra must be a valid era index");
             if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
                 p.Add("openWeightsOpenEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void LobbyingCostEraReliefProblems(List<string> p, GameConfig c)
+        {
+            LobbyingCostEraReliefConfig k = c.LobbyingCostEraRelief;
+            if (k == null) { p.Add("lobbyingCostEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lobbyingCostEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lobbyingCostEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("lobbyingCostEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsConformityEraSlackProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsConformityEraSlackConfig k = c.PublicMetricsConformityEraSlack;
+            if (k == null) { p.Add("publicMetricsConformityEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsConformityEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsConformityEraSlack.minEra must be a valid era index");
+            if (k.SlackPermille < 0 || k.SlackPermille > MathI.Permille)
+                p.Add("publicMetricsConformityEraSlack.slackPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void SpecialistBranchEraBoostProblems(List<string> p, GameConfig c)
+        {
+            SpecialistBranchEraBoostConfig k = c.SpecialistBranchEraBoost;
+            if (k == null) { p.Add("specialistBranchEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistBranchEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0 || k.TrustBoostPermille > MathI.Permille)
+                p.Add("specialistBranchEraBoost.trustBoostPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

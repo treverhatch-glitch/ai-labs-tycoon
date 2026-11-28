@@ -12601,6 +12601,24 @@
         "kind": "OpenWeightsOpenEraBoosted",
         "pick": -1,
         "text": "{lab} won extra trust opening weights"
+      },
+      {
+        "id": "lobby-cost-era-relief",
+        "kind": "LobbyingCostEraRelieved",
+        "pick": -1,
+        "text": "{lab} lobbied for less"
+      },
+      {
+        "id": "metrics-conformity-slack",
+        "kind": "PublicMetricsConformityEraSlacked",
+        "pick": -1,
+        "text": "{lab} eased conformity pressure"
+      },
+      {
+        "id": "specialist-branch-boost",
+        "kind": "SpecialistBranchEraBoosted",
+        "pick": -1,
+        "text": "{lab} branched with extra trust"
       }
     ],
     "filler": [
@@ -17258,6 +17276,39 @@
         "text": "Opening the weights lands softer now.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "lobby-cost-relief-chat",
+        "kind": "LobbyingCostEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Influence costs less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "conformity-slack-chat",
+        "kind": "PublicMetricsConformityEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Bad uptime does not drag review out as far.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "branch-boost-chat",
+        "kind": "SpecialistBranchEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A specialist branch lands softer now.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -20188,5 +20239,20 @@
     "enabled": 1,
     "minEra": 2,
     "trustBoostPermille": 25
+  },
+  "lobbyingCostEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "publicMetricsConformityEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackPermille": 300
+  },
+  "specialistBranchEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 20
   }
 }

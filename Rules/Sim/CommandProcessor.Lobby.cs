@@ -19,10 +19,12 @@ namespace AiLabs.Rules.Sim
             if (left > 0) return Fail(CommandError.LobbyCooling, "The lab lobbied " + name + " recently. It will hear from you again in " + left + (left == 1 ? " week." : " weeks."));
             if (goal == Lobbying.Quiet && standing.Attention <= 0)
                 return Fail(CommandError.InvalidArgument, name + " is not paying the lab any attention, so there is nothing to quieten.");
-            long cost = Lobbying.Cost(c, state, lab, goal);
+            long listCost = Lobbying.Cost(c, state, lab, goal);
+            long cost = LobbyingCostEraRelief.Cost(c, state, listCost);
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             Finance.Spend(lab, LedgerLine.Hiring, cost);
+            LobbyingCostEraRelief.OnPaid(c, state, lab, cmd.Id, goal, listCost, cost);
             string result = Lobbying.Run(c, state, lab, standing, goal);
             Events.Add(state, EventKind.Lobbied, lab.Id, -1, cost, cmd.Id + "|" + goal + "|" + result);
             return CommandResult.Done(-1);

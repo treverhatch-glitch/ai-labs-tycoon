@@ -2463,3 +2463,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q529. Extra trust when opening weights in late era? DECIDED (schema 191): `openWeightsOpenEraBoost`; `OpenWeightsOpenEraBoosted` on `OpenWeights.SetPolicy`.
 
 ### Q530. Batch thirty news, chat and combos. DECIDED: three headlines, three chat lines (443/396); `BatchThirtyNewsChatTests`, `BatchThirtyTogetherTests`.
+
+### Q531. Discount lobby push cost in late era? DECIDED (schema 192): `lobbyingCostEraRelief`; `LobbyingCostEraRelieved` on `Command.Lobby`.
+
+### Q532. Softer conformity push on bad published metrics in late era? DECIDED (schema 193): `publicMetricsConformityEraSlack`; `PublicMetricsConformityEraSlacked` on `PublicMetrics.RunWeek`.
+
+### Q533. Extra trust when branching specialist in late era? DECIDED (schema 194): `specialistBranchEraBoost`; `SpecialistBranchEraBoosted` on `SpecialistLines.Branch`.
+
+### Q534. Batch thirty-one news, chat and combos. DECIDED: three headlines, three chat lines (446/399); `BatchThirtyOneNewsChatTests`, `BatchThirtyOneTogetherTests`.
