@@ -58,3 +58,4 @@ In **Mum's Garage**, the player sees:
 - Exact general room footprint: 5×5 vs 6×5 on first frame?
 - Starter bundle: minimum count per workstation archetype in general room?
 - Copy-room v1: always include workstation layout, or footprint-only option?
+**Commit policy:** Hatch author `treverhatch-glitch` only; no `Co-authored-by` trailers on GD-6 commits.
