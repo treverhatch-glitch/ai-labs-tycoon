@@ -12,6 +12,7 @@ namespace AiLabs.Unity.Hq
         {
             "staff-engineer-work",
             "staff-founder-idle",
+            "staff-founder-kenney-stock",
             "staff-gpu-tech-idle",
             "staff-pose-typing",
             "staff-recruiter-idle",

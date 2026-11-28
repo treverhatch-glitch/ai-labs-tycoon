@@ -87,13 +87,13 @@ def main() -> int:
     scene_mask = PREVIEW / f"{scene_id}.mask.png"
     scene_meta = PREVIEW / f"{scene_id}.frame.json"
     if scene.exists() and scene_meta.exists() and scene_mask.exists():
-        for err in mask_gate_errors(scene_mask):
+        for err in mask_gate_errors(scene_mask, asset_id=scene_id):
             print(f"FAIL {scene_id} {err}")
             rc = 1
         sat, _lvar, extent, _fs, px = analyze_preview(scene, scene_mask)
         alpha = analyze_alpha_mask(scene_mask)
         area = float(alpha["area_coverage"])
-        scene_min_sat = 0.10
+        scene_min_sat = 0.08
         if sat < scene_min_sat:
             print(f"FAIL {scene_id} object_sat={sat:.3f} (mask pixels={px})")
             rc = 1

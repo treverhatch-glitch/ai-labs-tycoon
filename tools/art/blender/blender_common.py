@@ -573,11 +573,18 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         dup.matrix_world = mw
     root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
     bpy.context.view_layer.update()
-    frozen = [(dup, dup.matrix_world.copy()) for dup in dupes]
-    for dup, mw in frozen:
+    baked = [(dup, dup.matrix_world.copy()) for dup in dupes]
+    for dup, mw in baked:
         dup.parent = None
         dup.matrix_world = mw
     bpy.data.objects.remove(root, do_unlink=True)
+    bpy.context.view_layer.update()
+    export_root = bpy.data.objects.new("GarageKitRoot", None)
+    bpy.context.collection.objects.link(export_root)
+    for dup in dupes:
+        mw = dup.matrix_world.copy()
+        dup.parent = export_root
+        dup.matrix_world = mw
     bpy.context.view_layer.update()
     mins, _maxs = rig.mesh_bounds_world(dupes)
     if abs(mins.y) > 1e-6:
@@ -585,9 +592,10 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
             dup.location.y -= mins.y
         bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
+    export_root.select_set(True)
     for dup in dupes:
         dup.select_set(True)
-    bpy.context.view_layer.objects.active = dupes[0]
+    bpy.context.view_layer.objects.active = export_root
     bpy.ops.export_scene.gltf(
         filepath=str(glb_path),
         use_selection=True,
@@ -596,8 +604,7 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         export_image_format="AUTO",
         export_yup=True,
     )
-    for dup in dupes:
-        bpy.data.objects.remove(dup, do_unlink=True)
+    bpy.data.objects.remove(export_root, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -632,6 +639,12 @@ def _finish_garage_kit_asset(
 
     assign_part_materials(mesh_obs, asset_id)
     parts = list(mesh_obs)
+    try:
+        from garage_assembly import tighten_garage_cluster  # type: ignore
+
+        tighten_garage_cluster(parts, gap_frac=0.02)
+    except Exception as exc:  # noqa: BLE001
+        print(f"WARN {asset_id} tighten_cluster {exc}")
     min_parts = MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
     cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip() in ("1", "true", "yes")
     if part_count < min_parts and not cc0_import:
@@ -670,10 +683,14 @@ def _finish_garage_kit_asset(
     hero_framing: dict[str, tuple[float, float]] = {
         "garage-cable-spool": (0.54, 0.08),
         "garage-exterior-wall": (0.54, 0.08),
-        "garage-land-for-sale-sign": (0.56, 0.075),
+        "garage-land-for-sale-sign": (0.58, 0.07),
+        "garage-lot-curb": (0.60, 0.065),
+        "garage-roll-door": (0.58, 0.07),
         "garage-server-closet": (0.54, 0.08),
+        "garage-floor-tile": (0.54, 0.085),
         "garage-folding-chair": (0.52, 0.09),
-        "garage-window-frame": (0.56, 0.08),
+        "garage-whiteboard-1995": (0.62, 0.065),
+        "garage-window-frame": (0.58, 0.07),
     }
     fill, margin = hero_framing.get(asset_id, (0.58, 0.07))
     try:

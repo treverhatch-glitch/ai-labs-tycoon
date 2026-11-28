@@ -15,8 +15,8 @@ TEX = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures"
 PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
 
-COLS = 5
-SPACING = 1.15
+COLS = 4
+SPACING = 0.38
 FLOOR_Y = 0.0  # Blender Y-up floor
 
 
@@ -105,8 +105,8 @@ def main() -> None:
         out,
         resolution=768,
         mode="scene",
-        fill=0.58,
-        margin=0.06,
+        fill=0.645,
+        margin=0.072,
         frame_objects=joins,
         up_axis="Y",
         mask_path=mask,

@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -94,8 +95,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "generator": "tools/art/blender/garage-floor-tile.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-floor-tile.py"
     },
     {
       "id": "garage-folding-chair",
@@ -174,8 +175,8 @@
       "vertexCount": 864,
       "triangleCount": 3456,
       "partCount": 9,
-      "generator": "tools/art/blender/garage-server-closet.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-server-closet.py"
     },
     {
       "id": "garage-voodude-rack",
@@ -222,8 +223,8 @@
       "vertexCount": 1728,
       "triangleCount": 6912,
       "partCount": 18,
-      "generator": "tools/art/blender/garage-whiteboard-1995.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-whiteboard-1995.py"
     },
     {
       "id": "garage-window-frame",
@@ -238,8 +239,8 @@
       "vertexCount": 672,
       "triangleCount": 2688,
       "partCount": 7,
-      "generator": "tools/art/blender/garage-window-frame.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-window-frame.py"
     }
   ]
 }

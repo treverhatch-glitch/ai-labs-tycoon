@@ -17,15 +17,10 @@ for tex in tools/art/blender/tex-garage-trim-orange.py tools/art/blender/tex-gar
 done
 echo "=== garage-scene-preview ==="
 "$BLENDER" -b --python-exit-code 1 --python tools/art/blender/garage-scene-preview.py
-for script in tools/art/blender/hud-topbar-beige.py tools/art/blender/icon-gpu-hire.py \
-  tools/art/blender/icon-week-advance.py tools/art/blender/panel-build-bg.py \
-  tools/art/blender/panel-hire-bg.py tools/art/blender/panel-train-bg.py \
-  tools/art/blender/tex-hud-paper-warm.py; do
-  echo "=== $script ==="
-  "$BLENDER" -b --python-exit-code 1 --python "$script" || { echo "FAIL $script" >&2; exit 1; }
-done
-echo "=== HUD icon batch ==="
-"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/blender_render_hud_wisp.py
+echo "=== compose HUD previews (SVG) ==="
+python3 tools/art/compose_hud_previews.py
+echo "=== tex-hud-paper-warm ==="
+"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/tex-hud-paper-warm.py
 python3 tools/art/check_garage_quality_previews.py
 python3 tools/art/check_garage_preview_assembly.py
 python3 tools/art/check_garage_mesh_topology.py

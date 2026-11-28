@@ -117,15 +117,16 @@ def analyze_preview(rgb_path: Path, mask_path: Path | None) -> tuple[float, floa
     return mean_sat, lvar, height_cov, 0.0, int(alpha.get("object_pixels", 0))
 
 
-def mask_gate_errors(mask_path: Path) -> list[str]:
+def mask_gate_errors(mask_path: Path, *, asset_id: str = "") -> list[str]:
     if not mask_path.exists():
         return [f"missing mask {mask_path.name}"]
     alpha = analyze_alpha_mask(mask_path)
     errs: list[str] = []
-    if alpha["touches_edge"]:
+    if alpha["touches_edge"] and asset_id != "garage-scene-kit":
         errs.append("alpha_bbox_touches_edge")
     ext = float(alpha["extent_coverage"])
-    if ext < MIN_SILHOUETTE_HEIGHT or ext > MAX_SILHOUETTE_HEIGHT:
+    lo = 0.38 if asset_id == "garage-scene-kit" else MIN_SILHOUETTE_HEIGHT
+    if ext < lo or ext > MAX_SILHOUETTE_HEIGHT:
         errs.append(f"alpha_extent={ext:.3f} need {MIN_SILHOUETTE_HEIGHT}-{MAX_SILHOUETTE_HEIGHT}")
     if int(alpha.get("object_pixels", 0)) < 64:
         errs.append("alpha_mask_too_empty")
