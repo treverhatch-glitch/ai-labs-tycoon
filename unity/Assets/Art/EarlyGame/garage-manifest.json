@@ -1,162 +1,262 @@
 {
-  "generator": "tools/art/generate_garage_kit.py",
-  "lot": "garage",
-  "gridTiles": {
-    "width": 14,
-    "height": 10
-  },
-  "tileSizeMeters": 0.45,
-  "fidelity": "packet-2",
+  "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
-      "id": "garage-floor-tile",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 24,
-      "triangleCount": 12,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-wall-panel",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 48,
-      "triangleCount": 24,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-exterior-wall",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 48,
-      "triangleCount": 24,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-roll-door",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 288,
-      "triangleCount": 144,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-server-closet",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 72,
-      "triangleCount": 36,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-land-for-sale-sign",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 114,
-      "triangleCount": 56,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-lot-curb",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 48,
-      "triangleCount": 24,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-window-frame",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 72,
-      "triangleCount": 36,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-desk-crt",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 1248,
-      "triangleCount": 620,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-crt-tower",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 96,
-      "triangleCount": 48,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-voodude-rack",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 1068,
-      "triangleCount": 528,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
-    },
-    {
-      "id": "garage-whiteboard-1995",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 72,
-      "triangleCount": 36,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
+      "id": "garage-cable-spool",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-cable-spool.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 608,
+      "triangleCount": 2304,
+      "partCount": 5,
+      "generator": "tools/art/blender/garage-cable-spool.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-coffee-drip",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 130,
-      "triangleCount": 64,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-coffee-drip.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 310,
+      "triangleCount": 638,
+      "partCount": 2,
+      "generator": "tools/art/blender/garage-coffee-drip.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-crt-monitor",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-monitor.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-monitor/garage-crt-monitor_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-crt-monitor.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 288,
+      "triangleCount": 1152,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-crt-monitor.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-crt-tower",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-crt-tower.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1312,
+      "triangleCount": 3202,
+      "partCount": 3,
+      "generator": "tools/art/blender/garage-crt-tower.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-desk-crt",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-desk-crt.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 509,
+      "triangleCount": 1062,
+      "partCount": 3,
+      "generator": "tools/art/blender/garage-desk-crt.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-exterior-wall",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-exterior-wall/garage-exterior-wall_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-exterior-wall/garage-exterior-wall_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-exterior-wall/garage-exterior-wall_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-exterior-wall.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 136,
+      "triangleCount": 324,
+      "partCount": 2,
+      "generator": "tools/art/blender/garage-exterior-wall.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-floor-tile",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-floor-tile.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 24,
+      "triangleCount": 36,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-floor-tile.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-folding-chair",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 324,
-      "triangleCount": 158,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-folding-chair.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 940,
+      "triangleCount": 1848,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-folding-chair.py",
+      "blenderVersion": "4.0.2"
     },
     {
-      "id": "garage-cable-spool",
-      "path": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.obj",
-      "mtl": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.mtl",
-      "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 212,
-      "triangleCount": 104,
-      "era": "dial-up-days",
-      "scaleMeters": 1.0
+      "id": "garage-land-for-sale-sign",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-land-for-sale-sign.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 286,
+      "triangleCount": 590,
+      "partCount": 2,
+      "generator": "tools/art/blender/garage-land-for-sale-sign.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-lot-curb",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-lot-curb.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 36,
+      "triangleCount": 60,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-lot-curb.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-roll-door",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-roll-door.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1340,
+      "triangleCount": 3312,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-roll-door.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-server-closet",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-server-closet/garage-server-closet_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-server-closet/garage-server-closet_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-server-closet/garage-server-closet_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-server-closet.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 850,
+      "triangleCount": 2302,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-server-closet.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-voodude-rack",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-voodude-rack.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1304,
+      "triangleCount": 3172,
+      "partCount": 3,
+      "generator": "tools/art/blender/garage-voodude-rack.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-wall-panel",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-wall-panel.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 236,
+      "triangleCount": 450,
+      "partCount": 2,
+      "generator": "tools/art/blender/garage-wall-panel.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-whiteboard-1995",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-whiteboard-1995.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 3836,
+      "triangleCount": 11724,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-whiteboard-1995.py",
+      "blenderVersion": "4.0.2"
+    },
+    {
+      "id": "garage-window-frame",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.glb",
+      "textures": {
+        "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-window-frame/garage-window-frame_albedo.png",
+        "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-window-frame/garage-window-frame_normal.png",
+        "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-window-frame/garage-window-frame_roughness.png"
+      },
+      "preview": "docs/art/previews/garage-window-frame.png",
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 116,
+      "triangleCount": 294,
+      "partCount": 1,
+      "generator": "tools/art/blender/garage-window-frame.py",
+      "blenderVersion": "4.0.2"
     }
   ]
 }

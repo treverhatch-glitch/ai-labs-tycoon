@@ -1,0 +1,16 @@
+{
+  "id": "garage-cable-spool",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-cable-spool.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 608,
+  "triangleCount": 2304,
+  "partCount": 5,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-cable-spool.py"
+}

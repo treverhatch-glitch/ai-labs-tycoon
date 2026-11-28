@@ -1,0 +1,76 @@
+{
+  "fidelity": "kenney-import-restyle",
+  "sourceLicense": "CC0-1.0",
+  "sources": {
+    "kenney-furniture-kit": "tools/art/cc0/incoming/kenney_furniture-kit",
+    "kenney-building-kit": "tools/art/cc0/incoming/kenney_building-kit",
+    "polyhaven": "third_party/cc0/polyhaven (see garage_cc0_map.json)"
+  },
+  "assets": [
+    {
+      "id": "garage-folding-chair",
+      "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-desk-crt",
+      "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-crt-monitor",
+      "license": "CC0-1.0 (Kenney computerScreen via garage-interior-room-kit extract)"
+    },
+    {
+      "id": "garage-coffee-drip",
+      "license": "CC0-1.0 (Kenney Furniture Kit: sideTable+lampRoundTable; no drip mesh in kit — documented)",
+      "exception": "Kenney has no coffee machine; table+lamp hero stand-in"
+    },
+    {
+      "id": "garage-crt-tower",
+      "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-roll-door",
+      "license": "CC0-1.0 (Kenney plating slats via garage-interior-room-kit extract)",
+      "exception": "Hero re-export from kit_roll_door mesh; not procedural cubes or Poly Haven"
+    },
+    {
+      "id": "garage-server-closet",
+      "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-lot-curb",
+      "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-land-for-sale-sign",
+      "license": "CC0-1.0 (Kenney Furniture Kit: sideTable+cardboardBoxClosed; documented)",
+      "exception": "Kenney has no for-sale sign mesh"
+    },
+    {
+      "id": "garage-whiteboard-1995",
+      "license": "CC0-1.0 (Poly Haven standing_chalkboard_01, restyled in-repo)",
+      "polyhavenId": "standing_chalkboard_01",
+      "exception": "No chalkboard in Kenney kits"
+    },
+    {
+      "id": "garage-window-frame",
+      "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-wall-panel",
+      "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-exterior-wall",
+      "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-floor-tile",
+      "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)"
+    },
+    {
+      "id": "garage-voodude-rack",
+      "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)"
+    }
+  ]
+}

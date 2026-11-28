@@ -1,0 +1,16 @@
+{
+  "id": "garage-folding-chair",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-folding-chair.png",
+  "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)",
+  "vertexCount": 940,
+  "triangleCount": 1848,
+  "partCount": 1,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-folding-chair.py"
+}

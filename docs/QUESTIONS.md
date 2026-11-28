@@ -2430,4 +2430,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q17006+. Next rivals slice after packet 6? *Planned:* coordinator GO after rules green on packet 6 + era batch 24 PR head.
 
+### Q17007. PR #88 pass14 Kenney garage restyle vs canonical slots? DECIDED (pass14): `apply_kenney_garage_materials` + flat emit bake for Kenney imports (room-kit `wood/metal/wood` chair, desk+crt roles); `assign_part_materials` kept for building/Poly Haven props.
+
+### Q17008. PR #88 pass14 scene-kit framing? DECIDED (pass14): 4×4 grid, `fill=0.82`, baked albedo per prop with scene hue boost (`GARAGE_SCENE_PREVIEW`); multipart GLB heroes unchanged.
+
+### Q17009. PR #88 pass15 Y-up GLB hero previews? DECIDED (pass15): Kenney Y-up GLBs render heroes/orthos without π/2 preview flip; `GARAGE_HERO_FLAT_MATERIAL` uses exported tint slots (not baked UV albedo); thin slabs (`lot-curb`, `floor-tile`) + `cable-spool` keep legacy Z hero camera.
+
 ### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.

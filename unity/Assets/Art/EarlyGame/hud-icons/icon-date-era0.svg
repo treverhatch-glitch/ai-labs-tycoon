@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="date dial-up">
-  <rect width="64" height="64" rx="6" fill="#14171D"/>
-  <rect x="12" y="14" width="40" height="36" rx="3" fill="#C8B8A0"/>  <rect x="12" y="14" width="40" height="12" fill="#A85828"/>  <text x="32" y="40" text-anchor="middle" fill="#1A1D24" font-size="14" font-family="monospace">95</text>
+  <rect width="64" height="64" rx="6" fill="#F0E4D4"/>
+  <rect x="12" y="14" width="40" height="36" rx="3" fill="#E8DCC8" stroke="#5C3A28" stroke-width="1.5"/>
+  <rect x="12" y="14" width="40" height="12" fill="#C87830"/>
+  <text x="32" y="40" text-anchor="middle" fill="#4A3228" font-size="14" font-family="monospace" font-weight="600">95</text>
 </svg>

@@ -1,6 +1,8 @@
 # Early-game art licenses
 
-All assets on the `cursor/early-game-art-bootstrap` lane are **original, procedural, in-repo** content unless noted below.
+**Canonical third-party policy:** `docs/art/LICENSES.md` (CC0-only: Kenney, Quaternius, Poly Haven, ambientCG).
+
+Garage heroes on PR **#88** after the CC0 pivot use Poly Haven imports (see map in `tools/art/cc0/garage_cc0_map.json`). Legacy procedural rows below apply only to pre-pivot generators.
 
 | Asset tree | Generator | License |
 | --- | --- | --- |

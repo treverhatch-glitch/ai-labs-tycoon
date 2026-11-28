@@ -3,8 +3,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-game-art-bootstrap}"
+ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-art-quality-pass-97cc}"
 export ART_PREPUSH_UPSTREAM
+# shellcheck source=tools/art/check_push_fastforward.sh
+source "$ROOT/tools/art/check_push_fastforward.sh"
+git fetch origin 2>/dev/null || true
+check_push_fastforward "$ART_PREPUSH_UPSTREAM"
 if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_garage_kit.py
   python3 tools/art/generate_early_staff.py
@@ -12,12 +16,19 @@ if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_wisp_mascot.py
   python3 tools/art/generate_early_textures.py
 else
-  ./tools/art/run_blender_early_game.sh
+  if [[ "${GARAGE_CC0_HERO:-1}" == "1" ]]; then
+    ./tools/art/run_cc0_garage_hero.sh
+  else
+    ./tools/art/run_blender_early_game.sh
+  fi
   python3 tools/art/blender/sync_migration_inventory.py
   python3 tools/art/generate_early_hud_icons.py
   python3 tools/art/generate_wisp_mascot.py
 fi
 ./tools/art/prepush.sh
+python3 tools/art/check_tracked_pyc.py
 python3 tools/art/check_garage_manifest.py
+python3 tools/art/check_garage_quality_previews.py
+python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_early_hud_manifest.py
 echo "early-game art prepush OK"

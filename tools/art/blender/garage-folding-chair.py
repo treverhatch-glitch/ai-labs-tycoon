@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""Headless Blender: folding chair with legs and backrest."""
+"""garage-folding-chair — multi-part garage kit."""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
-    bc.add_cube("Seat", (0.52, 0.04, 0.5), (0, 0.48, 0))
-    bc.add_cube("Back", (0.5, 0.45, 0.05), (0, 0.72, -0.22))
-    for dx, dz in ((-0.2, 0.18), (0.2, 0.18), (-0.2, -0.18), (0.2, -0.18)):
-        bc.add_cylinder(f"Leg_{dx}_{dz}", 0.018, 0.46, (dx, 0.23, dz))
+    BUILDERS["garage-folding-chair"]()
     entry = bc.finish_asset("garage-folding-chair", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", "parts")
     return entry
 
 

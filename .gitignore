@@ -45,6 +45,10 @@ id_ed25519*
 .studio/
 .lanes/
 
+# Python
+__pycache__/
+*.py[cod]
+
 # OS
 .DS_Store
 Thumbs.db

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Headless Blender asset. Run: blender -b --python tools/art/blender/garage-window-frame.py"""
+"""garage-window-frame — multi-part garage kit."""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
-    bc.add_cube("Frame", (0.9, 0.7, 0.1), (0, 1.5, 0))
-    bc.add_cube("Pane", (0.7, 0.5, 0.04), (0, 1.5, 0.03))
+    BUILDERS["garage-window-frame"]()
     entry = bc.finish_asset("garage-window-frame", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", "parts")
     return entry
+
 
 if __name__ == "__main__":
     bc.run_script(main)
-

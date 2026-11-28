@@ -1,0 +1,16 @@
+{
+  "id": "garage-lot-curb",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-lot-curb.png",
+  "license": "CC0-1.0 (Kenney Building Kit, restyled in-repo)",
+  "vertexCount": 36,
+  "triangleCount": 60,
+  "partCount": 1,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-lot-curb.py"
+}

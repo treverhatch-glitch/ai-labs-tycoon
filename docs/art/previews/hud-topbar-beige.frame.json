@@ -1,0 +1,12 @@
+{
+  "preview_kind": "hud",
+  "camera_type": "orthographic",
+  "flat_backdrop": true,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "framing_fill": 0.76,
+  "source": "svg_compose"
+}

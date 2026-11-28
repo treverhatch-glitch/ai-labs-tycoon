@@ -10,12 +10,19 @@ namespace AiLabs.Unity.Hq
 
         public static readonly IReadOnlyList<string> AllAssetIds = new[]
         {
-            "staff-researcher-idle", "staff-engineer-work", "staff-safety-idle", "staff-sales-idle",
-            "staff-recruiter-idle", "staff-gpu-tech-idle", "staff-founder-idle", "staff-pose-typing",
+            "staff-engineer-work",
+            "staff-founder-idle",
+            "staff-founder-kenney-stock",
+            "staff-gpu-tech-idle",
+            "staff-pose-typing",
+            "staff-recruiter-idle",
+            "staff-researcher-idle",
+            "staff-safety-idle",
+            "staff-sales-idle",
         };
 
         public static readonly IReadOnlyDictionary<string, string> ObjById =
-            AllAssetIds.ToDictionary(id => id, id => Root + id + ".obj");
+            AllAssetIds.ToDictionary(id => id, id => Root + id + ".glb");
 
         public static string PathFor(string roleId) =>
             ObjById.TryGetValue(roleId, out string path) ? path : null;

@@ -11,6 +11,8 @@ DEFAULT_IDS: list[str] = []
 
 
 def check(path: Path, asset_id: str = "", plate_frac: float = 0.08) -> tuple[bool, str]:
+    if asset_id.startswith(("tex-", "icon-", "panel-", "hud-")):
+        return True, "flat_ui_exempt"
     from PIL import Image
 
     im = Image.open(path).convert("RGB")

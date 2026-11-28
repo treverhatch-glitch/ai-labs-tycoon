@@ -1,0 +1,16 @@
+{
+  "id": "garage-crt-tower",
+  "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_albedo.png",
+    "normal": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_normal.png",
+    "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_roughness.png"
+  },
+  "preview": "docs/art/previews/garage-crt-tower.png",
+  "license": "CC0-1.0 (Kenney Furniture Kit, restyled in-repo)",
+  "vertexCount": 1312,
+  "triangleCount": 3202,
+  "partCount": 3,
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/garage-crt-tower.py"
+}

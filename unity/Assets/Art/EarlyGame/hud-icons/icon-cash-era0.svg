@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="cash dial-up">
-  <rect width="64" height="64" rx="6" fill="#2A2218"/>
-  <rect x="10" y="18" width="44" height="28" rx="4" fill="#C87830" stroke="#F4F0E8" stroke-width="2"/>  <text x="32" y="38" text-anchor="middle" fill="#F4F0E8" font-size="20" font-family="sans-serif">$</text>
+  <rect width="64" height="64" rx="6" fill="#F0E4D4"/>
+  <rect x="10" y="18" width="44" height="28" rx="4" fill="#E8DCC8" stroke="#5C3A28" stroke-width="2"/>
+  <text x="32" y="38" text-anchor="middle" fill="#4A3228" font-size="20" font-family="sans-serif" font-weight="600">$</text>
 </svg>

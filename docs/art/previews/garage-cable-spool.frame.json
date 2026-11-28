@@ -1,0 +1,14 @@
+{
+  "preview_kind": "garage",
+  "flat_backdrop": true,
+  "backdrop_rgb": [
+    150,
+    150,
+    150
+  ],
+  "framing_fill": 0.56,
+  "framing_margin": 0.085,
+  "up_axis": "Z",
+  "floor_plane": "horizontal_z",
+  "renderer": "cycles_glb_import"
+}
