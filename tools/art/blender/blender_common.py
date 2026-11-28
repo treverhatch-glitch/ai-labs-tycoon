@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ART_ROOT = REPO_ROOT / "unity/Assets/Art/EarlyGame"
@@ -557,38 +557,33 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         bpy.context.collection.objects.link(dup)
         dup.matrix_world = ob.matrix_world.copy()
         dupes.append(dup)
+    mins, _maxs = rig.mesh_bounds_world(dupes)
+    shift = mins.z
+    if abs(shift) > 1e-6:
+        for dup in dupes:
+            dup.location.z -= shift
+        bpy.context.view_layer.update()
     root = bpy.data.objects.new("GarageExportRoot", None)
     bpy.context.collection.objects.link(root)
+    frozen: list[tuple[bpy.types.Object, Matrix]] = []
     for dup in dupes:
+        frozen.append((dup, dup.matrix_world.copy()))
+    for dup, mw in frozen:
         dup.parent = root
-        dup.matrix_parent_inverse = root.matrix_world.inverted()
+        dup.matrix_world = mw
     root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
     bpy.context.view_layer.update()
-    mins, _maxs = rig.mesh_bounds_world(dupes)
-    root.location.y -= mins.y
-    bpy.context.view_layer.update()
-    for dup in dupes:
+    frozen = [(dup, dup.matrix_world.copy()) for dup in dupes]
+    for dup, mw in frozen:
         dup.parent = None
-        dup.matrix_parent_inverse.identity()
-    bpy.context.view_layer.update()
-    for dup in dupes:
-        bpy.ops.object.select_all(action="DESELECT")
-        dup.select_set(True)
-        bpy.context.view_layer.objects.active = dup
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        dup.matrix_world = mw
+    bpy.data.objects.remove(root, do_unlink=True)
     bpy.context.view_layer.update()
     mins, _maxs = rig.mesh_bounds_world(dupes)
-    ground_dy = mins.y
-    if abs(ground_dy) > 1e-5:
+    if abs(mins.y) > 1e-6:
         for dup in dupes:
-            dup.location.y -= ground_dy
+            dup.location.y -= mins.y
         bpy.context.view_layer.update()
-        for dup in dupes:
-            bpy.ops.object.select_all(action="DESELECT")
-            dup.select_set(True)
-            bpy.context.view_layer.objects.active = dup
-            bpy.ops.object.transform_apply(location=True)
-    bpy.data.objects.remove(root, do_unlink=True)
     bpy.ops.object.select_all(action="DESELECT")
     for dup in dupes:
         dup.select_set(True)
@@ -596,7 +591,7 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
     bpy.ops.export_scene.gltf(
         filepath=str(glb_path),
         use_selection=True,
-        export_apply=False,
+        export_apply=True,
         export_format="GLB",
         export_image_format="AUTO",
         export_yup=True,
@@ -1521,7 +1516,7 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
         tex.image.reload()
     hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id.startswith("garage-"):
-        hue.inputs["Saturation"].default_value = 1.22
+        hue.inputs["Saturation"].default_value = 1.08
     else:
         hue.inputs["Saturation"].default_value = 1.45
     hue.inputs["Value"].default_value = 1.06 if asset_id.startswith("garage-") else 1.05

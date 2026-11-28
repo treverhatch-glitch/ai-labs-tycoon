@@ -12,7 +12,8 @@ REPO = Path(__file__).resolve().parents[3]
 TEX_OUT = REPO / "unity/Assets/Art/EarlyGame/textures"
 STREAM = REPO / "unity/Assets/StreamingAssets/EarlyGame/textures"
 SIZE = 1024
-SWATCH_GREY = (0.48, 0.48, 0.50, 1.0)
+STUDIO_GREY = (150 / 255.0, 150 / 255.0, 150 / 255.0, 1.0)
+SWATCH_GREY = STUDIO_GREY
 
 
 def render_tile_swatch(plane: bpy.types.Object, tex_dir: Path, asset_id: str, preview: Path) -> None:
@@ -63,6 +64,9 @@ def render_tile_swatch(plane: bpy.types.Object, tex_dir: Path, asset_id: str, pr
 
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE"
+    scene.view_settings.view_transform = "Raw"
+    scene.view_settings.look = "None"
+    scene.view_settings.exposure = 0.0
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = 512
@@ -116,6 +120,19 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
             shutil.copy2(p, STREAM / p.name)
 
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
+    albedo_baked = TEX_OUT / f"{asset_id}_albedo.png"
+    if albedo_baked.exists():
+        mat = plane.data.materials[0]
+        mat.use_nodes = True
+        nodes = mat.node_tree.nodes
+        links = mat.node_tree.links
+        nodes.clear()
+        out = nodes.new("ShaderNodeOutputMaterial")
+        bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+        img = nodes.new("ShaderNodeTexImage")
+        img.image = bpy.data.images.load(str(albedo_baked))
+        links.new(img.outputs["Color"], bsdf.inputs["Base Color"])
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     try:
         render_tile_swatch(plane, TEX_OUT, asset_id, preview)
     except Exception as exc:  # noqa: BLE001

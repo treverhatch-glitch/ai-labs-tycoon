@@ -6,24 +6,24 @@ import bpy
 _SLOT_SPECS: dict[str, tuple[tuple[float, float, float, float], float]] = {
     "steel": ((0.40, 0.44, 0.50, 1.0), 0.32),
     "wood": ((0.52, 0.36, 0.22, 1.0), 0.55),
-    "plastic_beige": ((0.88, 0.82, 0.70, 1.0), 0.38),
+    "plastic_beige": ((0.78, 0.76, 0.72, 1.0), 0.38),
+    "plastic_cool": ((0.74, 0.76, 0.78, 1.0), 0.22),
     "plastic_dark": ((0.22, 0.22, 0.24, 1.0), 0.55),
-    "plastic_orange": ((0.86, 0.42, 0.14, 1.0), 0.35),
+    "plastic_orange": ((0.78, 0.48, 0.22, 1.0), 0.42),
+    "trim_orange": ((0.82, 0.52, 0.24, 1.0), 0.40),
     "concrete": ((0.48, 0.46, 0.44, 1.0), 0.82),
     "dark_metal": ((0.18, 0.20, 0.24, 1.0), 0.35),
     "corrugated": ((0.72, 0.74, 0.76, 1.0), 0.28),
     "crt_bezel": ((0.88, 0.82, 0.72, 1.0), 0.35),
     "glass_dark": ((0.06, 0.08, 0.10, 1.0), 0.08),
     "cable_black": ((0.05, 0.05, 0.06, 1.0), 0.75),
-    "coil_copper": ((0.72, 0.48, 0.18, 1.0), 0.42),
+    "coil_copper": ((0.62, 0.42, 0.26, 1.0), 0.48),
     "whiteboard": ((0.94, 0.93, 0.88, 1.0), 0.32),
     "frame_wood": ((0.82, 0.56, 0.22, 1.0), 0.42),
-    "sign_yellow": ((0.98, 0.88, 0.10, 1.0), 0.34),
+    "sign_cream": ((0.88, 0.80, 0.70, 1.0), 0.38),
     "grass": ((0.18, 0.58, 0.24, 1.0), 0.65),
     "curb_grey": ((0.58, 0.54, 0.50, 1.0), 0.75),
-    "marker_red": ((0.78, 0.16, 0.12, 1.0), 0.38),
-    "marker_blue": ((0.14, 0.38, 0.72, 1.0), 0.38),
-    "marker_green": ((0.16, 0.52, 0.22, 1.0), 0.38),
+    "marker_warm": ((0.52, 0.36, 0.30, 1.0), 0.42),
     "keyboard_grey": ((0.78, 0.78, 0.80, 1.0), 0.35),
     "desk_wood": ((0.18, 0.12, 0.08, 1.0), 0.78),
 }
@@ -70,24 +70,33 @@ def _slot_for_part(ob: bpy.types.Object, asset_id: str) -> str:
     name = ob.name.lower().split(".")[0]
     if "screen" in name or name == "chart":
         return "glass_dark"
-    if "led" in name or "glass" in name or "pane" in name:
+    if "led" in name:
+        return "dark_metal"
+    if "pane" in name:
+        return "plastic_cool"
+    if "glass" in name:
         return "glass_dark"
     if "cord" in name or "cable" in name:
         return "cable_black"
     if "keyboard" in name or "key" in name:
         return "keyboard_grey"
     if "stroke" in name or name.startswith("pad"):
-        if "red" in name:
-            return "marker_red"
-        if "blue" in name:
-            return "marker_blue"
-        return "marker_green"
+        return "marker_warm"
     if "letter" in name:
         return "plastic_dark"
     if "grass" in name or "tuft" in name:
         return "grass"
     if "curb" in name or "asphalt" in name or "gutter" in name:
         return "curb_grey"
+    if asset_id == "garage-cable-spool":
+        if "hub" in name:
+            return "wood"
+        if "flange" in name:
+            return "dark_metal"
+        if "coil" in name:
+            return "coil_copper"
+        if "cable" in name:
+            return "cable_black"
     if "coil" in name or "cablestrand" in name:
         return "coil_copper"
     if "hub" in name or "flange" in name:
@@ -95,7 +104,9 @@ def _slot_for_part(ob: bpy.types.Object, asset_id: str) -> str:
     if "slat" in name or "curtain" in name or "corrugated" in name:
         return "corrugated"
     if asset_id == "garage-land-for-sale-sign" and "sign" in name:
-        return "sign_yellow"
+        return "sign_cream"
+    if asset_id == "garage-land-for-sale-sign" and "letter" in name:
+        return "plastic_dark"
     if "whiteboard" in name or name == "surface":
         return "whiteboard"
     if "frame" in name or "trim" in name or "mullion" in name or "header" in name or "sill" in name:
@@ -118,11 +129,11 @@ def _slot_for_part(ob: bpy.types.Object, asset_id: str) -> str:
         if "grout" in name:
             return "plastic_dark"
         if "accent" in name or "corner" in name:
-            return "plastic_orange"
+            return "trim_orange"
         if "pad" in name:
             return "wood"
     if "stripe" in name:
-        return "plastic_orange"
+        return "trim_orange"
     if "handle" in name:
         return "plastic_orange"
     return "plastic_beige"

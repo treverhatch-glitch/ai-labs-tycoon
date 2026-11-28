@@ -1,1 +1,21 @@
 # staff-researcher-idle render scene hygiene
+# pre-cull scene objects
+object name=FounderEye_L type=MESH hide_render=False hide_viewport=False world_loc=(0.1704,0.5333,3.2311)
+object name=FounderEye_R type=MESH hide_render=False hide_viewport=False world_loc=(-0.1699,0.5333,3.2311)
+object name=KenneyResearcherStock type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherCoatSkirt type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherCoatSleeves type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherHairCap type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.0)
+object name=Root type=ARMATURE hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.0)
+# render scene hygiene
+hide_render armature Root
+# pre-cull scene objects
+object name=FounderEye_L type=MESH hide_render=False hide_viewport=False world_loc=(0.1704,0.5333,3.2311)
+object name=FounderEye_R type=MESH hide_render=False hide_viewport=False world_loc=(-0.1699,0.5333,3.2311)
+object name=KenneyResearcherStock type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherCoatSkirt type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherCoatSleeves type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.1245)
+object name=ResearcherHairCap type=MESH hide_render=False hide_viewport=False world_loc=(0.0,0.0,0.0)
+object name=Root type=ARMATURE hide_render=True hide_viewport=False world_loc=(0.0,0.0,0.0)
+# render scene hygiene
+hide_render armature Root

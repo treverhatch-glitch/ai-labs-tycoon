@@ -18,11 +18,11 @@ def cyl_z(name, radius, height, x, loc_y, loc_z, **kw):
 
 
 def build_cable_spool() -> None:
-    cyl_z("Hub", 0.11, 0.14, 0, 0, 0.07)
-    cyl_z("FlangeL", 0.22, 0.04, 0, 0, 0.05)
-    cyl_z("FlangeR", 0.22, 0.04, 0, 0, 0.17)
-    cyl_z("Coil", 0.17, 0.22, 0, 0, 0.16)
-    cb("CableStrand", 0.12, 0.08, 0.12, 0.14, 0.10, 0.20)
+    cyl_z("Hub", 0.09, 0.22, 0, 0, 0.11)
+    cyl_z("FlangeL", 0.24, 0.035, 0, 0, 0.035)
+    cyl_z("FlangeR", 0.24, 0.035, 0, 0, 0.185)
+    cyl_z("Coil", 0.15, 0.14, 0, 0, 0.11)
+    cb("CableStrand", 0.05, 0.14, 0.38, 0.20, 0.06, 0.14)
 
 
 def build_coffee_drip() -> None:
@@ -64,11 +64,11 @@ def build_desk_crt() -> None:
 def build_exterior_wall() -> None:
     """Wall section lying on ground for 3/4 preview (not vertical slab)."""
     cb("Core", 2.10, 0.10, 1.20, 0, 0, 0.05)
-    cb("TrimTop", 2.14, 0.06, 0.08, 0, 0.02, 1.24)
+    cb("TrimTop", 2.14, 0.06, 0.08, 0, 0.03, 0.11)
     cb("Baseboard", 2.08, 0.08, 0.10, 0, 0.02, 0.02)
-    cb("Stripe", 0.12, 0.90, 0.06, 0.25, 0.04, 0.62)
-    cb("WindowCut", 0.55, 0.45, 0.04, -0.35, 0.04, 0.62)
-    cb("Sill", 0.60, 0.06, 0.08, -0.35, 0.05, 0.38)
+    cb("Stripe", 0.12, 0.10, 0.90, 0.25, 0.05, 0.58)
+    cb("WindowCut", 0.55, 0.10, 0.45, -0.35, 0.05, 0.58)
+    cb("Sill", 0.60, 0.08, 0.10, -0.35, 0.05, 0.28)
 
 
 def build_floor_tile() -> None:
@@ -80,7 +80,7 @@ def build_floor_tile() -> None:
 
 def build_folding_chair() -> None:
     cb("Seat", 0.44, 0.06, 0.40, 0, 0, 0.52)
-    cb("Backrest", 0.44, 0.48, 0.05, 0, -0.14, 0.84)
+    cb("Backrest", 0.44, 0.48, 0.05, 0, -0.02, 0.76)
     for i, (x, z) in enumerate([(0.17, 0.15), (-0.17, 0.15), (0.17, -0.15), (-0.17, -0.15)]):
         cb(f"Leg{i}", 0.045, 0.54, 0.045, x, z, 0.28)
     cb("BraceL", 0.03, 0.30, 0.26, 0.17, 0, 0.38)
@@ -88,14 +88,14 @@ def build_folding_chair() -> None:
 
 
 def build_land_sign() -> None:
-    cb("Post", 0.11, 1.65, 0.11, 0, 0, 0.825)
-    cb("PostCollar", 0.18, 0.14, 0.18, 0, 0, 1.36)
-    cb("SignBoard", 0.95, 0.62, 0.08, 0, 0.02, 1.46)
-    cb("Cap", 0.12, 0.08, 0.12, 0, 0, 1.78)
-    for i, (x, z, sx, hy) in enumerate(
-        [(0, 1.48, 0.55, 0.06), (-0.22, 1.42, 0.12, 0.06), (0.22, 1.42, 0.12, 0.06), (0, 1.36, 0.40, 0.05)]
+    cb("Post", 0.18, 1.42, 0.18, 0, 0.71, 0)
+    cb("PostCollar", 0.24, 0.16, 0.24, 0, 1.28, 0.04)
+    cb("SignBoard", 0.95, 0.62, 0.08, 0, 1.36, 0.05)
+    cb("Cap", 0.14, 0.08, 0.14, 0, 1.68, 0.05)
+    for i, (x, y_sign, sx, hy) in enumerate(
+        [(0, 1.36, 0.55, 0.06), (-0.22, 1.32, 0.12, 0.06), (0.22, 1.32, 0.12, 0.06), (0, 1.28, 0.40, 0.05)]
     ):
-        cb(f"Letter{i}", sx, hy, 0.06, x, 0.02, z)
+        cb(f"Letter{i}", sx, hy, 0.06, x, y_sign, 0.06)
 
 
 def build_lot_curb() -> None:
@@ -113,15 +113,15 @@ def build_lot_curb() -> None:
 
 
 def build_roll_door() -> None:
-    cb("FrameL", 0.10, 2.25, 0.12, -1.05, 0, 1.12)
-    cb("FrameR", 0.10, 2.25, 0.12, 1.05, 0, 1.12)
-    cb("Header", 2.10, 0.14, 0.12, 0, 0, 2.22)
-    cb("Curtain", 1.85, 1.78, 0.06, 0, 0.02, 1.02)
-    cb("Stripe", 0.14, 1.60, 0.06, 0.95, 0.05, 0.85)
-    cb("StripeB", 0.10, 0.50, 0.05, -0.95, 0.05, 0.55)
-    cb("Drum", 0.24, 0.16, 0.14, 0, 0.04, 2.06)
+    cb("Curtain", 1.80, 1.68, 0.10, 0, 0.98, 0.04)
+    cb("FrameL", 0.14, 1.68, 0.12, -0.88, 0.98, 0.04)
+    cb("FrameR", 0.14, 1.68, 0.12, 0.88, 0.98, 0.04)
+    cb("Header", 1.86, 0.12, 0.10, 0, 1.86, 0.04)
+    cb("Stripe", 0.10, 1.35, 0.04, 0.82, 0.95, 0.05)
+    cb("StripeB", 0.08, 0.42, 0.04, -0.82, 0.62, 0.05)
+    cb("Drum", 0.22, 0.12, 0.12, 0, 1.80, 0.06)
     for i in range(8):
-        cb(f"slat{i}", 1.72, 0.04, 0.02, 0, 0.035, 0.30 + i * 0.20)
+        cb(f"slat{i}", 1.66, 0.04, 0.02, 0, 0.32 + i * 0.18, 0.05)
 
 
 def build_server_closet() -> None:
@@ -148,8 +148,8 @@ def build_voodude_rack() -> None:
 def build_wall_panel() -> None:
     """Flat wall section on ground (garage-wall-panel)."""
     cb("Wall", 1.85, 0.10, 1.15, 0, 0, 0.05)
-    cb("Stripe", 0.12, 0.95, 0.04, 0.28, 0.04, 0.58)
-    cb("Trim", 1.88, 0.06, 0.08, 0, 0.02, 1.18)
+    cb("Stripe", 0.12, 0.10, 0.95, 0.28, 0.05, 0.56)
+    cb("Trim", 1.88, 0.06, 0.08, 0, 0.03, 0.11)
     cb("Outlet", 0.10, 0.12, 0.04, -0.22, 0.04, 0.42)
     cb("Stud", 0.06, 0.90, 0.06, -0.55, 0, 0.52)
     cb("Bracket", 0.08, 0.16, 0.10, 0.55, -0.02, 0.52)
@@ -182,9 +182,9 @@ def build_whiteboard() -> None:
 
 
 def build_window_frame() -> None:
-    cb("Frame", 1.05, 1.25, 0.10, 0, 0, 1.30)
-    cb("Header", 1.08, 0.10, 0.08, 0, 0.02, 1.92)
-    cb("Sill", 1.10, 0.08, 0.14, 0, 0.04, 0.72)
+    cb("Frame", 1.05, 0.10, 1.25, 0, 0, 0.625)
+    cb("Header", 1.08, 0.08, 0.10, 0, 0.03, 1.18)
+    cb("Sill", 1.10, 0.08, 0.12, 0, 0.04, 0.06)
     cb("MullionV", 0.05, 0.95, 0.04, 0, 0.02, 1.28)
     cb("MullionH", 0.95, 0.05, 0.04, 0, 0.02, 1.28)
     cb("PaneL", 0.42, 0.52, 0.02, -0.26, 0.04, 1.28)

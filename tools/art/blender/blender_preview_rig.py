@@ -117,11 +117,26 @@ def setup_studio_world(*, staff_flat: bool = False) -> None:
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
+def _garage_floor_grey() -> tuple[float, float, float, float]:
+    kind = os.environ.get("EARLY_ART_PREVIEW_KIND", "").lower()
+    if kind == "garage":
+        return STUDIO_GREY
+    return FLOOR_GREY
+
+
+def _garage_floor_scale() -> float:
+    kind = os.environ.get("EARLY_ART_PREVIEW_KIND", "").lower()
+    if kind == "garage":
+        return float(os.environ.get("GARAGE_PREVIEW_FLOOR_SCALE", "1.06"))
+    return 1.12
+
+
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
     footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.5)
+    scale = 1.8 if os.environ.get("EARLY_ART_PREVIEW_KIND", "").lower() != "garage" else _garage_floor_scale()
     bpy.ops.mesh.primitive_plane_add(
-        size=footprint * 1.8,
+        size=footprint * scale,
         location=(center.x, mins.y - 0.002, center.z),
         rotation=(math.pi / 2, 0, 0),
     )
@@ -131,8 +146,8 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
-        bsdf.inputs["Roughness"].default_value = 0.92
+        bsdf.inputs["Base Color"].default_value = _garage_floor_grey()
+        bsdf.inputs["Roughness"].default_value = 0.96
     floor.data.materials.append(mat)
     return floor
 
@@ -140,15 +155,16 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
 def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
     footprint = max(maxs.x - mins.x, maxs.y - mins.y, 0.35)
-    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.12, location=(center.x, center.y, mins.z - 0.002))
+    scale = _garage_floor_scale()
+    bpy.ops.mesh.primitive_plane_add(size=footprint * scale, location=(center.x, center.y, mins.z - 0.002))
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
-        bsdf.inputs["Roughness"].default_value = 0.92
+        bsdf.inputs["Base Color"].default_value = _garage_floor_grey()
+        bsdf.inputs["Roughness"].default_value = 0.96
     floor.data.materials.append(mat)
     return floor
 
@@ -546,6 +562,11 @@ def render_preview_studio(
                 add_shadow_floor_y(mins, maxs)
             else:
                 add_shadow_floor_z(mins, maxs)
+            floor_ob = bpy.data.objects.get("PreviewShadowFloor")
+            if floor_ob and floor_ob.active_material:
+                bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
+                if bsdf:
+                    bsdf.inputs["Base Color"].default_value = STUDIO_GREY
             scene.view_settings.view_transform = "Standard"
             scene.view_settings.exposure = -0.958
             scene.view_settings.gamma = 1.0

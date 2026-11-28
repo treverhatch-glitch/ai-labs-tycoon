@@ -5,7 +5,7 @@ export EARLY_ART_PREVIEW_RIG=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
-mapfile -t SCRIPTS < <(find tools/art/blender -maxdepth 1 -name 'garage-*.py' ! -name 'garage-scene-preview.py' | sort)
+mapfile -t SCRIPTS < <(find tools/art/blender -maxdepth 1 -name 'garage-*.py' ! -name 'garage-scene-preview.py' ! -name 'garage-interior-room-kit.py' | sort)
 for script in "${SCRIPTS[@]}"; do
   echo "=== $script ==="
   "$BLENDER" -b --python-exit-code 1 --python "$script" || { echo "FAIL $script" >&2; exit 1; }

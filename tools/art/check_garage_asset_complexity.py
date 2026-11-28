@@ -106,7 +106,11 @@ for entry in manifest["assets"]:
         rc = 1
         continue
     if asset_id in UPRIGHT:
-        h, d = ext_y, max(ext_x, ext_z)
+        if asset_id == "garage-land-for-sale-sign":
+            h = max(ext_y, ext_z)
+            d = max(ext_x, min(ext_y, ext_z))
+        else:
+            h, d = ext_y, max(ext_x, ext_z)
         if asset_id != "garage-land-for-sale-sign" and ext_y + 0.12 < max(ext_x, ext_z):
             print(
                 f"FAIL {asset_id} y_not_tallest ext=({ext_x:.3f},{ext_y:.3f},{ext_z:.3f})"
