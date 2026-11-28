@@ -32,16 +32,22 @@ HUD_ASSETS = [
 ]
 
 
-def rasterize_svg(svg_path: Path, target_px: int) -> "Image.Image":
+def rasterize_svg(
+    svg_path: Path, width: int, height: int | None = None, *, preserve_aspect: bool = False
+) -> "Image.Image":
     import cairosvg
     from PIL import Image
 
+    out_h = height if height is not None else width
     png_bytes = cairosvg.svg2png(
         url=str(svg_path),
-        output_width=target_px,
-        output_height=target_px,
+        output_width=width,
+        output_height=out_h,
     )
-    return Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    fg = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    if preserve_aspect and height is None:
+        fg.thumbnail((width, width), Image.Resampling.LANCZOS)
+    return fg
 
 
 def compose_one(asset_id: str) -> None:
@@ -51,14 +57,13 @@ def compose_one(asset_id: str) -> None:
     if not svg.is_file():
         raise FileNotFoundError(svg)
     if asset_id == "hud-topbar-beige":
-        fg = rasterize_svg(svg, SIZE)
-        bar_h = int(SIZE * 0.24)
-        fg = fg.resize((SIZE, bar_h), Image.Resampling.LANCZOS)
+        bar_h = max(96, int(SIZE * 96 / 1920))
+        fg = rasterize_svg(svg, SIZE, bar_h, preserve_aspect=True)
     else:
         target = int(SIZE * FILL)
-        fg = rasterize_svg(svg, target)
+        fg = rasterize_svg(svg, target, target)
     ox = (SIZE - fg.width) // 2
-    oy = (SIZE // 8) if asset_id == "hud-topbar-beige" else (SIZE - fg.height) // 2
+    oy = (SIZE // 16) if asset_id == "hud-topbar-beige" else (SIZE - fg.height) // 2
     rgb = Image.new("RGB", (SIZE, SIZE), STUDIO_RGB)
     rgb.paste(fg.convert("RGB"), (ox, oy), fg.split()[3])
     preview = PREVIEW / f"{asset_id}.png"

@@ -544,30 +544,33 @@ def duplicate_garage_preview_hierarchy(parts: list[bpy.types.Object], asset_id: 
 
 
 def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) -> None:
-    """Export hierarchy under GarageKitRoot (transforms pre-applied on parts)."""
+    """Export on isolated duplicates so Z-up build meshes stay intact for preview."""
     import blender_preview_rig as rig  # type: ignore
+    from garage_assembly import bake_parts_local_transforms, parent_under_assembly_root  # type: ignore
 
-    export_parts = [ob for ob in parts if ob.type == "MESH" and ob.name != "ConnectSpine"]
-    if not export_parts:
+    source = [ob for ob in parts if ob.type == "MESH" and ob.name != "ConnectSpine"]
+    if not source:
         raise RuntimeError("export_garage_multipart_glbf: no mesh parts")
-    root = export_parts[0].parent
-    if root is None or root.type != "EMPTY":
-        from garage_assembly import parent_under_assembly_root  # type: ignore
-
-        root = parent_under_assembly_root(export_parts, "garage-export", root_name="GarageKitRoot")
-    else:
-        root.name = "GarageKitRoot"
+    dupes: list[bpy.types.Object] = []
+    for ob in source:
+        dup = ob.copy()
+        dup.data = ob.data.copy()
+        bpy.context.collection.objects.link(dup)
+        dup.matrix_world = ob.matrix_world.copy()
+        dupes.append(dup)
+    root = parent_under_assembly_root(dupes, "garage-export", root_name="GarageKitRoot")
+    bake_parts_local_transforms(dupes)
     root.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
     bpy.context.view_layer.objects.active = root
     root.select_set(True)
     bpy.ops.object.transform_apply(rotation=True)
-    mins, _maxs = rig.mesh_bounds_world(export_parts)
+    mins, _maxs = rig.mesh_bounds_world(dupes)
     if abs(mins.y) > 1e-6:
         root.location.y -= mins.y
         bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
     root.select_set(True)
-    for ob in export_parts:
+    for ob in dupes:
         ob.select_set(True)
     bpy.context.view_layer.objects.active = root
     bpy.ops.export_scene.gltf(
@@ -578,6 +581,9 @@ def export_garage_multipart_glbf(parts: list[bpy.types.Object], glb_path: Path) 
         export_image_format="AUTO",
         export_yup=True,
     )
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in list(dupes) + [root]:
+        bpy.data.objects.remove(ob, do_unlink=True)
 
 
 def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
@@ -644,15 +650,6 @@ def _finish_garage_kit_asset(
     verts = len(bake_root.data.vertices)
     tris = sum(len(p.vertices) for p in bake_root.data.polygons)
     bpy.data.objects.remove(bake_root, do_unlink=True)
-    try:
-        from garage_assembly import bake_parts_local_transforms, parent_under_assembly_root  # type: ignore
-
-        parent_under_assembly_root(parts, asset_id, root_name="GarageKitRoot")
-        bake_parts_local_transforms(parts)
-    except Exception as exc:  # noqa: BLE001
-        print(f"WARN {asset_id} export_hierarchy {exc}")
-    glb_path = out_dir / f"{asset_id}.glb"
-    export_garage_multipart_glbf(parts, glb_path)
 
     preview_join = duplicate_join_meshes(parts, f"{asset_id}_preview")
     apply_preview_material(preview_join, tex_dir, asset_id)
@@ -714,6 +711,9 @@ def _finish_garage_kit_asset(
     for ob in parts:
         ob.hide_render = False
     bpy.data.objects.remove(preview_join, do_unlink=True)
+
+    glb_path = out_dir / f"{asset_id}.glb"
+    export_garage_multipart_glbf(parts, glb_path)
 
     entry = {
         "id": asset_id,

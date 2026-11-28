@@ -17,6 +17,33 @@ STUDIO_GREY = (150 / 255.0, 150 / 255.0, 150 / 255.0, 1.0)
 SWATCH_GREY = STUDIO_GREY
 
 
+def write_tile_albedo_png(
+    path: Path,
+    base_rgb: tuple[int, int, int],
+    accent_rgb: tuple[int, int, int],
+    *,
+    size: int = SIZE,
+) -> None:
+    """Procedural tile albedo (packet1 orange/warm); avoids grey Cycles bake fallback."""
+    from PIL import Image
+    import random
+
+    random.seed(hash((base_rgb, accent_rgb)) & 0xFFFF)
+    im = Image.new("RGB", (size, size))
+    pix = im.load()
+    for y in range(size):
+        for x in range(size):
+            fac = (x + y) / float(2 * size)
+            jitter = 0.88 + 0.12 * random.random()
+            rgb = tuple(
+                int(min(255, (base_rgb[i] * (1.0 - fac) + accent_rgb[i] * fac) * jitter))
+                for i in range(3)
+            )
+            pix[x, y] = rgb
+    path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(path)
+
+
 def write_flat_swatch_preview(
     preview: Path,
     base_rgb: tuple[int, int, int],
@@ -141,6 +168,7 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
     albedo = TEX_OUT / f"{asset_id}.png"
     normal = TEX_OUT / f"{asset_id}_normal.png"
     rough = TEX_OUT / f"{asset_id}_roughness.png"
+    write_tile_albedo_png(baked_albedo, base_rgb, accent_rgb, size=SIZE)
     if baked_albedo.exists():
         shutil.copy2(baked_albedo, albedo)
 

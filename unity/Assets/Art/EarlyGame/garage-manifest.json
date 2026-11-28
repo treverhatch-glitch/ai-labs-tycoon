@@ -1,6 +1,5 @@
 {
   "fidelity": "blender-baked",
-  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -15,8 +14,8 @@
       "vertexCount": 608,
       "triangleCount": 2304,
       "partCount": 5,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-cable-spool.py"
+      "generator": "tools/art/blender/garage-cable-spool.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-coffee-drip",
@@ -31,8 +30,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-coffee-drip.py"
+      "generator": "tools/art/blender/garage-coffee-drip.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-crt-tower",
@@ -47,8 +46,8 @@
       "vertexCount": 672,
       "triangleCount": 2688,
       "partCount": 7,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-crt-tower.py"
+      "generator": "tools/art/blender/garage-crt-tower.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-desk-crt",
@@ -207,8 +206,8 @@
       "vertexCount": 576,
       "triangleCount": 2304,
       "partCount": 6,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-wall-panel.py"
+      "generator": "tools/art/blender/garage-wall-panel.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-whiteboard-1995",
@@ -223,8 +222,8 @@
       "vertexCount": 1344,
       "triangleCount": 5376,
       "partCount": 14,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-whiteboard-1995.py"
+      "generator": "tools/art/blender/garage-whiteboard-1995.py",
+      "blenderVersion": "4.0.2"
     },
     {
       "id": "garage-window-frame",
@@ -239,8 +238,8 @@
       "vertexCount": 672,
       "triangleCount": 2688,
       "partCount": 7,
-      "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-window-frame.py"
+      "generator": "tools/art/blender/garage-window-frame.py",
+      "blenderVersion": "4.0.2"
     }
   ]
 }

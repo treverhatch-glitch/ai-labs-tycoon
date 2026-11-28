@@ -1,11 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 96" role="img" aria-label="hud top bar">
-  <rect width="512" height="96" fill="#E8DCC8"/>
-  <rect x="0" y="90" width="512" height="6" fill="#A85828" opacity="0.9"/>
-  <rect x="24" y="18" width="120" height="60" rx="6" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
-  <text x="84" y="58" text-anchor="middle" fill="#4A3228" font-size="28" font-family="sans-serif" font-weight="600">$</text>
-  <rect x="168" y="28" width="176" height="40" rx="4" fill="#D8C8B4" stroke="#5C3A28" stroke-width="1.5"/>
-  <rect x="168" y="28" width="52" height="40" rx="4" fill="#C87830"/>
-  <text x="256" y="24" text-anchor="middle" fill="#4A3228" font-size="14" font-family="sans-serif" font-weight="600">ERA</text>
-  <rect x="368" y="22" width="120" height="52" rx="6" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
-  <text x="428" y="56" text-anchor="middle" fill="#4A3228" font-size="18" font-family="monospace" font-weight="600">NOV 95</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 96" role="img" aria-label="hud top bar">
+  <rect width="1920" height="96" fill="#E8DCC8"/>
+  <rect x="0" y="90" width="1920" height="6" fill="#A85828" opacity="0.9"/>
+  <rect x="48" y="14" width="200" height="68" rx="8" fill="#F0E4D4" stroke="#5C3A28" stroke-width="3"/>
+  <text x="148" y="58" text-anchor="middle" fill="#4A3228" font-size="36" font-family="sans-serif" font-weight="600">$</text>
+  <rect x="280" y="22" width="520" height="52" rx="6" fill="#D8C8B4" stroke="#5C3A28" stroke-width="2"/>
+  <rect x="280" y="22" width="160" height="52" rx="6" fill="#C87830"/>
+  <text x="540" y="18" text-anchor="middle" fill="#4A3228" font-size="16" font-family="sans-serif" font-weight="600">ERA</text>
+  <rect x="840" y="18" width="220" height="60" rx="8" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
+  <text x="950" y="58" text-anchor="middle" fill="#4A3228" font-size="22" font-family="monospace" font-weight="600">NOV 95</text>
+  <rect x="1100" y="18" width="220" height="60" rx="8" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
+  <text x="1210" y="58" text-anchor="middle" fill="#4A3228" font-size="20" font-family="sans-serif" font-weight="600">BUILD</text>
+  <rect x="1360" y="18" width="220" height="60" rx="8" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
+  <text x="1470" y="58" text-anchor="middle" fill="#4A3228" font-size="20" font-family="sans-serif" font-weight="600">HIRE</text>
+  <rect x="1620" y="18" width="220" height="60" rx="8" fill="#F0E4D4" stroke="#5C3A28" stroke-width="2"/>
+  <text x="1730" y="58" text-anchor="middle" fill="#4A3228" font-size="18" font-family="sans-serif" font-weight="600">TRAIN</text>
 </svg>
