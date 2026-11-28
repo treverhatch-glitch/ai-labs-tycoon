@@ -987,6 +987,9 @@ def apply_walk_materials_to_hero(
         elif asset_id == "staff-researcher-idle":
             if base == "KenneyResearcherStock":
                 apply_researcher_founder_base_materials(ob)
+                from kenney_researcher_from_founder import apply_trouser_grey_leg_faces
+
+                apply_trouser_grey_leg_faces()
             elif base in ("ResearcherHairCap", "ResearcherCoatSkirt", "ResearcherCoatSleeves"):
                 _tune_coat_mat(ob)
 
@@ -1032,6 +1035,10 @@ def build_researcher_walk_scene() -> WalkHeroScene:
 
     coat_parts = spawn_researcher_shirt_derived_parts(mesh, arm, weight_body=mesh)
     sync_coat_parts_to_body(mesh, coat_parts, arm)
+    from kenney_researcher_from_founder import apply_trouser_grey_leg_faces
+
+    n_trouser = apply_trouser_grey_leg_faces()
+    print(f"OK researcher_walk_scene trouser_grey faces={n_trouser}")
     from researcher_scene_mesh_audit import audit_researcher_render_meshes
 
     render_set = [mesh, *coat_parts, *eyes, hair]

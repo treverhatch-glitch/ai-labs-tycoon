@@ -33,6 +33,7 @@ from kenney_researcher_stock_recolor import (
     RESEARCHER_HAIR,
     RESEARCHER_SOLE,
     RESEARCHER_TROUSERS,
+    _vg_mean_on_face,
     spawn_researcher_eye_meshes,
 )
 from researcher_hero_geometry import spawn_researcher_hair_cap
@@ -338,6 +339,128 @@ def collect_researcher_founder_meshes() -> list[bpy.types.Object]:
     return [body, *eyes, *props]
 
 
+TROUSER_GREY_NAME = "trouser_grey"
+TROUSER_GREY_RGBA = (100 / 255, 100 / 255, 102 / 255, 1.0)
+_THIGH_SHIN_VG = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+_FOOT_VG = frozenset({"LeftFoot", "RightFoot", "LeftToes", "RightToes"})
+_LEG_DOMINANT_VG = _THIGH_SHIN_VG | _FOOT_VG
+_ARM_VG = frozenset(ARM_VG_BONES)
+
+
+def _ensure_trouser_grey_material(roughness: float = 0.58) -> bpy.types.Material:
+    mat = bpy.data.materials.get(TROUSER_GREY_NAME)
+    if mat is None:
+        mat = bpy.data.materials.new(TROUSER_GREY_NAME)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf.inputs["Base Color"].default_value = TROUSER_GREY_RGBA
+    bsdf.inputs["Roughness"].default_value = roughness
+    spec = bsdf.inputs.get("Specular") or bsdf.inputs.get("Specular IOR Level")
+    if spec is not None:
+        spec.default_value = 0.35
+    nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    return mat
+
+
+def _coat_hem_normalized(
+    body: bpy.types.Object, meshes: list[bpy.types.Object], lm
+) -> float:
+    skirt = next(
+        (o for o in meshes if o.name.split(".")[0] == "ResearcherCoatSkirt"),
+        None,
+    )
+    if skirt is not None:
+        zs = [(skirt.matrix_world @ v.co).z for v in skirt.data.vertices]
+        if zs:
+            hem_z = min(zs)
+            return (hem_z - lm.zmin) / max(1e-6, lm.span)
+    hem = lm.h_waist + 0.50
+    if hem < lm.h_shoe + 0.12:
+        hem = max(lm.h_waist - 0.15, lm.h_shoe + 0.12)
+    return hem
+
+
+def _face_vg_weight_map(
+    ob: bpy.types.Object, face: bmesh.types.BMFace
+) -> dict[str, float]:
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    acc: dict[str, float] = {}
+    n = max(1, len(face.verts))
+    for v in face.verts:
+        for g in ob.data.vertices[v.index].groups:
+            name = vg_names.get(g.group, "")
+            if name:
+                acc[name] = acc.get(name, 0.0) + g.weight / n
+    return acc
+
+
+def _face_dominant_leg_below_hem(
+    ob: bpy.types.Object, face: bmesh.types.BMFace, *, arm_cap: float = 0.14
+) -> bool:
+    weights = _face_vg_weight_map(ob, face)
+    if not weights:
+        return False
+    arm_w = max((weights.get(b, 0.0) for b in _ARM_VG), default=0.0)
+    hand_w = _vg_mean_on_face(ob, face, _ARM_VG)
+    if arm_w > arm_cap or hand_w > arm_cap:
+        return False
+    dominant = max(weights, key=weights.get)
+    if dominant in _ARM_VG:
+        return False
+    if dominant in _LEG_DOMINANT_VG and weights[dominant] >= 0.12:
+        return True
+    leg_best = max((weights.get(b, 0.0) for b in _LEG_DOMINANT_VG), default=0.0)
+    return leg_best >= 0.12 and leg_best > arm_w + 0.02
+
+
+def apply_trouser_grey_leg_faces() -> int:
+    """Below coat hem: trouser_grey on faces whose dominant VG is leg (not arm/hand)."""
+    meshes = collect_researcher_founder_meshes()
+    body = next(
+        o
+        for o in meshes
+        if o.type == "MESH" and o.name.split(".")[0] == STOCK_OBJECT_NAME
+    )
+    trouser_mat = _ensure_trouser_grey_material()
+    lm = compute_landmarks(body)
+    lo, span = lm.zmin, lm.span
+    hem_h = _coat_hem_normalized(body, meshes, lm)
+    h_lo = lm.h_shoe - 0.058
+    slot_index = None
+    for i, slot in enumerate(body.data.materials):
+        if slot and slot.name == TROUSER_GREY_NAME:
+            slot_index = i
+            break
+    if slot_index is None:
+        slot_index = len(body.data.materials)
+        body.data.materials.append(trouser_mat)
+
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.faces.ensure_lookup_table()
+    changed = 0
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += body.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h >= hem_h or h < h_lo:
+            continue
+        if not _face_dominant_leg_below_hem(body, face):
+            continue
+        face.material_index = slot_index
+        changed += 1
+    bm.to_mesh(body.data)
+    bm.free()
+    body.data.update()
+    return changed
+
+
 def load_researcher_from_founder_stock() -> bpy.types.Object:
     if not STOCK_BLEND.is_file() or not STOCK_META.is_file():
         raise RuntimeError(f"FAIL staff-researcher-idle missing founder stock {STOCK_BLEND}")
@@ -376,4 +499,6 @@ def load_researcher_from_founder_stock() -> bpy.types.Object:
     reset_render_island_audit_log()
     meshes = collect_researcher_founder_meshes()
     audit_researcher_render_meshes(ob, meshes, prune=False)
+    n_trouser = apply_trouser_grey_leg_faces()
+    print(f"OK researcher trouser_grey faces={n_trouser}")
     return ob
